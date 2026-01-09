@@ -32,7 +32,7 @@ export function getCanvasFillStyle(
     // Solid color fill
     if (fillStyle.texture === Texture.WHITE && !fillStyle.fill)
     {
-        return Color.shared.setValue(fillStyle.color).setAlpha(fillStyle.alpha ?? 1).toRgbaString();
+        return Color.shared.setValue(fillStyle.color).setAlpha(fillStyle.alpha ?? 1).toHexa();
     }
     // Basic texture fill
     else if (!fillStyle.fill)

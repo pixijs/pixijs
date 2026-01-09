@@ -61,7 +61,6 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
      * Initializes the adaptor.
      * @param {Renderer} renderer - the renderer
      * @param {RenderTargetSystem} renderTargetSystem - the render target system
-     * @standard
      */
     init(
         renderer: Renderer,
@@ -81,7 +80,6 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
      * @param {object} originDest - the destination origin (top left to paste from!)
      * @param {number} originDest.x - the x destination origin of the copy
      * @param {number} originDest.y - the y destination origin of the copy
-     * @standard
      */
     copyToTexture(
         sourceRenderSurfaceTexture: RenderTarget,
@@ -97,7 +95,6 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
      * @param {CLEAR_OR_BOOL} clear - the clear mode to use. Can be true or a CLEAR number 'COLOR | DEPTH | STENCIL' 0b111*
      * @param {RgbaArray} [clearColor] - the color to clear to
      * @param {Rectangle} [viewport] - the viewport to use
-     * @standard
      */
     startRenderPass(
         renderTarget: RenderTarget,
@@ -112,7 +109,6 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
      * @param {CLEAR_OR_BOOL} clear - the clear mode to use. Can be true or a CLEAR number 'COLOR | DEPTH | STENCIL' 0b111*
      * @param {RgbaArray} [clearColor] - the color to clear to
      * @param {Rectangle} [viewport] - the viewport to use
-     * @standard
      */
     clear(
         renderTarget: RenderTarget,
@@ -124,28 +120,24 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
     /**
      * finishes the current render pass
      * @param {RenderTarget} renderTarget - the render target to finish the render pass for
-     * @standard
      */
     finishRenderPass(renderTarget: RenderTarget): void
 
     /**
      * called after the render pass is finished
      * @param {RenderTarget} renderTarget - the render target that was rendered to
-     * @standard
      */
     postrender?(renderTarget: RenderTarget): void;
 
     /**
      * called before the render main pass is started
      * @param {RenderTarget} renderTarget - the render target that will be rendered to
-     * @standard
      */
     prerender?(renderTarget: RenderTarget): void;
 
     /**
      * initializes a gpu render target
      * @param {RenderTarget} renderTarget - the render target to initialize
-     * @standard
      */
     initGpuRenderTarget(
         renderTarget: RenderTarget
@@ -154,7 +146,6 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
     /**
      * resizes the gpu render target
      * @param {RenderTarget} renderTarget - the render target to resize
-     * @standard
      */
     resizeGpuRenderTarget(
         renderTarget: RenderTarget
@@ -163,7 +154,6 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
     /**
      * destroys the gpu render target
      * @param {RendererRenderTarget} gpuRenderTarget - the gpu render target to destroy
-     * @standard
      */
     destroyGpuRenderTarget(gpuRenderTarget: RENDER_TARGET): void
 }
@@ -196,56 +186,28 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
  */
 export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> implements System
 {
-    /**
-     * When rendering of a scene begins, this is where the root render surface is stored
-     * @advanced
-     */
+    /** When rendering of a scene begins, this is where the root render surface is stored */
     public rootRenderTarget: RenderTarget;
-    /**
-     * This is the root viewport for the render pass
-     * @advanced
-     */
+    /** This is the root viewport for the render pass */
     public rootViewPort = new Rectangle();
-    /**
-     * A boolean that lets the dev know if the current render pass is rendering to the screen. Used by some plugins
-     * @advanced
-     */
+    /** A boolean that lets the dev know if the current render pass is rendering to the screen. Used by some plugins */
     public renderingToScreen: boolean;
-    /**
-     * the current active render target
-     * @advanced
-     */
+    /** the current active render target */
     public renderTarget: RenderTarget;
-    /**
-     * the current active render surface that the render target is created from
-     * @advanced
-     */
+    /** the current active render surface that the render target is created from */
     public renderSurface: RenderSurface;
-    /**
-     * the current viewport that the gpu is using
-     * @advanced
-     */
+    /** the current viewport that the gpu is using */
     public readonly viewport = new Rectangle();
     /**
      * a runner that lets systems know if the active render target has changed.
      * Eg the Stencil System needs to know so it can manage the stencil buffer
-     * @advanced
      */
     public readonly onRenderTargetChange = new SystemRunner('onRenderTargetChange');
-    /**
-     * the projection matrix that is used by the shaders based on the active render target and the viewport
-     * @advanced
-     */
+    /** the projection matrix that is used by the shaders based on the active render target and the viewport */
     public readonly projectionMatrix = new Matrix();
-    /**
-     * the default clear color for render targets
-     * @advanced
-     */
+    /** the default clear color for render targets */
     public readonly defaultClearColor: RgbaArray = [0, 0, 0, 0];
-    /**
-     * a reference to the adaptor that interfaces with WebGL / WebGP
-     * @advanced
-     */
+    /** a reference to the adaptor that interfaces with WebGL / WebGP */
     public readonly adaptor: RenderTargetAdaptor<RENDER_TARGET>;
     /**
      * a hash that stores the render target for a given render surface. When you pass in a texture source,
@@ -506,7 +468,7 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      * The best way to copy a canvas is to create a texture from it. Then render with that.
      *
      * Parsing in a RenderTarget canvas context (with a 2d context)
-     * @param {RenderTarget} sourceRenderSurfaceTexture - the render surface to copy from
+     * @param sourceRenderSurfaceTexture - the render surface to copy from
      * @param {Texture} destinationTexture - the texture to copy to
      * @param {object} originSrc - the origin of the copy
      * @param {number} originSrc.x - the x origin of the copy

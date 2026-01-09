@@ -1,6 +1,7 @@
 import { extensions, ExtensionType } from '../../../extensions/Extensions';
 import { CanvasGraphicsAdaptor } from '../../../scene/graphics/canvas/CanvasGraphicsAdaptor';
-import { CanvasParticleContainerPipe } from '../../../scene/particle-container/canvas/CanvasParticleContainerPipe';
+import { CanvasParticleContainerAdaptor } from '../../../scene/particle-container/canvas/CanvasParticleContainerAdaptor';
+import { ParticleContainerPipe } from '../../../scene/particle-container/shared/ParticleContainerPipe';
 import { CanvasTextPipe } from '../../../scene/text/canvas/CanvasTextPipe';
 import { CanvasTextSystem } from '../../../scene/text/canvas/CanvasTextSystem';
 import { HTMLTextPipe } from '../../../scene/text-html/HTMLTextPipe';
@@ -34,10 +35,14 @@ const DefaultCanvasSystems = [
 const DefaultCanvasPipes = [
     ...SharedRenderPipes,
     CanvasTextPipe,
-    CanvasParticleContainerPipe,
+    ParticleContainerPipe,
     HTMLTextPipe,
 ];
-const DefaultCanvasAdapters = [CanvasBatchAdaptor, CanvasGraphicsAdaptor];
+const DefaultCanvasAdapters = [
+    CanvasBatchAdaptor,
+    CanvasGraphicsAdaptor,
+    CanvasParticleContainerAdaptor,
+];
 
 // installed systems will be added to this array by the extensions manager.
 const systems: { name: string; value: SystemConstructor }[] = [];

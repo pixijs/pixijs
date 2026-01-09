@@ -271,7 +271,7 @@ export class CanvasTextMetrics
         const fontProperties = CanvasTextMetrics.measureFont(font);
 
         // fallback in case UA disallow canvas data extraction
-        if (fontProperties.fontSize <= 0)
+        if (fontProperties.fontSize === 0)
         {
             fontProperties.fontSize = style.fontSize as number;
             fontProperties.ascent = style.fontSize as number;

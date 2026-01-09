@@ -96,7 +96,6 @@ export * from './mesh/shared/Mesh';
 export * from './mesh/shared/MeshGeometry';
 export * from './mesh/shared/MeshPipe';
 export * from './particle-container/canvas/CanvasParticleContainerAdaptor';
-export * from './particle-container/canvas/CanvasParticleContainerPipe';
 export * from './particle-container/gl/GlParticleContainerAdaptor';
 export * from './particle-container/gpu/GpuParticleContainerAdaptor';
 export * from './particle-container/shared/GlParticleContainerPipe';
