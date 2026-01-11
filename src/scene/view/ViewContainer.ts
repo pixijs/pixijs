@@ -2,6 +2,7 @@ import { type GCable, type GCData } from '../../rendering/renderers/shared/GCSys
 import { type InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import { type RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import { type GPUDataOwner, type Renderer } from '../../rendering/renderers/types';
+import { warn } from '../../utils/logging/warn';
 import { Bounds } from '../container/bounds/Bounds';
 import { Container, type ContainerOptions } from '../container/Container';
 import { type RenderLayer } from '../layers/RenderLayer';
@@ -9,6 +10,8 @@ import { type RenderLayer } from '../layers/RenderLayer';
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { DestroyOptions } from '../container/destroyTypes';
+
+const missingRenderPipeWarnings = new Set<string>();
 
 /**
  * A GPU Data object
@@ -210,8 +213,27 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
         renderPipes.blendMode.pushBlendMode(this, this.groupBlendMode, instructionSet);
 
         const rp = renderPipes as unknown as Record<string, RenderPipe>;
+        const pipe = rp[this.renderPipeId];
 
-        rp[this.renderPipeId].addRenderable(this, instructionSet);
+        if (pipe?.addRenderable)
+        {
+            pipe.addRenderable(this, instructionSet);
+        }
+        else
+        {
+            const renderPipeKey = `${renderer.type}:${this.renderPipeId}`;
+
+            if (!missingRenderPipeWarnings.has(renderPipeKey))
+            {
+                const renderableName = this.constructor?.name ?? 'ViewContainer';
+
+                warn(
+                    `Renderer missing render pipe "${this.renderPipeId}" for ${renderableName}; `
+                    + 'skipping renderable.'
+                );
+                missingRenderPipeWarnings.add(renderPipeKey);
+            }
+        }
 
         this.didViewUpdate = false;
 

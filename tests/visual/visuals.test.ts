@@ -17,6 +17,52 @@ const scenes = paths.map((p) =>
     return { path: p, data: require(`./${relativePath}`).scene };
 });
 
+const canvasExcludedScenes = new Set([
+    'alpha-filter.scene.ts',
+    'alpha-inverse-mask.scene.ts',
+    'alpha-mask-cache-as-texture.scene.ts',
+    'alpha-mask.scene.ts',
+    'blend-mode-max.scene.ts',
+    'blend-mode-min.scene.ts',
+    'blend-mode-render-texture.scene.ts',
+    'circle-mask.scene.ts',
+    'culling-texture.scene.ts',
+    'custom-mesh-instanced.scene.ts',
+    'custom-mesh.scene.ts',
+    'dds.scene.ts',
+    'filter-render-textures.scene.ts',
+    'fully-custom-mesh.scene.ts',
+    'geometry-from-path.scene.ts',
+    'ktx.scene.ts',
+    'layer-mask.scene.ts',
+    'mask-out-of-viewport.scene.ts',
+    'mesh-textures.scene.ts',
+    'meshplane.scene.ts',
+    'meshrope.scene.ts',
+    'msdf-text.scene.ts',
+    'multiple-render-targets.scene.ts',
+    'nested-container.scene.ts',
+    'nested-mask.scene.ts',
+    'particle.scene.ts',
+    'perspective-mesh.scene.ts',
+    'restore-context.scene.ts',
+    'sdf-text.scene.ts',
+    'sprite-sheet-mesh.scene.ts',
+    'stencil-inverse-mask.scene.ts',
+    'stencil-mask.scene.ts',
+    'stencil-nested-render-group.scene.ts',
+    'text-bounds.scene.ts',
+    'triangle.scene.ts',
+    'trimed-sprite-mask.scene.ts',
+]);
+
+function isCanvasCompatible(scenePath: string): boolean
+{
+    const sceneName = path.basename(scenePath);
+
+    return !canvasExcludedScenes.has(sceneName);
+}
+
 const onlyScenes = scenes.filter((s) =>
 {
     if (isCI && s.data.only)
@@ -57,12 +103,18 @@ describe('Visual Tests', () =>
             webgpu: true,
             webgl1: true,
             webgl2: true,
+            canvas: true,
         };
 
         const renderers = {
             ...defaultRenderers,
             ...scene.data.renderers
         };
+
+        if (!isCanvasCompatible(scene.path))
+        {
+            renderers.canvas = false;
+        }
 
         Object.keys(renderers).forEach((renderer) =>
         {

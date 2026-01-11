@@ -1,7 +1,7 @@
 import type { Renderer, RendererOptions } from '~/rendering';
 import type { Container } from '~/scene';
 
-export type RenderType = 'webgl1' | 'webgl2' | 'webgpu';
+export type RenderType = 'webgl1' | 'webgl2' | 'webgpu' | 'canvas';
 export type RenderTypeFlags = Record<RenderType, boolean>;
 
 export interface TestScene

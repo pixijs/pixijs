@@ -62,6 +62,8 @@ export class Batch implements Instruction
     public bindGroup: BindGroup;
 
     public batcher: Batcher;
+    /** Elements contained in this batch. Used by the Canvas renderer. */
+    public elements: BatchableElement[];
 
     public destroy()
     {
@@ -69,6 +71,7 @@ export class Batch implements Instruction
         this.gpuBindGroup = null;
         this.bindGroup = null;
         this.batcher = null;
+        this.elements = null;
     }
 }
 
@@ -512,6 +515,7 @@ export abstract class Batcher
         let start = this._batchIndexStart;
 
         let action: BatchAction = 'startBatch';
+        let batchElements: BatchableElement[] = [];
 
         const maxTextures = this.maxTextures;
 
@@ -564,6 +568,7 @@ export abstract class Batcher
                 }
 
                 element._batch = batch;
+                batchElements.push(element);
 
                 continue;
             }
@@ -580,7 +585,8 @@ export abstract class Batcher
                     blendMode,
                     topology,
                     instructionSet,
-                    action
+                    action,
+                    batchElements
                 );
 
                 action = 'renderBatch';
@@ -592,6 +598,7 @@ export abstract class Batcher
                 batch = getBatchFromPool();
                 textureBatch = batch.textures;
                 textureBatch.clear();
+                batchElements = [];
 
                 ++BATCH_TICK;
             }
@@ -600,6 +607,7 @@ export abstract class Batcher
             textureBatch.ids[source.uid] = textureBatch.count;
             textureBatch.textures[textureBatch.count++] = source;
             element._batch = batch;
+            batchElements.push(element);
 
             size += element.indexSize;
 
@@ -642,7 +650,8 @@ export abstract class Batcher
                 blendMode,
                 topology,
                 instructionSet,
-                action
+                action,
+                batchElements
             );
 
             start = size;
@@ -662,7 +671,8 @@ export abstract class Batcher
         blendMode: BLEND_MODES,
         topology: Topology,
         instructionSet: InstructionSet,
-        action: BatchAction
+        action: BatchAction,
+        elements?: BatchableElement[]
     )
     {
         batch.gpuBindGroup = null;
@@ -675,6 +685,7 @@ export abstract class Batcher
         batch.topology = topology;
         batch.start = indexStart;
         batch.size = indexSize;
+        batch.elements = elements;
 
         ++BATCH_TICK;
 
@@ -812,4 +823,3 @@ export abstract class Batcher
         this.attributeBuffer = null;
     }
 }
-

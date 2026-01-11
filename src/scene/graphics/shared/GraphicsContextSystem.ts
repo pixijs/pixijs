@@ -137,7 +137,6 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
         type: [
             ExtensionType.WebGLSystem,
             ExtensionType.WebGPUSystem,
-            ExtensionType.CanvasSystem,
         ],
         name: 'graphicsContext'
     } as const;

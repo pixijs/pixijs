@@ -2,16 +2,24 @@ declare global
 {
     namespace PixiMixins
     {
-        interface RendererSystems
+        interface WebGLSystems
         {
             graphicsContext: import('./shared/GraphicsContextSystem').GraphicsContextSystem;
         }
-
+        interface WebGPUSystems
+        {
+            graphicsContext: import('./shared/GraphicsContextSystem').GraphicsContextSystem;
+        }
+        interface CanvasSystems
+        {
+            graphicsContext: import('./canvas/CanvasGraphicsContextSystem').CanvasGraphicsContextSystem;
+        }
         interface RendererPipes
         {
-            graphics: import('./shared/GraphicsPipe').GraphicsPipe;
+            graphics: import('../../rendering/renderers/shared/instructions/RenderPipe').RenderPipe<
+                import('./shared/Graphics').Graphics
+            >;
         }
-
         interface RendererOptions
         {
         /**

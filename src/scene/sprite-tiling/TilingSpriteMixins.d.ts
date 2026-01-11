@@ -4,9 +4,10 @@ declare global
     {
         interface RendererPipes
         {
-            tilingSprite: import('./TilingSpritePipe').TilingSpritePipe;
+            tilingSprite: import('../../rendering/renderers/shared/instructions/RenderPipe').RenderPipe<
+                import('./TilingSprite').TilingSprite
+            >;
         }
     }
 }
-
 export {};

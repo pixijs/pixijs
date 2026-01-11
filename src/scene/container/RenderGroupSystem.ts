@@ -127,20 +127,19 @@ export class RenderGroupSystem implements System
                 // We also want to know now, what the bounds of the texture will be.
                 // as if the texture changes, we need to invalidate the parent render group!
                 const bounds = renderGroup.root.getLocalBounds();
+                const renderer = this._renderer;
+                const resolution = renderGroup.textureOptions.resolution || renderer.view.resolution;
+                const antialias = renderGroup.textureOptions.antialias ?? renderer.view.antialias;
+                const scaleMode = renderGroup.textureOptions.scaleMode ?? 'linear';
+                const lastTexture = renderGroup.texture;
 
                 bounds.ceil();
-
-                const lastTexture = renderGroup.texture;
 
                 if (renderGroup.texture)
                 {
                     TexturePool.returnTexture(renderGroup.texture, true);
                 }
 
-                const renderer = this._renderer;
-                const resolution = renderGroup.textureOptions.resolution || renderer.view.resolution;
-                const antialias = renderGroup.textureOptions.antialias ?? renderer.view.antialias;
-                const scaleMode = renderGroup.textureOptions.scaleMode ?? 'linear';
                 const texture = TexturePool.getOptimalTexture(
                     bounds.width,
                     bounds.height,

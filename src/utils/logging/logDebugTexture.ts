@@ -1,3 +1,7 @@
+import { RendererType } from '../../rendering/renderers/types';
+
+import type { WebGLRenderer } from '../../rendering/renderers/gl/WebGLRenderer';
+import type { WebGPURenderer } from '../../rendering/renderers/gpu/WebGPURenderer';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { Renderer } from '../../rendering/renderers/types';
 
@@ -13,7 +17,10 @@ export async function logDebugTexture(texture: Texture, renderer: Renderer, size
 {
     const base64 = await renderer.extract.base64(texture);
 
-    await renderer.encoder.commandFinished;
+    if (renderer.type !== RendererType.CANVAS)
+    {
+        await (renderer as WebGLRenderer | WebGPURenderer).encoder.commandFinished;
+    }
 
     const width = size;
 

@@ -1,5 +1,6 @@
 import { Cache } from '../../assets/cache/Cache';
 import { ExtensionType } from '../../extensions/Extensions';
+import { type Renderer } from '../../rendering/renderers/types';
 import { GCManagedHash } from '../../utils/data/GCManagedHash';
 import { Graphics } from '../graphics/shared/Graphics';
 import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
@@ -11,7 +12,6 @@ import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../rendering/renderers/shared/Renderable';
-import type { Renderer } from '../../rendering/renderers/types';
 import type { BitmapText } from './BitmapText';
 
 /** @internal */
@@ -32,11 +32,10 @@ export class BitmapTextGraphics extends Graphics implements GPUData
 export class BitmapTextPipe implements RenderPipe<BitmapText>
 {
     /** @ignore */
-    public static extension = {
+    public static extension: { type: ExtensionType[]; name: 'bitmapText' } = {
         type: [
             ExtensionType.WebGLPipes,
             ExtensionType.WebGPUPipes,
-            ExtensionType.CanvasPipes,
         ],
         name: 'bitmapText',
     } as const;
@@ -98,6 +97,11 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         }
     }
 
+    protected shouldUseSdfShader(): boolean
+    {
+        return true;
+    }
+
     private _updateContext(bitmapText: BitmapText, proxyGraphics: Graphics)
     {
         const { context } = proxyGraphics;
@@ -108,10 +112,14 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
         if (bitmapFont.distanceField.type !== 'none')
         {
-            if (!context.customShader)
+            // Only use custom shader for WebGL/WebGPU renderers
+            // Canvas renderer cannot properly handle MSDF distance field math
+            if (this.shouldUseSdfShader())
             {
-                // TODO: Check if this is a WebGL renderer before asserting type
-                context.customShader = new SdfShader(this._renderer.limits.maxBatchableTextures);
+                if (!context.customShader)
+                {
+                    context.customShader = new SdfShader(this._renderer.limits.maxBatchableTextures);
+                }
             }
         }
 

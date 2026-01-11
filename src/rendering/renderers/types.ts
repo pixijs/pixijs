@@ -1,23 +1,25 @@
 import { type GPUData } from '../../scene/view/ViewContainer';
 
 import type { ICanvas } from '../../environment/canvas/ICanvas';
+import type { CanvasOptions, CanvasPipes, CanvasRenderer } from './canvas/CanvasRenderer';
 import type { WebGLOptions, WebGLPipes, WebGLRenderer } from './gl/WebGLRenderer';
 import type { WebGPUOptions, WebGPUPipes, WebGPURenderer } from './gpu/WebGPURenderer';
 
 /**
- * A generic renderer that can be either a WebGL or WebGPU renderer.
+ * A generic renderer that can be either a WebGL, WebGPU, or Canvas renderer.
  * @category rendering
  * @extends WebGLRenderer
  * @extends WebGPURenderer
+ * @extends CanvasRenderer
  * @standard
  */
-export type Renderer<T extends ICanvas = HTMLCanvasElement> = WebGLRenderer<T> | WebGPURenderer<T>;
+export type Renderer<T extends ICanvas = HTMLCanvasElement> = WebGLRenderer<T> | WebGPURenderer<T> | CanvasRenderer<T>;
 /**
  * Generic pipes for the renderer.
  * @category rendering
  * @advanced
  */
-export type RenderPipes = WebGLPipes | WebGPUPipes;
+export type RenderPipes = WebGLPipes | WebGPUPipes | CanvasPipes;
 /**
  * Options for the renderer.
  * @extends WebGLOptions
@@ -25,7 +27,7 @@ export type RenderPipes = WebGLPipes | WebGPUPipes;
  * @category rendering
  * @standard
  */
-export interface RendererOptions extends WebGLOptions, WebGPUOptions {}
+export interface RendererOptions extends WebGLOptions, WebGPUOptions, CanvasOptions {}
 
 /**
  * Ids for the different render types.
@@ -40,11 +42,13 @@ export interface RendererOptions extends WebGLOptions, WebGPUOptions {}
 export enum RendererType
 {
     /** The WebGL renderer */
-    WEBGL = 0b01,
+    WEBGL = 0b001,
     /** The WebGPU renderer */
-    WEBGPU = 0b10,
+    WEBGPU = 0b010,
+    /** The Canvas renderer */
+    CANVAS = 0b100,
     /** Either WebGL or WebGPU renderer */
-    BOTH = 0b11
+    BOTH = 0b011
 }
 
 /**
@@ -68,4 +72,3 @@ export interface GPUDataOwner<GPU_DATA extends GPUData = any>
     _gpuData: Record<number, GPU_DATA>;
     unload: () => void;
 }
-

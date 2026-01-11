@@ -435,6 +435,7 @@ export class ExtractSystem implements System
         type: [
             ExtensionType.WebGLSystem,
             ExtensionType.WebGPUSystem,
+            ExtensionType.CanvasSystem,
         ],
         name: 'extract',
     } as const;

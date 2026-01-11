@@ -1,3 +1,4 @@
+import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import { getAdjustedBlendModeBlend } from '../../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
@@ -26,6 +27,14 @@ export interface ParticleContainerAdaptor
  */
 export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
 {
+    /** @ignore */
+    public static extension: { type: ExtensionType[]; name: 'particle' } = {
+        type: [
+            ExtensionType.CanvasPipes,
+        ],
+        name: 'particle',
+    } as const;
+
     /** The default shader that is used if a sprite doesn't have a more specific one. */
     public defaultShader: Shader;
 
