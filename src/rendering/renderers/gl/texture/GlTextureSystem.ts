@@ -212,6 +212,17 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     private _initSource(source: TextureSource): GlTexture
     {
+        if (source.uploadMethodId === 'external')
+        {
+            const glTexture = new GlTexture(source.resource as WebGLTexture);
+
+            source._gpuData[this._renderer.uid] = glTexture;
+            source.on('update', this.onSourceUpdate, this);
+            source.on('resize', this.onSourceUpdate, this);
+
+            return glTexture;
+        }
+
         const gl = this._gl;
 
         const glTexture = new GlTexture(gl.createTexture());
@@ -292,6 +303,13 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     protected onSourceUpdate(source: TextureSource): void
     {
+        if (source.uploadMethodId === 'external')
+        {
+            (source._gpuData[this._renderer.uid] as GlTexture).texture = source.resource;
+
+            return;
+        }
+
         const gl = this._gl;
 
         const glTexture = this.getGlSource(source);

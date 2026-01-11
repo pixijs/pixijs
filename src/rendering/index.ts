@@ -196,6 +196,7 @@ export * from './renderers/shared/texture/RenderTexture';
 export * from './renderers/shared/texture/sources/BufferImageSource';
 export * from './renderers/shared/texture/sources/CanvasSource';
 export * from './renderers/shared/texture/sources/CompressedSource';
+export * from './renderers/shared/texture/sources/ExternalSource';
 export * from './renderers/shared/texture/sources/ImageSource';
 export * from './renderers/shared/texture/sources/TextureSource';
 export * from './renderers/shared/texture/sources/VideoSource';
