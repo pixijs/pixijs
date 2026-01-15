@@ -81,7 +81,7 @@ export class GpuBufferSystem implements System
                 gpuBuffer,
                 buffer._updateOffset,
                 data.buffer,
-                buffer._updateOffset + data.byteOffset,
+                data.byteOffset,
                 // round to the nearest 4 bytes
                 ((buffer._updateSize || data.byteLength) + 3) & ~3
             );
