@@ -102,6 +102,7 @@
     "eslint-plugin-jest": "^28.9.0",
     "eslint-plugin-jsdoc": "^50.6.0",
     "eslint-plugin-no-mixed-operators": "^1.1.1",
+    "expect-type": "^1.2.2",
     "fs-extra": "^11.2.0",
     "glob": "^8.1.0",
     "http-server": "^14.1.1",
