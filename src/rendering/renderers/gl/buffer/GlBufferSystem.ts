@@ -251,7 +251,7 @@ export class GlBufferSystem implements System
                     glBuffer.type,
                     buffer._updateOffset,
                     data,
-                    buffer._updateOffset / data.BYTES_PER_ELEMENT,
+                    0,
                     (buffer._updateSize || data.byteLength) / data.BYTES_PER_ELEMENT
                 );
             }
