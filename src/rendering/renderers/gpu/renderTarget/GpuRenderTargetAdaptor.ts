@@ -88,6 +88,11 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
         gpuRenderTarget.descriptor = descriptor;
 
+        if (renderTarget.depthStencilTexture)
+        {
+            gpuRenderTarget.depthStencilFormat = renderTarget.depthStencilTexture.source.format;
+        }
+
         // TODO we should not finish a render pass each time we bind
         // for example filters - we would want to push / pop render targets
         this._renderer.pipeline.setRenderTarget(gpuRenderTarget);
@@ -213,6 +218,8 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
         if (renderTarget.depthStencilTexture)
         {
+            const stencil = renderTarget.depthStencilTexture.source.format.includes('stencil');
+
             const stencilLoadOp = (clear & CLEAR.STENCIL ? 'clear' : 'load') as GPULoadOp;
             const depthLoadOp = (clear & CLEAR.DEPTH ? 'clear' : 'load') as GPULoadOp;
             // Only discard depth/stencil when the attachment is transient — same single-pass
@@ -232,8 +239,8 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                         baseArrayLayer: layer,
                         arrayLayerCount: 1,
                     }),
-                stencilStoreOp: dsStoreOp,
-                stencilLoadOp,
+                stencilStoreOp: stencil ? dsStoreOp : undefined,
+                stencilLoadOp: stencil ? stencilLoadOp : undefined,
                 depthClearValue: 1.0,
                 depthLoadOp,
                 depthStoreOp: dsStoreOp,

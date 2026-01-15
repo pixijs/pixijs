@@ -15,4 +15,5 @@ export class GpuRenderTarget
     public width: number;
     public height: number;
     public descriptor: GPURenderPassDescriptor;
+    public depthStencilFormat?: GPUTextureFormat;
 }
