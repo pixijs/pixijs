@@ -2,11 +2,17 @@ declare global
 {
     namespace PixiMixins
     {
-        interface RendererPipes
+        interface CanvasPipes
         {
-            nineSliceSprite: import('../../rendering/renderers/shared/instructions/RenderPipe').RenderPipe<
-                import('./NineSliceSprite').NineSliceSprite
-            >;
+            nineSliceSprite: import('./canvas/CanvasNineSliceSpritePipe').CanvasNineSliceSpritePipe;
+        }
+        interface WebGLPipes
+        {
+            nineSliceSprite: import('./NineSliceSpritePipe').NineSliceSpritePipe;
+        }
+        interface WebGPUPipes
+        {
+            nineSliceSprite: import('./NineSliceSpritePipe').NineSliceSpritePipe;
         }
     }
 }

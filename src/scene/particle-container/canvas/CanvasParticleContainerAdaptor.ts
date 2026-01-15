@@ -1,4 +1,3 @@
-import { ExtensionType } from '../../../extensions/Extensions';
 import { canvasUtils } from '../../../rendering/renderers/canvas/utils/canvasUtils';
 
 import type { CanvasRenderer } from '../../../rendering/renderers/canvas/CanvasRenderer';
@@ -11,14 +10,6 @@ import type { ParticleContainerAdaptor, ParticleContainerPipe } from '../shared/
  */
 export class CanvasParticleContainerAdaptor implements ParticleContainerAdaptor
 {
-    /** @ignore */
-    public static extension = {
-        type: [
-            ExtensionType.CanvasPipesAdaptor,
-        ],
-        name: 'particle',
-    } as const;
-
     public execute(particleContainerPipe: ParticleContainerPipe, container: ParticleContainer)
     {
         const renderer = particleContainerPipe.renderer as CanvasRenderer;

@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { GlParticleContainerAdaptor } from '../gl/GlParticleContainerAdaptor';
-import { ParticleContainerPipe } from './ParticleContainerPipe';
+import { ParticleContainerPipe } from '../shared/ParticleContainerPipe';
 
 import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRenderer';
 

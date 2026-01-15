@@ -2,13 +2,7 @@ import { extensions, ExtensionType } from '../../../extensions/Extensions';
 import { CustomRenderPipe } from '../../../scene/container/CustomRenderPipe';
 import { RenderGroupPipe } from '../../../scene/container/RenderGroupPipe';
 import { CanvasGraphicsAdaptor } from '../../../scene/graphics/canvas/CanvasGraphicsAdaptor';
-import { CanvasParticleContainerAdaptor } from '../../../scene/particle-container/canvas/CanvasParticleContainerAdaptor';
-import { ParticleContainerPipe } from '../../../scene/particle-container/shared/ParticleContainerPipe';
 import { SpritePipe } from '../../../scene/sprite/SpritePipe';
-import { CanvasTextPipe } from '../../../scene/text/canvas/CanvasTextPipe';
-import { CanvasTextSystem } from '../../../scene/text/canvas/CanvasTextSystem';
-import { HTMLTextPipe } from '../../../scene/text-html/HTMLTextPipe';
-import { HTMLTextSystem } from '../../../scene/text-html/HTMLTextSystem';
 import { CanvasBatchAdaptor } from '../../batcher/canvas/CanvasBatchAdaptor';
 import { BatcherPipe } from '../../batcher/shared/BatcherPipe';
 import { AlphaMaskPipe } from '../../mask/alpha/AlphaMaskPipe';
@@ -19,7 +13,6 @@ import { AbstractRenderer } from '../shared/system/AbstractRenderer';
 import { SharedSystems } from '../shared/system/SharedSystems';
 import { RendererType } from '../types';
 import { CanvasContextSystem } from './CanvasContextSystem';
-import { CanvasFilterSystem } from './CanvasFilterSystem';
 import { CanvasLimitsSystem } from './CanvasLimitsSystem';
 import { CanvasRenderTargetSystem } from './renderTarget/CanvasRenderTargetSystem';
 import { CanvasTextureSystem } from './texture/CanvasTextureSystem';
@@ -33,13 +26,11 @@ import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/syste
 const DefaultCanvasSystems = [
     ...SharedSystems,
     CanvasContextSystem,
-    CanvasFilterSystem,
     CanvasLimitsSystem,
     CanvasTextureSystem,
     CanvasRenderTargetSystem,
-    CanvasTextSystem,
-    HTMLTextSystem,
 ];
+
 const DefaultCanvasPipes = [
     BlendModePipe,
     BatcherPipe,
@@ -49,14 +40,10 @@ const DefaultCanvasPipes = [
     CanvasStencilMaskPipe,
     CanvasColorMaskPipe,
     CustomRenderPipe,
-    CanvasTextPipe,
-    ParticleContainerPipe,
-    HTMLTextPipe,
 ];
 const DefaultCanvasAdapters = [
     CanvasBatchAdaptor,
     CanvasGraphicsAdaptor,
-    CanvasParticleContainerAdaptor,
 ];
 
 // installed systems will be added to this array by the extensions manager.
