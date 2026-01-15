@@ -175,14 +175,20 @@ export class GpuTextureSystem implements System, CanvasGenerator
             const gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
             const newTexture = source.resource as GPUTexture;
 
-            if (gpuData && gpuData.gpuTexture !== newTexture)
+            if (!gpuData)
+            {
+                if (newTexture)
+                {
+                    this._initSource(source);
+                }
+
+                return;
+            }
+
+            if (gpuData.gpuTexture !== newTexture)
             {
                 this._bindGroupHash[source.uid] = null;
                 gpuData.textureView = null;
-            }
-
-            if (gpuData)
-            {
                 gpuData.gpuTexture = newTexture;
             }
 
@@ -233,14 +239,20 @@ export class GpuTextureSystem implements System, CanvasGenerator
             const gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
             const newTexture = source.resource as GPUTexture;
 
-            if (gpuData && gpuData.gpuTexture !== newTexture)
+            if (!gpuData)
+            {
+                if (newTexture)
+                {
+                    this._initSource(source);
+                }
+
+                return;
+            }
+
+            if (gpuData.gpuTexture !== newTexture)
             {
                 this._bindGroupHash[source.uid] = null;
                 gpuData.textureView = null;
-            }
-
-            if (gpuData)
-            {
                 gpuData.gpuTexture = newTexture;
             }
 
