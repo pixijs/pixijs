@@ -320,7 +320,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
             gpuRenderTarget.height = renderTarget.pixelHeight;
         }
 
-        const source = renderTarget.colorTexture;
+        const source = renderTarget.colorTexture || renderTarget.depthStencilTexture;
         const viewport = this.viewport;
         const arrayLayerCount = source.arrayLayerCount || 1;
 

@@ -51,6 +51,16 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
                 }
             });
         }
+        else if (group.type === 'sampler_comparison')
+        {
+            layout[group.group].push({
+                binding: group.binding,
+                visibility: ShaderStage.FRAGMENT,
+                sampler: {
+                    type: 'comparison'
+                }
+            });
+        }
         else if (group.type === 'texture_2d')
         {
             layout[group.group].push({
@@ -71,6 +81,19 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
                 texture: {
                     sampleType: 'depth',
                     viewDimension: '2d',
+                    multisampled: false,
+                }
+            });
+        }
+        else if (group.type === 'texture_depth_2d_array')
+        {
+            //   console.log('!!!>>>!!!>>>', group);
+            layout[group.group].push({
+                binding: group.binding,
+                visibility: ShaderStage.FRAGMENT,
+                texture: {
+                    sampleType: 'depth',
+                    viewDimension: '2d-array',
                     multisampled: false,
                 }
             });

@@ -46,12 +46,19 @@ export class BindGroupSystem implements System
     {
         bindGroup._updateKey();
 
-        const gpuBindGroup = this._hash[bindGroup._key] || this._createBindGroup(bindGroup, program, groupIndex);
+        // The cache key must include both the resources AND the program layout,
+        // because a GPUBindGroup must exactly match its GPUBindGroupLayout.
+        // Two programs with different layouts cannot share a GPUBindGroup,
+        // even if they use the same resources.
+        // Bit shift combines layoutKey and groupIndex into single number (groupIndex < 16)
+        const key = `${bindGroup._key}:${(program._layoutKey << 4) | groupIndex}`;
+
+        const gpuBindGroup = this._hash[key] || this._createBindGroup(key, bindGroup, program, groupIndex);
 
         return gpuBindGroup;
     }
 
-    private _createBindGroup(group: BindGroup, program: GpuProgram, groupIndex: number): GPUBindGroup
+    private _createBindGroup(key: string, group: BindGroup, program: GpuProgram, groupIndex: number): GPUBindGroup
     {
         const device = this._gpu.device;
         const groupLayout = program.layout[groupIndex];
@@ -124,7 +131,7 @@ export class BindGroupSystem implements System
             entries,
         });
 
-        this._hash[group._key] = gpuBindGroup;
+        this._hash[key] = gpuBindGroup;
 
         return gpuBindGroup;
     }

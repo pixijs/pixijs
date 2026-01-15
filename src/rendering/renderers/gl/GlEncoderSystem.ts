@@ -49,6 +49,7 @@ export class GlEncoderSystem implements System
         start?: number,
         instanceCount?: number
         skipSync?: boolean,
+        firstInstance?: number,
     })
     {
         const renderer = this._renderer;

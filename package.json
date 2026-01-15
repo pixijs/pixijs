@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "prepare": "husky install",
-    "start": "run-s watch",
+    "start": "run-s watch:lib",
     "clean": "run-s clean:*",
     "clean:build": "rimraf \"{lib,dist,out}\" --glob",
     "clean:uploads": "rimraf .pr_uploads .s3_uploads --glob",

@@ -26,6 +26,17 @@ const topologyStringToId = {
 
 const emptyOverrides = new ShaderOverrides({});
 
+const depthStencilFormatMap: Record<string, { depth: boolean, stencil: boolean, index: number }> = {
+    'depth24plus-stencil8': { depth: true, stencil: true, index: 0 },
+    depth24plus: { depth: true, stencil: false, index: 1 },
+    depth32float: { depth: true, stencil: false, index: 2 },
+    'depth32float-stencil8': { depth: true, stencil: true, index: 3 },
+    depth16unorm: { depth: true, stencil: false, index: 4 },
+    stencil8: { depth: false, stencil: true, index: 5 },
+};
+
+const emptyDepthStencilFormatData = { depth: false, stencil: false, index: 0 };
+
 // geometryLayouts = 256; // 8 bits // 256 states // value 0-255;
 // shaderKeys = 256; // 8 bits // 256 states // value 0-255;
 // state = 64; // 6 bits // 64 states // value 0-63;
@@ -53,17 +64,18 @@ function getGraphicsStateKey(
 // renderTarget = 1; // 2 bit // 3 states // value 0-3; // none, stencil, depth, depth-stencil
 // multiSampleCount = 1; // 1 bit // 2 states // value 0-1;
 // colorTargetCount = 4; // 2 bits // 4 states // value 0-3; // supports 1-4 color targets
+// depthStencilFormat = 7; // 3 bits // 8 states // value 0-7;
 function getGlobalStateKey(
     stencilStateId: number,
     multiSampleCount: number,
     colorMask: number,
-    renderTarget: number,
     colorTargetCount: number,
+    depthStencilFormat: number,
 ): number
 {
-    return (colorMask << 8) // Allocate the 4 bits for colorMask at the top
+    return (depthStencilFormat << 12) // Allocate 3 bits
+         | (colorMask << 8) // Allocate the 4 bits for colorMask at the top
          | (stencilStateId << 5) // Next 3 bits for stencilStateId
-         | (renderTarget << 3) // 2 bits for renderTarget
          | (colorTargetCount << 1) // 2 bits for colorTargetCount
          | multiSampleCount; // And 1 bit for multiSampleCount at the least significant position
 }
@@ -113,7 +125,8 @@ export class PipelineSystem implements System
     private _colorMask = 0b1111;
     private _multisampleCount = 1;
     private _colorTargetCount = 1;
-    private _depthStencilAttachment: 0 | 1;
+    private _depthStencilFormat: GPUTextureFormat = 'depth24plus-stencil8';
+    private _depthStencilFormatData = emptyDepthStencilFormatData;
 
     constructor(renderer: WebGPURenderer)
     {
@@ -140,8 +153,9 @@ export class PipelineSystem implements System
     public setRenderTarget(renderTarget: GpuRenderTarget)
     {
         this._multisampleCount = renderTarget.msaaSamples;
-        this._depthStencilAttachment = renderTarget.descriptor.depthStencilAttachment ? 1 : 0;
         this._colorTargetCount = renderTarget.colorTargetCount;
+        this._depthStencilFormat = renderTarget.depthStencilFormat;
+        this._depthStencilFormatData = depthStencilFormatMap[this._depthStencilFormat] || emptyDepthStencilFormatData;
         this._updatePipeHash();
     }
 
@@ -169,6 +183,41 @@ export class PipelineSystem implements System
         const pipeline = this.getPipeline(geometry, program, state);
 
         passEncoder.setPipeline(pipeline);
+    }
+
+    /**
+     * Generates a key for the pipeline.advanced usage only.
+     * @param geometry - The geometry to get the key for
+     * @param program - The program to get the key for
+     * @param state - The state to get the key for
+     * @param topology - The topology to get the key for
+     * @param overrides - The overrides to get the key for
+     * @returns The key for the pipeline
+     */
+    public getPipelineKey(
+        geometry: Geometry,
+        program: GpuProgram,
+        state: State,
+        topology: Topology,
+        overrides: ShaderOverrides,
+    ): number
+    {
+        if (!geometry._layoutKey)
+        {
+            ensureAttributes(geometry, program.attributeData);
+
+            // prepare the geometry for the pipeline
+            this._generateBufferKey(geometry);
+        }
+
+        return getGraphicsStateKey(
+            geometry._layoutKey,
+            program._layoutKey,
+            state.data,
+            state._blendModeId,
+            topologyStringToId[topology],
+            overrides.id,
+        );
     }
 
     public getPipeline(
@@ -260,14 +309,16 @@ export class PipelineSystem implements System
         };
 
         // only apply if the texture has stencil or depth
-        if (this._depthStencilAttachment)
+        if (this._depthStencilFormatData.depth || this._depthStencilFormatData.stencil)
         {
+            const formatData = this._depthStencilFormatData;
+
             // mask states..
             descriptor.depthStencil = {
                 ...this._stencilState,
-                format: 'depth24plus-stencil8',
-                depthWriteEnabled: state.depthTest,
-                depthCompare: state.depthTest ? 'less' : 'always',
+                format: this._depthStencilFormat,
+                depthWriteEnabled: formatData.depth ? state.depthTest : false,
+                depthCompare: formatData.depth && state.depthTest ? 'less' : 'always',
             };
         }
 
@@ -445,8 +496,8 @@ export class PipelineSystem implements System
             this._stencilMode,
             this._multisampleCount,
             this._colorMask,
-            this._depthStencilAttachment,
             this._colorTargetCount,
+            this._depthStencilFormatData.index
         );
 
         if (!this._pipeStateCaches[key])
