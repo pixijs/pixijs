@@ -367,10 +367,31 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
             let h = Math.ceil(baseH / scale);
 
             // Clamp to mip dimensions.
-            x = Math.min(Math.max(x, 0), pixelWidth - 1);
-            y = Math.min(Math.max(y, 0), pixelHeight - 1);
-            w = Math.min(Math.max(w, 1), pixelWidth - x);
-            h = Math.min(Math.max(h, 1), pixelHeight - y);
+            // We clamp the position first, then calculate the width/height based on the new position.
+            // This ensures that we don't collapse the width/height if the position is clamped.
+            if (x < 0)
+            {
+                w += x;
+                x = 0;
+            }
+
+            if (y < 0)
+            {
+                h += y;
+                y = 0;
+            }
+
+            // clamp position to the texture bounds
+            x = Math.min(x, pixelWidth - 1);
+            y = Math.min(y, pixelHeight - 1);
+
+            // now clamp the width/height to the texture bounds
+            w = Math.min(w, pixelWidth - x);
+            h = Math.min(h, pixelHeight - y);
+
+            // ensure we have at least 1 pixel
+            w = Math.max(w, 1);
+            h = Math.max(h, 1);
 
             viewport.x = x;
             viewport.y = y;
