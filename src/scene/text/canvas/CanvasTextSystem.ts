@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { TextSystemBase } from '../shared/TextSystemBase';
+import { AbstractTextSystem } from '../shared/AbstractTextSystem';
 
 import type { Renderer } from '../../../rendering/renderers/types';
 
@@ -8,7 +8,7 @@ import type { Renderer } from '../../../rendering/renderers/types';
  * @category rendering
  * @advanced
  */
-export class CanvasTextSystem extends TextSystemBase
+export class CanvasRendererTextSystem extends AbstractTextSystem
 {
     /** @ignore */
     public static extension = {

@@ -3,8 +3,8 @@ import { groupD8 } from '../../../maths/matrix/groupD8';
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { bgr2rgb } from '../../../scene/container/container-mixins/getGlobalMixin';
 import { multiplyHexColors } from '../../../scene/container/utils/multiplyHexColors';
+import { type PatternRepetition } from '../../../scene/graphics/shared/fill/FillPattern';
 import { canvasUtils } from '../../renderers/canvas/utils/canvasUtils';
-import { type PatternRepetition } from '~/scene';
 
 import type { CanvasRenderer } from '../../renderers/canvas/CanvasRenderer';
 import type { Geometry } from '../../renderers/shared/geometry/Geometry';

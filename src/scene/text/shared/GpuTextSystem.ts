@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { TextSystemBase } from './TextSystemBase';
+import { AbstractTextSystem } from './AbstractTextSystem';
 
 import type { Renderer } from '../../../rendering/renderers/types';
 
@@ -8,7 +8,7 @@ import type { Renderer } from '../../../rendering/renderers/types';
  * @category rendering
  * @advanced
  */
-export class GpuTextSystem extends TextSystemBase
+export class CanvasTextSystem extends AbstractTextSystem
 {
     /** @ignore */
     public static extension = {

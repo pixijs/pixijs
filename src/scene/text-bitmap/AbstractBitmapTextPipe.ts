@@ -1,10 +1,9 @@
 import { Cache } from '../../assets/cache/Cache';
-import { ExtensionType } from '../../extensions/Extensions';
 import { type Renderer } from '../../rendering/renderers/types';
 import { GCManagedHash } from '../../utils/data/GCManagedHash';
 import { Graphics } from '../graphics/shared/Graphics';
 import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
-import { SdfShader } from '../text/sdfShader/SdfShader';
+import { type SdfShader } from '../text/sdfShader/SdfShader';
 import { type GPUData } from '../view/ViewContainer';
 import { BitmapFontManager } from './BitmapFontManager';
 import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
@@ -29,18 +28,9 @@ export class BitmapTextGraphics extends Graphics implements GPUData
 }
 
 /** @internal */
-export class BitmapTextPipe implements RenderPipe<BitmapText>
+export abstract class AbstractBitmapTextPipe implements RenderPipe<BitmapText>
 {
-    /** @ignore */
-    public static extension: { type: ExtensionType[]; name: 'bitmapText' } = {
-        type: [
-            ExtensionType.WebGLPipes,
-            ExtensionType.WebGPUPipes,
-        ],
-        name: 'bitmapText',
-    } as const;
-
-    private _renderer: Renderer;
+    protected _renderer: Renderer;
     private readonly _managedBitmapTexts: GCManagedHash<BitmapText>;
 
     constructor(renderer: Renderer)
@@ -97,10 +87,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         }
     }
 
-    protected shouldUseSdfShader(): boolean
-    {
-        return true;
-    }
+    protected abstract getSdfShader(): SdfShader | null;
 
     private _updateContext(bitmapText: BitmapText, proxyGraphics: Graphics)
     {
@@ -114,11 +101,13 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         {
             // Only use custom shader for WebGL/WebGPU renderers
             // Canvas renderer cannot properly handle MSDF distance field math
-            if (this.shouldUseSdfShader())
+            const sdfShader = this.getSdfShader();
+
+            if (sdfShader)
             {
                 if (!context.customShader)
                 {
-                    context.customShader = new SdfShader(this._renderer.limits.maxBatchableTextures);
+                    context.customShader = sdfShader;
                 }
             }
         }

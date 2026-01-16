@@ -52,7 +52,7 @@ type RendererRenderTarget = GlRenderTarget | GpuRenderTarget | CanvasRenderTarge
 /**
  * An adaptor interface for RenderTargetSystem to support WebGL and WebGPU.
  * This is used internally by the renderer, and is not intended to be used directly.
- * @memberof rendering
+ * @category rendering
  * @ignore
  */
 export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>

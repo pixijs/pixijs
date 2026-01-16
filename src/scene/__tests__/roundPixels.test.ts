@@ -120,7 +120,7 @@ describe('Round Pixels', () =>
 
         expect(batchableSprite.roundPixels).toBe(1);
 
-        const batchableGraphics = (renderer.renderPipes.graphics)['_getGpuDataForRenderable'](graphics).batches;
+        const batchableGraphics = renderer.renderPipes.graphics['_getGpuDataForRenderable'](graphics).batches;
 
         expect(batchableGraphics[0].roundPixels).toBe(1);
 
@@ -128,8 +128,7 @@ describe('Round Pixels', () =>
 
         expect(batchableMesh.roundPixels).toBe(1);
 
-        // eslint-disable-next-line max-len
-        const batchableTilingSprite = (renderer.renderPipes.tilingSprite)['_getTilingSpriteData'](tilingSprite).batchableMesh;
+        const batchableTilingSprite = renderer.renderPipes.tilingSprite['_getTilingSpriteData'](tilingSprite).batchableMesh;
 
         expect(batchableTilingSprite.roundPixels).toBe(1);
     });
@@ -185,9 +184,9 @@ describe('Round Pixels', () =>
 
         // this is a brutal line, but we want to dig in and see that the uniform was set correctly!
         // eslint-disable-next-line max-len
-        expect(((renderer.renderPipes.graphics)['_adaptor'] as GlGraphicsAdaptor)['shader'].resources.localUniforms.uniforms.uRound).toBe(1);
+        expect((renderer.renderPipes.graphics['_adaptor'] as GlGraphicsAdaptor)['shader'].resources.localUniforms.uniforms.uRound).toBe(1);
 
-        const renderData = (renderer.renderPipes.tilingSprite)['_getTilingSpriteData'](tilingSprite);
+        const renderData = renderer.renderPipes.tilingSprite['_getTilingSpriteData'](tilingSprite);
 
         // this test covers mesh and tiling sprite (as mesh is used under the hood)
         expect(renderData.shader.resources.localUniforms.uniforms.uRound).toBe(1);

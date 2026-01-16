@@ -17,7 +17,7 @@ import type { Renderer } from '../../../rendering/renderers/types';
  * @category rendering
  * @advanced
  */
-export abstract class TextSystemBase implements System
+export abstract class AbstractTextSystem implements System
 {
     protected readonly _renderer: Renderer;
     private readonly _retainCanvasContext: boolean;
