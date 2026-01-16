@@ -334,7 +334,13 @@ class BitmapFontManagerClass
 
             // Override the lineHeight, let the BitmapFont calculate the lineHeight
             // from the fontMetrics instead using a custom lineHeight from BitmapText parameter
-            styleCopy.lineHeight = 0;
+              Object.defineProperty(styleCopy, 'lineHeight', {
+                 value: 0,
+                 writable: true,
+                 configurable: true,
+                 enumerable: true,
+               });
+
 
             const fnt = new DynamicBitmapFont({
                 style: styleCopy,
