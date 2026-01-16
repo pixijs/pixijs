@@ -189,8 +189,8 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
 
         (this.baseMeasurementFontSize as number) = data.fontSize;
         (this.fontMetrics as FontMetrics) = {
-            ascent: 0,
-            descent: 0,
+            ascent: data.lineHeight - data.baseLineOffset,
+            descent: data.baseLineOffset,
             fontSize: data.fontSize,
         };
         (this.baseLineOffset as number) = data.baseLineOffset;
