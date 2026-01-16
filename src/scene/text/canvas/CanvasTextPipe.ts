@@ -28,7 +28,12 @@ export class CanvasTextPipe implements RenderPipe<Text>
     {
         this._renderer = renderer;
         renderer.runners.resolutionChange.add(this);
-        this._managedTexts = new GCManagedHash({ renderer, type: 'renderable', onUnload: this.onTextUnload.bind(this) });
+        this._managedTexts = new GCManagedHash({
+            renderer,
+            type: 'renderable',
+            onUnload: this.onTextUnload.bind(this),
+            name: 'canvasText'
+        });
     }
 
     protected resolutionChange()

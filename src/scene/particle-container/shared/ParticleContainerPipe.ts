@@ -59,7 +59,7 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
 
         this.state = State.for2d();
 
-        this._managedContainers = new GCManagedHash({ renderer, type: 'renderable' });
+        this._managedContainers = new GCManagedHash({ renderer, type: 'renderable', name: 'particleContainer' });
     }
 
     public validateRenderable(_renderable: ParticleContainer): boolean

@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "8.15.0-rc",
+  "version": "8.15.0",
   "author": "PixiJS Team",
   "homepage": "http://pixijs.com/",
   "bugs": "https://github.com/pixijs/pixijs/issues",
@@ -100,6 +100,7 @@
     "eslint-plugin-jest": "^29.5.0",
     "eslint-plugin-jsdoc": "^61.5.0",
     "eslint-plugin-no-mixed-operators": "^1.1.1",
+    "expect-type": "^1.2.2",
     "fs-extra": "^11.2.0",
     "glob": "^8.1.0",
     "http-server": "^14.1.1",
