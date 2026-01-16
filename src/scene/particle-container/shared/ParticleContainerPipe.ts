@@ -14,8 +14,7 @@ import type { Renderer } from '../../../rendering/renderers/types';
 import type { ParticleContainer } from './ParticleContainer';
 
 /** @internal */
-export interface ParticleContainerAdaptor
-{
+export interface ParticleContainerAdaptor {
     execute(particleContainerPop: ParticleContainerPipe, container: ParticleContainer): void;
 }
 
@@ -24,8 +23,7 @@ export interface ParticleContainerAdaptor
  * @category scene
  * @internal
  */
-export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
-{
+export class ParticleContainerPipe implements RenderPipe<ParticleContainer> {
     /** The default shader that is used if a sprite doesn't have a more specific one. */
     public defaultShader: Shader;
 
@@ -36,6 +34,7 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
     /** @internal */
     public readonly renderer: Renderer;
     private readonly _managedContainers: GCManagedHash<ParticleContainer>;
+    private _contextChanged = false;
 
     /** Local uniforms that are used for rendering particles. */
     public readonly localUniforms = new UniformGroup({
@@ -49,8 +48,7 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
      * @param renderer - The renderer this sprite batch works for.
      * @param adaptor
      */
-    constructor(renderer: Renderer, adaptor: ParticleContainerAdaptor)
-    {
+    constructor(renderer: Renderer, adaptor: ParticleContainerAdaptor) {
         this.renderer = renderer;
 
         this.adaptor = adaptor;
@@ -62,25 +60,31 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
         this._managedContainers = new GCManagedHash({ renderer, type: 'renderable', name: 'particleContainer' });
     }
 
-    public validateRenderable(_renderable: ParticleContainer): boolean
-    {
+    public validateRenderable(_renderable: ParticleContainer): boolean {
         // always fine :D
         return false;
     }
 
-    public addRenderable(renderable: ParticleContainer, instructionSet: InstructionSet)
-    {
+    public addRenderable(renderable: ParticleContainer, instructionSet: InstructionSet) {
         this.renderer.renderPipes.batch.break(instructionSet);
         instructionSet.add(renderable);
     }
 
-    public getBuffers(renderable: ParticleContainer): ParticleBuffer
-    {
-        return renderable._gpuData[this.renderer.uid] || this._initBuffer(renderable);
+    public getBuffers(renderable: ParticleContainer): ParticleBuffer {
+        if (this._contextChanged) {
+            delete renderable._gpuData[this.renderer.uid];
+        }
+
+        const buffer =
+            renderable._gpuData[this.renderer.uid]
+            || this._initBuffer(renderable);
+
+        this._contextChanged = false;
+
+        return buffer;
     }
 
-    private _initBuffer(renderable: ParticleContainer): ParticleBuffer
-    {
+    private _initBuffer(renderable: ParticleContainer): ParticleBuffer {
         renderable._gpuData[this.renderer.uid] = new ParticleBuffer({
             size: renderable.particleChildren.length,
             properties: renderable._properties,
@@ -91,17 +95,14 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
         return renderable._gpuData[this.renderer.uid];
     }
 
-    public updateRenderable(_renderable: ParticleContainer)
-    {
+    public updateRenderable(_renderable: ParticleContainer) {
         // nothing to be done here!
     }
 
-    public execute(container: ParticleContainer): void
-    {
+    public execute(container: ParticleContainer): void {
         const children = container.particleChildren;
 
-        if (children.length === 0)
-        {
+        if (children.length === 0) {
             return;
         }
 
@@ -138,12 +139,14 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
     }
 
     /** Destroys the ParticleRenderer. */
-    public destroy(): void
-    {
+    public onContextChange(): void {
+        this._contextChanged = true;
+    }
+
+    public destroy(): void {
         this._managedContainers.destroy();
         (this.renderer as null) = null;
-        if (this.defaultShader)
-        {
+        if (this.defaultShader) {
             this.defaultShader.destroy();
             this.defaultShader = null;
         }
