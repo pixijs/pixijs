@@ -46,7 +46,7 @@ export class ViewableBuffer
         }
         else if (sizeOrBuffer instanceof Uint8Array)
         {
-            this.rawBinaryData = sizeOrBuffer.buffer;
+            this.rawBinaryData = sizeOrBuffer.buffer as ArrayBuffer;
         }
         else
         {
