@@ -669,8 +669,7 @@ export abstract class AbstractText<
      */
     public get styleKey(): string
     {
-       return `${this._text}:${this._style.styleKey}:${this._resolution}:${this._autoResolution}`;
-
+        return `${this._style.styleKey}:${this._resolution}:${this._autoResolution}`;
     }
 }
 
