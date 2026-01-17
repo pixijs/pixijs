@@ -3,7 +3,6 @@ import { copySearchParams } from '../../../assets/utils/copySearchParams';
 import { DOMAdapter } from '../../../environment/adapter';
 import { ExtensionType } from '../../../extensions/Extensions';
 import { path } from '../../../utils/path';
-import { BitmapFont } from '../BitmapFont';
 import { bitmapFontTextParser } from './bitmapFontTextParser';
 import { bitmapFontXMLStringParser } from './bitmapFontXMLStringParser';
 
@@ -12,6 +11,7 @@ import type { Loader } from '../../../assets/loader/Loader';
 import type { LoaderParserAdvanced } from '../../../assets/loader/parsers/LoaderParser';
 import type { ResolvedAsset } from '../../../assets/types';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import type { BitmapFont } from '../BitmapFont';
 
 const validExtensions = ['.xml', '.fnt'];
 
@@ -25,7 +25,7 @@ export const bitmapFontCachePlugin = {
         type: ExtensionType.CacheParser,
         name: 'cacheBitmapFont',
     },
-    test: (asset: BitmapFont) => asset instanceof BitmapFont,
+    test: (asset: BitmapFont) => !!asset?.pages && !!asset?.chars && typeof asset?.fontFamily === 'string',
     getCacheableAssets(keys: string[], asset: BitmapFont)
     {
         const out: Record<string, BitmapFont> = {};
@@ -100,7 +100,10 @@ export const loadBitmapFont = {
             });
         }
 
-        const loadedTextures = await loader.load<Texture>(textureUrls);
+        const [loadedTextures, { BitmapFont }] = await Promise.all([
+            loader.load<Texture>(textureUrls),
+            import('../BitmapFont'),
+        ]);
         const textures = textureUrls.map((url) => loadedTextures[url.src]);
 
         const bitmapFont = new BitmapFont({
