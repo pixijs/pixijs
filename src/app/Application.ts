@@ -3,6 +3,7 @@ import { autoDetectRenderer } from '../rendering/renderers/autoDetectRenderer';
 import { Container } from '../scene/container/Container';
 import { ApplicationInitHook } from '../utils/global/globalHooks';
 import { deprecation, v8_0_0 } from '../utils/logging/deprecation';
+import '../app/init';
 
 import type { Rectangle } from '../maths/shapes/Rectangle';
 import type { AutoDetectOptions } from '../rendering/renderers/autoDetectRenderer';
