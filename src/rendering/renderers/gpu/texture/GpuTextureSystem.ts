@@ -30,6 +30,7 @@ export class GPUTextureGpuData implements GPUData
 {
     public gpuTexture: GPUTexture;
     public textureView: GPUTextureView = null;
+    public textureViews: Record<string, GPUTextureView> = Object.create(null);
 
     constructor(gpuTexture: GPUTexture)
     {
@@ -278,9 +279,37 @@ export class GpuTextureSystem implements System, CanvasGenerator
             gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
         }
 
-        gpuData.textureView ||= gpuData.gpuTexture.createView({ dimension: source.viewDimension });
+        const descriptorKey = 0;
 
-        return gpuData.textureView;
+        gpuData.textureViews[descriptorKey] ||= gpuData.gpuTexture.createView({ dimension: source.viewDimension });
+
+        return gpuData.textureViews[descriptorKey];
+    }
+
+    public getTextureRenderTargetView(texture: BindableTexture, mipLevel = 0, layer = 0)
+    {
+        const source = texture.source;
+
+        source._gcLastUsed = this._renderer.gc.now;
+        let gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
+
+        if (!gpuData)
+        {
+            this.initSource(source);
+            gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
+        }
+
+        const descriptorKey = (layer * (source.mipLevelCount || 1)) + mipLevel + 1;
+
+        gpuData.textureViews[descriptorKey] ||= gpuData.gpuTexture.createView({
+            dimension: '2d',
+            baseMipLevel: mipLevel,
+            mipLevelCount: 1,
+            baseArrayLayer: layer,
+            arrayLayerCount: 1,
+        });
+
+        return gpuData.textureViews[descriptorKey];
     }
 
     public generateCanvas(texture: Texture): ICanvas

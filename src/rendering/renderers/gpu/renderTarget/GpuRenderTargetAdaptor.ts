@@ -166,14 +166,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                 }
                 else
                 {
-                    view = this._renderer.texture.getGpuSource(texture).createView({
-                        // Render attachments must be 2d views; for array/cube textures we select a single layer.
-                        dimension: '2d',
-                        baseMipLevel: mipLevel,
-                        mipLevelCount: 1,
-                        baseArrayLayer: layer,
-                        arrayLayerCount: 1,
-                    });
+                    view = this._renderer.texture.getTextureRenderTargetView(texture, mipLevel, layer);
                 }
 
                 if (gpuRenderTarget.msaaTextures[i])
@@ -217,14 +210,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
             depthStencilAttachment = {
                 view: this._renderer.texture
-                    .getGpuSource(renderTarget.depthStencilTexture.source)
-                    .createView({
-                        dimension: '2d',
-                        baseMipLevel: mipLevel,
-                        mipLevelCount: 1,
-                        baseArrayLayer: layer,
-                        arrayLayerCount: 1,
-                    }),
+                    .getTextureRenderTargetView(renderTarget.depthStencilTexture, mipLevel, layer),
                 stencilStoreOp: stencil ? 'store' : undefined,
                 stencilLoadOp: stencil ? stencilLoadOp : undefined,
                 depthClearValue: 1.0,
