@@ -65,6 +65,7 @@ export class TexturePoolClass
             resolution: 1,
             antialias,
             autoGarbageCollect: false,
+            autoGenerateMipmaps: false,
         });
 
         return new Texture({
