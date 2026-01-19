@@ -54,8 +54,6 @@ export class FilterPipe implements InstructionPipe<FilterInstruction>
 
     public execute(instruction: FilterInstruction)
     {
-        if (!this._renderer.filter) return;
-
         if (instruction.action === 'pushFilter')
         {
             this._renderer.filter.push(instruction);
