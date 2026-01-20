@@ -918,11 +918,21 @@ export class BitmapText extends Container
         const pageMeshDataPool = data.distanceFieldType === 'none'
             ? pageMeshDataDefaultPageMeshData : pageMeshDataMSDFPageMeshData;
 
-        pageMeshDataPool.push(...this._activePagesMeshData);
         for (const pageMeshData of this._activePagesMeshData)
         {
             this.removeChild(pageMeshData.mesh);
+            Object.assign(pageMeshData, {
+                vertices: null,
+                uvs: null,
+                indices: null,
+                index: 0,
+                indexCount: 0,
+                vertexCount: 0,
+                uvsCount: 0,
+                total: 0,
+            });
         }
+        pageMeshDataPool.push(...this._activePagesMeshData);
         this._activePagesMeshData = [];
 
         // Release references to any cached textures in page pool
