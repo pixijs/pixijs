@@ -1,8 +1,12 @@
 /* eslint-disable no-restricted-globals */
+import { extensions } from '../extensions/Extensions';
 import { Point } from '../maths/point/Point';
 import { ViewContainer, type ViewContainerOptions } from '../scene/view/ViewContainer';
+import { DOMPipe } from './DOMPipe';
 
 import type { PointData } from '../maths/point/PointData';
+
+extensions.add(DOMPipe);
 
 /**
  * Options for configuring a {@link DOMContainer}.
