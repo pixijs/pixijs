@@ -150,7 +150,7 @@ describe('GCSystem', () =>
             gcSystem.enabled = true;
 
             expect(gcSystem.enabled).toBe(true);
-            expect(renderer.scheduler.repeat).toHaveBeenCalledTimes(2);
+            expect(renderer.scheduler.repeat).toHaveBeenCalledTimes(4);
         });
 
         it('should not double-enable if already enabled', () =>
@@ -158,7 +158,7 @@ describe('GCSystem', () =>
             gcSystem.init({ gcActive: true, gcMaxUnusedTime: 60000, gcFrequency: 10000 });
             gcSystem.enabled = true;
 
-            expect(renderer.scheduler.repeat).toHaveBeenCalledTimes(1);
+            expect(renderer.scheduler.repeat).toHaveBeenCalledTimes(2);
         });
 
         it('should not double-disable if already disabled', () =>
@@ -444,6 +444,171 @@ describe('GCSystem', () =>
             expect(hashes[0].priority).toBe(5);
             expect(hashes[1].priority).toBe(10);
             expect(hashes[2].priority).toBe(15);
+        });
+    });
+
+    describe('addCollection', () =>
+    {
+        beforeEach(() =>
+        {
+            gcSystem.init({ gcActive: true, gcMaxUnusedTime: 1000, gcFrequency: 100 });
+        });
+
+        it('should add a hash collection entry', () =>
+        {
+            const context = { myHash: { key1: 'value1', key2: null } as Record<string, string | null> };
+
+            gcSystem.addCollection(context, 'myHash', 'hash');
+
+            const managedCollections = (gcSystem as any)._managedCollections;
+
+            expect(managedCollections.length).toBe(1);
+            expect(managedCollections[0].context).toBe(context);
+            expect(managedCollections[0].collection).toBe('myHash');
+            expect(managedCollections[0].type).toBe('hash');
+        });
+
+        it('should add an array collection entry', () =>
+        {
+            const context = { myArray: ['value1', null, 'value2'] as (string | null)[] };
+
+            gcSystem.addCollection(context, 'myArray', 'array');
+
+            const managedCollections = (gcSystem as any)._managedCollections;
+
+            expect(managedCollections.length).toBe(1);
+            expect(managedCollections[0].context).toBe(context);
+            expect(managedCollections[0].collection).toBe('myArray');
+            expect(managedCollections[0].type).toBe('array');
+        });
+
+        it('should track multiple collections', () =>
+        {
+            const context1 = { hash1: {} };
+            const context2 = { array1: [] as (string | null)[] };
+            const context3 = { hash2: {} };
+
+            gcSystem.addCollection(context1, 'hash1', 'hash');
+            gcSystem.addCollection(context2, 'array1', 'array');
+            gcSystem.addCollection(context3, 'hash2', 'hash');
+
+            const managedCollections = (gcSystem as any)._managedCollections;
+
+            expect(managedCollections.length).toBe(3);
+        });
+
+        it('should clean hash collections when scheduler triggers', () =>
+        {
+            const context = {
+                myHash: {
+                    key1: 'value1',
+                    key2: null,
+                    key3: 'value3',
+                    key4: undefined,
+                } as Record<string, string | null | undefined>,
+            };
+
+            gcSystem.addCollection(context, 'myHash', 'hash');
+
+            // Trigger the collections scheduler callback (second handler registered)
+            const collectionsHandler = (gcSystem as any)._collectionsHandler;
+
+            // eslint-disable-next-line jest/expect-expect
+            (renderer as any)._triggerScheduler(collectionsHandler);
+
+            // Hash should be cleaned (null/undefined entries removed)
+            expect(context.myHash.key1).toBe('value1');
+            expect(context.myHash.key3).toBe('value3');
+            expect('key2' in context.myHash).toBe(false);
+            expect('key4' in context.myHash).toBe(false);
+        });
+
+        it('should clean array collections when scheduler triggers', () =>
+        {
+            const context = {
+                myArray: ['value1', null, 'value2', undefined, 'value3'] as (string | null | undefined)[],
+            };
+
+            gcSystem.addCollection(context, 'myArray', 'array');
+
+            // Trigger the collections scheduler callback
+            const collectionsHandler = (gcSystem as any)._collectionsHandler;
+
+            // eslint-disable-next-line jest/expect-expect
+            (renderer as any)._triggerScheduler(collectionsHandler);
+
+            // Array should be cleaned (null/undefined entries removed)
+            expect(context.myArray).toEqual(['value1', 'value2', 'value3']);
+            expect(context.myArray.length).toBe(3);
+        });
+
+        it('should clean multiple collections of different types', () =>
+        {
+            const hashContext = {
+                myHash: { a: 1, b: null, c: 3 } as Record<string, number | null>,
+            };
+            const arrayContext = {
+                myArray: [1, null, 2, undefined, 3] as (number | null | undefined)[],
+            };
+
+            gcSystem.addCollection(hashContext, 'myHash', 'hash');
+            gcSystem.addCollection(arrayContext, 'myArray', 'array');
+
+            const collectionsHandler = (gcSystem as any)._collectionsHandler;
+
+            // eslint-disable-next-line jest/expect-expect
+            (renderer as any)._triggerScheduler(collectionsHandler);
+
+            // Hash should be cleaned
+            expect(Object.keys(hashContext.myHash)).toEqual(['a', 'c']);
+            expect(hashContext.myHash.a).toBe(1);
+            expect(hashContext.myHash.c).toBe(3);
+
+            // Array should be cleaned
+            expect(arrayContext.myArray).toEqual([1, 2, 3]);
+        });
+
+        it('should not modify hash if no null/undefined values exist', () =>
+        {
+            const originalHash = { key1: 'value1', key2: 'value2' };
+            const context = { myHash: originalHash };
+
+            gcSystem.addCollection(context, 'myHash', 'hash');
+
+            const collectionsHandler = (gcSystem as any)._collectionsHandler;
+
+            // eslint-disable-next-line jest/expect-expect
+            (renderer as any)._triggerScheduler(collectionsHandler);
+
+            // Hash should be the same reference (not replaced)
+            expect(context.myHash).toBe(originalHash);
+        });
+
+        it('should clear managed collections on destroy', () =>
+        {
+            const context1 = { hash1: {} };
+            const context2 = { array1: [] as unknown[] };
+
+            gcSystem.addCollection(context1, 'hash1', 'hash');
+            gcSystem.addCollection(context2, 'array1', 'array');
+
+            gcSystem.destroy();
+
+            const managedCollections = (gcSystem as any)._managedCollections;
+
+            expect(managedCollections.length).toBe(0);
+        });
+
+        it('should cancel collections scheduler when GC is disabled', () =>
+        {
+            const context = { myHash: { a: null } as Record<string, number | null> };
+
+            gcSystem.addCollection(context, 'myHash', 'hash');
+
+            gcSystem.enabled = false;
+
+            // Scheduler should have been cancelled
+            expect(renderer.scheduler.cancel).toHaveBeenCalled();
         });
     });
 
