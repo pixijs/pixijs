@@ -172,7 +172,14 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
         }
         else
         {
-            // WebGL - update the texture reference
+            // WebGL - validate context ownership and update the texture reference
+            const gl = (renderer as any).gl;
+
+            if (gl && !gl.isTexture(gpuTexture as WebGLTexture))
+            {
+                throw new Error('WebGLTexture does not belong to this renderer\'s WebGL context');
+            }
+
             const data = gpuData as GlTexture;
 
             data.texture = gpuTexture as WebGLTexture;
