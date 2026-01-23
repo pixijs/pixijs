@@ -10,6 +10,7 @@ describe('Spritesheet', () =>
     let assets: string;
     let validate: (spritesheet: Spritesheet, done: () => void) => void;
     let parseFrame: (frameData: SpritesheetFrameData, cb: (frame: Texture) => void) => void;
+    let parseFrameSync: (frameData: SpritesheetFrameData) => Spritesheet;
 
     beforeAll(() =>
     {
@@ -68,6 +69,30 @@ describe('Spritesheet', () =>
 
                 sheet.destroy(true);
             });
+        };
+
+        parseFrameSync = (frameData) =>
+        {
+            const data = {
+                frames: { frame: frameData },
+                meta: { scale: 1 },
+            } as unknown as SpritesheetData;
+            const baseTexture = new Texture({
+                source: new ImageSource({ resource: document.createElement('canvas') })
+            });
+
+            // @ts-expect-error - hack
+            baseTexture.imageUrl = 'test.png';
+
+            const sheet = new Spritesheet(baseTexture, data);
+
+            sheet.parseSync();
+
+            const { frame } = sheet.textures;
+
+            expect(frame).toBeInstanceOf(Texture);
+
+            return sheet;
         };
     });
 
@@ -174,6 +199,25 @@ describe('Spritesheet', () =>
             });
         }));
 
+    it('should parse full data untrimmed using parseSync', () =>
+    {
+        const data = {
+            frame: { x: 0, y: 0, w: 14, h: 16 },
+            rotated: false,
+            trimmed: false,
+            spriteSourceSize: { x: 0, y: 0, w: 14, h: 16 },
+            sourceSize: { w: 14, h: 16 },
+        } as SpritesheetFrameData;
+
+        const sheet = parseFrameSync(data);
+        const texture = sheet.textures.frame;
+
+        expect(texture.width).toEqual(14);
+        expect(texture.height).toEqual(16);
+
+        sheet.destroy(true);
+    });
+
     it('should parse texture from trimmed', () =>
         new Promise<void>((done) =>
         {
@@ -193,6 +237,25 @@ describe('Spritesheet', () =>
             });
         }));
 
+    it('should parse texture from trimmed using parseSync', () =>
+    {
+        const data = {
+            frame: { x: 0, y: 28, w: 14, h: 14 },
+            rotated: false,
+            trimmed: true,
+            spriteSourceSize: { x: 0, y: 0, w: 40, h: 20 },
+            sourceSize: { w: 40, h: 20 },
+        };
+
+        const sheet = parseFrameSync(data);
+        const texture = sheet.textures.frame;
+
+        expect(texture.width).toEqual(40);
+        expect(texture.height).toEqual(20);
+
+        sheet.destroy(true);
+    });
+
     it('should parse texture from minimal data', () =>
         new Promise<void>((done) =>
         {
@@ -205,6 +268,19 @@ describe('Spritesheet', () =>
                 done();
             });
         }));
+
+    it('should parse texture from minimal data using parseSync', () =>
+    {
+        const data = { frame: { x: 0, y: 0, w: 14, h: 14 } };
+
+        const sheet = parseFrameSync(data);
+        const texture = sheet.textures.frame;
+
+        expect(texture.width).toEqual(14);
+        expect(texture.height).toEqual(14);
+
+        sheet.destroy(true);
+    });
 
     it('should parse texture without trimmed or sourceSize', () =>
         new Promise<void>((done) =>
@@ -224,6 +300,24 @@ describe('Spritesheet', () =>
             });
         }));
 
+    it('should parse texture without trimmed or sourceSize using parseSync', () =>
+    {
+        const data = {
+            frame: { x: 0, y: 14, w: 14, h: 14 },
+            rotated: false,
+            trimmed: false,
+            spriteSourceSize: { x: 0, y: 0, w: 20, h: 30 },
+        };
+
+        const sheet = parseFrameSync(data);
+        const texture = sheet.textures.frame;
+
+        expect(texture.width).toEqual(14);
+        expect(texture.height).toEqual(14);
+
+        sheet.destroy(true);
+    });
+
     it('should parse as trimmed if spriteSourceSize is set', () =>
         new Promise<void>((done) =>
         {
@@ -241,6 +335,24 @@ describe('Spritesheet', () =>
                 done();
             });
         }));
+
+    it('should parse as trimmed if spriteSourceSize is set using parseSync', () =>
+    {
+        // shoebox format
+        const data = {
+            frame: { x: 0, y: 0, w: 14, h: 16 },
+            spriteSourceSize: { x: 0, y: 0, w: 120, h: 100 },
+            sourceSize: { w: 120, h: 100 },
+        };
+
+        const sheet = parseFrameSync(data);
+        const texture = sheet.textures.frame;
+
+        expect(texture.width).toEqual(120);
+        expect(texture.height).toEqual(100);
+
+        sheet.destroy(true);
+    });
 
     it('should parse scale correctly', () =>
     {

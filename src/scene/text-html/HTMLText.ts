@@ -3,6 +3,7 @@ import { AbstractText, ensureTextOptions } from '../text/AbstractText';
 import { type BatchableHTMLText } from './BatchableHTMLText';
 import { HTMLTextStyle } from './HTMLTextStyle';
 import { measureHtmlText } from './utils/measureHtmlText';
+import './init';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from '../text/AbstractText';

@@ -8,7 +8,9 @@ import { TexturePool } from '~/rendering';
 
 import type { RenderType, RenderTypeFlags } from './types';
 
-const paths = glob.sync('**/*.scene.ts', { cwd: path.join(process.cwd(), './tests') });
+const sceneFilter = process.env.SCENE_FILTER;
+const globPattern = sceneFilter ? `**/${sceneFilter}` : '**/*.scene.ts';
+const paths = glob.sync(globPattern, { cwd: path.join(process.cwd(), './tests') });
 const scenes = paths.map((p) =>
 {
     const relativePath = path.relative('visual/', p);
@@ -43,7 +45,7 @@ function setAssetBasePath(): void
         : 'http://127.0.0.1:8080/tests/visual/assets/';
 
     Assets.init({
-        basePath
+        basePath,
     }).catch((e) => console.error(e));
 }
 
@@ -61,7 +63,7 @@ describe('Visual Tests', () =>
 
         const renderers = {
             ...defaultRenderers,
-            ...scene.data.renderers
+            ...scene.data.renderers,
         };
 
         Object.keys(renderers).forEach((renderer) =>
@@ -85,14 +87,14 @@ describe('Visual Tests', () =>
                 Assets.reset();
                 setAssetBasePath();
 
-                const pixelMatch = isCI ? scene.data.pixelMatch ?? 100 : scene.data.pixelMatchLocal ?? 100;
+                const pixelMatch = isCI ? (scene.data.pixelMatch ?? 100) : (scene.data.pixelMatchLocal ?? 100);
 
                 const res = await renderTest(
                     id,
                     scene.data.create,
                     renderer as RenderType,
                     scene.data.options ?? {},
-                    pixelMatch
+                    pixelMatch,
                 );
 
                 expect(res).toBeLessThanOrEqual(pixelMatch);
