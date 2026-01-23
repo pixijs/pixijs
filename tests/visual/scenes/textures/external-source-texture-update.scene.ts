@@ -75,14 +75,12 @@ export const scene: TestScene = {
             ? (bunnyGpuData as GPUTextureGpuData).gpuTexture : (bunnyGpuData as GlTexture).texture;
 
         // Use the new updateGPUTexture API
-        source.updateGPUTexture(bunnyGpuTexture);
-        if (!isWebGPU)
-        {
-            // For WebGL, we need to update dimensions manually and resize the sprite
-            source.pixelWidth = bunnyTexture.source.width;
-            source.pixelHeight = bunnyTexture.source.height;
-            sprite.width = bunnyTexture.source.width;
-            sprite.height = bunnyTexture.source.height;
-        }
+        // For WebGPU: dimensions are auto-detected from GPUTexture
+        // For WebGL: dimensions must be provided (WebGLTexture is opaque)
+        source.updateGPUTexture(
+            bunnyGpuTexture,
+            isWebGPU ? undefined : bunnyTexture.source.width,
+            isWebGPU ? undefined : bunnyTexture.source.height
+        );
     },
 };

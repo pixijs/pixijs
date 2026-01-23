@@ -3,14 +3,13 @@ import { GPUTextureGpuData } from '../../../gpu/texture/GpuTextureSystem';
 import { TextureSource } from './TextureSource';
 
 import type { Renderer } from '../../../types';
-import type { TextureSourceOptions } from './TextureSource';
 
 /**
  * Options for creating an ExternalSource.
  * @category rendering
  * @advanced
  */
-export interface ExternalSourceOptions extends TextureSourceOptions<GPUTexture | WebGLTexture>
+export interface ExternalSourceOptions
 {
     /**
      * The external GPU texture (GPUTexture for WebGPU, WebGLTexture for WebGL)
@@ -32,6 +31,11 @@ export interface ExternalSourceOptions extends TextureSourceOptions<GPUTexture |
      * @advanced
      */
     height?: number;
+    /**
+     * Optional label for debugging
+     * @advanced
+     */
+    label?: string;
 }
 
 /**
@@ -72,13 +76,21 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
 
     constructor(options: ExternalSourceOptions)
     {
-        const { resource, renderer } = options;
+        const { resource, renderer, label } = options;
 
-        // Auto-detect dimensions for GPUTexture
+        // Auto-detect dimensions for GPUTexture (WebGLTexture is opaque, requires explicit dimensions)
         const width = options.width ?? (resource as GPUTexture).width;
         const height = options.height ?? (resource as GPUTexture).height;
 
-        super({ ...options, width, height });
+        // Only pass the minimal required options to TextureSource
+        super({
+            resource,
+            width,
+            height,
+            label,
+            // External textures shouldn't be garbage collected - the external library owns them
+            autoGarbageCollect: false,
+        });
 
         this._renderer = renderer;
 
@@ -125,8 +137,10 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
      * Update the external GPU texture reference.
      * Call this when the external library provides a new texture.
      * @param gpuTexture - The new GPU texture
+     * @param width - New width (required for WebGLTexture, auto-detected for GPUTexture)
+     * @param height - New height (required for WebGLTexture, auto-detected for GPUTexture)
      */
-    public updateGPUTexture(gpuTexture: GPUTexture | WebGLTexture): void
+    public updateGPUTexture(gpuTexture: GPUTexture | WebGLTexture, width?: number, height?: number): void
     {
         const renderer = this._renderer;
         const gpuData = this._gpuData[renderer.uid];
@@ -150,16 +164,24 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
                 }
             }
 
-            // Update dimensions from GPUTexture
-            this.pixelWidth = (gpuTexture as GPUTexture).width;
-            this.pixelHeight = (gpuTexture as GPUTexture).height;
+            // Update dimensions from GPUTexture (or use provided values)
+            const newWidth = width ?? (gpuTexture as GPUTexture).width;
+            const newHeight = height ?? (gpuTexture as GPUTexture).height;
+
+            this.resize(newWidth, newHeight);
         }
         else
         {
-            // WebGL - just update the texture reference
+            // WebGL - update the texture reference
             const data = gpuData as GlTexture;
 
             data.texture = gpuTexture as WebGLTexture;
+
+            // WebGL: dimensions must be provided (WebGLTexture is opaque)
+            if (width !== undefined && height !== undefined)
+            {
+                this.resize(width, height);
+            }
         }
 
         this.emit('update', this);
