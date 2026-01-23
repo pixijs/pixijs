@@ -39,9 +39,10 @@ export const scene: TestScene = {
         const gpuTexture = isWebGPU ? (gpuData as GPUTextureGpuData).gpuTexture : (gpuData as GlTexture).texture;
         const externalTexture = new Texture({
             source: isWebGPU
-                ? new ExternalSource({ resource: gpuTexture })
+                ? new ExternalSource({ resource: gpuTexture, renderer })
                 : new ExternalSource({
                     resource: gpuTexture,
+                    renderer,
                     width: texture.source.width,
                     height: texture.source.height,
                 })

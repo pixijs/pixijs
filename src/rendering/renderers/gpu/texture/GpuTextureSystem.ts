@@ -109,17 +109,6 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     private _initSource(source: TextureSource): GPUTexture
     {
-        if (source.uploadMethodId === 'external')
-        {
-            const gpuTexture = source.resource as GPUTexture;
-
-            source._gpuData[this._renderer.uid] = new GPUTextureGpuData(gpuTexture);
-            source.on('update', this.onSourceUpdate, this);
-            source.on('resize', this.onSourceResize, this);
-
-            return gpuTexture;
-        }
-
         if (source.autoGenerateMipmaps)
         {
             const biggestDimension = Math.max(source.pixelWidth, source.pixelHeight);
@@ -170,31 +159,6 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     protected onSourceUpdate(source: TextureSource): void
     {
-        if (source.uploadMethodId === 'external')
-        {
-            const gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
-            const newTexture = source.resource as GPUTexture;
-
-            if (!gpuData)
-            {
-                if (newTexture)
-                {
-                    this._initSource(source);
-                }
-
-                return;
-            }
-
-            if (gpuData.gpuTexture !== newTexture)
-            {
-                this._bindGroupHash[source.uid] = null;
-                gpuData.textureView = null;
-                gpuData.gpuTexture = newTexture;
-            }
-
-            return;
-        }
-
         const gpuTexture = this.getGpuSource(source);
 
         // destroyed!
@@ -233,31 +197,6 @@ export class GpuTextureSystem implements System, CanvasGenerator
     protected onSourceResize(source: TextureSource): void
     {
         source._gcLastUsed = this._renderer.gc.now;
-
-        if (source.uploadMethodId === 'external')
-        {
-            const gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
-            const newTexture = source.resource as GPUTexture;
-
-            if (!gpuData)
-            {
-                if (newTexture)
-                {
-                    this._initSource(source);
-                }
-
-                return;
-            }
-
-            if (gpuData.gpuTexture !== newTexture)
-            {
-                this._bindGroupHash[source.uid] = null;
-                gpuData.textureView = null;
-                gpuData.gpuTexture = newTexture;
-            }
-
-            return;
-        }
 
         const gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
         const gpuTexture = gpuData?.gpuTexture;

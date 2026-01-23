@@ -52,9 +52,10 @@ export const scene: TestScene = {
         const gpuData = texture.source._gpuData[renderer.uid];
         const gpuTexture = isWebGPU ? (gpuData as GPUTextureGpuData).gpuTexture : (gpuData as GlTexture).texture;
         const source = isWebGPU
-            ? new ExternalSource({ resource: gpuTexture })
+            ? new ExternalSource({ resource: gpuTexture, renderer })
             : new ExternalSource({
                 resource: gpuTexture,
+                renderer,
                 width: texture.source.width,
                 height: texture.source.height,
             });
@@ -73,15 +74,13 @@ export const scene: TestScene = {
         const bunnyGpuTexture = isWebGPU
             ? (bunnyGpuData as GPUTextureGpuData).gpuTexture : (bunnyGpuData as GlTexture).texture;
 
-        source.resource = bunnyGpuTexture;
+        // Use the new updateGPUTexture API
+        source.updateGPUTexture(bunnyGpuTexture);
         if (!isWebGPU)
         {
+            // For WebGL, we need to update dimensions manually and resize the sprite
             source.pixelWidth = bunnyTexture.source.width;
             source.pixelHeight = bunnyTexture.source.height;
-        }
-        source.update();
-        if (!isWebGPU)
-        {
             sprite.width = bunnyTexture.source.width;
             sprite.height = bunnyTexture.source.height;
         }
