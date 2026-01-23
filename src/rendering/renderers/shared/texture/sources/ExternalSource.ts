@@ -111,9 +111,40 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
         );
     }
 
+    private _validateTexture(resource: GPUTexture | WebGLTexture): void
+    {
+        const renderer = this._renderer;
+        const isWebGPU = !!(renderer as any).gpu;
+        const isGPUTexture = globalThis.GPUTexture && resource instanceof GPUTexture;
+        const isWebGLTexture = globalThis.WebGLTexture && resource instanceof WebGLTexture;
+
+        if (isWebGPU && isWebGLTexture)
+        {
+            throw new Error('Cannot use WebGLTexture with a WebGPU renderer');
+        }
+
+        if (!isWebGPU && isGPUTexture)
+        {
+            throw new Error('Cannot use GPUTexture with a WebGL renderer');
+        }
+
+        // WebGL context ownership check
+        if (!isWebGPU)
+        {
+            const gl = (renderer as any).gl;
+
+            if (gl && !gl.isTexture(resource as WebGLTexture))
+            {
+                throw new Error('WebGLTexture does not belong to this renderer\'s WebGL context');
+            }
+        }
+    }
+
     private _initGpuData(resource: GPUTexture | WebGLTexture): void
     {
         const renderer = this._renderer;
+
+        this._validateTexture(resource);
 
         if ((renderer as any).gpu)
         {
@@ -122,13 +153,7 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
         }
         else
         {
-            // WebGL - validate context ownership
-            const gl = (renderer as any).gl;
-
-            if (gl && !gl.isTexture(resource as WebGLTexture))
-            {
-                throw new Error('WebGLTexture does not belong to this renderer\'s WebGL context');
-            }
+            // WebGL
             this._gpuData[renderer.uid] = new GlTexture(resource as WebGLTexture);
         }
     }
@@ -147,7 +172,9 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
 
         if ((renderer as any).gpu)
         {
-            // WebGPU - update and invalidate caches
+            // WebGPU - validate and update
+            this._validateTexture(gpuTexture);
+
             const data = gpuData as GPUTextureGpuData;
 
             if (data.gpuTexture !== gpuTexture)
@@ -172,13 +199,8 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
         }
         else
         {
-            // WebGL - validate context ownership and update the texture reference
-            const gl = (renderer as any).gl;
-
-            if (gl && !gl.isTexture(gpuTexture as WebGLTexture))
-            {
-                throw new Error('WebGLTexture does not belong to this renderer\'s WebGL context');
-            }
+            // WebGL - validate and update the texture reference
+            this._validateTexture(gpuTexture);
 
             const data = gpuData as GlTexture;
 
