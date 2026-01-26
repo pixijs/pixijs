@@ -1,5 +1,6 @@
 import { Cache } from '../../assets/cache/Cache';
 import { ExtensionType } from '../../extensions/Extensions';
+import { GCManagedHash } from '../../utils/data/GCManagedHash';
 import { Graphics } from '../graphics/shared/Graphics';
 import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
 import { SdfShader } from '../text/sdfShader/SdfShader';
@@ -41,10 +42,12 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
     } as const;
 
     private _renderer: Renderer;
+    private readonly _managedBitmapTexts: GCManagedHash<BitmapText>;
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._managedBitmapTexts = new GCManagedHash({ renderer, type: 'renderable', priority: -2, name: 'bitmapText' });
     }
 
     public validateRenderable(bitmapText: BitmapText): boolean
@@ -198,6 +201,8 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
         this._updateContext(bitmapText, proxyRenderable);
 
+        this._managedBitmapTexts.add(bitmapText);
+
         return proxyRenderable;
     }
 
@@ -224,7 +229,9 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
     public destroy()
     {
+        this._managedBitmapTexts.destroy();
         this._renderer = null;
+        (this._managedBitmapTexts as null) = null;
     }
 }
 

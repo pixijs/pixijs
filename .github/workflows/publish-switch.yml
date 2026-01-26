@@ -1,0 +1,28 @@
+name: Publish switch
+
+on:
+  release:
+    types: [ published ]
+  push:
+    branches:
+      - main
+      - dev
+
+permissions:
+  id-token: write # Required for OIDC
+  contents: write # Required for npm beta version updates
+
+jobs:
+  publish-prod:
+    if: github.event_name == 'release'
+    uses: ./.github/workflows/release.yml
+    permissions:
+      id-token: write
+      contents: write
+
+  publish-branch:
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/publish-branch.yaml
+    permissions:
+      id-token: write
+      contents: write

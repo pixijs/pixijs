@@ -38,7 +38,7 @@ export const gpuUploadCompressedTextureResource = {
                     texture: gpuTexture,
                     mipLevel: i
                 },
-                levelBuffer,
+                levelBuffer as BufferSource,
                 {
                     offset: 0,
                     bytesPerRow,

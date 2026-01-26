@@ -50,7 +50,12 @@ export class GpuBufferSystem implements System
     constructor(renderer: WebGPURenderer)
     {
         this._renderer = renderer;
-        this._managedBuffers = new GCManagedHash({ renderer, type: 'resource', onUnload: this.onBufferUnload.bind(this) });
+        this._managedBuffers = new GCManagedHash({
+            renderer,
+            type: 'resource',
+            onUnload: this.onBufferUnload.bind(this),
+            name: 'gpuBuffer'
+        });
     }
 
     protected contextChange(gpu: GPU): void
@@ -110,7 +115,7 @@ export class GpuBufferSystem implements System
         {
             // TODO if data is static, this can be mapped at creation
             fastCopy(
-                buffer.data.buffer,
+                buffer.data.buffer as ArrayBuffer,
                 gpuBuffer.getMappedRange(),
                 buffer.data.byteOffset,
                 buffer.data.byteLength
