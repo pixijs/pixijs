@@ -5,6 +5,7 @@ import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { Transform } from '../../utils/misc/Transform';
 import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
 import { type TilingSpriteGpuData } from './TilingSpritePipe';
+import './init';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';

@@ -63,7 +63,7 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         this.renderer = renderer;
         this._adaptor = adaptor;
         this.renderer.runners.contextChange.add(this);
-        this._managedGraphics = new GCManagedHash({ renderer, type: 'renderable', priority: -1 });
+        this._managedGraphics = new GCManagedHash({ renderer, type: 'renderable', priority: -1, name: 'graphics' });
     }
 
     public contextChange(): void
