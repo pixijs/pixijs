@@ -1,8 +1,9 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { Container } from '../../container/Container';
-import { type ConvertedStrokeStyle } from '../../graphics/shared/FillTypes';
+import { FillGradient } from '../../graphics/shared/fill/FillGradient';
 import { type SplitOptions } from '../../text-split/SplitText';
 import { type TextSplitOutput } from '../../text-split/types';
+import { CanvasTextGenerator } from '../canvas/CanvasTextGenerator';
 import { CanvasTextMetrics } from '../canvas/CanvasTextMetrics';
 import { Text } from '../Text';
 import { type TextStyle } from '../TextStyle';
@@ -122,31 +123,79 @@ export function canvasTextSplit(
     const groupedSegments: GroupedSegment[] = groupTextSegments(segments, measuredText, textStyle.clone());
 
     const alignment = textStyle.align;
-    const largestLine = measuredText.lineWidths.reduce((max, line) => Math.max(max, line), 0);
+    const maxLineWidth = measuredText.lineWidths.reduce((max, line) => Math.max(max, line), 0);
+    const isSingleLine = measuredText.lines.length === 1;
+    // For single-line text, alignment has no effect (nothing to align relative to)
+    // Multi-line text uses wordWrapWidth when word wrap is enabled
+    const useWordWrapWidth = !isSingleLine && textStyle.wordWrap;
+    const alignWidth = useWordWrapWidth ? textStyle.wordWrapWidth : maxLineWidth;
+
+    // Check if fill or stroke contains a gradient that needs offset/bounds
+    const fillGradient = textStyle._fill?.fill;
+    const strokeGradient = textStyle._stroke?.fill;
+
+    const hasFillGradient = fillGradient instanceof FillGradient;
+    const hasStrokeGradient = strokeGradient instanceof FillGradient;
+    const hasGradient = hasFillGradient || hasStrokeGradient;
+    const hasLocalGradient = (hasFillGradient && fillGradient.textureSpace === 'local')
+        || (hasStrokeGradient && strokeGradient.textureSpace === 'local');
+
+    // Store full text dimensions for gradient calculation
+    const fullTextWidth = measuredText.width;
+    const fullTextHeight = measuredText.height;
+
+    // Clone style for individual characters with left alignment.
+    // Container-level positioning handles alignment via getAlignmentOffset().
+    // Without this, each character applies its own alignment offset within its measurement area.
+    const baseCharStyle = textStyle.clone();
+
+    baseCharStyle.align = 'left';
+
+    // When trim is enabled on the style, calculate the trim offset for the whole text block once,
+    // then disable trim on individual characters and offset all characters to compensate
+    let trimOffsetX = 0;
+    let trimOffsetY = 0;
+
+    if (baseCharStyle.trim)
+    {
+        const { frame, canvasAndContext } = CanvasTextGenerator.getCanvasAndContext({
+            text,
+            style: textStyle,
+            resolution: 1,
+        });
+
+        CanvasTextGenerator.returnCanvasAndContext(canvasAndContext);
+
+        trimOffsetX = -frame.x;
+        trimOffsetY = -frame.y;
+
+        // Disable trim for individual characters; we'll use the whole-text trim offset instead
+        baseCharStyle.trim = false;
+    }
 
     // now create Text objects for each segment and add them to the container
     const chars: Text[] = [];
     const lineContainers: Container[] = [];
     const wordContainers: Container[] = [];
     let yOffset = 0;
-    const strokeWidth = (textStyle.stroke as ConvertedStrokeStyle)?.width || 0;
+    const strokeWidth = textStyle._stroke?.width || 0;
     const dropShadowDistance = textStyle.dropShadow?.distance || 0;
 
-    groupedSegments.forEach((group, i) =>
+    groupedSegments.forEach((group, lineIndex) =>
     {
-        const lineContainer = new Container({ label: `line-${i}` });
+        const lineContainer = new Container({ label: `line-${lineIndex}` });
 
-        lineContainer.y = yOffset;
+        lineContainer.y = yOffset + trimOffsetY;
         lineContainers.push(lineContainer);
 
-        const lineWidth = measuredText.lineWidths[i];
-        let xOffset = getAlignmentOffset(alignment, lineWidth, largestLine);
+        const lineWidth = measuredText.lineWidths[lineIndex];
+        let xOffset = getAlignmentOffset(alignment, lineWidth, alignWidth);
 
         let currentWordContainer = new Container({ label: 'word' });
 
-        currentWordContainer.x = xOffset;
+        currentWordContainer.x = xOffset + trimOffsetX;
 
-        group.chars.forEach((segment, i) =>
+        group.chars.forEach((segment, charIndex) =>
         {
             if (segment.metric.width === 0)
             {
@@ -172,10 +221,25 @@ export function canvasTextSplit(
                 // Start new word container
                 xOffset += segment.metric.width + textStyle.letterSpacing - strokeWidth;
                 currentWordContainer = new Container({ label: 'word' });
-                currentWordContainer.x = xOffset;
+                currentWordContainer.x = xOffset + trimOffsetX;
             }
             else
             {
+                // Create style for this character
+                let charStyle = baseCharStyle;
+
+                if (hasGradient)
+                {
+                    charStyle = baseCharStyle.clone();
+                    // All gradients need offset to position correctly within split text
+                    charStyle._gradientOffset = { x: -xOffset, y: -yOffset };
+                    // Local gradients also need full text bounds for proper scaling
+                    if (hasLocalGradient)
+                    {
+                        charStyle._gradientBounds = { width: fullTextWidth, height: fullTextHeight };
+                    }
+                }
+
                 // if there are existing characters, reuse them
                 let char: Text;
 
@@ -184,16 +248,16 @@ export function canvasTextSplit(
                     char = existingChars.shift();
 
                     char.text = segment.char;
-                    char.style = textStyle;
+                    char.style = charStyle;
                     char.setFromMatrix(Matrix.IDENTITY);
-                    char.x = xOffset - currentWordContainer.x - (dropShadowDistance * i);
+                    char.x = xOffset - currentWordContainer.x + trimOffsetX - (dropShadowDistance * charIndex);
                 }
                 else
                 {
                     char = new Text({
                         text: segment.char,
-                        style: textStyle,
-                        x: xOffset - currentWordContainer.x - (dropShadowDistance * i),
+                        style: charStyle,
+                        x: xOffset - currentWordContainer.x + trimOffsetX - (dropShadowDistance * charIndex),
                     });
                 }
 

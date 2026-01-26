@@ -1,4 +1,4 @@
-import { BlurFilter } from '~/filters/defaults/blur/BlurFilter';
+import { BlurFilter } from '~/filters';
 import { Text } from '~/scene';
 
 import type { TestScene } from '../../../types';

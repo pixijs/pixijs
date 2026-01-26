@@ -500,7 +500,9 @@ export abstract class AbstractSplitText<T extends SplitableTextObject> extends C
     {
         style ||= {};
 
+        this._style?.off('update', this._onStyleUpdate);
         this._style = new TextStyle(style);
+        this._style.on('update', this._onStyleUpdate);
 
         // tidy up word/line containers, characters can be reused
         this.words.forEach((word) => word.destroy());
@@ -524,6 +526,16 @@ export abstract class AbstractSplitText<T extends SplitableTextObject> extends C
         }
     }
 
+    private readonly _onStyleUpdate = (): void =>
+    {
+        this.words.forEach((word) => word.destroy());
+        this.words.length = 0;
+        this.lines.forEach((line) => line.destroy());
+        this.lines.length = 0;
+        this._canReuseChars = true;
+        this.onTextUpdate();
+    };
+
     /**
      * Destroys the SplitText instance and all its resources.
      * Cleans up all segment arrays, event listeners, and optionally the text style.
@@ -539,6 +551,8 @@ export abstract class AbstractSplitText<T extends SplitableTextObject> extends C
      */
     public destroy(options?: DestroyOptions): void
     {
+        this._style?.off('update', this._onStyleUpdate);
+
         super.destroy(options);
         this.chars = [];
         this.words = [];

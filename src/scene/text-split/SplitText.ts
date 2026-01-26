@@ -199,9 +199,22 @@ export class SplitText extends AbstractSplitText<Text>
             style: new TextStyle(text.style),
         };
 
-        return new SplitText({
+        const splitText = new SplitText({
             ...completeOptions,
         });
+
+        // Transfer anchor behavior using pivot
+        const anchor = text.anchor;
+
+        if (anchor.x !== 0 || anchor.y !== 0)
+        {
+            splitText.pivot.set(
+                splitText.width * anchor.x,
+                splitText.height * anchor.y
+            );
+        }
+
+        return splitText;
     }
 
     protected splitFn(): TextSplitOutput<Text>
