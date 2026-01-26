@@ -1,5 +1,6 @@
 import { lru } from 'tiny-lru';
 import { Cache } from '../../assets/cache/Cache';
+import { Color } from '../../color/Color';
 import { type TextureStyle, type TextureStyleOptions } from '../../rendering/renderers/shared/texture/TextureStyle';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { warn } from '../../utils/logging/warn';
@@ -321,9 +322,7 @@ class BitmapFontManagerClass
         }
         else if (style._stroke || style.dropShadow)
         {
-            // if there is a stoke, we need to use the style key as this the font generated cannot be tinted
-            // due to the fact the font has at least two colors.
-            fontFamilyKey = `${style.styleKey}-bitmap`;
+            fontFamilyKey = this._getStyledFontKey(style);
             overrideFill = false;
         }
 
@@ -520,6 +519,52 @@ class BitmapFontManagerClass
             && (!style.dropShadow || style.dropShadow.color === 0x000000)
             && !style._fill.fill
             && style._fill.color === 0xFFFFFF;
+    }
+
+    /**
+     * Returns a stable bitmap font cache key for styles with stroke or dropShadow.
+     * Caches the key directly on the style, invalidated by _tick.
+     * @param style - The text style to generate a key for
+     */
+    private _getStyledFontKey(style: TextStyle): string
+    {
+        if (style._bitmapFontKeyTick === style._tick)
+        {
+            return style._bitmapFontKey;
+        }
+
+        const parts: (string | number)[] = [style.fontFamily as string];
+
+        // Fill properties
+        parts.push(style._fill.color, style._fill.alpha);
+        if (style._fill.fill) parts.push(style._fill.fill.styleKey);
+
+        // Stroke properties
+        if (style._stroke)
+        {
+            parts.push(
+                style._stroke.color, style._stroke.alpha, style._stroke.width,
+                style._stroke.alignment, style._stroke.cap,
+                style._stroke.join, style._stroke.miterLimit,
+            );
+            if (style._stroke.fill) parts.push(style._stroke.fill.styleKey);
+        }
+
+        // Drop shadow properties
+        if (style.dropShadow)
+        {
+            const ds = style.dropShadow;
+
+            parts.push(ds.alpha, ds.angle, ds.blur, ds.distance);
+            parts.push(Color.shared.setValue(ds.color).toNumber());
+        }
+
+        const key = `${parts.join('-')}-bitmap`;
+
+        style._bitmapFontKey = key;
+        style._bitmapFontKeyTick = style._tick;
+
+        return key;
     }
 }
 

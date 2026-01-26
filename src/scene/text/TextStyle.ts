@@ -733,6 +733,11 @@ export class TextStyle extends EventEmitter<{
      */
     public _tick = 0;
 
+    /** @internal */
+    public _bitmapFontKey = '';
+    /** @internal */
+    public _bitmapFontKeyTick = -1;
+
     /**
      * Default text style settings used when creating new text objects.
      * These values serve as the base configuration and can be customized globally.
