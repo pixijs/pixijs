@@ -51,7 +51,7 @@ fn mainVert(input: VertexInput) -> @builtin(position) vec4<f32> {
 
 describe('extractAttributesFromGpuProgram', () =>
 {
-    it('should extract attributes from inline @location decorators', async () =>
+    it('should extract attributes from inline @location decorators', () =>
     {
         const extractedAttributeData = extractAttributesFromGpuProgram({
             source: shaderCodeInline,
