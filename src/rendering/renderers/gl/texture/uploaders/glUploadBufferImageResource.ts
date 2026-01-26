@@ -19,7 +19,7 @@ export const glUploadBufferImageResource = {
     {
         const target = targetOverride || glTexture.target;
 
-        if (!forceAllocation && (glTexture.width === source.width || glTexture.height === source.height))
+        if (!forceAllocation && (glTexture.width === source.width && glTexture.height === source.height))
         {
             gl.texSubImage2D(
                 target,
