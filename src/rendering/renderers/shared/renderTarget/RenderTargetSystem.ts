@@ -338,7 +338,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         }
 
         this.mipLevel = mipLevel | 0;
-        this.layer = layer;
+        this.layer = layer | 0;
 
         const pixelWidth = Math.max(source.pixelWidth >> mipLevel, 1);
         const pixelHeight = Math.max(source.pixelHeight >> mipLevel, 1);

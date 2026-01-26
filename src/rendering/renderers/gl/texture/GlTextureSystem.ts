@@ -383,8 +383,6 @@ export class GlTextureSystem implements System, CanvasGenerator
         );
 
         // Mips (if requested)
-        if (source.mipLevelCount === 0) return;
-
         let w = Math.max(source.pixelWidth >> 1, 1);
         let h = Math.max(source.pixelHeight >> 1, 1);
 
@@ -432,8 +430,6 @@ export class GlTextureSystem implements System, CanvasGenerator
         );
 
         // Mips (if requested)
-        if (source.mipLevelCount === 0) return;
-
         let w = Math.max(source.pixelWidth >> 1, 1);
         let h = Math.max(source.pixelHeight >> 1, 1);
 
@@ -480,8 +476,6 @@ export class GlTextureSystem implements System, CanvasGenerator
         }
 
         // Mips (if requested)
-        if (source.mipLevelCount === 0) return;
-
         let w = Math.max(source.pixelWidth >> 1, 1);
         let h = Math.max(source.pixelHeight >> 1, 1);
 
