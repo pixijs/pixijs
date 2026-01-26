@@ -3,6 +3,7 @@ import { AbstractText, ensureTextOptions } from '../text/AbstractText';
 import { TextStyle } from '../text/TextStyle';
 import { BitmapFontManager } from './BitmapFontManager';
 import { type BitmapTextGraphics } from './BitmapTextPipe';
+import './init';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from '../text/AbstractText';
@@ -148,6 +149,21 @@ export class BitmapText extends AbstractText<
         options.style.fill ??= 0xffffff;
 
         super(options, TextStyle);
+    }
+
+    /**
+     * @param now - The current time in milliseconds.
+     * @internal
+     */
+    public _onTouch(now: number): void
+    {
+        this._gcLastUsed = now;
+
+        // Make sure to touch the proxy renderable
+        for (const key in this._gpuData)
+        {
+            this._gpuData[key]?._onTouch(now);
+        }
     }
 
     /** @private */

@@ -2,6 +2,7 @@ import { Bounds } from '../../container/bounds/Bounds';
 import { ViewContainer, type ViewContainerOptions } from '../../view/ViewContainer';
 import { type ParticleBuffer } from './ParticleBuffer';
 import { particleData } from './particleData';
+import '../init';
 
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';

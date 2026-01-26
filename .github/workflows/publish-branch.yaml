@@ -1,17 +1,15 @@
 name: Publish Branch
 
 on:
-    push:
-        branches:
-            - main
-            - dev
+    workflow_call:
 
 jobs:
     release_candidate:
         runs-on: ubuntu-22.04
+        permissions:
+          id-token: write
+          contents: write
         env:
-            NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-            NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
             BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         steps:
             - uses: actions/checkout@v4
@@ -20,6 +18,9 @@ jobs:
 
             - name: Setup Project
               uses: ./.github/actions/setup
+              with:
+                  node-version: 24
+                  npm-version: latest
 
             - name: Build Project
               run: npm run build

@@ -80,7 +80,13 @@ export class GpuTextureSystem implements System, CanvasGenerator
     {
         this._renderer = renderer;
         renderer.renderableGC.addManagedHash(this, '_bindGroupHash');
-        this._managedTextures = new GCManagedHash({ renderer, type: 'resource', onUnload: this.onSourceUnload.bind(this) });
+
+        this._managedTextures = new GCManagedHash({
+            renderer,
+            type: 'resource',
+            onUnload: this.onSourceUnload.bind(this),
+            name: 'gpuTextureSource'
+        });
 
         const baseUploaders = {
             image: gpuUploadImageResource,
