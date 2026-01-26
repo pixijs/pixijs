@@ -70,14 +70,14 @@ export class GlTextureSystem implements System, CanvasGenerator
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
-       
-       this._managedTextures = new GCManagedHash({
+
+        this._managedTextures = new GCManagedHash({
             renderer,
             type: 'resource',
             onUnload: this.onSourceUnload.bind(this),
             name: 'glTexture'
         });
-      
+
         // our 2D uploaders..
         const baseUploaders = {
             image: glUploadImageResource,
@@ -90,7 +90,6 @@ export class GlTextureSystem implements System, CanvasGenerator
             ...baseUploaders,
             cube: createGlUploadCubeTextureResource(baseUploaders),
         };
-       
     }
 
     protected contextChange(gl: GlRenderingContext): void
