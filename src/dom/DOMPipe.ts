@@ -142,13 +142,14 @@ export class DOMPipe implements RenderPipe<DOMContainer>
                 const ax = domContainer.width * anchor.x;
                 const ay = domContainer.height * anchor.y;
 
+                const rootBounds = this._domElement.getBoundingClientRect();
+
                 element.style.transformOrigin = `${ax}px ${ay}px`;
-                element.style.transform = `matrix(${wt.a}, ${wt.b}, ${wt.c}, ${wt.d}, ${wt.tx - ax}, ${wt.ty - ay})`;
+                element.style.transform = `matrix(${wt.a}, ${wt.b}, ${wt.c}, ${wt.d}, ${wt.tx - ax - rootBounds.left}, ${wt.ty - ay - rootBounds.top})`;
                 element.style.opacity = domContainer.groupAlpha.toString();
             }
         }
     }
-
     /** Destroys the DOMPipe, removing all attached DOM elements and cleaning up resources. */
     public destroy(): void
     {
