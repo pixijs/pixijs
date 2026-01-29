@@ -268,7 +268,7 @@ export const loadVideoTextures = {
                 resolve(createTexture(base, loader, url));
             };
 
-            const onError = (event: ErrorEvent) =>
+            const onError = (event: Event | ErrorEvent) =>
             {
                 cleanup();
                 reject(event);
@@ -278,6 +278,7 @@ export const loadVideoTextures = {
             {
                 videoElement.removeEventListener('canplay', onCanPlay);
                 videoElement.removeEventListener('error', onError);
+                sourceElement.removeEventListener('error', onError);
             }
 
             if (options.preload && !options.autoPlay)
@@ -287,6 +288,7 @@ export const loadVideoTextures = {
 
             videoElement.addEventListener('canplay', onCanPlay);
             videoElement.addEventListener('error', onError);
+            sourceElement.addEventListener('error', onError);
             videoElement.appendChild(sourceElement);
         });
     },
