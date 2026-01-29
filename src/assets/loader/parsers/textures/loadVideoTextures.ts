@@ -274,12 +274,12 @@ export const loadVideoTextures = {
                 reject(event);
             };
 
-            function cleanup(): void
+            const cleanup = (): void =>
             {
                 videoElement.removeEventListener('canplay', onCanPlay);
                 videoElement.removeEventListener('error', onError);
                 sourceElement.removeEventListener('error', onError);
-            }
+            };
 
             if (options.preload && !options.autoPlay)
             {
