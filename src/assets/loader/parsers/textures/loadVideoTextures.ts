@@ -252,13 +252,13 @@ export const loadVideoTextures = {
 
         // this promise will make sure that video is ready to play - as in we have a valid width, height and it can be
         // uploaded to the GPU. Our textures are kind of dumb now, and don't want to handle resizing right now.
-        return new Promise((resolve) =>
+        return new Promise((resolve, reject) =>
         {
             const onCanPlay = async () =>
             {
                 const base = new VideoSource({ ...options, resource: videoElement });
 
-                videoElement.removeEventListener('canplay', onCanPlay);
+                cleanup();
 
                 if (asset.data.preload)
                 {
@@ -268,12 +268,25 @@ export const loadVideoTextures = {
                 resolve(createTexture(base, loader, url));
             };
 
+            const onError = (event: ErrorEvent) =>
+            {
+                cleanup();
+                reject(event);
+            };
+
+            function cleanup(): void
+            {
+                videoElement.removeEventListener('canplay', onCanPlay);
+                videoElement.removeEventListener('error', onError);
+            }
+
             if (options.preload && !options.autoPlay)
             {
                 videoElement.load();
             }
 
             videoElement.addEventListener('canplay', onCanPlay);
+            videoElement.addEventListener('error', onError);
             videoElement.appendChild(sourceElement);
         });
     },
