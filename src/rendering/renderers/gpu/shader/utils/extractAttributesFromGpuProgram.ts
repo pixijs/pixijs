@@ -55,7 +55,7 @@ export function extractAttributesFromGpuProgram(
             const functionArgsSubstring = source.substring(mainVertStart, arrowFunctionStart);
 
             // Apply the inputs regex directly to the trimmed string
-            const inputsRegex = /@location\((\d+)\)\s+([a-zA-Z0-9_]+)\s*:\s*([a-zA-Z0-9_<>]+)(?:,|\s|$)/g;
+            const inputsRegex = /@location\((\d+)\)\s+([a-zA-Z0-9_]+)\s*:\s*([a-zA-Z0-9_<>]+)(?:,|\s|\)|$)/g;
             let match;
 
             while ((match = inputsRegex.exec(functionArgsSubstring)) !== null)
