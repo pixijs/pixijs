@@ -1,30 +1,40 @@
 /**
- * Copies from one buffer to another.
- * This is an optimised function that will use `Float64Array` window.
- * This means it can copy twice as fast!
+ * Copies from one ArrayBuffer to another.
+ * Uses Float64Array (8-byte), Float32Array (4-byte), or Uint8Array depending on alignment.
  * @param sourceBuffer - the array buffer to copy from
  * @param destinationBuffer - the array buffer to copy to
- * @private
+ * @param sourceOffset - the byte offset to start copying from (default 0)
+ * @param byteLength - the number of bytes to copy (default: min of source available and destination size)
+ * @category rendering
+ * @advanced
  */
-export function fastCopy(sourceBuffer: ArrayBuffer, destinationBuffer: ArrayBuffer): void
+export function fastCopy(
+    sourceBuffer: ArrayBuffer,
+    destinationBuffer: ArrayBuffer,
+    sourceOffset?: number,
+    byteLength?: number
+): void
 {
-    const lengthDouble = (sourceBuffer.byteLength / 8) | 0;
+    sourceOffset ??= 0;
+    byteLength ??= Math.min(sourceBuffer.byteLength - sourceOffset, destinationBuffer.byteLength);
 
-    const sourceFloat64View = new Float64Array(sourceBuffer, 0, lengthDouble);
-    const destinationFloat64View = new Float64Array(destinationBuffer, 0, lengthDouble);
-
-    // Use set for faster copying
-    destinationFloat64View.set(sourceFloat64View);
-
-    // copying over the remaining bytes
-    const remainingBytes = sourceBuffer.byteLength - (lengthDouble * 8);
-
-    if (remainingBytes > 0)
+    if (!(sourceOffset & 7) && !(byteLength & 7))
     {
-        const sourceUint8View = new Uint8Array(sourceBuffer, lengthDouble * 8, remainingBytes);
-        const destinationUint8View = new Uint8Array(destinationBuffer, lengthDouble * 8, remainingBytes);
+        // 8-byte aligned - use Float64Array (8x faster)
+        const len = byteLength / 8;
 
-        // Direct copy for remaining bytes
-        destinationUint8View.set(sourceUint8View);
+        new Float64Array(destinationBuffer, 0, len).set(new Float64Array(sourceBuffer, sourceOffset, len));
+    }
+    else if (!(sourceOffset & 3) && !(byteLength & 3))
+    {
+        // 4-byte aligned - use Float32Array (4x faster)
+        const len = byteLength / 4;
+
+        new Float32Array(destinationBuffer, 0, len).set(new Float32Array(sourceBuffer, sourceOffset, len));
+    }
+    else
+    {
+        // Fall back to byte-by-byte copy
+        new Uint8Array(destinationBuffer).set(new Uint8Array(sourceBuffer, sourceOffset, byteLength));
     }
 }
