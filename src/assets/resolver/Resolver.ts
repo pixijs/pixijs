@@ -512,8 +512,8 @@ export class Resolver
                 const parser = this._parsers.find((p) => p.test(url));
 
                 return {
-                    ...parser?.parse(url),
                     src: url,
+                    ...parser?.parse(url),
                 };
             };
 

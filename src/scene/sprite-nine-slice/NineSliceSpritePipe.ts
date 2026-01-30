@@ -49,7 +49,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        this._managedSprites = new GCManagedHash({ renderer, type: 'renderable' });
+        this._managedSprites = new GCManagedHash({ renderer, type: 'renderable', name: 'nineSliceSprite' });
     }
 
     public addRenderable(sprite: NineSliceSprite, instructionSet: InstructionSet)

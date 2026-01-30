@@ -94,7 +94,8 @@ export class GlGeometrySystem implements System
         this._managedGeometries = new GCManagedHash({
             renderer,
             type: 'resource',
-            onUnload: this.onGeometryUnload.bind(this)
+            onUnload: this.onGeometryUnload.bind(this),
+            name: 'glGeometry'
         });
     }
 

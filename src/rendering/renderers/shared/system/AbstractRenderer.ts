@@ -70,6 +70,17 @@ export interface ClearOptions
     clearColor?: ColorSource;
     /** The clear mode to use. */
     clear?: CLEAR_OR_BOOL
+
+    /**
+     * Mip level to render/clear to when the target is a texture-backed render surface.
+     * @default 0
+     *
+     * Note: When rendering to a {@link Texture} target, Pixi renders into the underlying {@link TextureSource}
+     * (via an internal {@link RenderTarget}). The texture's `frame` is interpreted in mip 0 space and is scaled/clamped
+     * to the requested mip level.
+     * @advanced
+     */
+    mipLevel?: number;
 }
 
 /**
