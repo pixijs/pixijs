@@ -241,6 +241,12 @@ export class GlTextureSystem implements System, CanvasGenerator
             throw new Error(`Unsupported view dimension: ${source.viewDimension} with this webgl version: ${this._renderer.context.webGLVersion}`);
         }
 
+        // Cube textures use a different GL target.
+        if (source.uploadMethodId === 'cube')
+        {
+            glTexture.target = gl.TEXTURE_CUBE_MAP;
+        }
+
         if (source.autoGenerateMipmaps && (this._renderer.context.supports.nonPowOf2mipmaps || source.isPowerOfTwo))
         {
             const biggestDimension = Math.max(source.width, source.height);
