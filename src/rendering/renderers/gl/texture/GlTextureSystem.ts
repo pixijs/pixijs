@@ -5,6 +5,7 @@ import { Texture } from '../../shared/texture/Texture';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
 import { glUploadCompressedTextureResource } from './uploaders/glUploadCompressedTextureResource';
+import { createGlUploadCubeTextureResource } from './uploaders/glUploadCubeTextureResource';
 import { glUploadImageResource } from './uploaders/glUploadImageResource';
 import { glUploadVideoResource } from './uploaders/glUploadVideoResource';
 import { applyStyleParams } from './utils/applyStyleParams';
@@ -54,12 +55,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     private _boundSamplers: Record<number, WebGLSampler> = Object.create(null);
 
-    private readonly _uploads: Record<string, GLTextureUploader> = {
-        image: glUploadImageResource,
-        buffer: glUploadBufferImageResource,
-        video: glUploadVideoResource,
-        compressed: glUploadCompressedTextureResource,
-    };
+    private readonly _uploads: Record<string, GLTextureUploader>;
 
     private _gl: GlRenderingContext;
     private _mapFormatToInternalFormat: Record<string, number>;
@@ -74,12 +70,26 @@ export class GlTextureSystem implements System, CanvasGenerator
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
+
         this._managedTextures = new GCManagedHash({
             renderer,
             type: 'resource',
             onUnload: this.onSourceUnload.bind(this),
             name: 'glTexture'
         });
+
+        // our 2D uploaders..
+        const baseUploaders = {
+            image: glUploadImageResource,
+            buffer: glUploadBufferImageResource,
+            video: glUploadVideoResource,
+            compressed: glUploadCompressedTextureResource,
+        };
+
+        this._uploads = {
+            ...baseUploaders,
+            cube: createGlUploadCubeTextureResource(baseUploaders),
+        };
     }
 
     protected contextChange(gl: GlRenderingContext): void
@@ -220,6 +230,12 @@ export class GlTextureSystem implements System, CanvasGenerator
         glTexture.internalFormat = this._mapFormatToInternalFormat[source.format];
         glTexture.format = this._mapFormatToFormat[source.format];
 
+        // Cube textures use a different GL target.
+        if (source.uploadMethodId === 'cube')
+        {
+            glTexture.target = gl.TEXTURE_CUBE_MAP;
+        }
+
         if (source.autoGenerateMipmaps && (this._renderer.context.supports.nonPowOf2mipmaps || source.isPowerOfTwo))
         {
             const biggestDimension = Math.max(source.width, source.height);
@@ -256,7 +272,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         const glTexture = this.getGlSource(source);
 
-        gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
+        gl.bindTexture(glTexture.target, glTexture.texture);
 
         this._boundTextures[this._activeTextureLocation] = source;
 
@@ -266,7 +282,7 @@ export class GlTextureSystem implements System, CanvasGenerator
             source.mipLevelCount > 1,
             this._renderer.context.extensions.anisotropicFiltering,
             'texParameteri',
-            gl.TEXTURE_2D,
+            glTexture.target,
             // will force a clamp to edge if the texture is not a power of two
             !this._renderer.context.supports.nonPowOf2wrapping && !source.isPowerOfTwo,
             firstCreation,
@@ -296,7 +312,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         const glTexture = this.getGlSource(source);
 
-        gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
+        gl.bindTexture(glTexture.target, glTexture.texture);
 
         this._boundTextures[this._activeTextureLocation] = source;
 
