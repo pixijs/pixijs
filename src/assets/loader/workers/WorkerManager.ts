@@ -272,7 +272,7 @@ class WorkerManagerClass
  *
  * > [!IMPORTANT] You should not need to use this class directly
  * > However, you can call `WorkerManager.reset()` to clean up all workers when they are no longer needed.
- * @category Assets
+ * @category assets
  * @advanced
  */
 const WorkerManager = new WorkerManagerClass();

@@ -5,11 +5,22 @@ import tseslint from 'typescript-eslint';
 import config from '@pixi/eslint-config';
 import requireExport from './scripts/plugins/eslint-require-export.mjs';
 import requireMemberAPI from './scripts/plugins/eslint-require-modifier.mjs';
+import stylistic from '@stylistic/eslint-plugin';
 
 export default tseslint.config(
     ...config,
     {
-        ignores: ['.s3_uploads', 'out', 'docs', 'dist', 'lib', 'transcoders', 'node_modules', 'src/*/**/index.ts'],
+        ignores: [
+            '.s3_uploads',
+            'out',
+            'docs',
+            'dist',
+            'lib',
+            'transcoders',
+            'node_modules',
+            'src/*/**/index.ts',
+            'src/**/__docs__/examples/**/*.js',
+        ],
     },
     {
         files: ['**/*'],
@@ -120,7 +131,12 @@ export default tseslint.config(
             'jest/expect-expect': [
                 'error',
                 {
-                    assertFunctionNames: ['expect', 'check32BitColorMatches', 'assertRemovedFromParent', 'expectTypeOf'],
+                    assertFunctionNames: [
+                        'expect',
+                        'check32BitColorMatches',
+                        'assertRemovedFromParent',
+                        'expectTypeOf',
+                    ],
                     additionalTestBlockFunctions: [''],
                 },
             ],
@@ -140,11 +156,11 @@ export default tseslint.config(
                 'warn',
                 {
                     name: 'document',
-                    message: 'Do not use document. Use DOMAdapter instead.'
+                    message: 'Do not use document. Use DOMAdapter instead.',
                 },
                 {
                     name: 'Image',
-                    message: 'Do not use Image. Use DOMAdapter instead.'
+                    message: 'Do not use Image. Use DOMAdapter instead.',
                 },
             ],
             'no-restricted-properties': [
@@ -152,9 +168,34 @@ export default tseslint.config(
                 {
                     object: 'URL',
                     property: 'createObjectURL',
-                    message: 'Avoid using URL.createObjectURL. See https://github.com/pixijs/pixijs/pull/11599.'
-                }
-            ]
-        }
+                    message: 'Avoid using URL.createObjectURL. See https://github.com/pixijs/pixijs/pull/11599.',
+                },
+            ],
+        },
+    },
+    {
+        files: ['examples/**', 'src/**/__docs__/examples/**'],
+        rules: {
+            '@stylistic/indent': [1, 2, { SwitchCase: 1 }],
+            indent: [1, 2, { SwitchCase: 1 }],
+            'brace-style': [1, '1tbs', { allowSingleLine: true }],
+            '@stylistic/brace-style': [1, '1tbs', { allowSingleLine: true }],
+            'jsdoc/require-param': 0,
+            'jsdoc/require-param-description': 0,
+            'jsdoc/require-param-name': 0,
+            'jsdoc/require-param-type': 0,
+            'jsdoc/require-returns-description': 0,
+            'jsdoc/require-returns-type': 0,
+            'jsdoc/require-returns': 0,
+            'jsdoc/require-returns-check': 0,
+            'max-len': 0,
+            'newline-after-var': 0,
+            '@typescript-eslint/no-this-alias': 0,
+            '@typescript-eslint/no-floating-promises': 0,
+            'func-names': 0,
+            'no-restricted-globals': 0,
+            'no-console': 0,
+        },
+        plugins: { '@stylistic': stylistic },
     },
 );
