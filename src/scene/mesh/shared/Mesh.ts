@@ -6,6 +6,7 @@ import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { ViewContainer } from '../../view/ViewContainer';
 import { MeshGeometry } from './MeshGeometry';
 import { type MeshGpuData } from './MeshPipe';
+import '../init';
 
 import type { PointData } from '../../../maths/point/PointData';
 import type { Topology } from '../../../rendering/renderers/shared/geometry/const';
@@ -362,7 +363,5 @@ export class Mesh<
         this._texture = null;
         this._geometry = null;
         this._shader = null;
-
-        this._gpuData = null;
     }
 }

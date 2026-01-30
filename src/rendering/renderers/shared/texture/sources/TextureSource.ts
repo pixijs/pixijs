@@ -2,10 +2,21 @@ import EventEmitter from 'eventemitter3';
 import { isPow2 } from '../../../../../maths/misc/pow2';
 import { definedProps } from '../../../../../scene/container/utils/definedProps';
 import { uid } from '../../../../../utils/data/uid';
+import { type GPUDataOwner } from '../../../../renderers/types';
+import { type GlTexture } from '../../../gl/texture/GlTexture';
+import { type GPUTextureGpuData } from '../../../gpu/texture/GpuTextureSystem';
+import { type GCable, type GCData } from '../../GCSystem';
 import { TextureStyle } from '../TextureStyle';
 
 import type { BindResource } from '../../../gpu/shader/BindResource';
-import type { ALPHA_MODES, SCALE_MODE, TEXTURE_DIMENSIONS, TEXTURE_FORMATS, WRAP_MODE } from '../const';
+import type {
+    ALPHA_MODES,
+    SCALE_MODE,
+    TEXTURE_DIMENSIONS,
+    TEXTURE_FORMATS,
+    TEXTURE_VIEW_DIMENSIONS,
+    WRAP_MODE,
+} from '../const';
 import type { TextureStyleOptions } from '../TextureStyle';
 import type { TextureResourceOrOptions } from '../utils/textureFrom';
 
@@ -42,6 +53,22 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
     antialias?: boolean;
     /** how many dimensions does this texture have? currently v8 only supports 2d */
     dimensions?: TEXTURE_DIMENSIONS;
+    /**
+     * How this texture is viewed/sampled by shaders.
+     *
+     * This aligns with WebGPU's `GPUTextureViewDescriptor.dimension`. For example, cube maps are typically stored as a
+     * 2D texture with 6 array layers (`dimensions: '2d'`) but viewed as `viewDimension: 'cube'`.
+     */
+    viewDimension?: TEXTURE_VIEW_DIMENSIONS;
+    /**
+     * The number of array layers for this texture source.
+     *
+     * This maps to WebGPU's `GPUTextureDescriptor.size.depthOrArrayLayers` and is used for array-backed textures
+     * such as cube maps (6 layers).
+     * @default 1
+     * @advanced
+     */
+    arrayLayerCount?: number;
     /** The number of mip levels to generate for this texture. this is  overridden if autoGenerateMipmaps is true */
     mipLevelCount?: number;
     /**
@@ -59,6 +86,8 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
     label?: string;
     /** If true, the Garbage Collector will unload this texture if it is not used after a period of time */
     autoGarbageCollect?: boolean;
+    /** Used by RenderTexture.create to allow resizing. Not used by TextureSource itself. */
+    dynamic?: boolean;
 }
 
 /**
@@ -80,7 +109,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     styleChange: TextureSource;
     updateMipmaps: TextureSource;
     error: Error;
-}> implements BindResource
+}> implements BindResource, GPUDataOwner, GCable
 {
     /** The default options used when creating a new TextureSource. override these to add your own defaults */
     public static defaultOptions: TextureSourceOptions = {
@@ -88,12 +117,21 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         format: 'bgra8unorm',
         alphaMode: 'premultiply-alpha-on-upload',
         dimensions: '2d',
+        viewDimension: '2d',
+        arrayLayerCount: 1,
         mipLevelCount: 1,
         autoGenerateMipmaps: false,
         sampleCount: 1,
         antialias: false,
         autoGarbageCollect: false,
     };
+
+    /** @internal */
+    public _gpuData: Record<number, GlTexture | GPUTextureGpuData> = Object.create(null);
+    /** GC tracking data, undefined if not being tracked */
+    public _gcData?: GCData;
+    /** @internal */
+    public _gcLastUsed = -1;
 
     /** unique id for this Texture source */
     public readonly uid: number = uid('textureSource');
@@ -167,6 +205,10 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public format: TEXTURE_FORMATS = 'rgba8unorm';
     /** how many dimensions does this texture have? currently v8 only supports 2d */
     public dimension: TEXTURE_DIMENSIONS = '2d';
+    /** how this texture is viewed/sampled by shaders (WebGPU view dimension) */
+    public viewDimension: TEXTURE_VIEW_DIMENSIONS = '2d';
+    /** how many array layers this texture has (WebGPU depthOrArrayLayers) */
+    public arrayLayerCount = 1;
     /** the alpha mode of the texture */
     public alphaMode: ALPHA_MODES;
     private _style: TextureStyle;
@@ -249,6 +291,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         this.format = options.format;
         this.dimension = options.dimensions;
+        this.viewDimension = options.viewDimension ?? options.dimensions;
+        this.arrayLayerCount = options.arrayLayerCount;
         this.mipLevelCount = options.mipLevelCount;
         this.autoGenerateMipmaps = options.autoGenerateMipmaps;
         this.sampleCount = options.sampleCount;
@@ -400,8 +444,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public destroy()
     {
         this.destroyed = true;
+        this.unload();
         this.emit('destroy', this);
-        this.emit('change', this);
 
         if (this._style)
         {
@@ -422,7 +466,14 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     {
         this._resourceId = uid('resource');
         this.emit('change', this);
+
+        /** Unloads the GPU data from the view container. */
         this.emit('unload', this);
+        for (const key in this._gpuData)
+        {
+            this._gpuData[key]?.destroy?.();
+        }
+        this._gpuData = Object.create(null);
     }
 
     /** the width of the resource. This is the REAL pure number, not accounting resolution   */

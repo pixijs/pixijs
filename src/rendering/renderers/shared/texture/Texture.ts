@@ -380,6 +380,8 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
     {
         if (this._source)
         {
+            this._source.off('resize', this.update, this);
+
             if (destroySource)
             {
                 this._source.destroy();

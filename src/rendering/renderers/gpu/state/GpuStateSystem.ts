@@ -69,18 +69,25 @@ export class GpuStateSystem implements System
     /**
      * Gets the blend mode data for the current state
      * @param state - The state to get the blend mode from
+     * @param count - The number of color targets to create
      */
-    public getColorTargets(state: State): GPUColorTargetState[]
+    public getColorTargets(state: State, count: number): GPUColorTargetState[]
     {
         const blend = GpuBlendModesToPixi[state.blendMode] || GpuBlendModesToPixi.normal;
 
-        return [
-            {
-                format: 'bgra8unorm',
-                writeMask: 0,
-                blend,
-            },
-        ];
+        const targets: GPUColorTargetState[] = [];
+        const target = {
+            format: 'bgra8unorm',
+            writeMask: 0,
+            blend,
+        } as GPUColorTargetState;
+
+        for (let i = 0; i < count; i++)
+        {
+            targets[i] = target;
+        }
+
+        return targets;
     }
 
     public destroy(): void

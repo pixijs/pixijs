@@ -2,6 +2,7 @@ import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../../view/ViewContainer';
 import { GraphicsContext } from './GraphicsContext';
 import { type GraphicsGpuData } from './GraphicsPipe';
+import '../init';
 
 import type { ColorSource } from '../../../color/Color';
 import type { Matrix } from '../../../maths/matrix/Matrix';
@@ -121,14 +122,13 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
 
         if (!context)
         {
-            this._context = this._ownedContext = new GraphicsContext();
+            this.context = this._ownedContext = new GraphicsContext();
+            this.context.autoGarbageCollect = this.autoGarbageCollect;
         }
         else
         {
-            this._context = context;
+            this.context = context;
         }
-
-        this._context.on('update', this.onViewUpdate, this);
 
         this.didViewUpdate = true;
 
@@ -140,12 +140,17 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
     {
         if (context === this._context) return;
 
-        this._context.off('update', this.onViewUpdate, this);
+        if (this._context)
+        {
+            this._context.off('update', this.onViewUpdate, this);
+            this._context.off('unload', this.unload, this);
+        }
 
         this._context = context;
 
         // TODO store this bound function somewhere else..
         this._context.on('update', this.onViewUpdate, this);
+        this._context.on('unload', this.unload, this);
 
         this.onViewUpdate();
     }
@@ -272,6 +277,16 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
         this._context = null;
 
         super.destroy(options);
+    }
+
+    /**
+     * @param now - The current time in milliseconds.
+     * @internal
+     */
+    public _onTouch(now: number): void
+    {
+        this._gcLastUsed = now;
+        this._context._gcLastUsed = now;
     }
 
     private _callContextMethod(method: keyof GraphicsContext, args: any[]): this

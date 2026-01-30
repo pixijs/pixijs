@@ -195,6 +195,9 @@ export class AbstractRenderer<
     /** The name of the renderer. */
     public readonly name: string;
 
+    /** The current tick of the renderer. */
+    public tick: number = 0;
+
     /** @internal */
     public readonly uid = uid('renderer');
 
@@ -284,6 +287,8 @@ export class AbstractRenderer<
     public render(container: Container, options: {renderTexture: any}): void;
     public render(args: RenderOptions | Container, deprecated?: {renderTexture: any}): void
     {
+        this.tick++;
+
         let options = args;
 
         if (options instanceof Container)
@@ -542,16 +547,16 @@ export class AbstractRenderer<
         this.runners.destroy.items.reverse();
         this.runners.destroy.emit(options);
 
+        if (options === true || (typeof options === 'object' && options.releaseGlobalResources))
+        {
+            GlobalResourceRegistry.release();
+        }
+
         // destroy all runners
         Object.values(this.runners).forEach((runner) =>
         {
             runner.destroy();
         });
-
-        if (options === true || (typeof options === 'object' && options.releaseGlobalResources))
-        {
-            GlobalResourceRegistry.release();
-        }
 
         this._systemsHash = null;
 

@@ -42,6 +42,7 @@ export class StencilMask implements Effect, PoolItem
 
     public reset()
     {
+        if (this.mask === null) return;
         this.mask.measurable = true;
         this.mask.includeInBuild = true;
         this.mask = null;

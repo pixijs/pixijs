@@ -166,6 +166,7 @@ export class TickerPlugin
         // Create ticker setter
         Object.defineProperty(this, 'ticker',
             {
+                configurable: true,
                 set(ticker)
                 {
                     if (this._ticker)

@@ -99,7 +99,7 @@ describe('TilingSprite', () =>
 
             sprite.destroy();
 
-            expect(sprite._gpuData).toBeNull();
+            expect(sprite._gpuData).toBeEmptyObject();
 
             expect(sprite.texture).toBeNull();
         });

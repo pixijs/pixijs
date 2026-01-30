@@ -23,7 +23,7 @@ describe('GraphicsContextSystem', () =>
             context.clear();
             const checkContext = system.updateGpuContext(context);
 
-            expect(gpuContext.batches.length).toEqual(0);
+            expect(checkContext.batches.length).toEqual(0);
             expect(checkContext).toEqual(gpuContext);
 
             // circle

@@ -651,6 +651,51 @@ describe('Resolver', () =>
         });
     });
 
+    it('should parse resolution and format from json URLs for both string and object sources', () =>
+    {
+        const resolver = new Resolver();
+
+        resolver.prefer({
+            params: {
+                resolution: [0.5],
+                format: ['webp'],
+            },
+        });
+
+        resolver['_parsers'].push(resolveJsonUrl);
+
+        resolver.add([
+            {
+                alias: 'spritesheet-string-sources', src: [
+                    'my-spritesheet@2x.webp.json',
+                    'my-spritesheet@0.5x.webp.json',
+                    'my-spritesheet@2x.png.json',
+                    'my-spritesheet@0.5x.png.json',
+                ]
+            },
+            {
+                alias: 'spritesheet-object-sources', src: [
+                    { resolution: 2, format: 'webp', src: 'my-spritesheet@2x.webp.json' },
+                    { resolution: 0.5, format: 'webp', src: 'my-spritesheet@0.5x.webp.json' },
+                    { resolution: 2, format: 'png', src: 'my-spritesheet@2x.png.json' },
+                    { resolution: 0.5, format: 'png', src: 'my-spritesheet@0.5x.png.json' },
+                ]
+            },
+            {
+                alias: 'spritesheet-object-parsed-urls', src: [
+                    { progressSize: 0, src: 'my-spritesheet@2x.webp.json' },
+                    { progressSize: 0, src: 'my-spritesheet@0.5x.webp.json' },
+                    { progressSize: 0, src: 'my-spritesheet@2x.png.json' },
+                    { progressSize: 0, src: 'my-spritesheet@0.5x.png.json' },
+                ]
+            },
+        ]);
+
+        expect(resolver.resolveUrl('spritesheet-string-sources')).toBe('my-spritesheet@0.5x.webp.json');
+        expect(resolver.resolveUrl('spritesheet-object-sources')).toBe('my-spritesheet@0.5x.webp.json');
+        expect(resolver.resolveUrl('spritesheet-object-parsed-urls')).toBe('my-spritesheet@0.5x.webp.json');
+    });
+
     it('should be able to have resolve with a single string with {} options', () =>
     {
         const resolver = new Resolver();
@@ -715,6 +760,24 @@ describe('Resolver', () =>
         resolver.setDefaultSearchParams('hello=world&lucky=23');
 
         expect(resolver.resolveUrl('my-image.png')).toBe('my-image.png?hello=world&lucky=23');
+    });
+
+    it('should allow custom parsers to override src', () =>
+    {
+        const resolver = new Resolver();
+
+        resolver['_parsers'].push({
+            test: (url: string) => url.includes('custom://'),
+            parse: (value: string) => ({
+                src: value.replace('custom://', 'https://cdn.example.com/'),
+            }),
+        });
+
+        resolver.add({ alias: 'test', src: 'custom://my-image.png' });
+
+        const resolved = resolver.resolve('test');
+
+        expect(resolved.src).toBe('https://cdn.example.com/my-image.png');
     });
 
     it('should parse url extensions correctly', () =>

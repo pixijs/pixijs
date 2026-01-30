@@ -6,6 +6,7 @@ import type { TextureSourceOptions } from '../../../rendering/renderers/shared/t
 
 let ktxWorker: Worker;
 const urlHash: Record<string, (value: any) => void> = {};
+const errorHash: Record<string, (err: any) => void> = {};
 
 function getKTX2Worker(supportedTextures: TEXTURE_FORMATS[]): Worker
 {
@@ -15,7 +16,14 @@ function getKTX2Worker(supportedTextures: TEXTURE_FORMATS[]): Worker
 
         ktxWorker.onmessage = (messageEvent) =>
         {
-            const { success, url, textureOptions } = messageEvent.data;
+            const { err, success, url, textureOptions } = messageEvent.data;
+
+            if (err)
+            {
+                errorHash[url](err);
+
+                return;
+            }
 
             if (!success)
             {
@@ -48,9 +56,10 @@ export function loadKTX2onWorker(
 {
     const ktxWorker = getKTX2Worker(supportedTextures);
 
-    return new Promise((resolve) =>
+    return new Promise((resolve, reject) =>
     {
         urlHash[url] = resolve;
+        errorHash[url] = reject;
 
         ktxWorker.postMessage({ type: 'load', url });
     });

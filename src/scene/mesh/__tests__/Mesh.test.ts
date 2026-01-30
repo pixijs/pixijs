@@ -50,7 +50,7 @@ describe('Mesh', () =>
         expect(mesh.geometry).toBeNull();
         expect(mesh.texture).toBeNull();
 
-        expect(mesh._gpuData).toBeNull();
+        expect(mesh._gpuData).toBeEmptyObject();
     });
 
     it('should clean up correctly when not batching', async () =>
@@ -74,7 +74,7 @@ describe('Mesh', () =>
         expect(mesh.geometry).toBeNull();
         expect(mesh.texture).toBeNull();
 
-        expect(mesh._gpuData).toBeNull();
+        expect(mesh._gpuData).toBeEmptyObject();
     });
 
     it('should support color tinting', () =>

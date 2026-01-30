@@ -5,8 +5,8 @@
  * @advanced
  */
 export const ktxTranscoderUrls = {
-    jsUrl: 'https://files.pixijs.download/transcoders/ktx/libktx.js',
-    wasmUrl: 'https://files.pixijs.download/transcoders/ktx/libktx.wasm'
+    jsUrl: 'https://cdn.jsdelivr.net/npm/pixi.js/transcoders/ktx/libktx.js',
+    wasmUrl: 'https://cdn.jsdelivr.net/npm/pixi.js/transcoders/ktx/libktx.wasm'
 };
 
 /**

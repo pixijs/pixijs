@@ -3,6 +3,7 @@ import { autoDetectRenderer } from '../rendering/renderers/autoDetectRenderer';
 import { Container } from '../scene/container/Container';
 import { ApplicationInitHook } from '../utils/global/globalHooks';
 import { deprecation, v8_0_0 } from '../utils/logging/deprecation';
+import '../app/init';
 
 import type { Rectangle } from '../maths/shapes/Rectangle';
 import type { AutoDetectOptions } from '../rendering/renderers/autoDetectRenderer';
@@ -152,7 +153,7 @@ export interface Application extends PixiMixins.Application { }
  * document.body.appendChild(app.canvas);
  *
  * // Start adding content to your application
- * const texture - await Assets.load('your-image.png');
+ * const texture = await Assets.load('your-image.png');
  * const sprite = new Sprite(texture);
  * app.stage.addChild(sprite);
  * ```
@@ -249,6 +250,7 @@ export class Application<R extends Renderer = Renderer>
         // The default options
         options = { ...options };
 
+        this.stage ||= new Container();
         this.renderer = await autoDetectRenderer(options as ApplicationOptions) as R;
 
         // install plugins here

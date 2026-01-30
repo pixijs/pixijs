@@ -74,7 +74,7 @@ describe('Sprite', () =>
 
             sprite.destroy();
 
-            expect(sprite._gpuData).toBeNull();
+            expect(sprite._gpuData).toBeEmptyObject();
         });
     });
 

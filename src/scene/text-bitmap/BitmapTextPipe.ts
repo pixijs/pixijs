@@ -1,8 +1,10 @@
 import { Cache } from '../../assets/cache/Cache';
 import { ExtensionType } from '../../extensions/Extensions';
+import { GCManagedHash } from '../../utils/data/GCManagedHash';
 import { Graphics } from '../graphics/shared/Graphics';
 import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
 import { SdfShader } from '../text/sdfShader/SdfShader';
+import { type GPUData } from '../view/ViewContainer';
 import { BitmapFontManager } from './BitmapFontManager';
 import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
 
@@ -13,7 +15,7 @@ import type { Renderer } from '../../rendering/renderers/types';
 import type { BitmapText } from './BitmapText';
 
 /** @internal */
-export class BitmapTextGraphics extends Graphics
+export class BitmapTextGraphics extends Graphics implements GPUData
 {
     public destroy()
     {
@@ -40,10 +42,12 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
     } as const;
 
     private _renderer: Renderer;
+    private readonly _managedBitmapTexts: GCManagedHash<BitmapText>;
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._managedBitmapTexts = new GCManagedHash({ renderer, type: 'renderable', priority: -2, name: 'bitmapText' });
     }
 
     public validateRenderable(bitmapText: BitmapText): boolean
@@ -170,7 +174,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
                     context.texture(
                         texture,
-                        tint ? tint : 'black',
+                        tint,
                         Math.round(line.charPositions[j] + charData.xOffset),
                         Math.round(currentY + charData.yOffset + linePositionYShift),
                         texture.orig.width,
@@ -196,6 +200,8 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         bitmapText._gpuData[this._renderer.uid] = proxyRenderable;
 
         this._updateContext(bitmapText, proxyRenderable);
+
+        this._managedBitmapTexts.add(bitmapText);
 
         return proxyRenderable;
     }
@@ -223,7 +229,9 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
     public destroy()
     {
+        this._managedBitmapTexts.destroy();
         this._renderer = null;
+        (this._managedBitmapTexts as null) = null;
     }
 }
 

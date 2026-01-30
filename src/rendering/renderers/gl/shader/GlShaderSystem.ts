@@ -53,7 +53,6 @@ export class GlShaderSystem
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
-        this._renderer.renderableGC.addManagedHash(this, '_programDataHash');
     }
 
     protected contextChange(gl: GlRenderingContext): void
@@ -190,10 +189,7 @@ export class GlShaderSystem
     {
         for (const key of Object.keys(this._programDataHash))
         {
-            const programData = this._programDataHash[key];
-
-            programData.destroy();
-            this._programDataHash[key] = null;
+            this._programDataHash[key].destroy();
         }
 
         this._programDataHash = null;

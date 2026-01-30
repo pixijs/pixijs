@@ -165,7 +165,7 @@ describe('Text', () =>
 
             text.destroy();
 
-            expect(text._gpuData).toBeNull();
+            expect(text._gpuData).toBeEmptyObject();
             expect(renderer.canvasText['_activeTextures'][key]).toBeNull();
         });
 
@@ -185,7 +185,7 @@ describe('Text', () =>
 
             text.destroy();
 
-            expect(text._gpuData).toBeNull();
+            expect(text._gpuData).toBeEmptyObject();
         });
 
         it('should destroy textStyle correctly', () =>

@@ -7,7 +7,7 @@ import type { BitmapFontData } from '../AbstractBitmapFont';
 export const bitmapFontXMLStringParser = {
     test(data: string | XMLDocument | BitmapFontData): boolean
     {
-        if (typeof data === 'string' && data.includes('<font>'))
+        if (typeof data === 'string' && data.match(/<font(\s|>)/))
         {
             return bitmapFontXMLParser.test(DOMAdapter.get().parseXML(data));
         }

@@ -312,7 +312,7 @@ export class Loader
 
         let count = 0;
 
-        const assets: Record<string, Promise<any>> = {};
+        const assets: Record<string, T> = {};
 
         const singleAsset = isSingleItem(assetsToLoadIn);
 
@@ -411,11 +411,11 @@ export class Loader
             }, {} as Record<string, LoaderParser>);
     }
 
-    private async _loadAssetWithRetry(
+    private async _loadAssetWithRetry<T>(
         url: string,
         asset: ResolvedAsset,
         options: LoadOptions,
-        assets: Record<string, Promise<any>>
+        assets: Record<string, T>
     )
     {
         let attempt = 0;
@@ -431,7 +431,7 @@ export class Loader
                     this.promiseCache[url] = this._getLoadPromiseAndParser(url, asset);
                 }
 
-                assets[asset.src] = await this.promiseCache[url].promise;
+                assets[asset.src] = await this.promiseCache[url].promise as T;
 
                 return;
             }
@@ -461,7 +461,13 @@ export class Loader
 
                 // strategy 'throw' or exhausted 'retry'
                 if (onError) onError(e as Error, asset);
-                throw new Error(`[Loader.load] Failed to load ${url}.\n${e}`);
+                const error = new Error(`[Loader.load] Failed to load ${url}.\n${e}`);
+
+                if (e instanceof Error && e.stack)
+                {
+                    error.stack = e.stack;
+                }
+                throw error;
             }
         }
     }

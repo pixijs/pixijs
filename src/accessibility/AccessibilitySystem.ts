@@ -389,7 +389,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         // Remove all active accessibility elements
         for (const child of this._children)
         {
-            if (child._accessibleDiv && child._accessibleDiv.parentNode)
+            if (child._accessibleDiv?.parentNode)
             {
                 child._accessibleDiv.parentNode.removeChild(child._accessibleDiv);
                 child._accessibleDiv = null;
@@ -413,7 +413,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         }
 
         // Remove parent div from DOM
-        if (this._div && this._div.parentNode)
+        if (this._div?.parentNode)
         {
             this._div.parentNode.removeChild(this._div);
         }
