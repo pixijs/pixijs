@@ -3,6 +3,7 @@ import { AbstractText, ensureTextOptions } from '../text/AbstractText';
 import { type BatchableHTMLText } from './BatchableHTMLText';
 import { HTMLTextStyle } from './HTMLTextStyle';
 import { measureHtmlText } from './utils/measureHtmlText';
+import './init';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from '../text/AbstractText';
@@ -84,7 +85,7 @@ export interface HTMLText extends PixiMixins.HTMLText, AbstractText<
  * This allows for rich text formatting using standard HTML tags and CSS styling.
  *
  * Key features:
- * - HTML tag support (<strong>, <em>, etc.)
+ * - HTML tag support (&lt;strong&gt;, &lt;em&gt;, etc.)
  * - CSS styling and custom style overrides
  * - Emoji and special character support
  * - Line breaking and word wrapping
