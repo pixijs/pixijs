@@ -1,8 +1,30 @@
 import { GlTexture } from '../../../gl/texture/GlTexture';
 import { GPUTextureGpuData } from '../../../gpu/texture/GpuTextureSystem';
+import { type Renderer, RendererType } from '../../../types';
 import { TextureSource } from './TextureSource';
 
-import type { Renderer } from '../../../types';
+// Shared placeholders - created lazily, reused by all ExternalSource instances
+const placeholderGl: Record<number, WebGLTexture> = Object.create(null);
+const placeholderGpu: Record<number, GPUTexture> = Object.create(null);
+
+function getPlaceholder(renderer: Renderer): GPUTexture | WebGLTexture
+{
+    if (renderer.type === RendererType.WEBGPU)
+    {
+        placeholderGpu[renderer.uid] ||= (renderer as any).gpu.device.createTexture({
+            label: 'ExternalSource placeholder',
+            size: { width: 1, height: 1 },
+            format: 'rgba8unorm',
+            usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST,
+        });
+
+        return placeholderGpu[renderer.uid];
+    }
+
+    placeholderGl[renderer.uid] ||= (renderer as any).gl.createTexture();
+
+    return placeholderGl[renderer.uid];
+}
 
 /**
  * Options for creating an ExternalSource.
@@ -12,10 +34,12 @@ import type { Renderer } from '../../../types';
 export interface ExternalSourceOptions
 {
     /**
-     * The external GPU texture (GPUTexture for WebGPU, WebGLTexture for WebGL)
+     * The external GPU texture (GPUTexture for WebGPU, WebGLTexture for WebGL).
+     * If not provided, a shared 1x1 placeholder texture will be used until
+     * `updateGPUTexture()` is called.
      * @advanced
      */
-    resource: GPUTexture | WebGLTexture;
+    resource?: GPUTexture | WebGLTexture;
     /**
      * The renderer this texture will be used with
      * @advanced
@@ -74,13 +98,11 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
 {
     private readonly _renderer: Renderer;
 
-    constructor(options: ExternalSourceOptions)
+    constructor({ resource, renderer, label, width, height }: ExternalSourceOptions)
     {
-        const { resource, renderer, label } = options;
-
-        // Auto-detect dimensions for GPUTexture (WebGLTexture is opaque, requires explicit dimensions)
-        const width = options.width ?? (resource as GPUTexture).width;
-        const height = options.height ?? (resource as GPUTexture).height;
+        resource ||= getPlaceholder(renderer);
+        width ||= width ?? (resource as GPUTexture)?.width ?? 1;
+        height ||= height ?? (resource as GPUTexture)?.height ?? 1;
 
         // Only pass the minimal required options to TextureSource
         super({
@@ -94,7 +116,7 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
 
         this._renderer = renderer;
 
-        // Pre-populate _gpuData - this is the key to avoiding special checks in texture systems
+        // Pre-populate _gpuData
         this._initGpuData(resource);
     }
 
@@ -170,6 +192,9 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
         const renderer = this._renderer;
         const gpuData = this._gpuData[renderer.uid];
 
+        // Update the resource property to reflect the new texture
+        this.resource = gpuTexture;
+
         if ((renderer as any).gpu)
         {
             // WebGPU - validate and update
@@ -214,5 +239,17 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
         }
 
         this.emit('update', this);
+    }
+
+    public override destroy(): void
+    {
+        // Never destroy the GPU texture:
+        // - Placeholder is shared across all instances
+        // - External textures are owned by the external library
+        const renderer = this._renderer;
+
+        delete this._gpuData[renderer.uid];
+
+        super.destroy();
     }
 }
