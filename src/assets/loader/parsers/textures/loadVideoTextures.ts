@@ -254,7 +254,17 @@ export const loadVideoTextures = {
         // uploaded to the GPU. Our textures are kind of dumb now, and don't want to handle resizing right now.
         return new Promise((resolve, reject) =>
         {
-            const onCanPlay = async () =>
+            if (options.preload && !options.autoPlay)
+            {
+                videoElement.load();
+            }
+
+            videoElement.addEventListener('canplay', onCanPlay);
+            videoElement.addEventListener('error', onError);
+            sourceElement.addEventListener('error', onError);
+            videoElement.appendChild(sourceElement);
+
+            async function onCanPlay()
             {
                 const base = new VideoSource({ ...options, resource: videoElement });
 
@@ -266,30 +276,20 @@ export const loadVideoTextures = {
                 }
 
                 resolve(createTexture(base, loader, url));
-            };
+            }
 
-            const onError = (event: Event | ErrorEvent) =>
+            function onError(event: Event | ErrorEvent)
             {
                 cleanup();
                 reject(event);
-            };
+            }
 
-            const cleanup = (): void =>
+            function cleanup()
             {
                 videoElement.removeEventListener('canplay', onCanPlay);
                 videoElement.removeEventListener('error', onError);
                 sourceElement.removeEventListener('error', onError);
-            };
-
-            if (options.preload && !options.autoPlay)
-            {
-                videoElement.load();
             }
-
-            videoElement.addEventListener('canplay', onCanPlay);
-            videoElement.addEventListener('error', onError);
-            sourceElement.addEventListener('error', onError);
-            videoElement.appendChild(sourceElement);
         });
     },
 
