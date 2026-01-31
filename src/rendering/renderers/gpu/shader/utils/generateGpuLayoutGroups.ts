@@ -53,7 +53,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
                 }
             });
         }
-        else if (group.type === 'texture_cube')
+        else if (group.type === 'texture_cube' || group.type.startsWith('texture_cube<'))
         {
             layout[group.group].push({
                 binding: group.binding,
