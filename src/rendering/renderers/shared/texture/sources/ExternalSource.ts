@@ -86,8 +86,8 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
         }
 
         // Auto-detect dimensions for GPUTexture (WebGLTexture is opaque, requires explicit dimensions)
-        const width = options.width ?? (resource as GPUTexture)?.width ?? 1;
-        const height = options.height ?? (resource as GPUTexture)?.height ?? 1;
+        const width = options.width ?? (resource as GPUTexture).width;
+        const height = options.height ?? (resource as GPUTexture).height;
 
         // Only pass the minimal required options to TextureSource
         super({
