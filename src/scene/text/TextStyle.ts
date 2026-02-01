@@ -831,11 +831,35 @@ export class TextStyle extends EventEmitter<{
     /** @internal */
     public _tagStyles: Record<string, TextStyleOptions> | undefined;
 
+    /**
+     * When set, gradient fills use these bounds instead of the text's own measured dimensions.
+     * Used by SplitText to make character gradients span the full text width.
+     * @internal
+     */
+    public _gradientBounds?: { width: number; height: number };
+
+    /**
+     * When set, gradient fills are offset by this amount within the gradient bounds.
+     * Used by SplitText to position each character's gradient correctly.
+     * @internal
+     */
+    public _gradientOffset?: { x: number; y: number };
+
     constructor(style: Partial<TextStyleOptions> = {})
     {
         super();
 
         convertV7Tov8Style(style);
+
+        // When style is a TextStyle instance, use its toObject() values instead of the spread
+        // which copies proxy objects bound to the wrong instance.
+        const isTextStyle = style instanceof TextStyle;
+        const existingStyle = style as TextStyle;
+
+        if (isTextStyle)
+        {
+            style = existingStyle._toObject();
+        }
 
         const fullStyle = { ...TextStyle.defaultTextStyle, ...style };
 
@@ -1282,16 +1306,27 @@ export class TextStyle extends EventEmitter<{
     }
 
     /**
-     * Creates a new TextStyle object with the same values as this one.
-     * @returns New cloned TextStyle object
+     * Returns an object with the same values as this TextStyle instance.
+     * @returns Object with the same values as this TextStyle instance
+     * @example
+     * ```ts
+     * const style = new TextStyle({
+     *     fontSize: 24,
+     *     fill: 0xff0000,
+     *     stroke: { color: 0x0000ff, width: 2 }
+     * });
+     * const object = style.toObject();
+     * console.log(object);
+     * // { fontSize: 24, fill: 0xff0000, stroke: { color: 0x0000ff, width: 2 } }
+     * ```
      */
-    public clone(): TextStyle
+    protected _toObject(): Required<TextStyleOptions>
     {
-        return new TextStyle({
+        return {
             align: this.align,
             breakWords: this.breakWords,
             dropShadow: this._dropShadow ? { ...this._dropShadow } : null,
-            fill: this._fill,
+            fill: this._fill ? { ...this._fill } : undefined,
             fontFamily: this.fontFamily,
             fontSize: this.fontSize,
             fontStyle: this.fontStyle,
@@ -1301,14 +1336,24 @@ export class TextStyle extends EventEmitter<{
             letterSpacing: this.letterSpacing,
             lineHeight: this.lineHeight,
             padding: this.padding,
-            stroke: this._stroke,
+            stroke: this._stroke ? { ...this._stroke } : undefined,
             textBaseline: this.textBaseline,
+            trim: this.trim,
             whiteSpace: this.whiteSpace,
             wordWrap: this.wordWrap,
             wordWrapWidth: this.wordWrapWidth,
             filters: this._filters ? [...this._filters] : undefined,
             tagStyles: this._tagStyles ? { ...this._tagStyles } : undefined,
-        });
+        };
+    }
+
+    /**
+     * Creates a new TextStyle object with the same values as this one.
+     * @returns New cloned TextStyle object
+     */
+    public clone(): TextStyle
+    {
+        return new TextStyle(this._toObject());
     }
 
     /**

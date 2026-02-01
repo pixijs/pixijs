@@ -5,7 +5,7 @@ import type { Renderer } from '~/rendering';
 import type { Container } from '~/scene';
 
 export const scene: TestScene = {
-    it: 'should render text correctly if style changes',
+    it: 'should render text correctly if text changes',
     options: {
         width: 750,
         height: 40,
