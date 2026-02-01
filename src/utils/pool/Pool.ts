@@ -1,10 +1,11 @@
 /**
  * A generic class for managing a pool of items.
  * @template T The type of items in the pool. Must implement {@link PoolItem}.
+ * @template I The type of argument passed to item's `init` method if it exists.
  * @category utils
  * @advanced
  */
-export class Pool<T extends PoolItem>
+export class Pool<T extends PoolItem, I = Parameters<NonNullable<T['init']>>[0]>
 {
     /** @internal */
     public readonly _classType: PoolItemConstructor<T>;
@@ -44,10 +45,10 @@ export class Pool<T extends PoolItem>
     /**
      * Gets an item from the pool. Calls the item's `init` method if it exists.
      * If there are no items left in the pool, a new one will be created.
-     * @param {unknown} [data] - Optional data to pass to the item's constructor.
+     * @param {I} [data] - Optional data to pass to the item's constructor.
      * @returns {T} The item from the pool.
      */
-    public get(data?: unknown): T
+    public get(data?: I): T
     {
         let item;
 

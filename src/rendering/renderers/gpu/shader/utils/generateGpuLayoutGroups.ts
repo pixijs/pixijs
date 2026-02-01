@@ -41,7 +41,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
                 }
             });
         }
-        else if (group.type === 'texture_2d')
+        else if (group.type === 'texture_2d' || group.type.startsWith('texture_2d<'))
         {
             layout[group.group].push({
                 binding: group.binding,
@@ -53,6 +53,24 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
                 }
             });
         }
+        else if (group.type === 'texture_cube' || group.type.startsWith('texture_cube<'))
+        {
+            layout[group.group].push({
+                binding: group.binding,
+                visibility: ShaderStage.FRAGMENT,
+                texture: {
+                    sampleType: 'float',
+                    viewDimension: 'cube',
+                    multisampled: false,
+                }
+            });
+        }
+    }
+
+    // Ensure a dense array. WebGPU expects intermediate bind groups to exist even if empty.
+    for (let i = 0; i < layout.length; i++)
+    {
+        layout[i] ||= [];
     }
 
     return layout;

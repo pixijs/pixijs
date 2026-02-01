@@ -24,7 +24,6 @@ export const scene: TestScene = {
                     distance: 5,
                 },
             },
-            // renderMode: 'bitmap'
         });
 
         scene.addChild(text);

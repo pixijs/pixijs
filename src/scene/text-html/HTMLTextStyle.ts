@@ -113,7 +113,7 @@ export class HTMLTextStyle extends TextStyle
      * );
      * @standard
      */
-    public tagStyles: Record<string, HTMLTextStyleOptions>;
+    public override _tagStyles: Record<string, HTMLTextStyleOptions>;
 
     constructor(options: HTMLTextStyleOptions = {})
     {
@@ -121,6 +121,37 @@ export class HTMLTextStyle extends TextStyle
 
         this.cssOverrides = options.cssOverrides ?? [];
         this.tagStyles = options.tagStyles ?? {};
+    }
+
+    /**
+     * Custom styles to apply to specific HTML tags.
+     * Allows for consistent styling of custom elements without CSS overrides.
+     * @example
+     * ```ts
+     * const text = new HTMLText({
+     *     text: '<red>Red</red>, <blue>Blue</blue>, <green>Green</green>',
+     *     style: {
+     *         tagStyles: {
+     *             red: { fill: 'red' },
+     *             blue: { fill: 'blue' },
+     *             green: { fill: 'green' },
+     *         }
+     *     }
+     * });
+     * ```
+     * @standard
+     */
+    public override get tagStyles(): Record<string, HTMLTextStyleOptions> | undefined
+    {
+        return this._tagStyles;
+    }
+    /** @standard */
+    public override set tagStyles(value: Record<string, HTMLTextStyleOptions> | undefined)
+    {
+        if (this._tagStyles === value) return;
+
+        this._tagStyles = value ?? {};
+        this.update();
     }
 
     /**

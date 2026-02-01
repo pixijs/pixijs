@@ -38,7 +38,9 @@ interface RenderTargetAndFrame
     /** the render target */
     renderTarget: RenderTarget;
     /** the frame to use when using the render target */
-    frame: Rectangle
+    frame: Rectangle;
+    /** mip level to render to (subresource) */
+    mipLevel: number;
 }
 
 /**
@@ -78,7 +80,9 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends GlRenderTarget | GpuR
         /** the color to clear to */
         clearColor?: RgbaArray,
         /** the viewport to use */
-        viewport?: Rectangle
+        viewport?: Rectangle,
+        /** mip level to render to (subresource) */
+        mipLevel?: number
     ): void
 
     /** clears the current render target to the specified color */
@@ -211,17 +215,20 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
      * @param options.clear - the clear mode to use. Can be true or a CLEAR number 'COLOR | DEPTH | STENCIL' 0b111
      * @param options.clearColor - the color to clear to
      * @param options.frame - the frame to render to
+     * @param options.mipLevel - the mip level to render to
      */
     public renderStart({
         target,
         clear,
         clearColor,
-        frame
+        frame,
+        mipLevel
     }: {
         target: RenderSurface;
         clear: CLEAR_OR_BOOL;
         clearColor: RgbaArray;
-        frame?: Rectangle
+        frame?: Rectangle;
+        mipLevel?: number;
     }): void
     {
         // TODO no need to reset this - use optimised index instead
@@ -231,7 +238,8 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
             target,
             clear,
             clearColor,
-            frame
+            frame,
+            mipLevel ?? 0
         );
 
         this.rootViewPort.copyFrom(this.viewport);
@@ -251,18 +259,28 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
      * It will take the RenderSurface (which can be a texture, canvas, or render target) and bind it to the renderer.
      * Once bound all draw calls will be rendered to the render surface.
      *
-     * If a frame is not provide and the render surface is a texture, the frame of the texture will be used.
+     * If a frame is not provided and the render surface is a {@link Texture}, the frame of the texture will be used.
+     *
+     * IMPORTANT:
+     * - `frame` is treated as **base mip (mip 0) pixel space**.
+     * - When `mipLevel > 0`, the viewport derived from `frame` is scaled by \(2^{mipLevel}\) and clamped to the
+     *   mip dimensions. This keeps "render the same region" semantics consistent across mip levels.
+     * - When `renderSurface` is a {@link Texture}, `renderer.render({ target: texture, mipLevel })` will render into
+     *   the underlying {@link TextureSource} (Pixi will create/use a {@link RenderTarget} for the source) using the
+     *   texture's frame to define the region (in mip 0 space).
      * @param renderSurface - the render surface to bind
      * @param clear - the clear mode to use. Can be true or a CLEAR number 'COLOR | DEPTH | STENCIL' 0b111
      * @param clearColor - the color to clear to
      * @param frame - the frame to render to
+     * @param mipLevel - the mip level to render to
      * @returns the render target that was bound
      */
     public bind(
         renderSurface: RenderSurface,
         clear: CLEAR_OR_BOOL = true,
         clearColor?: RgbaArray,
-        frame?: Rectangle
+        frame?: Rectangle,
+        mipLevel = 0
     ): RenderTarget
     {
         const renderTarget = this.getRenderTarget(renderSurface);
@@ -286,9 +304,12 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         const source = renderTarget.colorTexture;
         const viewport = this.viewport;
 
-        const pixelWidth = source.pixelWidth;
-        const pixelHeight = source.pixelHeight;
+        const pixelWidth = Math.max(source.pixelWidth >> mipLevel, 1);
+        const pixelHeight = Math.max(source.pixelHeight >> mipLevel, 1);
 
+        // If no explicit frame was provided, Texture targets default to their frame.
+        // IMPORTANT: frame is treated as base-level (mip 0) coordinates; when rendering to mip N,
+        // the viewport is scaled down by 2^N.
         if (!frame && renderSurface instanceof Texture)
         {
             frame = renderSurface.frame;
@@ -297,11 +318,31 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         if (frame)
         {
             const resolution = source._resolution;
+            const scale = 1 << Math.max(mipLevel | 0, 0);
 
-            viewport.x = ((frame.x * resolution) + 0.5) | 0;
-            viewport.y = ((frame.y * resolution) + 0.5) | 0;
-            viewport.width = ((frame.width * resolution) + 0.5) | 0;
-            viewport.height = ((frame.height * resolution) + 0.5) | 0;
+            // Convert frame to pixel units (mip 0), then scale to the requested mip level.
+            const baseX = ((frame.x * resolution) + 0.5) | 0;
+            const baseY = ((frame.y * resolution) + 0.5) | 0;
+            const baseW = ((frame.width * resolution) + 0.5) | 0;
+            const baseH = ((frame.height * resolution) + 0.5) | 0;
+
+            // Use floor for origin and ceil for size to avoid collapsing to zero due to rounding.
+            // (When mipLevel === 0, scale === 1 so this behaves like the base-level case.)
+            let x = Math.floor(baseX / scale);
+            let y = Math.floor(baseY / scale);
+            let w = Math.ceil(baseW / scale);
+            let h = Math.ceil(baseH / scale);
+
+            // Clamp to mip dimensions.
+            x = Math.min(Math.max(x, 0), pixelWidth - 1);
+            y = Math.min(Math.max(y, 0), pixelHeight - 1);
+            w = Math.min(Math.max(w, 1), pixelWidth - x);
+            h = Math.min(Math.max(h, 1), pixelHeight - y);
+
+            viewport.x = x;
+            viewport.y = y;
+            viewport.width = w;
+            viewport.height = h;
         }
         else
         {
@@ -319,7 +360,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
             !renderTarget.isRoot
         );
 
-        this.adaptor.startRenderPass(renderTarget, clear, clearColor, viewport);
+        this.adaptor.startRenderPass(renderTarget, clear, clearColor, viewport, mipLevel);
 
         if (didChange)
         {
@@ -361,19 +402,22 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
      * @param clear - the clear mode to use. Can be true or a CLEAR number 'COLOR | DEPTH | STENCIL' 0b111
      * @param clearColor - the color to clear to
      * @param frame - the frame to use when rendering to the render surface
+     * @param mipLevel - the mip level to render to
      */
     public push(
         renderSurface: RenderSurface,
         clear: CLEAR | boolean = CLEAR.ALL,
         clearColor?: RgbaArray,
-        frame?: Rectangle
+        frame?: Rectangle,
+        mipLevel = 0
     )
     {
-        const renderTarget = this.bind(renderSurface, clear, clearColor, frame);
+        const renderTarget = this.bind(renderSurface, clear, clearColor, frame, mipLevel);
 
         this._renderTargetStack.push({
             renderTarget,
             frame,
+            mipLevel,
         });
 
         return renderTarget;
@@ -386,7 +430,13 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
 
         const currentRenderTargetData = this._renderTargetStack[this._renderTargetStack.length - 1];
 
-        this.bind(currentRenderTargetData.renderTarget, false, null, currentRenderTargetData.frame);
+        this.bind(
+            currentRenderTargetData.renderTarget,
+            false,
+            null,
+            currentRenderTargetData.frame,
+            currentRenderTargetData.mipLevel
+        );
     }
 
     /**
@@ -494,7 +544,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         {
             this.renderTarget.stencil = true;
 
-            this.adaptor.startRenderPass(this.renderTarget, false, null, this.viewport);
+            this.adaptor.startRenderPass(this.renderTarget, false, null, this.viewport, 0);
         }
     }
 
