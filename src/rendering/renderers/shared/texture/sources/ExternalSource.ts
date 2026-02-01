@@ -15,7 +15,7 @@ export interface ExternalSourceOptions
      * The external GPU texture (GPUTexture for WebGPU, WebGLTexture for WebGL)
      * @advanced
      */
-    resource: GPUTexture | WebGLTexture;
+    resource?: GPUTexture | WebGLTexture;
     /**
      * The renderer this texture will be used with
      * @advanced
@@ -76,11 +76,18 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
 
     constructor(options: ExternalSourceOptions)
     {
-        const { resource, renderer, label } = options;
+        const { renderer, label } = options;
+        let { resource } = options;
+
+        // Create a default placeholder texture if resource is null/undefined
+        if (!resource)
+        {
+            resource = ExternalSource._createPlaceholderTexture(renderer);
+        }
 
         // Auto-detect dimensions for GPUTexture (WebGLTexture is opaque, requires explicit dimensions)
-        const width = options.width ?? (resource as GPUTexture).width;
-        const height = options.height ?? (resource as GPUTexture).height;
+        const width = options.width ?? (resource as GPUTexture).width ?? 1;
+        const height = options.height ?? (resource as GPUTexture).height ?? 1;
 
         // Only pass the minimal required options to TextureSource
         super({
@@ -96,6 +103,33 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
 
         // Pre-populate _gpuData - this is the key to avoiding special checks in texture systems
         this._initGpuData(resource);
+    }
+
+    private static _createPlaceholderTexture(renderer: Renderer): GPUTexture | WebGLTexture
+    {
+        const isWebGPU = !!(renderer as any).gpu;
+
+        if (isWebGPU)
+        {
+            // WebGPU: create a 1x1 placeholder texture
+            const device = (renderer as any).gpu.device as GPUDevice;
+
+            return device.createTexture({
+                size: { width: 1, height: 1 },
+                format: 'rgba8unorm',
+                usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
+            });
+        }
+
+        // WebGL: create a 1x1 placeholder texture
+        const gl = (renderer as any).gl as WebGL2RenderingContext;
+        const texture = gl.createTexture();
+
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+        gl.bindTexture(gl.TEXTURE_2D, null);
+
+        return texture;
     }
 
     /**

@@ -48,17 +48,8 @@ export const scene: TestScene = {
         renderer.texture.initSource(texture.source);
         renderer.texture.initSource(bunnyTexture.source);
 
-        // Get the GPU texture and create an ExternalTexture from it
-        const gpuData = texture.source._gpuData[renderer.uid];
-        const gpuTexture = isWebGPU ? (gpuData as GPUTextureGpuData).gpuTexture : (gpuData as GlTexture).texture;
-        const source = isWebGPU
-            ? new ExternalSource({ resource: gpuTexture, renderer })
-            : new ExternalSource({
-                resource: gpuTexture,
-                renderer,
-                width: texture.source.width,
-                height: texture.source.height,
-            });
+        // Step 1: Create ExternalSource with placeholder (no resource)
+        const source = new ExternalSource({ renderer });
         const externalTexture = new Texture({
             source,
             dynamic: true,
@@ -67,16 +58,30 @@ export const scene: TestScene = {
 
         scene.addChild(sprite);
 
-        // Simulate a render
+        // Step 2: Simulate render with placeholder texture
         renderer.render({ container: scene });
 
-        const bunnyGpuData = bunnyTexture.source._gpuData[renderer.uid];
-        const bunnyGpuTexture = isWebGPU
-            ? (bunnyGpuData as GPUTextureGpuData).gpuTexture : (bunnyGpuData as GlTexture).texture;
+        // Step 3: Update to the checkered pattern texture
+        const gpuData = texture.source._gpuData[renderer.uid];
+        const gpuTexture = isWebGPU ? (gpuData as GPUTextureGpuData).gpuTexture : (gpuData as GlTexture).texture;
 
         // Use the new updateGPUTexture API
         // For WebGPU: dimensions are auto-detected from GPUTexture
         // For WebGL: dimensions must be provided (WebGLTexture is opaque)
+        source.updateGPUTexture(
+            gpuTexture,
+            isWebGPU ? undefined : texture.source.width,
+            isWebGPU ? undefined : texture.source.height
+        );
+
+        // Step 4: Simulate render with checkered pattern
+        renderer.render({ container: scene });
+
+        // Step 5: Update to the bunny texture
+        const bunnyGpuData = bunnyTexture.source._gpuData[renderer.uid];
+        const bunnyGpuTexture = isWebGPU
+            ? (bunnyGpuData as GPUTextureGpuData).gpuTexture : (bunnyGpuData as GlTexture).texture;
+
         source.updateGPUTexture(
             bunnyGpuTexture,
             isWebGPU ? undefined : bunnyTexture.source.width,
