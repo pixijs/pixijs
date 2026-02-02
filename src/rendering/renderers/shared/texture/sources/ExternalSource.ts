@@ -105,13 +105,21 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
         // Pre-populate _gpuData - this is the key to avoiding special checks in texture systems
         this._initGpuData(resource);
 
-        // WebGL requires explicit cleanup of placeholder (WebGPU auto-releases on GC)
-        if (createdPlaceholder && !isWebGPU)
+        // Clean up placeholder texture on destroy
+        if (createdPlaceholder)
         {
-            const gl = (renderer as any).gl as WebGL2RenderingContext;
-            const placeholder = resource as WebGLTexture;
+            const placeholder = resource;
 
-            this.on('destroy', () => gl.deleteTexture(placeholder));
+            if (isWebGPU)
+            {
+                this.on('destroy', () => (placeholder as GPUTexture).destroy());
+            }
+            else
+            {
+                const gl = (renderer as any).gl as WebGL2RenderingContext;
+
+                this.on('destroy', () => gl.deleteTexture(placeholder as WebGLTexture));
+            }
         }
     }
 
