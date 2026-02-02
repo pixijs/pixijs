@@ -80,10 +80,7 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
         let { resource } = options;
 
         // Create a default placeholder texture if resource is null/undefined
-        if (!resource)
-        {
-            resource = ExternalSource._createPlaceholderTexture(renderer);
-        }
+        resource ??= ExternalSource._createPlaceholderTexture(renderer);
 
         // Auto-detect dimensions for GPUTexture (WebGLTexture is opaque, requires explicit dimensions)
         const width = options.width ?? (resource as GPUTexture).width;
