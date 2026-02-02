@@ -54,8 +54,9 @@ export class TexturePoolClass
      * @param pixelWidth - Width of texture in pixels.
      * @param pixelHeight - Height of texture in pixels.
      * @param antialias
+     * @param autoGenerateMipmaps - Whether to automatically generate mipmaps for this texture
      */
-    public createTexture(pixelWidth: number, pixelHeight: number, antialias: boolean): Texture
+    public createTexture(pixelWidth: number, pixelHeight: number, antialias: boolean, autoGenerateMipmaps: boolean): Texture
     {
         const textureSource = new TextureSource({
             ...this.textureOptions,
@@ -65,6 +66,7 @@ export class TexturePoolClass
             resolution: 1,
             antialias,
             autoGarbageCollect: false,
+            autoGenerateMipmaps,
         });
 
         return new Texture({
@@ -79,9 +81,16 @@ export class TexturePoolClass
      * @param frameHeight - The minimum height of the render texture.
      * @param resolution - The resolution of the render texture.
      * @param antialias
+     * @param autoGenerateMipmaps - Whether to automatically generate mipmaps. Defaults to false.
      * @returns The new render texture.
      */
-    public getOptimalTexture(frameWidth: number, frameHeight: number, resolution = 1, antialias: boolean): Texture
+    public getOptimalTexture(
+        frameWidth: number,
+        frameHeight: number,
+        resolution = 1,
+        antialias: boolean,
+        autoGenerateMipmaps = false
+    ): Texture
     {
         let po2Width = Math.ceil((frameWidth * resolution) - 1e-6);
         let po2Height = Math.ceil((frameHeight * resolution) - 1e-6);
@@ -89,7 +98,8 @@ export class TexturePoolClass
         po2Width = nextPow2(po2Width);
         po2Height = nextPow2(po2Height);
 
-        const key = (po2Width << 17) + (po2Height << 1) + (antialias ? 1 : 0);
+        const mipmapBit = autoGenerateMipmaps ? 1 : 0;
+        const key = (po2Width << 17) + (po2Height << 1) + (antialias ? 1 : 0) + (mipmapBit << 2);
 
         if (!this._texturePool[key])
         {
@@ -100,7 +110,7 @@ export class TexturePoolClass
 
         if (!texture)
         {
-            texture = this.createTexture(po2Width, po2Height, antialias);
+            texture = this.createTexture(po2Width, po2Height, antialias, autoGenerateMipmaps);
         }
 
         texture.source._resolution = resolution;

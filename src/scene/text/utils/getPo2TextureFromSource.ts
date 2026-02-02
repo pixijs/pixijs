@@ -1,4 +1,5 @@
 import { type ImageLike } from '../../../environment/ImageLike';
+import { TextureSource } from '../../../rendering/renderers/shared/texture/sources/TextureSource';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { Bounds } from '../../container/bounds/Bounds';
 
@@ -36,7 +37,8 @@ export function getPo2TextureFromSource(
         bounds.width,
         bounds.height,
         resolution,
-        false
+        false,
+        TextureSource.defaultOptions.autoGenerateMipmaps
     );
 
     texture.source.uploadMethodId = 'image';
