@@ -7,6 +7,7 @@ import { CanvasPool } from '../../shared/texture/CanvasPool';
 import { BindGroup } from '../shader/BindGroup';
 import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageResource';
 import { blockDataMap, gpuUploadCompressedTextureResource } from './uploaders/gpuUploadCompressedTextureResource';
+import { createGpuUploadCubeTextureResource } from './uploaders/gpuUploadCubeTextureResource';
 import { gpuUploadImageResource } from './uploaders/gpuUploadImageSource';
 import { gpuUploadVideoResource } from './uploaders/gpuUploadVideoSource';
 import { GpuMipmapGenerator } from './utils/GpuMipmapGenerator';
@@ -63,12 +64,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
     private _gpuSamplers: Record<string, GPUSampler> = Object.create(null);
     private _bindGroupHash: Record<string, BindGroup> = Object.create(null);
 
-    private readonly _uploads: Record<string, GpuTextureUploader> = {
-        image: gpuUploadImageResource,
-        buffer: gpuUploadBufferImageResource,
-        video: gpuUploadVideoResource,
-        compressed: gpuUploadCompressedTextureResource
-    };
+    private readonly _uploads: Record<string, GpuTextureUploader>;
 
     private _gpu: GPU;
     private _mipmapGenerator?: GpuMipmapGenerator;
@@ -84,12 +80,25 @@ export class GpuTextureSystem implements System, CanvasGenerator
     {
         this._renderer = renderer;
         renderer.renderableGC.addManagedHash(this, '_bindGroupHash');
+
         this._managedTextures = new GCManagedHash({
             renderer,
             type: 'resource',
             onUnload: this.onSourceUnload.bind(this),
             name: 'gpuTextureSource'
         });
+
+        const baseUploaders = {
+            image: gpuUploadImageResource,
+            buffer: gpuUploadBufferImageResource,
+            video: gpuUploadVideoResource,
+            compressed: gpuUploadCompressedTextureResource,
+        };
+
+        this._uploads = {
+            ...baseUploaders,
+            cube: createGpuUploadCubeTextureResource(baseUploaders),
+        };
     }
 
     protected contextChange(gpu: GPU): void
@@ -131,7 +140,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
         const textureDescriptor: GPUTextureDescriptor = {
             label: source.label,
-            size: { width, height },
+            size: { width, height, depthOrArrayLayers: source.arrayLayerCount },
             format: source.format,
             sampleCount: source.sampleCount,
             mipLevelCount: source.mipLevelCount,
@@ -268,7 +277,6 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
         source._gcLastUsed = this._renderer.gc.now;
         let gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
-        let textureView: GPUTextureView = null;
 
         if (!gpuData)
         {
@@ -276,9 +284,9 @@ export class GpuTextureSystem implements System, CanvasGenerator
             gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
         }
 
-        textureView = gpuData.textureView || gpuData.gpuTexture.createView();
+        gpuData.textureView ||= gpuData.gpuTexture.createView({ dimension: source.viewDimension });
 
-        return textureView;
+        return gpuData.textureView;
     }
 
     public generateCanvas(texture: Texture): ICanvas

@@ -114,7 +114,12 @@ export class GpuBufferSystem implements System
         if (buffer.data)
         {
             // TODO if data is static, this can be mapped at creation
-            fastCopy(buffer.data.buffer as ArrayBuffer, gpuBuffer.getMappedRange());
+            fastCopy(
+                buffer.data.buffer as ArrayBuffer,
+                gpuBuffer.getMappedRange(),
+                buffer.data.byteOffset,
+                buffer.data.byteLength
+            );
 
             gpuBuffer.unmap();
         }

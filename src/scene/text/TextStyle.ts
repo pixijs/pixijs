@@ -8,6 +8,7 @@ import { FillGradient } from '../graphics/shared/fill/FillGradient';
 import { FillPattern } from '../graphics/shared/fill/FillPattern';
 import { GraphicsContext } from '../graphics/shared/GraphicsContext';
 import { toFillStyle, toStrokeStyle } from '../graphics/shared/utils/convertFillInputToFillStyle';
+import { fontStringFromTextStyle } from './canvas/utils/fontStringFromTextStyle';
 
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
 import type {
@@ -635,6 +636,34 @@ export interface TextStyleOptions
      * @default undefined
      */
     filters?: Filter[] | readonly Filter[];
+    /**
+     * Custom styles to apply to specific tags within the text.
+     * Allows for rich text formatting using simple tag markup like `<red>text</red>`.
+     *
+     * Tags are only parsed when this property has entries. If `tagStyles` is empty or undefined,
+     * `<` characters in text are treated as literal.
+     *
+     * Nested tags are supported via a style stack - inner tags inherit from outer tags
+     * but can override specific properties.
+     * @example
+     * ```ts
+     * const text = new Text({
+     *     text: '<red>Red</red>, <blue>Blue</blue>, <big>Big</big>',
+     *     style: {
+     *         fontFamily: 'Arial',
+     *         fontSize: 24,
+     *         fill: 'white',
+     *         tagStyles: {
+     *             red: { fill: 'red' },
+     *             blue: { fill: 'blue' },
+     *             big: { fontSize: 48 }
+     *         }
+     *     }
+     * });
+     * ```
+     * @default undefined
+     */
+    tagStyles?: Record<string, TextStyleOptions>;
 }
 
 /**
@@ -798,6 +827,9 @@ export class TextStyle extends EventEmitter<{
     private _padding: number;
 
     private _trim: boolean;
+    private _cachedFontString: string | null = null;
+    /** @internal */
+    public _tagStyles: Record<string, TextStyleOptions> | undefined;
 
     constructor(style: Partial<TextStyleOptions> = {})
     {
@@ -813,6 +845,9 @@ export class TextStyle extends EventEmitter<{
 
             this[thisKey] = fullStyle[key as keyof TextStyleOptions] as any;
         }
+
+        // Initialize tagStyles separately (not in defaultTextStyle to avoid shared reference)
+        this._tagStyles = style.tagStyles ?? undefined;
 
         this.update();
         this._tick = 0;
@@ -1152,9 +1187,43 @@ export class TextStyle extends EventEmitter<{
         this.update();
     }
 
+    /**
+     * Custom styles to apply to specific tags within the text.
+     * Allows for rich text formatting using simple tag markup like `<red>text</red>`.
+     *
+     * Tags are only parsed when this property has entries. If `tagStyles` is undefined,
+     * `<` characters in text are treated as literal.
+     * @example
+     * ```ts
+     * const text = new Text({
+     *     text: '<red>Red</red>, <blue>Blue</blue>',
+     *     style: {
+     *         fill: 'white',
+     *         tagStyles: {
+     *             red: { fill: 'red' },
+     *             blue: { fill: 'blue' }
+     *         }
+     *     }
+     * });
+     * ```
+     */
+    public get tagStyles(): Record<string, TextStyleOptions> | undefined
+    {
+        return this._tagStyles;
+    }
+
+    public set tagStyles(value: Record<string, TextStyleOptions> | undefined)
+    {
+        if (this._tagStyles === value) return;
+
+        this._tagStyles = value ?? undefined;
+        this.update();
+    }
+
     public update()
     {
         this._tick++;
+        this._cachedFontString = null;
         this.emit('update', this);
     }
 
@@ -1170,6 +1239,24 @@ export class TextStyle extends EventEmitter<{
     }
 
     /**
+     * Assigns partial style options to this TextStyle instance.
+     * Uses public setters to ensure proper value transformation.
+     * @param values - Partial style options to assign
+     * @returns This TextStyle instance for chaining
+     */
+    public assign(values: Partial<TextStyleOptions>): this
+    {
+        for (const key in values)
+        {
+            const thisKey = key as keyof typeof this;
+
+            this[thisKey] = values[key as keyof typeof values] as any;
+        }
+
+        return this;
+    }
+
+    /**
      * Returns a unique key for this instance.
      * This key is used for caching.
      * @returns {string} Unique key for the instance
@@ -1177,6 +1264,21 @@ export class TextStyle extends EventEmitter<{
     public get styleKey(): string
     {
         return `${this.uid}-${this._tick}`;
+    }
+
+    /**
+     * Returns the CSS font string for this style, cached for performance.
+     * @internal
+     * @returns CSS font string
+     */
+    public get _fontString(): string
+    {
+        if (this._cachedFontString === null)
+        {
+            this._cachedFontString = fontStringFromTextStyle(this);
+        }
+
+        return this._cachedFontString;
     }
 
     /**
@@ -1204,7 +1306,8 @@ export class TextStyle extends EventEmitter<{
             whiteSpace: this.whiteSpace,
             wordWrap: this.wordWrap,
             wordWrapWidth: this.wordWrapWidth,
-            filters: this._filters ? [...this._filters] : undefined
+            filters: this._filters ? [...this._filters] : undefined,
+            tagStyles: this._tagStyles ? { ...this._tagStyles } : undefined,
         });
     }
 
