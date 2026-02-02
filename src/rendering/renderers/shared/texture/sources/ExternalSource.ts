@@ -79,7 +79,11 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
         const { renderer, label } = options;
         let { resource } = options;
 
+        const isWebGPU = !!(renderer as any).gpu;
+
         // Create a default placeholder texture if resource is null/undefined
+        const createdPlaceholder = resource === null || resource === undefined;
+
         resource ??= ExternalSource._createPlaceholderTexture(renderer);
 
         // Auto-detect dimensions for GPUTexture (WebGLTexture is opaque, requires explicit dimensions)
@@ -100,6 +104,15 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
 
         // Pre-populate _gpuData - this is the key to avoiding special checks in texture systems
         this._initGpuData(resource);
+
+        // WebGL requires explicit cleanup of placeholder (WebGPU auto-releases on GC)
+        if (createdPlaceholder && !isWebGPU)
+        {
+            const gl = (renderer as any).gl as WebGL2RenderingContext;
+            const placeholder = resource as WebGLTexture;
+
+            this.on('destroy', () => gl.deleteTexture(placeholder));
+        }
     }
 
     private static _createPlaceholderTexture(renderer: Renderer): GPUTexture | WebGLTexture
