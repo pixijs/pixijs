@@ -519,6 +519,7 @@ describe('TextStyle', () =>
             expect(splitText.style._stroke.width).toBe(1);
 
             (splitText.style.stroke as StrokeStyle).width = 5;
+            splitText.styleChanged();
 
             expect(splitText.style._stroke.width).toBe(5);
             expect(splitText.chars[0].style._stroke.width).toBe(5);
@@ -624,6 +625,7 @@ describe('TextStyle', () =>
 
             (splitText.style.fill as FillStyle).alpha = 0.5;
             (splitText.style.fill as FillStyle).color = 0x00ff00;
+            splitText.styleChanged();
 
             expect(splitText.style._fill.alpha).toBe(0.5);
             expect(splitText.style._fill.color).toBe(0x00ff00);
