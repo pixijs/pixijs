@@ -15,5 +15,6 @@ export interface TestScene
     skip?: boolean;
     skipCI?: boolean;
     only?: boolean;
-    renderers?: Partial<RenderTypeFlags>;
+    renderers?: Partial<RenderTypeFlags> | RenderType[];
+    excludeRenderers?: RenderType[];
 }

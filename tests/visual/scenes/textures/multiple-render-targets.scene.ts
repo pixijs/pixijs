@@ -7,6 +7,7 @@ import type { Renderer } from '~/rendering';
 import type { Container } from '~/scene';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should render to multiple color attachments (MRT)',
     pixelMatch: 500,
     create: async (scene: Container, renderer: Renderer) =>

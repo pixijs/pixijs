@@ -6,6 +6,7 @@ import type { Renderer } from '~/rendering';
 import type { Container } from '~/scene';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should multiple textures on a complex mesh',
     create: async (scene: Container, renderer: Renderer) =>
     {

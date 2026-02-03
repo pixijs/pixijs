@@ -7,6 +7,7 @@ import type { Container } from '../../../../src/scene';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should cull correctly when rendering to a texture',
     create: async (scene: Container) =>
     {

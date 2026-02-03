@@ -6,6 +6,7 @@ import type { TestScene } from '../../types';
 import type { Renderer } from '~/rendering';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should have correct alpha when blending on a transparent texture',
     options: {
         useBackBuffer: true,

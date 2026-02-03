@@ -7,11 +7,7 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render to a specific mip level of a renderTexture',
-    renderers: {
-        webgl2: true,
-        webgpu: true,
-        webgl1: false,
-    },
+    excludeRenderers: ['webgl1'],
     create: async (scene: Container, renderer: Renderer) =>
     {
         const target = RenderTexture.create({

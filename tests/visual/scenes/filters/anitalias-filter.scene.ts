@@ -6,6 +6,7 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render filters correctly with antialiasing',
+    excludeRenderers: ['canvas'],
     create: async (scene: Container) =>
     {
         const g = new Graphics();

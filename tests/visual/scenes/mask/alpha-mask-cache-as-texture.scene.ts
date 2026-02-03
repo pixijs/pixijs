@@ -5,6 +5,7 @@ import { Container, Sprite } from '~/scene';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should render alpha mask with cache as texture',
     create: async (scene: Container) =>
     {

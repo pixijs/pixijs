@@ -8,11 +8,7 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render to MRT at a specific mip level',
-    renderers: {
-        webgl2: true,
-        webgpu: true,
-        webgl1: false,
-    },
+    excludeRenderers: ['webgl1'],
     create: async (scene: Container, renderer: Renderer) =>
     {
         // IMPORTANT: mipLevelCount must be set before the GPU texture is created.

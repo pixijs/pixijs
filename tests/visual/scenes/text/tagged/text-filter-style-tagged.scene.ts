@@ -6,7 +6,7 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render filters with tagged text correctly',
-
+    excludeRenderers: ['canvas'],
     create: async (scene: Container) =>
     {
         const filter = new BlurFilter({

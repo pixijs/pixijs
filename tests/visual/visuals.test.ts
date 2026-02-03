@@ -6,7 +6,7 @@ import { renderTest } from './tester';
 import { Assets } from '~/assets';
 import { TexturePool } from '~/rendering';
 
-import type { RenderType, RenderTypeFlags } from './types';
+import type { RenderType, RenderTypeFlags, TestScene } from './types';
 
 const sceneFilter = process.env.SCENE_FILTER;
 const globPattern = sceneFilter ? `**/${sceneFilter}` : '**/*.scene.ts';
@@ -16,56 +16,8 @@ const scenes = paths.map((p) =>
     const relativePath = path.relative('visual/', p);
 
     // eslint-disable-next-line global-require , @typescript-eslint/no-require-imports
-    return { path: p, data: require(`./${relativePath}`).scene };
+    return { path: p, data: require(`./${relativePath}`).scene as TestScene };
 });
-
-const canvasExcludedScenes = new Set([
-    'alpha-filter.scene.ts',
-    'alpha-inverse-mask.scene.ts',
-    'alpha-mask-cache-as-texture.scene.ts',
-    'alpha-mask.scene.ts',
-    'blend-mode-max.scene.ts',
-    'blend-mode-min.scene.ts',
-    'blend-mode-render-texture.scene.ts',
-    'circle-mask.scene.ts',
-    'culling-texture.scene.ts',
-    'custom-mesh-instanced.scene.ts',
-    'custom-mesh.scene.ts',
-    'dds.scene.ts',
-    'external-source-texture-update.scene.ts',
-    'external-source-texture.scene.ts',
-    'filter-render-textures.scene.ts',
-    'fully-custom-mesh.scene.ts',
-    'geometry-from-path.scene.ts',
-    'ktx.scene.ts',
-    'layer-mask.scene.ts',
-    'mask-out-of-viewport.scene.ts',
-    'mesh-textures.scene.ts',
-    'meshplane.scene.ts',
-    'meshrope.scene.ts',
-    'msdf-text.scene.ts',
-    'multiple-render-targets.scene.ts',
-    'nested-container.scene.ts',
-    'nested-mask.scene.ts',
-    'particle.scene.ts',
-    'perspective-mesh.scene.ts',
-    'restore-context.scene.ts',
-    'sdf-text.scene.ts',
-    'sprite-sheet-mesh.scene.ts',
-    'stencil-inverse-mask.scene.ts',
-    'stencil-mask.scene.ts',
-    'stencil-nested-render-group.scene.ts',
-    'text-bounds.scene.ts',
-    'triangle.scene.ts',
-    'trimed-sprite-mask.scene.ts',
-]);
-
-function isCanvasCompatible(scenePath: string): boolean
-{
-    const sceneName = path.basename(scenePath);
-
-    return !canvasExcludedScenes.has(sceneName);
-}
 
 const onlyScenes = scenes.filter((s) =>
 {
@@ -112,17 +64,23 @@ describe('Visual Tests', () =>
 
         const renderers = {
             ...defaultRenderers,
-            ...scene.data.renderers,
-        };
+            ...(Array.isArray(scene.data.renderers) ? scene.data.renderers.reduce((acc, r) =>
+            {
+                acc[r] = true;
 
-        if (!isCanvasCompatible(scene.path))
-        {
-            renderers.canvas = false;
-        }
+                return acc;
+            }, {} as Record<RenderType, boolean>) : scene.data.renderers),
+            ...(scene.data.excludeRenderers?.reduce((acc, r) =>
+            {
+                acc[r] = false;
+
+                return acc;
+            }, {} as Record<RenderType, boolean>) ?? {}),
+        };
 
         Object.keys(renderers).forEach((renderer) =>
         {
-            if (!renderers[renderer])
+            if (!renderers[renderer as RenderType])
             {
                 return;
             }
