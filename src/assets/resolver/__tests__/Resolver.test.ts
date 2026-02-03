@@ -762,6 +762,24 @@ describe('Resolver', () =>
         expect(resolver.resolveUrl('my-image.png')).toBe('my-image.png?hello=world&lucky=23');
     });
 
+    it('should allow custom parsers to override src', () =>
+    {
+        const resolver = new Resolver();
+
+        resolver['_parsers'].push({
+            test: (url: string) => url.includes('custom://'),
+            parse: (value: string) => ({
+                src: value.replace('custom://', 'https://cdn.example.com/'),
+            }),
+        });
+
+        resolver.add({ alias: 'test', src: 'custom://my-image.png' });
+
+        const resolved = resolver.resolve('test');
+
+        expect(resolved.src).toBe('https://cdn.example.com/my-image.png');
+    });
+
     it('should parse url extensions correctly', () =>
     {
         expect(getUrlExtension('http://example.com/bunny.webp')).toBe('webp');

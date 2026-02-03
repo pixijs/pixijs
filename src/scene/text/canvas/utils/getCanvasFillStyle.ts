@@ -19,6 +19,8 @@ const PRECISION = 100000;
  * @param context - The canvas rendering context
  * @param textMetrics - Metrics about the text being rendered
  * @param padding - Padding to add to the text metrics (used to ensure that the gradient accommodates the stroke width)
+ * @param offsetX - X offset for gradient positioning (used for tagged text runs)
+ * @param offsetY - Y offset for gradient positioning (used for tagged text runs)
  * @returns Canvas-compatible fill style (string, CanvasGradient, or CanvasPattern)
  * @internal
  */
@@ -26,7 +28,9 @@ export function getCanvasFillStyle(
     fillStyle: ConvertedFillStyle,
     context: ICanvasRenderingContext2D,
     textMetrics?: CanvasTextMetrics,
-    padding = 0
+    padding = 0,
+    offsetX = 0,
+    offsetY = 0
 ): string | CanvasGradient | CanvasPattern
 {
     // Solid color fill
@@ -87,10 +91,10 @@ export function getCanvasFillStyle(
             const { start, end } = fillGradient;
 
             gradient = context.createLinearGradient(
-                start.x * width,
-                start.y * height,
-                end.x * width,
-                end.y * height
+                (start.x * width) + offsetX,
+                (start.y * height) + offsetY,
+                (end.x * width) + offsetX,
+                (end.y * height) + offsetY
             );
 
             // Check if gradient is nearly vertical (10% threshold)
@@ -101,11 +105,11 @@ export function getCanvasFillStyle(
             const { center, innerRadius, outerCenter, outerRadius } = fillGradient;
 
             gradient = context.createRadialGradient(
-                center.x * width,
-                center.y * height,
+                (center.x * width) + offsetX,
+                (center.y * height) + offsetY,
                 innerRadius * width,
-                outerCenter.x * width,
-                outerCenter.y * height,
+                (outerCenter.x * width) + offsetX,
+                (outerCenter.y * height) + offsetY,
                 outerRadius * width
             );
         }

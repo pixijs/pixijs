@@ -32,6 +32,8 @@ const canvasExcludedScenes = new Set([
     'custom-mesh-instanced.scene.ts',
     'custom-mesh.scene.ts',
     'dds.scene.ts',
+    'external-source-texture-update.scene.ts',
+    'external-source-texture.scene.ts',
     'filter-render-textures.scene.ts',
     'fully-custom-mesh.scene.ts',
     'geometry-from-path.scene.ts',
