@@ -116,23 +116,11 @@ export class CanvasFilterSystem implements System
         }
 
         const cssFilters: string[] = [];
-        let alphaMultiplier = 1;
+        const alphaMultiplier = 1;
 
         for (const filter of filters)
         {
             if (!filter.enabled) continue;
-
-            if (this._isAlphaFilter(filter))
-            {
-                const alphaValue = this._getAlphaFilterValue(filter);
-
-                if (alphaValue !== null)
-                {
-                    alphaMultiplier *= alphaValue;
-                }
-
-                continue;
-            }
 
             if (!isCanvasFilterCapable(filter))
             {
@@ -257,23 +245,11 @@ export class CanvasFilterSystem implements System
         }
 
         const cssFilters: string[] = [];
-        let alphaMultiplier = 1;
+        const alphaMultiplier = 1;
 
         for (const filter of filters)
         {
             if (!filter.enabled) continue;
-
-            if (this._isAlphaFilter(filter))
-            {
-                const alphaValue = this._getAlphaFilterValue(filter);
-
-                if (alphaValue !== null)
-                {
-                    alphaMultiplier *= alphaValue;
-                }
-
-                continue;
-            }
 
             if (!isCanvasFilterCapable(filter))
             {
@@ -402,20 +378,6 @@ export class CanvasFilterSystem implements System
         );
     }
 
-    private _isAlphaFilter(filter: Filter): boolean
-    {
-        return filter?.constructor?.name === 'AlphaFilter';
-    }
-
-    private _getAlphaFilterValue(filter: Filter): number | null
-    {
-        const value = (filter as Filter & { alpha?: number }).alpha;
-
-        if (!Number.isFinite(value)) return null;
-
-        return Math.min(1, Math.max(0, value));
-    }
-
     public get alphaMultiplier(): number
     {
         return this._alphaMultiplier;
@@ -437,6 +399,11 @@ export class CanvasFilterSystem implements System
 
     private _popFilterFrame(): CanvasFilterFrame
     {
+        if (this._filterStackIndex <= 0)
+        {
+            return this._filterStack[0];
+        }
+
         this._filterStackIndex--;
 
         return this._filterStack[this._filterStackIndex];

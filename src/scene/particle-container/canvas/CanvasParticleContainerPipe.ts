@@ -4,7 +4,7 @@ import { ParticleContainerPipe } from '../shared/ParticleContainerPipe';
 import { CanvasParticleContainerAdaptor } from './CanvasParticleContainerAdaptor';
 
 /**
- * WebGL renderer for Particles that is designed for speed over feature set.
+ * Canvas renderer for Particles that is designed for speed over feature set.
  * @category scene
  * @internal
  */

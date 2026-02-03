@@ -222,6 +222,8 @@ export abstract class AbstractTextSystem implements System
     {
         const activeTexture = this._activeTextures[textKey];
 
+        if (!activeTexture) return;
+
         activeTexture.usageCount--;
 
         if (activeTexture.usageCount === 0)

@@ -102,6 +102,7 @@ function getBatchFromPool()
 
 function returnBatchToPool(batch: Batch)
 {
+    batch.elements = null;
     batchPool[batchPoolIndex++] = batch;
 }
 
