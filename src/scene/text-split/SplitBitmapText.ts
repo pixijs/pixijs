@@ -170,6 +170,9 @@ export class SplitBitmapText extends AbstractSplitText<BitmapText>
             ...config,
         };
 
+        completeOptions.style ??= {};
+        completeOptions.style.fill ??= 0xffffff;
+
         super(completeOptions);
     }
 

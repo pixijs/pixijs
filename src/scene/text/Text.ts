@@ -4,6 +4,7 @@ import { type BatchableText } from './canvas/BatchableText';
 import { CanvasTextGenerator } from './canvas/CanvasTextGenerator';
 import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
 import { TextStyle } from './TextStyle';
+import './init';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from './AbstractText';

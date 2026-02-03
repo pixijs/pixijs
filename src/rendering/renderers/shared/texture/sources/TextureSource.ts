@@ -192,7 +192,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
     /**
      * The number of mip levels to generate for this texture.
-     * this is  overridden if autoGenerateMipmaps is true. it is read only!
+     * this is overridden if autoGenerateMipmaps is true. it is read only!
      */
     public mipLevelCount = 1;
     /**
