@@ -85,7 +85,8 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         renderTarget: RenderTarget,
         clear: CLEAR_OR_BOOL = true,
         clearColor?: RgbaArray,
-        viewport?: Rectangle
+        viewport?: Rectangle,
+        mipLevel = 0
     )
     {
         const renderTargetSystem = this._renderTargetSystem;
@@ -97,7 +98,6 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         if (renderTarget.isRoot)
         {
-            // /TODO this is the same logic?
             viewPortY = source.pixelHeight - viewport.height - viewport.y;
         }
 
@@ -110,6 +110,46 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         const gl = this._renderer.gl;
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, gpuRenderTarget.framebuffer);
+
+        if (mipLevel > 0)
+        {
+            if (gpuRenderTarget.msaa)
+            {
+                throw new Error('[RenderTargetSystem] Rendering to mip levels is not supported with MSAA render targets.');
+            }
+
+            if (this._renderer.context.webGLVersion < 2)
+            {
+                throw new Error('[RenderTargetSystem] Rendering to mip levels requires WebGL2.');
+            }
+        }
+
+        // Re-attach color textures at the requested mip level.
+        // (Framebuffer attachments are per-FBO, so we must re-attach when mipLevel changes.)
+        // IMPORTANT: This must also run when returning from mip>0 back to mip=0, because attachments are stateful.
+        if (!renderTarget.isRoot && gpuRenderTarget._attachedMipLevel !== mipLevel)
+        {
+            renderTarget.colorTextures.forEach((colorTexture, i) =>
+            {
+                // TODO: handle cube / array textures (needs face/layer selection)
+                const glSource = this._renderer.texture.getGlSource(colorTexture);
+
+                if (glSource.target !== gl.TEXTURE_2D)
+                {
+                    throw new Error('[RenderTargetSystem] Rendering to mip levels currently supports only 2D textures.');
+                }
+
+                gl.framebufferTexture2D(
+                    gl.FRAMEBUFFER,
+                    gl.COLOR_ATTACHMENT0 + i,
+                    gl.TEXTURE_2D,
+                    glSource.texture,
+                    mipLevel
+                );
+            });
+
+            gpuRenderTarget._attachedMipLevel = mipLevel;
+        }
 
         // Set draw buffers for multiple render targets (MRT)
         if (renderTarget.colorTextures.length > 1)
@@ -180,6 +220,8 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         // do single...
 
         const glRenderTarget = new GlRenderTarget();
+
+        glRenderTarget._attachedMipLevel = 0;
 
         // we are rendering to the main canvas..
         const colorTexture = renderTarget.colorTexture;
@@ -362,6 +404,9 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         glRenderTarget.width = source.pixelWidth;
         glRenderTarget.height = source.pixelHeight;
+        // After a resize, attachments are implicitly at mip 0 again (and non-zero mip allocations may have changed).
+        // Force a re-attach on next mip render.
+        glRenderTarget._attachedMipLevel = 0;
 
         renderTarget.colorTextures.forEach((colorTexture, i) =>
         {

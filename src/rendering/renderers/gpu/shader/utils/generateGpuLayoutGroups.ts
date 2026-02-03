@@ -41,7 +41,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
                 }
             });
         }
-        else if (group.type === 'texture_2d')
+        else if (group.type === 'texture_2d' || group.type.startsWith('texture_2d<'))
         {
             layout[group.group].push({
                 binding: group.binding,
@@ -53,7 +53,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
                 }
             });
         }
-        else if (group.type === 'texture_cube')
+        else if (group.type === 'texture_cube' || group.type.startsWith('texture_cube<'))
         {
             layout[group.group].push({
                 binding: group.binding,

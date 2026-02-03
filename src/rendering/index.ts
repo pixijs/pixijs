@@ -103,6 +103,7 @@ export * from './renderers/gl/texture/utils/getSupportedGlCompressedTextureForma
 export * from './renderers/gl/texture/utils/mapFormatToGlFormat';
 export * from './renderers/gl/texture/utils/mapFormatToGlInternalFormat';
 export * from './renderers/gl/texture/utils/mapFormatToGlType';
+export * from './renderers/gl/texture/utils/mapViewDimensionToGlTarget';
 export * from './renderers/gl/texture/utils/pixiToGlMaps';
 export * from './renderers/gl/texture/utils/unpremultiplyAlpha';
 export * from './renderers/gl/WebGLRenderer';
@@ -200,6 +201,7 @@ export * from './renderers/shared/texture/sources/BufferImageSource';
 export * from './renderers/shared/texture/sources/CanvasSource';
 export * from './renderers/shared/texture/sources/CompressedSource';
 export * from './renderers/shared/texture/sources/CubeTextureSource';
+export * from './renderers/shared/texture/sources/ExternalSource';
 export * from './renderers/shared/texture/sources/ImageSource';
 export * from './renderers/shared/texture/sources/TextureSource';
 export * from './renderers/shared/texture/sources/VideoSource';

@@ -263,10 +263,14 @@ export class GlGeometrySystem implements System
 
         const signature = this.getSignature(geometry, program);
 
-        const gpuData = new GlGeometryGpuData();
+        let gpuData = geometry._gpuData[this._renderer.uid];
 
-        geometry._gpuData[this._renderer.uid] = gpuData;
-        this._managedGeometries.add(geometry);
+        if (!gpuData)
+        {
+            gpuData = new GlGeometryGpuData();
+            geometry._gpuData[this._renderer.uid] = gpuData;
+            this._managedGeometries.add(geometry);
+        }
 
         const vaoObjectHash = gpuData.vaoCache;
         let vao = vaoObjectHash[signature];
