@@ -79,7 +79,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
     constructor(renderer: WebGPURenderer)
     {
         this._renderer = renderer;
-        renderer.renderableGC.addManagedHash(this, '_bindGroupHash');
+        renderer.gc.addCollection(this, '_bindGroupHash', 'hash');
 
         this._managedTextures = new GCManagedHash({
             renderer,

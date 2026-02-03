@@ -1,9 +1,13 @@
+import { Matrix } from '../maths/matrix/Matrix';
+import { Rectangle } from '../maths/shapes/Rectangle';
 import { Bounds } from '../scene/container/bounds/Bounds';
 import { getGlobalBounds } from '../scene/container/bounds/getGlobalBounds';
 
 import type { Container } from '../scene/container/Container';
 
 const tempBounds = new Bounds();
+const tempMatrix = new Matrix();
+const tempRectangle = new Rectangle();
 
 /**
  * A rectangle-like object that contains x, y, width, and height properties.
@@ -96,13 +100,32 @@ export class Culler
     {
         if (container.cullable && container.measurable && container.includeInBuild)
         {
-            const bounds = container.cullArea ?? getGlobalBounds(container, skipUpdateTransform, tempBounds);
+            if (container.cullArea)
+            {
+                tempRectangle.x = view.x;
+                tempRectangle.y = view.y;
+                tempRectangle.width = view.width;
+                tempRectangle.height = view.height;
 
-            // check view intersection..
-            container.culled = bounds.x >= view.x + view.width
-                || bounds.y >= view.y + view.height
-                || bounds.x + bounds.width <= view.x
-                || bounds.y + bounds.height <= view.y;
+                const transform = skipUpdateTransform
+                    ? container.worldTransform
+                    : container.getGlobalTransform(tempMatrix, skipUpdateTransform);
+
+                container.culled = !tempRectangle.intersects(
+                    container.cullArea,
+                    transform
+                );
+            }
+            else
+            {
+                const bounds = getGlobalBounds(container, skipUpdateTransform, tempBounds);
+
+                // check view intersection..
+                container.culled = bounds.x >= view.x + view.width
+                    || bounds.y >= view.y + view.height
+                    || bounds.x + bounds.width <= view.x
+                    || bounds.y + bounds.height <= view.y;
+            }
         }
         else
         {

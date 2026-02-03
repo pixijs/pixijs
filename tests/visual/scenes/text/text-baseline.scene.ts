@@ -14,7 +14,7 @@ export const scene: TestScene = {
         const TEXT_Y = 0;
         const FONT_SIZE = 20;
         const style1 = new TextStyle({
-            fontFamily: 'Academico',
+            fontFamily: 'Times',
             textBaseline: 'alphabetic',
             fontSize: FONT_SIZE,
         });
@@ -25,7 +25,7 @@ export const scene: TestScene = {
         scene.addChild(text1);
 
         const style2 = new TextStyle({
-            fontFamily: 'Academico',
+            fontFamily: 'Times',
             textBaseline: 'bottom',
             fontSize: FONT_SIZE,
         });
@@ -36,7 +36,7 @@ export const scene: TestScene = {
         scene.addChild(text2);
 
         const style3 = new TextStyle({
-            fontFamily: 'Academico',
+            fontFamily: 'Times',
             textBaseline: 'middle',
             fontSize: FONT_SIZE,
         });

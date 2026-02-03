@@ -1,6 +1,5 @@
 import { Assets } from '~/assets';
-import { BitmapFont, BitmapText } from '~/scene';
-import { SplitBitmapText } from '~/scene/text-split/SplitBitmapText';
+import { BitmapFont, BitmapText, SplitBitmapText } from '~/scene';
 
 import type { TestScene } from '../../types';
 import type { Container } from '~/scene';

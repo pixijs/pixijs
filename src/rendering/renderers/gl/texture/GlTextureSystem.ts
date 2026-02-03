@@ -339,32 +339,28 @@ export class GlTextureSystem implements System, CanvasGenerator
         {
             this._uploads[source.uploadMethodId].upload(source, glTexture, gl, this._renderer.context.webGLVersion);
         }
+        else if (glTexture.target === gl.TEXTURE_2D)
+        {
+            // Allocate an "empty" texture (typical for RenderTexture) for the appropriate target.
+            // This allocates level 0 and, if needed, the full mip chain so any mip can be attached/rendered into (WebGL2).
+            this._initEmptyTexture2D(glTexture, source);
+        }
+        else if (glTexture.target === (gl as any).TEXTURE_2D_ARRAY)
+        {
+            this._initEmptyTexture2DArray(glTexture, source);
+        }
+        else if (glTexture.target === gl.TEXTURE_CUBE_MAP)
+        {
+            this._initEmptyTextureCube(glTexture, source);
+        }
         else
         {
-            gl.texImage2D(
-                gl.TEXTURE_2D,
-                0,
-                glTexture.internalFormat,
-                source.pixelWidth,
-                source.pixelHeight,
-                0,
-                glTexture.format,
-                glTexture.type,
-                null,
-            );
+            throw new Error('[GlTextureSystem] Unsupported texture target for empty allocation.');
         }
 
         // Keep the texture's mip range in sync with the declared mipLevelCount.
         // This is required in WebGL2 for FBO attachments at mipLevel > 0 when using partial mip chains.
         this._applyMipRange(glTexture, source);
-
-        // If this is an "empty" texture source (typical for RenderTexture) and it declares multiple mip levels,
-        // allocate the full mip chain so any mip can be attached/rendered into (WebGL2).
-        // Image/video/canvas sources should generally rely on upload + generateMipmap instead.
-        if (!source.resource && source.mipLevelCount > 1 && glTexture.target === gl.TEXTURE_2D)
-        {
-            this._allocateEmpty2DMipChain(glTexture, source);
-        }
 
         if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
         {
@@ -381,16 +377,24 @@ export class GlTextureSystem implements System, CanvasGenerator
         this._gl.generateMipmap(glTexture.target);
     }
 
-    /**
-     * Allocates storage for all mip levels > 0 for an "empty" 2D texture (no CPU resource backing).
-     * This is required if you want to render into mip levels via FBO attachment (WebGL2).
-     * @param glTexture - The GL texture wrapper (format/type info is used).
-     * @param source - The texture source describing size/mipLevelCount.
-     */
-    private _allocateEmpty2DMipChain(glTexture: GlTexture, source: TextureSource): void
+    private _initEmptyTexture2D(glTexture: GlTexture, source: TextureSource): void
     {
         const gl = this._gl;
 
+        // Level 0
+        gl.texImage2D(
+            gl.TEXTURE_2D,
+            0,
+            glTexture.internalFormat,
+            source.pixelWidth,
+            source.pixelHeight,
+            0,
+            glTexture.format,
+            glTexture.type,
+            null,
+        );
+
+        // Mips (if requested)
         let w = Math.max(source.pixelWidth >> 1, 1);
         let h = Math.max(source.pixelHeight >> 1, 1);
 
@@ -407,6 +411,102 @@ export class GlTextureSystem implements System, CanvasGenerator
                 glTexture.type,
                 null,
             );
+
+            w = Math.max(w >> 1, 1);
+            h = Math.max(h >> 1, 1);
+        }
+    }
+
+    private _initEmptyTexture2DArray(glTexture: GlTexture, source: TextureSource): void
+    {
+        if (this._renderer.context.webGLVersion !== 2)
+        {
+            throw new Error('[GlTextureSystem] TEXTURE_2D_ARRAY requires WebGL2.');
+        }
+
+        const gl2 = this._gl as WebGL2RenderingContext;
+        const depth = Math.max(source.arrayLayerCount | 0, 1);
+
+        // Level 0
+        gl2.texImage3D(
+            gl2.TEXTURE_2D_ARRAY,
+            0,
+            glTexture.internalFormat,
+            source.pixelWidth,
+            source.pixelHeight,
+            depth,
+            0,
+            glTexture.format,
+            glTexture.type,
+            null,
+        );
+
+        // Mips (if requested)
+        let w = Math.max(source.pixelWidth >> 1, 1);
+        let h = Math.max(source.pixelHeight >> 1, 1);
+
+        for (let level = 1; level < source.mipLevelCount; level++)
+        {
+            gl2.texImage3D(
+                gl2.TEXTURE_2D_ARRAY,
+                level,
+                glTexture.internalFormat,
+                w,
+                h,
+                depth,
+                0,
+                glTexture.format,
+                glTexture.type,
+                null,
+            );
+
+            w = Math.max(w >> 1, 1);
+            h = Math.max(h >> 1, 1);
+        }
+    }
+
+    private _initEmptyTextureCube(glTexture: GlTexture, source: TextureSource): void
+    {
+        const gl = this._gl;
+
+        const totalCubeFaces = 6;
+
+        // Level 0 (all faces)
+        for (let face = 0; face < totalCubeFaces; face++)
+        {
+            gl.texImage2D(
+                gl.TEXTURE_CUBE_MAP_POSITIVE_X + face,
+                0,
+                glTexture.internalFormat,
+                source.pixelWidth,
+                source.pixelHeight,
+                0,
+                glTexture.format,
+                glTexture.type,
+                null,
+            );
+        }
+
+        // Mips (if requested)
+        let w = Math.max(source.pixelWidth >> 1, 1);
+        let h = Math.max(source.pixelHeight >> 1, 1);
+
+        for (let level = 1; level < source.mipLevelCount; level++)
+        {
+            for (let face = 0; face < totalCubeFaces; face++)
+            {
+                gl.texImage2D(
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_X + face,
+                    level,
+                    glTexture.internalFormat,
+                    w,
+                    h,
+                    0,
+                    glTexture.format,
+                    glTexture.type,
+                    null,
+                );
+            }
 
             w = Math.max(w >> 1, 1);
             h = Math.max(h >> 1, 1);

@@ -69,7 +69,7 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
      * @advanced
      */
     arrayLayerCount?: number;
-    /** The number of mip levels to generate for this texture. this is overridden if autoGenerateMipmaps is true */
+    /** The number of mip levels to generate for this texture. this is  overridden if autoGenerateMipmaps is true */
     mipLevelCount?: number;
     /**
      * Should we auto generate mipmaps for this texture? This will automatically generate mipmaps

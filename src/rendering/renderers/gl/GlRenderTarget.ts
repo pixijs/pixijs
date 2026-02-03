@@ -14,6 +14,12 @@ export class GlRenderTarget
      * @internal
      */
     public _attachedMipLevel = 0;
+    /**
+     * Tracks which array layer (or cube face index) is currently attached to this render target's framebuffer.
+     * For non-array 2D textures this will always be 0.
+     * @internal
+     */
+    public _attachedLayer = 0;
     public framebuffer: WebGLFramebuffer;
     public resolveTargetFramebuffer: WebGLFramebuffer;
     public msaaRenderBuffer: WebGLRenderbuffer[] = [];

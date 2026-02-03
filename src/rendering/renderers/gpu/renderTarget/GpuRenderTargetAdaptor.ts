@@ -66,19 +66,25 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         clear: CLEAR_OR_BOOL = true,
         clearColor?: RgbaArray,
         viewport?: Rectangle,
-        mipLevel = 0
+        mipLevel = 0,
+        layer = 0
     )
     {
         const renderTargetSystem = this._renderTargetSystem;
 
         const gpuRenderTarget = renderTargetSystem.getGpuRenderTarget(renderTarget);
 
+        if (layer !== 0 && gpuRenderTarget.msaaTextures?.length)
+        {
+            throw new Error('[RenderTargetSystem] Rendering to array layers is not supported with MSAA render targets.');
+        }
+
         if (mipLevel > 0 && gpuRenderTarget.msaaTextures?.length)
         {
             throw new Error('[RenderTargetSystem] Rendering to mip levels is not supported with MSAA render targets.');
         }
 
-        const descriptor = this.getDescriptor(renderTarget, clear, clearColor, mipLevel);
+        const descriptor = this.getDescriptor(renderTarget, clear, clearColor, mipLevel, layer);
 
         gpuRenderTarget.descriptor = descriptor;
 
@@ -118,7 +124,8 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         renderTarget: RenderTarget,
         clear: CLEAR_OR_BOOL,
         clearValue: RgbaArray,
-        mipLevel = 0
+        mipLevel = 0,
+        layer = 0
     ): GPURenderPassDescriptor
     {
         if (typeof clear === 'boolean')
@@ -140,6 +147,12 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
                 if (context)
                 {
+                    if (layer !== 0)
+                    {
+                        // eslint-disable-next-line max-len
+                        throw new Error('[RenderTargetSystem] Rendering to array layers is not supported for canvas targets.');
+                    }
+
                     const currentTexture = context.getCurrentTexture();
 
                     const canvasTextureView = currentTexture.createView();
@@ -149,8 +162,12 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                 else
                 {
                     view = this._renderer.texture.getGpuSource(texture).createView({
+                        // Render attachments must be 2d views; for array/cube textures we select a single layer.
+                        dimension: '2d',
                         baseMipLevel: mipLevel,
                         mipLevelCount: 1,
+                        baseArrayLayer: layer,
+                        arrayLayerCount: 1,
                     });
                 }
 
@@ -194,7 +211,13 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             depthStencilAttachment = {
                 view: this._renderer.texture
                     .getGpuSource(renderTarget.depthStencilTexture.source)
-                    .createView(),
+                    .createView({
+                        dimension: '2d',
+                        baseMipLevel: mipLevel,
+                        mipLevelCount: 1,
+                        baseArrayLayer: layer,
+                        arrayLayerCount: 1,
+                    }),
                 stencilStoreOp: 'store',
                 stencilLoadOp,
                 depthClearValue: 1.0,
@@ -211,7 +234,14 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         return descriptor;
     }
 
-    public clear(renderTarget: RenderTarget, clear: CLEAR_OR_BOOL = true, clearColor?: RgbaArray, viewport?: Rectangle)
+    public clear(
+        renderTarget: RenderTarget,
+        clear: CLEAR_OR_BOOL = true,
+        clearColor?: RgbaArray,
+        viewport?: Rectangle,
+        mipLevel = 0,
+        layer = 0
+    )
     {
         if (!clear) return;
 
@@ -224,7 +254,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         if (standAlone)
         {
             const commandEncoder = device.createCommandEncoder();
-            const renderPassDescriptor = this.getDescriptor(renderTarget, clear, clearColor);
+            const renderPassDescriptor = this.getDescriptor(renderTarget, clear, clearColor, mipLevel, layer);
 
             const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
 
@@ -238,7 +268,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         }
         else
         {
-            this.startRenderPass(renderTarget, clear, clearColor, viewport);
+            this.startRenderPass(renderTarget, clear, clearColor, viewport, mipLevel, layer);
         }
     }
 
@@ -291,6 +321,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     width: 0,
                     height: 0,
                     sampleCount: 4,
+                    arrayLayerCount: colorTexture.source.arrayLayerCount,
                 });
 
                 gpuRenderTarget.msaaTextures[i] = msaaTexture;

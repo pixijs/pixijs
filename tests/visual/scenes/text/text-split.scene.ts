@@ -1,6 +1,5 @@
 import { Assets } from '~/assets';
-import { Text } from '~/scene';
-import { SplitText } from '~/scene/text-split/SplitText';
+import { SplitText, Text } from '~/scene';
 
 import type { TestScene } from '../../types';
 import type { Container } from '~/scene';

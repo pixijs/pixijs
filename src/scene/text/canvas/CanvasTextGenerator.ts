@@ -128,7 +128,7 @@ class CanvasTextGeneratorClass
             return;
         }
 
-        const { canvas, context } = canvasAndContext;
+        const { canvas, context } = canvasAndContext as { canvas: HTMLCanvasElement, context: CanvasRenderingContext2D };
 
         const font = fontStringFromTextStyle(style);
 
@@ -198,17 +198,38 @@ class CanvasTextGeneratorClass
 
             if (isShadowPass)
             {
-                this._setupDropShadow(context as CanvasRenderingContext2D, style, resolution, dsOffsetShadow);
+                this._setupDropShadow(context, style, resolution, dsOffsetShadow);
             }
             else
             {
-                context.fillStyle = style._fill ? getCanvasFillStyle(style._fill, context, measured, padding * 2) : null;
+                // When gradient bounds are set (e.g., from SplitText), use them for gradient calculation
+                const gradientBounds = style._gradientBounds;
+                const gradientOffset = style._gradientOffset;
 
-                if (style._stroke?.width)
+                if (gradientBounds)
                 {
-                    const strokePadding = halfStroke + (padding * 2);
+                    const gradientMetrics = {
+                        width: gradientBounds.width,
+                        height: gradientBounds.height,
+                        lineHeight: gradientBounds.height,
+                        lines: measured.lines,
+                    } as CanvasTextMetrics;
 
-                    context.strokeStyle = getCanvasFillStyle(style._stroke, context, measured, strokePadding);
+                    this._setFillAndStrokeStyles(
+                        context, style, gradientMetrics, padding, halfStroke,
+                        gradientOffset?.x ?? 0, gradientOffset?.y ?? 0
+                    );
+                }
+                else if (gradientOffset)
+                {
+                    this._setFillAndStrokeStyles(
+                        context, style, measured, padding, halfStroke,
+                        gradientOffset.x, gradientOffset.y
+                    );
+                }
+                else
+                {
+                    this._setFillAndStrokeStyles(context, style, measured, padding, halfStroke);
                 }
 
                 context.shadowColor = 'black';
@@ -480,6 +501,40 @@ class CanvasTextGeneratorClass
 
                 currentY += currentLineHeight;
             }
+        }
+    }
+
+    /**
+     * Sets fill and stroke styles on the canvas context for text rendering.
+     * @param context - The canvas context
+     * @param style - The text style
+     * @param metrics - The text metrics for gradient calculation
+     * @param padding - The padding value
+     * @param halfStroke - Half the stroke width
+     * @param offsetX - X offset for gradient positioning
+     * @param offsetY - Y offset for gradient positioning
+     */
+    private _setFillAndStrokeStyles(
+        context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
+        style: TextStyle,
+        metrics: CanvasTextMetrics,
+        padding: number,
+        halfStroke: number,
+        offsetX: number = 0,
+        offsetY: number = 0
+    ): void
+    {
+        context.fillStyle = style._fill
+            ? getCanvasFillStyle(style._fill, context, metrics, padding * 2, offsetX, offsetY)
+            : null;
+
+        if (style._stroke?.width)
+        {
+            const strokePadding = halfStroke + (padding * 2);
+
+            context.strokeStyle = getCanvasFillStyle(
+                style._stroke, context, metrics, strokePadding, offsetX, offsetY
+            );
         }
     }
 
