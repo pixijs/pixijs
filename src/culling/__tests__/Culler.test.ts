@@ -214,6 +214,194 @@ describe('Culler', () =>
         expect(container.culled).toBe(true);
         expect(graphics.culled).toBe(false);
     });
+
+    it('should not recurse into children when cullableChildren is false', () =>
+    {
+        const child = new Sprite(texture);
+
+        child.x = 200;
+        child.y = 200;
+        child.cullable = true;
+        container.addChild(child);
+        container.cullableChildren = false;
+
+        Culler.shared.cull(container, view, false);
+
+        expect(container.culled).toBe(false);
+        expect(child.culled).toBe(false);
+    });
+
+    it('should set culled to false when measurable is false', () =>
+    {
+        const child = new Sprite(texture);
+
+        child.x = 200;
+        child.y = 200;
+        child.cullable = true;
+        child.measurable = false;
+        container.addChild(child);
+
+        Culler.shared.cull(container, view, false);
+
+        expect(child.culled).toBe(false);
+    });
+
+    it('should set culled to false when includeInBuild is false', () =>
+    {
+        const child = new Sprite(texture);
+
+        child.x = 200;
+        child.y = 200;
+        child.cullable = true;
+        child.includeInBuild = false;
+        container.addChild(child);
+
+        Culler.shared.cull(container, view, false);
+
+        expect(child.culled).toBe(false);
+    });
+
+    it('should not recurse into children when container is not renderable', () =>
+    {
+        const child = new Sprite(texture);
+
+        child.x = 200;
+        child.y = 200;
+        child.cullable = true;
+        container.addChild(child);
+        container.renderable = false;
+
+        Culler.shared.cull(container, view, false);
+
+        expect(container.culled).toBe(false);
+        expect(child.culled).toBe(false);
+    });
+
+    it('should not recurse into children when parent is culled', () =>
+    {
+        const parent = new Container();
+        const child = new Sprite(texture);
+
+        parent.cullable = true;
+        child.cullable = true;
+        child.x = 200;
+        child.y = 200;
+        parent.addChild(child);
+        container.addChild(parent);
+
+        child.culled = true;
+
+        Culler.shared.cull(container, view, false);
+
+        expect(parent.culled).toBe(true);
+        expect(child.culled).toBe(true);
+
+        child.x = 50;
+        child.y = 50;
+
+        Culler.shared.cull(container, view, false);
+
+        expect(parent.culled).toBe(false);
+        expect(child.culled).toBe(false);
+    });
+
+    it('should use global transform for cullArea when skipUpdateTransform is false', () =>
+    {
+        const parent = new Container();
+        const child = new Container();
+
+        child.addChild(new Graphics().rect(0, 0, 10, 10).fill());
+        parent.addChild(child);
+        container.addChild(parent);
+
+        parent.x = 500;
+        child.cullable = true;
+        child.cullArea = new Rectangle(0, 0, 10, 10);
+
+        Culler.shared.cull(container, view, false);
+
+        expect(child.culled).toBe(true);
+
+        parent.x = 50;
+
+        Culler.shared.cull(container, view, false);
+
+        expect(child.culled).toBe(false);
+    });
+
+    it('should use local transform for cullArea positioning', () =>
+    {
+        const child = new Container();
+
+        child.addChild(new Graphics().rect(0, 0, 10, 10).fill());
+        container.addChild(child);
+
+        child.x = 200;
+        child.cullable = true;
+        child.cullArea = new Rectangle(0, 0, 10, 10);
+
+        Culler.shared.cull(container, view, false);
+
+        expect(child.culled).toBe(true);
+
+        child.x = 50;
+
+        Culler.shared.cull(container, view, false);
+
+        expect(child.culled).toBe(false);
+    });
+
+    it('should cull nested children correctly', () =>
+    {
+        const grandparent = new Container();
+        const parent = new Container();
+        const child = new Sprite(texture);
+
+        grandparent.addChild(parent);
+        parent.addChild(child);
+        container.addChild(grandparent);
+
+        grandparent.cullable = true;
+        parent.cullable = true;
+        child.cullable = true;
+        child.x = 200;
+        child.y = 200;
+
+        Culler.shared.cull(container, view, false);
+
+        expect(grandparent.culled).toBe(true);
+        // culled not passed to children as we do not recurse into children if the parent is culled
+        expect(parent.culled).toBe(false);
+        expect(child.culled).toBe(false);
+    });
+
+    it('should handle multiple children with mixed culling states', () =>
+    {
+        const visible = new Sprite(texture);
+
+        visible.x = 50;
+        visible.y = 50;
+        visible.cullable = true;
+
+        const hidden = new Sprite(texture);
+
+        hidden.x = 200;
+        hidden.y = 200;
+        hidden.cullable = true;
+
+        const nonCullable = new Sprite(texture);
+
+        nonCullable.x = 300;
+        nonCullable.y = 300;
+
+        container.addChild(visible, hidden, nonCullable);
+
+        Culler.shared.cull(container, view, false);
+
+        expect(visible.culled).toBe(false);
+        expect(hidden.culled).toBe(true);
+        expect(nonCullable.culled).toBe(false);
+    });
 });
 
 describe('CullerPlugin', () =>
