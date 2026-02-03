@@ -302,8 +302,8 @@ describe('TexturePool', () =>
             });
 
             // Return all to pool
-            mipmapTextures.forEach((tex) => pool.returnTexture(tex));
-            normalTextures.forEach((tex) => pool.returnTexture(tex));
+            mipmapTextures.forEach((tex) => { pool.returnTexture(tex); });
+            normalTextures.forEach((tex) => { pool.returnTexture(tex); });
 
             // Get them back - should maintain properties
             for (let i = 0; i < iterations; i++)
