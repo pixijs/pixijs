@@ -3,6 +3,7 @@ import path from 'path';
 import '~/environment-browser/browserAll';
 import { isCI } from '../utils/basePath';
 import { renderTest } from './tester';
+import { getServerPort, startServer, stopServer } from './utils/serverUtils';
 import { Assets } from '~/assets';
 import { TexturePool } from '~/rendering';
 
@@ -42,7 +43,7 @@ function setAssetBasePath(): void
 
     const basePath = process.env.GITHUB_ACTIONS
         ? `https://raw.githubusercontent.com/pixijs/pixijs/${branchPath}/tests/visual/assets/`
-        : 'http://127.0.0.1:8080/tests/visual/assets/';
+        : `http://127.0.0.1:${getServerPort()}/tests/visual/assets/`;
 
     Assets.init({
         basePath,
@@ -51,6 +52,19 @@ function setAssetBasePath(): void
 
 describe('Visual Tests', () =>
 {
+    beforeAll(async () =>
+    {
+        if (!isCI)
+        {
+            await startServer();
+        }
+    });
+
+    afterAll(async () =>
+    {
+        await stopServer();
+    });
+
     scenesToTest.forEach((scene) =>
     {
         const id = scene.data.id || path.basename(scene.path).toLowerCase().replaceAll('.', '-');

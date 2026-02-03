@@ -6,8 +6,6 @@ module.exports = {
     setupFilesAfterEnv: [
         'jest-extended/all',
     ],
-    globalSetup: '<rootDir>/scripts/jest/jest-global-setup.ts',
-    globalTeardown: '<rootDir>/scripts/jest/jest-global-teardown.ts',
     transform: {
         '\\.worker.ts$': '@pixi/webworker-plugins/lib/jest-transform',
         '\\.vert$': 'jest-raw-loader',
