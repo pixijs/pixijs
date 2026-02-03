@@ -11,6 +11,11 @@ import { UNIFORM_TO_ARRAY_SETTERS, UNIFORM_TO_SINGLE_SETTERS } from './generateU
 
 import type { UniformsSyncCallback } from '../../../shared/shader/types';
 
+/**
+ * @param group
+ * @param uniformData
+ * @internal
+ */
 export function generateUniformsSync(group: UniformGroup, uniformData: Record<string, any>): UniformsSyncCallback
 {
     const funcFragments = [`

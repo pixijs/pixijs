@@ -1,29 +1,36 @@
-import { Polygon } from '../../../maths/shapes/Polygon';
+import { pointInTriangle } from '../../../maths/point/pointInTriangle';
 import { Geometry } from '../../../rendering/renderers/shared/geometry/Geometry';
 import { State } from '../../../rendering/renderers/shared/state/State';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
-import { Container } from '../../container/Container';
+import { ViewContainer } from '../../view/ViewContainer';
 import { MeshGeometry } from './MeshGeometry';
+import { type MeshGpuData } from './MeshPipe';
+import '../init';
 
 import type { PointData } from '../../../maths/point/PointData';
 import type { Topology } from '../../../rendering/renderers/shared/geometry/const';
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { View } from '../../../rendering/renderers/shared/view/View';
-import type { Bounds } from '../../container/bounds/Bounds';
 import type { ContainerOptions } from '../../container/Container';
 import type { DestroyOptions } from '../../container/destroyTypes';
 
-const tempPolygon = new Polygon();
-
+/**
+ * Shader that uses a texture.
+ * This is the default shader used by `Mesh` when no shader is provided.
+ * It is a simple shader that samples a texture and applies it to the geometry.
+ * @category scene
+ * @advanced
+ */
 export interface TextureShader extends Shader
 {
+    /** The texture that the shader uses. */
     texture: Texture;
 }
 
 /**
- * Constructor options used for `Mesh` instances. Extends {@link scene.MeshViewOptions}
+ * Constructor options used for `Mesh` instances. Extends {@link MeshViewOptions}
  * ```js
  * const mesh = new Mesh({
  *    texture: Texture.from('assets/image.png'),
@@ -31,18 +38,21 @@ export interface TextureShader extends Shader
  *    shader: Shader.from(VERTEX, FRAGMENT),
  * });
  * ```
- * @see {@link scene.Mesh}
- * @see {@link scene.MeshViewOptions}
- * @memberof scene
+ * @see {@link Mesh}
+ * @see {@link MeshViewOptions}
+ * @category scene
  */
 
 /**
- * @memberof scene
+ * Options for creating a Mesh instance.
+ * @category scene
+ * @advanced
+ * @noInheritDoc
  */
 export interface MeshOptions<
     GEOMETRY extends Geometry = MeshGeometry,
     SHADER extends Shader = TextureShader
-> extends ContainerOptions
+> extends PixiMixins.MeshOptions, ContainerOptions
 {
     /**
      * Includes vertex positions, face indices, colors, UVs, and
@@ -54,7 +64,7 @@ export interface MeshOptions<
      * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
      * Can be shared between multiple Mesh objects.
      */
-    shader?: SHADER;
+    shader?: SHADER | null;
     /** The state of WebGL required to render the mesh. */
     state?: State;
     /** The texture that the Mesh uses. Null for non-MeshMaterial shaders */
@@ -62,6 +72,9 @@ export interface MeshOptions<
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
+export interface Mesh extends PixiMixins.Mesh, ViewContainer<MeshGpuData> {}
+
 /**
  * Base mesh class.
  *
@@ -75,28 +88,26 @@ export interface MeshOptions<
  * - State - This is the state of WebGL required to render the mesh.
  *
  * Through a combination of the above elements you can render anything you want, 2D or 3D!
- * @memberof scene
+ * @category scene
+ * @advanced
  */
 export class Mesh<
     GEOMETRY extends Geometry = MeshGeometry,
     SHADER extends Shader = TextureShader
-> extends Container implements View, Instruction
+> extends ViewContainer<MeshGpuData> implements View, Instruction
 {
-    public readonly renderPipeId = 'mesh';
-    public readonly canBundle = true;
+    /** @internal */
+    public override readonly renderPipeId: string = 'mesh';
     public state: State;
 
-    /** @ignore */
+    /** @internal */
     public _texture: Texture;
-    /** @ignore */
+    /** @internal */
     public _geometry: GEOMETRY;
-    /** @ignore */
-    public _shader?: SHADER;
-
-    public _roundPixels: 0 | 1 = 0;
-
+    /** @internal */
+    public _shader: SHADER | null = null;
     /**
-     * @param {scene.MeshOptions} options - options for the mesh instance
+     * @param {MeshOptions} options - options for the mesh instance
      */
     constructor(options: MeshOptions<GEOMETRY, SHADER>);
     /** @deprecated since 8.0.0 */
@@ -135,7 +146,7 @@ export class Mesh<
 
         this.allowChildren = false;
 
-        this.shader = shader;
+        this.shader = shader ?? null;
         this.texture = texture ?? (shader as unknown as TextureShader)?.texture ?? Texture.WHITE;
         this.state = state ?? State.for2d();
 
@@ -145,21 +156,7 @@ export class Mesh<
         this.roundPixels = roundPixels ?? false;
     }
 
-    /**
-     *  Whether or not to round the x/y position of the mesh.
-     * @type {boolean}
-     */
-    get roundPixels()
-    {
-        return !!this._roundPixels;
-    }
-
-    set roundPixels(value: boolean)
-    {
-        this._roundPixels = value ? 1 : 0;
-    }
-
-    /** Alias for {@link scene.Mesh#shader}. */
+    /** Alias for {@link Mesh#shader}. */
     get material()
     {
         // #if _DEBUG
@@ -173,7 +170,7 @@ export class Mesh<
      * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
      * Can be shared between multiple Mesh objects.
      */
-    set shader(value: SHADER)
+    set shader(value: SHADER | null)
     {
         if (this._shader === value) return;
 
@@ -181,7 +178,7 @@ export class Mesh<
         this.onViewUpdate();
     }
 
-    get shader()
+    get shader(): SHADER | null
     {
         return this._shader;
     }
@@ -237,6 +234,10 @@ export class Mesh<
     {
         if (this._shader) return false;
 
+        // The state must be compatible with the batcher pipe.
+        // It isn't compatible if depth test or culling is enabled.
+        if ((this.state.data & 0b001100) !== 0) return false;
+
         if (this._geometry instanceof MeshGeometry)
         {
             if (this._geometry.batchMode === 'auto')
@@ -252,27 +253,27 @@ export class Mesh<
 
     /**
      * The local bounds of the mesh.
-     * @type {rendering.Bounds}
+     * @type {Bounds}
      */
-    get bounds()
+    override get bounds()
     {
         return this._geometry.bounds;
     }
 
     /**
-     * Adds the bounds of this object to the bounds object.
-     * @param bounds - The output bounds object.
+     * Update local bounds of the mesh.
+     * @private
      */
-    public addBounds(bounds: Bounds)
+    protected updateBounds()
     {
-        bounds.addBounds(this.geometry.bounds);
+        this._bounds = this._geometry.bounds;
     }
 
     /**
      * Checks if the object contains the given point.
      * @param point - The point to check
      */
-    public containsPoint(point: PointData)
+    public override containsPoint(point: PointData)
     {
         const { x, y } = point;
 
@@ -280,56 +281,71 @@ export class Mesh<
 
         const vertices = this.geometry.getBuffer('aPosition').data;
 
-        const points = tempPolygon.points;
-        const indices = this.geometry.getIndex().data;
-        const len = indices.length;
         const step = this.geometry.topology === 'triangle-strip' ? 3 : 1;
 
-        for (let i = 0; i + 2 < len; i += step)
+        if (this.geometry.getIndex())
         {
-            const ind0 = indices[i] * 2;
-            const ind1 = indices[i + 1] * 2;
-            const ind2 = indices[i + 2] * 2;
+            const indices = this.geometry.getIndex().data;
+            const len = indices.length;
 
-            points[0] = vertices[ind0];
-            points[1] = vertices[ind0 + 1];
-            points[2] = vertices[ind1];
-            points[3] = vertices[ind1 + 1];
-            points[4] = vertices[ind2];
-            points[5] = vertices[ind2 + 1];
-
-            if (tempPolygon.contains(x, y))
+            for (let i = 0; i + 2 < len; i += step)
             {
-                return true;
+                const ind0 = indices[i] * 2;
+                const ind1 = indices[i + 1] * 2;
+                const ind2 = indices[i + 2] * 2;
+
+                if (pointInTriangle(
+                    x, y,
+                    vertices[ind0],
+                    vertices[ind0 + 1],
+                    vertices[ind1],
+                    vertices[ind1 + 1],
+                    vertices[ind2],
+                    vertices[ind2 + 1],
+                ))
+                {
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            const len = vertices.length / 2; // Each vertex has 2 coordinates, x and y
+
+            for (let i = 0; i + 2 < len; i += step)
+            {
+                const ind0 = i * 2;
+                const ind1 = (i + 1) * 2;
+                const ind2 = (i + 2) * 2;
+
+                if (pointInTriangle(
+                    x, y,
+                    vertices[ind0],
+                    vertices[ind0 + 1],
+                    vertices[ind1],
+                    vertices[ind1 + 1],
+                    vertices[ind2],
+                    vertices[ind2 + 1],
+                ))
+                {
+                    return true;
+                }
             }
         }
 
         return false;
     }
 
-    /** @ignore */
-    public onViewUpdate()
-    {
-        // increment from the 12th bit!
-        this._didChangeId += 1 << 12;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        if (this.renderGroup)
-        {
-            this.renderGroup.onChildViewUpdate(this);
-        }
-    }
-
     /**
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
-     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     * @example
+     * mesh.destroy();
+     * mesh.destroy(true);
+     * mesh.destroy({ texture: true, textureSource: true });
      */
-    public destroy(options?: DestroyOptions): void
+    public override destroy(options?: DestroyOptions): void
     {
         super.destroy(options);
 

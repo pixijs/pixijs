@@ -7,7 +7,7 @@ import type { Container } from '../scene/container/Container';
 import type { Effect } from '../scene/container/Effect';
 import type { FilterInstruction } from './FilterSystem';
 
-// eslint-disable-next-line max-len
+/** @internal */
 export class FilterPipe implements InstructionPipe<FilterInstruction>
 {
     public static extension = {

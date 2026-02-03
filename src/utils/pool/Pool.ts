@@ -1,10 +1,13 @@
 /**
  * A generic class for managing a pool of items.
- * @template T The type of items in the pool. Must implement {@link utils.PoolItem}.
- * @memberof utils
+ * @template T The type of items in the pool. Must implement {@link PoolItem}.
+ * @template I The type of argument passed to item's `init` method if it exists.
+ * @category utils
+ * @advanced
  */
-export class Pool<T extends PoolItem>
+export class Pool<T extends PoolItem, I = Parameters<NonNullable<T['init']>>[0]>
 {
+    /** @internal */
     public readonly _classType: PoolItemConstructor<T>;
     private readonly _pool: T[] = [];
     private _count = 0;
@@ -42,10 +45,10 @@ export class Pool<T extends PoolItem>
     /**
      * Gets an item from the pool. Calls the item's `init` method if it exists.
      * If there are no items left in the pool, a new one will be created.
-     * @param {unknown} [data] - Optional data to pass to the item's constructor.
+     * @param {I} [data] - Optional data to pass to the item's constructor.
      * @returns {T} The item from the pool.
      */
-    public get(data?: unknown): T
+    public get(data?: I): T
     {
         let item;
 
@@ -56,6 +59,7 @@ export class Pool<T extends PoolItem>
         else
         {
             item = new this._classType();
+            this._count++;
         }
 
         item.init?.(data);
@@ -77,7 +81,6 @@ export class Pool<T extends PoolItem>
     /**
      * Gets the number of items in the pool.
      * @readonly
-     * @member {number}
      */
     get totalSize(): number
     {
@@ -87,7 +90,6 @@ export class Pool<T extends PoolItem>
     /**
      * Gets the number of items in the pool that are free to use without needing to create more.
      * @readonly
-     * @member {number}
      */
     get totalFree(): number
     {
@@ -97,27 +99,44 @@ export class Pool<T extends PoolItem>
     /**
      * Gets the number of items in the pool that are currently in use.
      * @readonly
-     * @member {number}
      */
     get totalUsed(): number
     {
         return this._count - this._index;
     }
+
+    /** clears the pool */
+    public clear()
+    {
+        if (this._pool.length > 0 && this._pool[0].destroy)
+        {
+            for (let i = 0; i < this._index; i++)
+            {
+                this._pool[i].destroy();
+            }
+        }
+        this._pool.length = 0;
+        this._count = 0;
+        this._index = 0;
+    }
 }
 
 /**
- * An object that can be stored in a {@link utils.Pool}.
- * @memberof utils
+ * An object that can be stored in a {@link Pool}.
+ * @category utils
+ * @advanced
  */
 export type PoolItem = {
     init?: (data?: any) => void;
     reset?: () => void;
+    destroy?: () => void;
     [key: string]: any;
 };
 
 /**
- * The constructor of an object that can be stored in a {@link utils.Pool}.
- * @typeParam K - The type of the object that can be stored in a {@link utils.Pool}.
- * @memberof utils
+ * The constructor of an object that can be stored in a {@link Pool}.
+ * @typeParam K - The type of the object that can be stored in a {@link Pool}.
+ * @category utils
+ * @advanced
  */
 export type PoolItemConstructor<K extends PoolItem> = new () => K;

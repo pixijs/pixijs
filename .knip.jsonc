@@ -1,0 +1,35 @@
+{
+    "entry": [
+        // Bundle entry points
+        "src/index.ts",
+        "src/index.docs.ts",
+        "src/bundle.*.ts",
+        "src/*/index.ts",
+        // Sub-module exports
+        "src/**/init.ts",
+        // Convention for worker files
+        "src/**/*.worker.ts",
+        // Convention for test files
+        "tests/visual/**/*.scene.ts",
+        // Scripts called from package.json using ts-node
+        "scripts/index/index.ts",
+        "scripts/types/fixTypes.ts",
+        "scripts/utils/autoGenerateUnsafeEvalFunctions.ts",
+        // 3rd party configurations,
+        "dts.config.js"
+    ],
+    "project": [
+        "src/**/*.ts",
+        "scripts/**/*.{ts,js}",
+        "tests/**/*.ts",
+        "*.{mjs,js,json}",
+        "types/**/*.d.ts"
+    ],
+    "ignoreDependencies": [
+        // Not detected in jest setup
+        "http-server",
+        // Used internaly as dependences like "node:*" or "worker:*"
+        "node",
+        "worker"
+    ]
+}

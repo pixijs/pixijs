@@ -1,6 +1,8 @@
-import type { Container } from '../../../scene/container/Container';
-import type { View } from './view/View';
+import { type ViewContainer } from '../../../scene/view/ViewContainer';
 
-export interface Renderable extends Container, View
-{
-}
+/**
+ * Represents a renderable object in the rendering system.
+ * This is typically a view container that can be rendered to a target.
+ * @internal
+ */
+export type Renderable = ViewContainer;

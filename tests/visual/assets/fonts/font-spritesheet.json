@@ -1,0 +1,24 @@
+{
+	"frames": {
+		"fontsdf-copy.png": {
+			"frame": {"x":0,"y":0,"w":344,"h":256},
+			"rotated": true,
+			"trimmed": true,
+			"spriteSourceSize": {"x":0,"y":0,"w":344,"h":256},
+			"sourceSize": {"w":512,"h":256}
+		},
+		"dummy-image.png": {
+			"frame": {"x":0,"y":344,"w":230,"h":214},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":230,"h":214},
+			"sourceSize": {"w":230,"h":214}
+		}
+	},
+	"meta": {
+		"image": "font-spritesheet.png",
+		"format": "RGBA8888",
+		"size": {"w":256,"h":557},
+		"scale": "1"
+	}
+}

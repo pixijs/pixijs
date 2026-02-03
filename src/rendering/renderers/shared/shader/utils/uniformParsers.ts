@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 // Parsers, each one of these will take a look at the type of shader property and uniform.
 // if they pass the test function then the code function is called that returns a the shader upload code for that uniform.
 // Shader upload code is automagically generated with these parsers.
@@ -32,6 +31,7 @@ interface UniformParserDefinition
     uniform?: string;
 }
 
+/** @internal */
 export const uniformParsers: UniformParserDefinition[] = [
     // uploading pixi matrix object to mat3
     {
@@ -54,7 +54,7 @@ export const uniformParsers: UniformParserDefinition[] = [
             data[offset + 9] = matrix[7];
             data[offset + 10] = matrix[8];
         `,
-        uniform: ` 
+        uniform: `
             gl.uniformMatrix3fv(ud[name].location, false, uv[name].toArray(true));
         `
     },

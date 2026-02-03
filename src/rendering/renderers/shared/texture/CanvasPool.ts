@@ -1,24 +1,27 @@
 import { DOMAdapter } from '../../../../environment/adapter';
 import { nextPow2 } from '../../../../maths/misc/pow2';
+import { GlobalResourceRegistry } from '../../../../utils/pool/GlobalResourceRegistry';
 
 import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../../environment/canvas/ICanvas';
 import type { ICanvasRenderingContext2D } from '../../../../environment/canvas/ICanvasRenderingContext2D';
 
+/**
+ * A utility type that represents a canvas and its rendering context.
+ * @category rendering
+ * @internal
+ */
 export interface CanvasAndContext
 {
+    /** The canvas element. */
     canvas: ICanvas;
+    /** The rendering context of the canvas. */
     context: ICanvasRenderingContext2D;
 }
 
 /**
- * Texture pool, used by FilterSystem and plugins.
- *
- * Stores collection of temporary pow2 or screen-sized renderTextures
- *
- * If you use custom RenderTexturePool for your filters, you can use methods
- * `getFilterTexture` and `returnFilterTexture` same as in
- * @name CanvasPool
- * @memberof rendering
+ * CanvasPool is a utility class that manages a pool of reusable canvas elements
+ * @category rendering
+ * @internal
  */
 export class CanvasPoolClass
 {
@@ -94,9 +97,13 @@ export class CanvasPoolClass
      */
     public returnCanvasAndContext(canvasAndContext: CanvasAndContext): void
     {
-        const { width, height } = canvasAndContext.canvas;
+        const canvas = canvasAndContext.canvas;
+        const { width, height } = canvas;
 
         const key = (width << 17) + (height << 1);
+
+        canvasAndContext.context.resetTransform();
+        canvasAndContext.context.clearRect(0, 0, width, height);
 
         this._canvasPool[key].push(canvasAndContext);
     }
@@ -107,4 +114,10 @@ export class CanvasPoolClass
     }
 }
 
+/**
+ * CanvasPool is a utility class that manages a pool of reusable canvas elements
+ * @category rendering
+ * @internal
+ */
 export const CanvasPool = new CanvasPoolClass();
+GlobalResourceRegistry.register(CanvasPool);

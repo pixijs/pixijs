@@ -12,14 +12,21 @@ import type { ResolvedAsset } from '../../assets/types';
 import type { TextureSourceOptions } from '../../rendering/renderers/shared/texture/sources/TextureSource';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 
-/** Loads KTX textures! */
+/**
+ * Loads DDS textures.
+ * @category assets
+ * @advanced
+ */
 export const loadDDS = {
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.High,
+        name: 'loadDDS',
     },
 
+    /** used for deprecation purposes */
     name: 'loadDDS',
+    id: 'dds',
 
     test(url: string): boolean
     {
@@ -53,5 +60,5 @@ export const loadDDS = {
         }
     }
 
-} as LoaderParser<Texture | Texture[], TextureSourceOptions>;
+} satisfies LoaderParser<Texture | Texture[], TextureSourceOptions>;
 

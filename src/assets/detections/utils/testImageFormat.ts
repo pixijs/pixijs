@@ -1,3 +1,7 @@
+/**
+ * @param imageData
+ * @internal
+ */
 export async function testImageFormat(imageData: string): Promise<boolean>
 {
     // Some browsers currently do not support createImageBitmap with Blob, so new Image() is preferred when exist.
@@ -7,6 +11,7 @@ export async function testImageFormat(imageData: string): Promise<boolean>
     {
         return new Promise<boolean>((resolve) =>
         {
+            // eslint-disable-next-line no-restricted-globals
             const image = new Image();
 
             image.onload = () =>
@@ -29,7 +34,7 @@ export async function testImageFormat(imageData: string): Promise<boolean>
 
             await createImageBitmap(blob);
         }
-        catch (e)
+        catch (_e)
         {
             return false;
         }

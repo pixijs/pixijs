@@ -3,13 +3,15 @@ import { ExtensionType } from '../../../../extensions/Extensions';
 import { warn } from '../../../../utils/logging/warn';
 import { type GpuPowerPreference } from '../../types';
 
+import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { System } from '../../shared/system/System';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { WebGLExtensions } from './WebGLExtensions';
 
 /**
  * Options for the context system.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  * @property {WebGL2RenderingContext | null} [context=null] - User-provided WebGL rendering context object.
  * @property {GpuPowerPreference} [powerPreference='default'] - An optional hint indicating what configuration
  * of GPU is suitable for the WebGL context, can be `'high-performance'` or `'low-power'`. Setting to `'high-performance'`
@@ -28,7 +30,6 @@ export interface ContextSystemOptions
     /**
      * User-provided WebGL rendering context object.
      * @default null
-     * @memberof rendering.SharedRendererOptions
      */
     context: WebGL2RenderingContext | null;
     /**
@@ -36,7 +37,6 @@ export interface ContextSystemOptions
      * can be `'high-performance'` or `'low-power'`.
      * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
      * while setting to `'low-power'` will prioritize power saving over rendering performance.
-     * @memberof rendering.SharedRendererOptions
      * @default undefined
      */
     powerPreference?: GpuPowerPreference;
@@ -44,14 +44,12 @@ export interface ContextSystemOptions
     /**
      * Whether the compositor will assume the drawing buffer contains colors with premultiplied alpha.
      * @default true
-     * @memberof rendering.SharedRendererOptions
      */
     premultipliedAlpha: boolean;
     /**
      * Whether to enable drawing buffer preservation. If enabled, the drawing buffer will preserve
      * its value until cleared or overwritten. Enable this if you need to call `toDataUrl` on the WebGL context.
      * @default false
-     * @memberof rendering.SharedRendererOptions
      */
     preserveDrawingBuffer: boolean;
 
@@ -60,14 +58,21 @@ export interface ContextSystemOptions
     /**
      * The preferred WebGL version to use.
      * @default 2
-     * @memberof rendering.SharedRendererOptions
      */
     preferWebGLVersion?: 1 | 2;
+
+    /**
+     * Whether to enable multi-view rendering. Set to true when rendering to multiple
+     * canvases on the dom.
+     * @default false
+     */
+    multiView: boolean;
 }
 
 /**
  * System plugin to the renderer to manage the context
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class GlContextSystem implements System<ContextSystemOptions>
 {
@@ -106,6 +111,11 @@ export class GlContextSystem implements System<ContextSystemOptions>
          * @default 2
          */
         preferWebGLVersion: 2,
+        /**
+         * {@link WebGLOptions.multiView}
+         * @default false
+         */
+        multiView: false
     };
 
     protected CONTEXT_UID: number;
@@ -148,6 +158,21 @@ export class GlContextSystem implements System<ContextSystemOptions>
 
     public webGLVersion: 1 | 2;
 
+    /**
+     * Whether to enable multi-view rendering. Set to true when rendering to multiple
+     * canvases on the dom.
+     * @default false
+     */
+    public multiView: boolean;
+
+    /**
+     * The canvas that the WebGL Context is rendering to.
+     * This will be the view canvas. But if multiView is enabled, this canvas will not be attached to the DOM.
+     * It will be rendered to and then copied to the target canvas.
+     * @readonly
+     */
+    public canvas: ICanvas;
+
     private _renderer: WebGLRenderer;
     private _contextLossForced: boolean;
 
@@ -186,6 +211,26 @@ export class GlContextSystem implements System<ContextSystemOptions>
     {
         options = { ...GlContextSystem.defaultOptions, ...options };
 
+        // TODO add to options
+        let multiView = this.multiView = options.multiView;
+
+        if (options.context && multiView)
+        {
+            // eslint-disable-next-line max-len
+            warn('Renderer created with both a context and multiview enabled. Disabling multiView as both cannot work together.');
+
+            multiView = false;
+        }
+
+        if (multiView)
+        {
+            this.canvas = DOMAdapter.get()
+                .createCanvas(this._renderer.canvas.width, this._renderer.canvas.height);
+        }
+        else
+        {
+            this.canvas = this._renderer.view.canvas;
+        }
         /*
          * The options passed in to create a new WebGL context.
          */
@@ -207,6 +252,27 @@ export class GlContextSystem implements System<ContextSystemOptions>
                 preserveDrawingBuffer: options.preserveDrawingBuffer,
                 powerPreference: options.powerPreference ?? 'default',
             });
+        }
+    }
+
+    public ensureCanvasSize(targetCanvas: ICanvas): void
+    {
+        if (!this.multiView)
+        {
+            if (targetCanvas !== this.canvas)
+            {
+                warn('multiView is disabled, but targetCanvas is not the main canvas');
+            }
+
+            return;
+        }
+
+        const { canvas } = this;
+
+        if (canvas.width < targetCanvas.width || canvas.height < targetCanvas.height)
+        {
+            canvas.width = Math.max(targetCanvas.width, targetCanvas.width);
+            canvas.height = Math.max(targetCanvas.height, targetCanvas.height);
         }
     }
 
@@ -243,7 +309,8 @@ export class GlContextSystem implements System<ContextSystemOptions>
     protected createContext(preferWebGLVersion: 1 | 2, options: WebGLContextAttributes): void
     {
         let gl: WebGL2RenderingContext | WebGLRenderingContext;
-        const canvas = this._renderer.view.canvas;
+
+        const canvas = this.canvas;
 
         if (preferWebGLVersion === 2)
         {
@@ -351,6 +418,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
     /** Handles a restored webgl context. */
     protected handleContextRestored(): void
     {
+        this.getExtensions(); // restore extensions state
         this._renderer.runners.contextChange.emit(this.gl);
     }
 
@@ -393,9 +461,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
         if (attributes && !attributes.stencil)
         {
             // #if _DEBUG
-            /* eslint-disable max-len, no-console */
             warn('Provided WebGL context does not have a stencil buffer, masks may not render correctly');
-            /* eslint-enable max-len, no-console */
             // #endif
         }
 
@@ -416,9 +482,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
         if (!supports.uint32Indices)
         {
             // #if _DEBUG
-            /* eslint-disable max-len, no-console */
             warn('Provided WebGL context does not support 32 index buffer, large scenes may not render correctly');
-            /* eslint-enable max-len, no-console */
             // #endif
         }
     }

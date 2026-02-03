@@ -1,5 +1,10 @@
 import type { BasisTexture } from '../types';
 
+/**
+ * @param basisTexture
+ * @param basisTranscoderFormat
+ * @internal
+ */
 export function createLevelBuffers(basisTexture: BasisTexture, basisTranscoderFormat: number): Uint8Array[]
 {
     const images = basisTexture.getNumImages();

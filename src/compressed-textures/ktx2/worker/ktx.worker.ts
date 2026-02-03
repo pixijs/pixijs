@@ -10,7 +10,7 @@ import type { COMPRESSED_TEXTURE_FORMATS, LIBKTXModule, LIBKTXModuleCreator } fr
 /**
  * -----------------------------------------------------------
  * This code includes parts that are adapted from the webGPU(GL) wizard @toji's web-texture-tool.
- * Massive thanks to @toji for making this tool and sharing it with the world.
+ * Massive thanks to toji for making this tool and sharing it with the world.
  *
  * Original Repository: https://github.com/toji/web-texture-tool
  *
@@ -143,6 +143,7 @@ const messageHandlers = {
     },
     load: async (data: {url: string}) =>
     {
+        // eslint-disable-next-line no-useless-catch
         try
         {
             const textureOptions = await load(data.url) as TextureSourceOptions<Uint8Array[]>;
@@ -166,10 +167,22 @@ const messageHandlers = {
 self.onmessage = (async (messageEvent) =>
 {
     const message = messageEvent.data;
-    const response = await messageHandlers[message.type as 'load' | 'init']?.(message as any);
 
-    if (response)
+    try
     {
-        (self as any).postMessage(response, response.transferables);
+        const response = await messageHandlers[message.type as 'load' | 'init']?.(message as any);
+
+        if (response)
+        {
+            (self as any).postMessage(response, response.transferables);
+        }
+    }
+    catch (err)
+    {
+        (self as any).postMessage({
+            type: 'error',
+            err,
+            url: message.url,
+        });
     }
 });

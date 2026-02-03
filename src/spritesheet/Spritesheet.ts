@@ -1,14 +1,15 @@
 import { Rectangle } from '../maths/shapes/Rectangle';
+import { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 
 import type { PointData } from '../maths/point/PointData';
-import type { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
 import type { BindableTexture, TextureBorders } from '../rendering/renderers/shared/texture/Texture';
 import type { Dict } from '../utils/types';
 
 /**
  * Represents the JSON data for a spritesheet atlas.
- * @memberof assets
+ * @category assets
+ * @advanced
  */
 export interface SpritesheetFrameData
 {
@@ -43,7 +44,8 @@ export interface SpritesheetFrameData
 
 /**
  * Atlas format.
- * @memberof assets
+ * @category assets
+ * @advanced
  */
 export interface SpritesheetData
 {
@@ -85,10 +87,30 @@ export interface SpritesheetData
                 };
             }[];
         }[];
-        // eslint-disable-next-line camelcase
         related_multi_packs?: string[];
         version?: string;
     };
+}
+
+/**
+ * Options for loading a spritesheet from an atlas.
+ * @category assets
+ * @advanced
+ */
+export interface SpritesheetOptions<S extends SpritesheetData = SpritesheetData>
+{
+    /** Reference to Texture */
+    texture: BindableTexture;
+    /** JSON data for the atlas. */
+    data: S;
+    /** The filename to consider when determining the resolution of the spritesheet. */
+    resolutionFilename?: string;
+    /**
+     * Prefix to add to texture names when adding to global TextureCache,
+     * using this option can be helpful if you have multiple texture atlases
+     * that share texture names and you need to disambiguate them.
+     */
+    cachePrefix?: string;
 }
 
 /**
@@ -124,14 +146,14 @@ export interface SpritesheetData
  *             "frame": {"x":103,"y":1,"w":32,"h":32},
  *             "spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
  *             "sourceSize": {"w":32,"h":32},
- *             "anchor": {"x":16,"y":16}
+ *             "anchor": {"x":0.5,"y":0.5}
  *         },
  *         "enemy2.png":
  *         {
  *             "frame": {"x":103,"y":35,"w":32,"h":32},
  *             "spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
  *             "sourceSize": {"w":32,"h":32},
- *             "anchor": {"x":16,"y":16}
+ *             "anchor": {"x":0.5,"y":0.5}
  *         },
  *         "button.png":
  *         {
@@ -169,7 +191,7 @@ export interface SpritesheetData
  * const sheetTexture = await Assets.load('images/spritesheet.png');
  * Assets.add({
  *     alias: 'atlas',
- *     src: 'images/spritesheet.json'
+ *     src: 'images/spritesheet.json',
  *     data: {texture: sheetTexture} // using of preloaded texture
  * });
  * const sheet = await Assets.load('atlas')
@@ -182,27 +204,31 @@ export interface SpritesheetData
  *
  * Assets.add({
  *     alias: 'atlas',
- *     src: 'images/spritesheet.json'
+ *     src: 'images/spritesheet.json',
  *     data: {imageFilename: 'my-spritesheet.2x.avif'} // using of custom filename located in "images/my-spritesheet.2x.avif"
  * });
  * const sheet = await Assets.load('atlas')
  * ```
- * @memberof assets
+ * @category assets
+ * @standard
  */
 export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 {
-    /** The maximum number of Textures to build per process. */
+    /**
+     * The maximum number of Textures to build per process.
+     * @advanced
+     */
     public static readonly BATCH_SIZE = 1000;
 
     /** For multi-packed spritesheets, this contains a reference to all the other spritesheets it depends on. */
     public linkedSheets: Spritesheet<S>[] = [];
 
-    /** Reference to ths source texture. */
+    /** Reference to the source texture. */
     public textureSource: TextureSource;
 
     /**
      * A map containing all textures of the sprite sheet.
-     * Can be used to create a {@link Sprite|Sprite}:
+     * Can be used to create a {@link Sprite}:
      * @example
      * import { Sprite } from 'pixi.js';
      *
@@ -212,7 +238,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 
     /**
      * A map containing the textures for each animation.
-     * Can be used to create an {@link AnimatedSprite|AnimatedSprite}:
+     * Can be used to create an {@link AnimatedSprite}:
      * @example
      * import { AnimatedSprite } from 'pixi.js';
      *
@@ -253,12 +279,35 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
      */
     private _callback: (textures: Dict<Texture>) => void;
 
+    /** Prefix string to add to global cache */
+    public readonly cachePrefix: string;
+
+    /**
+     * @class
+     * @param options - Options to use when constructing a new Spritesheet.
+     */
+    constructor(options: SpritesheetOptions<S>);
+
     /**
      * @param texture - Reference to the source BaseTexture object.
      * @param {object} data - Spritesheet image data.
      */
-    constructor(texture: BindableTexture, data: S)
+    constructor(texture: BindableTexture, data: S);
+
+    constructor(optionsOrTexture: SpritesheetOptions<S> | BindableTexture, arg1?: S)
     {
+        let options = optionsOrTexture as SpritesheetOptions<S>;
+
+        if ((optionsOrTexture as BindableTexture)?.source instanceof TextureSource)
+        {
+            options = {
+                texture: optionsOrTexture as BindableTexture,
+                data: arg1,
+            };
+        }
+        const { texture, data, cachePrefix = '' } = options;
+
+        this.cachePrefix = cachePrefix;
         this._texture = texture instanceof Texture ? texture : null;
         this.textureSource = texture.source;
         this.textures = {} as Record<keyof S['frames'], Texture>;
@@ -284,7 +333,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
     }
 
     /**
-     * Parser spritesheet from loaded data. This is done asynchronously
+     * Parse spritesheet from loaded data. This is done asynchronously
      * to prevent creating too many Texture within a single process.
      */
     public parse(): Promise<Record<string, Texture>>
@@ -308,13 +357,32 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
     }
 
     /**
+     * Parse spritesheet from loaded data. This is done synchronously
+     * and is only suitable for smaller spritesheets (less than ~1000 frames)
+     * or may cause too many Texture within a single process. However, synchronous parsing may be
+     * more convenient since the called does not need to be asynchronous and is safe for
+     * small-to-medium sized spritesheets.
+     *
+     * Other than being synchronous, `parseSync` is otherwise identical to `.parse()`.
+     */
+    public parseSync(): Record<keyof S['frames'], Texture>
+    {
+        this._processFrames(0, true);
+        this._processAnimations();
+
+        return this.textures;
+    }
+
+    /**
      * Process a batch of frames
      * @param initialFrameIndex - The index of frame to start.
+     * @param processAll - if true will process all frames in a single batch, ignoring BATCH_SIZE - this
+     * is used for synchronous parsing.
      */
-    private _processFrames(initialFrameIndex: number): void
+    private _processFrames(initialFrameIndex: number, processAll: boolean = false): void
     {
         let frameIndex = initialFrameIndex;
-        const maxFrames = Spritesheet.BATCH_SIZE;
+        const maxFrames = processAll ? Infinity : Spritesheet.BATCH_SIZE;
 
         while (frameIndex - initialFrameIndex < maxFrames && frameIndex < this._frameKeys.length)
         {

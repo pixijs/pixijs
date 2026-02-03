@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "es2020",
-        "lib": ["ESNext", "DOM", "WebWorker"],
+        "lib": ["ESNext", "DOM", "WebWorker", "DOM.Iterable"],
         "module": "ESNext",
         "allowJs": false,
         "removeComments": false,
@@ -16,19 +16,18 @@
         "resolveJsonModule": true,
         "downlevelIteration": true,
         "skipDefaultLibCheck": true,
-        "types": ["node", "css-font-loading-module", "earcut", "@webgpu/types"]
+        "forceConsistentCasingInFileNames": true,
+        "types": ["node", "@webgpu/types"],
+        "baseUrl": ".",
+        "paths": {
+            "~/*": ["./src/*"],
+            "@test-utils": ["./tests/utils/index.ts"]
+        },
     },
     "exclude": [
         "node_modules",
         "**/dist/**",
         "**/lib/**",
         "**/out/**"
-    ],
-    "ts-node": {
-        "files": true,
-        "compilerOptions": {
-            "esModuleInterop": true,
-            "module": "commonjs"
-        }
-    }
+    ]
 }

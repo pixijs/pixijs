@@ -1,15 +1,18 @@
 import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
 import { Texture } from '../../shared/texture/Texture';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
 import { glUploadCompressedTextureResource } from './uploaders/glUploadCompressedTextureResource';
+import { createGlUploadCubeTextureResource } from './uploaders/glUploadCubeTextureResource';
 import { glUploadImageResource } from './uploaders/glUploadImageResource';
 import { glUploadVideoResource } from './uploaders/glUploadVideoResource';
 import { applyStyleParams } from './utils/applyStyleParams';
 import { mapFormatToGlFormat } from './utils/mapFormatToGlFormat';
 import { mapFormatToGlInternalFormat } from './utils/mapFormatToGlInternalFormat';
 import { mapFormatToGlType } from './utils/mapFormatToGlType';
+import { mapViewDimensionToGlTarget } from './utils/mapViewDimensionToGlTarget';
 import { unpremultiplyAlpha } from './utils/unpremultiplyAlpha';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
@@ -26,7 +29,8 @@ const BYTES_PER_PIXEL = 4;
 
 /**
  * The system for managing textures in WebGL.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class GlTextureSystem implements System, CanvasGenerator
 {
@@ -38,11 +42,13 @@ export class GlTextureSystem implements System, CanvasGenerator
         name: 'texture',
     } as const;
 
-    public readonly managedTextures: TextureSource[] = [];
-
     private readonly _renderer: WebGLRenderer;
+    private readonly _managedTextures: GCManagedHash<TextureSource>;
+    /**
+     * @deprecated since 8.15.0
+     */
+    public get managedTextures(): Readonly<TextureSource[]> { return Object.values(this._managedTextures.items); }
 
-    private _glTextures: Record<number, GlTexture> = Object.create(null);
     private _glSamplers: Record<string, WebGLSampler> = Object.create(null);
 
     private _boundTextures: TextureSource[] = [];
@@ -50,17 +56,15 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     private _boundSamplers: Record<number, WebGLSampler> = Object.create(null);
 
-    private readonly _uploads: Record<string, GLTextureUploader> = {
-        image: glUploadImageResource,
-        buffer: glUploadBufferImageResource,
-        video: glUploadVideoResource,
-        compressed: glUploadCompressedTextureResource,
-    };
+    private readonly _uploads: Record<string, GLTextureUploader>;
 
     private _gl: GlRenderingContext;
     private _mapFormatToInternalFormat: Record<string, number>;
     private _mapFormatToType: Record<string, number>;
     private _mapFormatToFormat: Record<string, number>;
+    private _mapViewDimensionToGlTarget: Record<TextureSource['viewDimension'], number | null>;
+
+    private _premultiplyAlpha = false;
 
     // TODO - separate samplers will be a cool thing to add, but not right now!
     private readonly _useSeparateSamplers = false;
@@ -68,6 +72,26 @@ export class GlTextureSystem implements System, CanvasGenerator
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
+
+        this._managedTextures = new GCManagedHash({
+            renderer,
+            type: 'resource',
+            onUnload: this.onSourceUnload.bind(this),
+            name: 'glTexture'
+        });
+
+        // our 2D uploaders..
+        const baseUploaders = {
+            image: glUploadImageResource,
+            buffer: glUploadBufferImageResource,
+            video: glUploadVideoResource,
+            compressed: glUploadCompressedTextureResource,
+        };
+
+        this._uploads = {
+            ...baseUploaders,
+            cube: createGlUploadCubeTextureResource(baseUploaders),
+        };
     }
 
     protected contextChange(gl: GlRenderingContext): void
@@ -76,15 +100,19 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         if (!this._mapFormatToInternalFormat)
         {
+            // rebuild all our maps if they don't exist yet
             this._mapFormatToInternalFormat = mapFormatToGlInternalFormat(gl, this._renderer.context.extensions);
 
             this._mapFormatToType = mapFormatToGlType(gl);
             this._mapFormatToFormat = mapFormatToGlFormat(gl);
+            this._mapViewDimensionToGlTarget = mapViewDimensionToGlTarget(gl);
         }
 
-        this._glTextures = Object.create(null);
+        this._managedTextures.removeAll(true);
+
         this._glSamplers = Object.create(null);
         this._boundSamplers = Object.create(null);
+        this._premultiplyAlpha = false;
 
         for (let i = 0; i < 16; i++)
         {
@@ -92,6 +120,11 @@ export class GlTextureSystem implements System, CanvasGenerator
         }
     }
 
+    /**
+     * Initializes a texture source, if it has already been initialized nothing will happen.
+     * @param source - The texture source to initialize.
+     * @returns The initialized texture source.
+     */
     public initSource(source: TextureSource)
     {
         this.bind(source);
@@ -125,14 +158,14 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         const gl = this._gl;
 
-        source._touched = this._renderer.textureGC.count;
+        source._gcLastUsed = this._renderer.gc.now;
 
         if (this._boundTextures[location] !== source)
         {
             this._boundTextures[location] = source;
             this._activateLocation(location);
 
-            source = source || Texture.EMPTY.source;
+            source ||= Texture.EMPTY.source;
 
             // bind texture and source!
             const glTexture = this.getGlSource(source);
@@ -200,6 +233,19 @@ export class GlTextureSystem implements System, CanvasGenerator
         glTexture.type = this._mapFormatToType[source.format];
         glTexture.internalFormat = this._mapFormatToInternalFormat[source.format];
         glTexture.format = this._mapFormatToFormat[source.format];
+        glTexture.target = this._mapViewDimensionToGlTarget[source.viewDimension];
+
+        if (glTexture.target === null)
+        {
+            // eslint-disable-next-line max-len
+            throw new Error(`Unsupported view dimension: ${source.viewDimension} with this webgl version: ${this._renderer.context.webGLVersion}`);
+        }
+
+        // Cube textures use a different GL target.
+        if (source.uploadMethodId === 'cube')
+        {
+            glTexture.target = gl.TEXTURE_CUBE_MAP;
+        }
 
         if (source.autoGenerateMipmaps && (this._renderer.context.supports.nonPowOf2mipmaps || source.isPowerOfTwo))
         {
@@ -208,18 +254,16 @@ export class GlTextureSystem implements System, CanvasGenerator
             source.mipLevelCount = Math.floor(Math.log2(biggestDimension)) + 1;
         }
 
-        this._glTextures[source.uid] = glTexture;
+        source._gpuData[this._renderer.uid] = glTexture;
 
-        if (!this.managedTextures.includes(source))
+        const added = this._managedTextures.add(source);
+
+        if (added)
         {
             source.on('update', this.onSourceUpdate, this);
             source.on('resize', this.onSourceUpdate, this);
             source.on('styleChange', this.onStyleChange, this);
-            source.on('destroy', this.onSourceDestroy, this);
-            source.on('unload', this.onSourceUnload, this);
             source.on('updateMipmaps', this.onUpdateMipmaps, this);
-
-            this.managedTextures.push(source);
         }
 
         this.onSourceUpdate(source);
@@ -239,7 +283,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         const glTexture = this.getGlSource(source);
 
-        gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
+        gl.bindTexture(glTexture.target, glTexture.texture);
 
         this._boundTextures[this._activeTextureLocation] = source;
 
@@ -249,23 +293,28 @@ export class GlTextureSystem implements System, CanvasGenerator
             source.mipLevelCount > 1,
             this._renderer.context.extensions.anisotropicFiltering,
             'texParameteri',
-            gl.TEXTURE_2D,
+            glTexture.target,
             // will force a clamp to edge if the texture is not a power of two
             !this._renderer.context.supports.nonPowOf2wrapping && !source.isPowerOfTwo,
             firstCreation,
         );
     }
 
-    protected onSourceUnload(source: TextureSource): void
+    protected onSourceUnload(source: TextureSource, contextLost = false): void
     {
-        const glTexture = this._glTextures[source.uid];
+        const glTexture = source._gpuData[this._renderer.uid] as GlTexture;
 
         if (!glTexture) return;
 
-        this.unbind(source);
-        this._glTextures[source.uid] = null;
-
-        this._gl.deleteTexture(glTexture.texture);
+        if (!contextLost)
+        {
+            this.unbind(source);
+            this._gl.deleteTexture(glTexture.texture);
+        }
+        source.off('update', this.onSourceUpdate, this);
+        source.off('resize', this.onSourceUpdate, this);
+        source.off('styleChange', this.onStyleChange, this);
+        source.off('updateMipmaps', this.onUpdateMipmaps, this);
     }
 
     protected onSourceUpdate(source: TextureSource): void
@@ -274,19 +323,44 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         const glTexture = this.getGlSource(source);
 
-        gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
+        gl.bindTexture(glTexture.target, glTexture.texture);
 
         this._boundTextures[this._activeTextureLocation] = source;
+
+        const premultipliedAlpha = source.alphaMode === 'premultiply-alpha-on-upload';
+
+        if (this._premultiplyAlpha !== premultipliedAlpha)
+        {
+            this._premultiplyAlpha = premultipliedAlpha;
+            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, premultipliedAlpha);
+        }
 
         if (this._uploads[source.uploadMethodId])
         {
             this._uploads[source.uploadMethodId].upload(source, glTexture, gl, this._renderer.context.webGLVersion);
         }
+        else if (glTexture.target === gl.TEXTURE_2D)
+        {
+            // Allocate an "empty" texture (typical for RenderTexture) for the appropriate target.
+            // This allocates level 0 and, if needed, the full mip chain so any mip can be attached/rendered into (WebGL2).
+            this._initEmptyTexture2D(glTexture, source);
+        }
+        else if (glTexture.target === (gl as any).TEXTURE_2D_ARRAY)
+        {
+            this._initEmptyTexture2DArray(glTexture, source);
+        }
+        else if (glTexture.target === gl.TEXTURE_CUBE_MAP)
+        {
+            this._initEmptyTextureCube(glTexture, source);
+        }
         else
         {
-            // eslint-disable-next-line max-len
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, source.pixelWidth, source.pixelHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+            throw new Error('[GlTextureSystem] Unsupported texture target for empty allocation.');
         }
+
+        // Keep the texture's mip range in sync with the declared mipLevelCount.
+        // This is required in WebGL2 for FBO attachments at mipLevel > 0 when using partial mip chains.
+        this._applyMipRange(glTexture, source);
 
         if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
         {
@@ -303,18 +377,157 @@ export class GlTextureSystem implements System, CanvasGenerator
         this._gl.generateMipmap(glTexture.target);
     }
 
-    protected onSourceDestroy(source: TextureSource): void
+    private _initEmptyTexture2D(glTexture: GlTexture, source: TextureSource): void
     {
-        source.off('destroy', this.onSourceDestroy, this);
-        source.off('update', this.onSourceUpdate, this);
-        source.off('resize', this.onSourceUpdate, this);
-        source.off('unload', this.onSourceUnload, this);
-        source.off('styleChange', this.onStyleChange, this);
-        source.off('updateMipmaps', this.onUpdateMipmaps, this);
+        const gl = this._gl;
 
-        this.managedTextures.splice(this.managedTextures.indexOf(source), 1);
+        // Level 0
+        gl.texImage2D(
+            gl.TEXTURE_2D,
+            0,
+            glTexture.internalFormat,
+            source.pixelWidth,
+            source.pixelHeight,
+            0,
+            glTexture.format,
+            glTexture.type,
+            null,
+        );
 
-        this.onSourceUnload(source);
+        // Mips (if requested)
+        let w = Math.max(source.pixelWidth >> 1, 1);
+        let h = Math.max(source.pixelHeight >> 1, 1);
+
+        for (let level = 1; level < source.mipLevelCount; level++)
+        {
+            gl.texImage2D(
+                gl.TEXTURE_2D,
+                level,
+                glTexture.internalFormat,
+                w,
+                h,
+                0,
+                glTexture.format,
+                glTexture.type,
+                null,
+            );
+
+            w = Math.max(w >> 1, 1);
+            h = Math.max(h >> 1, 1);
+        }
+    }
+
+    private _initEmptyTexture2DArray(glTexture: GlTexture, source: TextureSource): void
+    {
+        if (this._renderer.context.webGLVersion !== 2)
+        {
+            throw new Error('[GlTextureSystem] TEXTURE_2D_ARRAY requires WebGL2.');
+        }
+
+        const gl2 = this._gl as WebGL2RenderingContext;
+        const depth = Math.max(source.arrayLayerCount | 0, 1);
+
+        // Level 0
+        gl2.texImage3D(
+            gl2.TEXTURE_2D_ARRAY,
+            0,
+            glTexture.internalFormat,
+            source.pixelWidth,
+            source.pixelHeight,
+            depth,
+            0,
+            glTexture.format,
+            glTexture.type,
+            null,
+        );
+
+        // Mips (if requested)
+        let w = Math.max(source.pixelWidth >> 1, 1);
+        let h = Math.max(source.pixelHeight >> 1, 1);
+
+        for (let level = 1; level < source.mipLevelCount; level++)
+        {
+            gl2.texImage3D(
+                gl2.TEXTURE_2D_ARRAY,
+                level,
+                glTexture.internalFormat,
+                w,
+                h,
+                depth,
+                0,
+                glTexture.format,
+                glTexture.type,
+                null,
+            );
+
+            w = Math.max(w >> 1, 1);
+            h = Math.max(h >> 1, 1);
+        }
+    }
+
+    private _initEmptyTextureCube(glTexture: GlTexture, source: TextureSource): void
+    {
+        const gl = this._gl;
+
+        const totalCubeFaces = 6;
+
+        // Level 0 (all faces)
+        for (let face = 0; face < totalCubeFaces; face++)
+        {
+            gl.texImage2D(
+                gl.TEXTURE_CUBE_MAP_POSITIVE_X + face,
+                0,
+                glTexture.internalFormat,
+                source.pixelWidth,
+                source.pixelHeight,
+                0,
+                glTexture.format,
+                glTexture.type,
+                null,
+            );
+        }
+
+        // Mips (if requested)
+        let w = Math.max(source.pixelWidth >> 1, 1);
+        let h = Math.max(source.pixelHeight >> 1, 1);
+
+        for (let level = 1; level < source.mipLevelCount; level++)
+        {
+            for (let face = 0; face < totalCubeFaces; face++)
+            {
+                gl.texImage2D(
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_X + face,
+                    level,
+                    glTexture.internalFormat,
+                    w,
+                    h,
+                    0,
+                    glTexture.format,
+                    glTexture.type,
+                    null,
+                );
+            }
+
+            w = Math.max(w >> 1, 1);
+            h = Math.max(h >> 1, 1);
+        }
+    }
+
+    /**
+     * Applies a mip range to the currently-bound texture so WebGL2 considers the texture "mipmap complete"
+     * for the declared `mipLevelCount` (especially important for partial mip chains rendered via FBO).
+     * @param glTexture - The GL texture wrapper.
+     * @param source - The texture source describing mipLevelCount.
+     */
+    private _applyMipRange(glTexture: GlTexture, source: TextureSource): void
+    {
+        if (this._renderer.context.webGLVersion !== 2) return;
+
+        const gl = this._gl as WebGL2RenderingContext;
+        const maxLevel = Math.max((source.mipLevelCount | 0) - 1, 0);
+
+        gl.texParameteri(glTexture.target, gl.TEXTURE_BASE_LEVEL, 0);
+        gl.texParameteri(glTexture.target, gl.TEXTURE_MAX_LEVEL, maxLevel);
     }
 
     private _initSampler(style: TextureStyle): WebGLSampler
@@ -346,7 +559,9 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     public getGlSource(source: TextureSource): GlTexture
     {
-        return this._glTextures[source.uid] || this._initSource(source);
+        source._gcLastUsed = this._renderer.gc.now;
+
+        return source._gpuData[this._renderer.uid] as GlTexture || this._initSource(source);
     }
 
     public generateCanvas(texture: Texture): ICanvas
@@ -414,13 +629,28 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         // we copy the array as the array with a slice as onSourceDestroy
         // will remove the source from the real managedTextures array
-        this.managedTextures
-            .slice()
-            .forEach((source) => this.onSourceDestroy(source));
-
-        (this.managedTextures as null) = null;
-
+        this._managedTextures.destroy();
+        this._glSamplers = null;
+        this._boundTextures = null;
+        this._boundSamplers = null;
+        this._mapFormatToInternalFormat = null;
+        this._mapFormatToType = null;
+        this._mapFormatToFormat = null;
+        (this._uploads as null) = null;
         (this._renderer as null) = null;
+    }
+
+    public resetState(): void
+    {
+        this._activeTextureLocation = -1;
+        this._boundTextures.fill(Texture.EMPTY.source);
+        this._boundSamplers = Object.create(null);
+
+        const gl = this._gl;
+
+        this._premultiplyAlpha = false;
+
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._premultiplyAlpha);
     }
 }
 

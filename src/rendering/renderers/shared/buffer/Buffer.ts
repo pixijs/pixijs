@@ -1,14 +1,31 @@
 import EventEmitter from 'eventemitter3';
 import { uid } from '../../../../utils/data/uid';
+import { type GlBuffer } from '../../gl/buffer/GlBuffer';
+import { type GpuBufferData } from '../../gpu/buffer/GpuBufferSystem';
+import { type GPUDataOwner } from '../../types';
+import { type GCable, type GCData } from '../GCSystem';
 import { BufferUsage } from './const';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
 
-/** All the various typed arrays that exist in js */
+/**
+ * All the various typed arrays that exist in js
+ * @category rendering
+ * @advanced
+ */
 // eslint-disable-next-line max-len
 export type TypedArray = Int8Array | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array;
 
-/** Options for creating a buffer */
+/**
+ * Options for creating a buffer
+ *
+ * This interface defines the options that can be passed to the Buffer constructor.
+ * It includes the data to initialize the buffer with, the size of the buffer,
+ * the usage of the buffer, a label for debugging, and whether the buffer should shrink to fit
+ * when the data becomes smaller.
+ * @category rendering
+ * @advanced
+ */
 export interface BufferOptions
 {
     /**
@@ -18,7 +35,7 @@ export interface BufferOptions
     data?: TypedArray | number[];
     /** the size of the buffer in bytes, if not supplied, it will be inferred from the data */
     size?: number;
-    /** the usage of the buffer, see {@link rendering.BufferUsage} */
+    /** the usage of the buffer, see {@link BufferUsage} */
     usage: number;
     /** a label for the buffer, this is useful for debugging */
     label?: string;
@@ -33,6 +50,7 @@ export interface BufferOptions
     shrinkToFit?: boolean;
 }
 
+/** @internal */
 export interface BufferDescriptor
 {
     label?: string;
@@ -70,13 +88,15 @@ export interface BufferDescriptor
  *     data: new Float32Array([1, 2, 3, 4]),
  *     usage: BufferUsage.VERTEX,
  * });
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class Buffer extends EventEmitter<{
     change: BindResource,
     update: Buffer,
     destroy: Buffer,
-}> implements BindResource
+    unload: Buffer,
+}> implements BindResource, GPUDataOwner, GCable
 {
     /**
      * emits when the underlying buffer has changed shape (i.e. resized)
@@ -95,54 +115,51 @@ export class Buffer extends EventEmitter<{
      * @event destroy
      */
 
-    /**
-     * a unique id for this uniform group used through the renderer
-     * @internal
-     * @ignore
-     */
-    public readonly uid = uid('buffer');
+    /** @internal */
+    public _gpuData: Record<number, GlBuffer | GpuBufferData> = Object.create(null);
+    /** @internal */
+    public _gcData?: GCData;
+    /** @internal */
+    public _gcLastUsed = -1;
+    /** If set to true, the buffer will be garbage collected automatically when it is not used. */
+    public autoGarbageCollect = true;
+
+    /** a unique id for this uniform group used through the renderer */
+    public readonly uid: number = uid('buffer');
 
     /**
      * a resource type, used to identify how to handle it when its in a bind group / shader resource
      * @internal
-     * @ignore
      */
     public readonly _resourceType = 'buffer';
 
     /**
      * the resource id used internally by the renderer to build bind group keys
      * @internal
-     * @ignore
      */
     public _resourceId = uid('resource');
 
     /**
      * used internally to know if a uniform group was used in the last render pass
      * @internal
-     * @ignore
      */
     public _touched = 0;
 
     /**
      * a description of the buffer and how it should be set up on the GPU
      * @internal
-     * @ignore
      */
     public readonly descriptor: BufferDescriptor;
 
-    /**
-     * @internal
-     * @ignore
-     */
+    /** @internal */
     public _updateID = 1;
 
-    /**
-     * @internal
-     * @ignore
-     */
+    /** @internal */
     public _updateSize: number;
 
     private _data: TypedArray;
+
+    private _dataInt32: Int32Array = null;
 
     /**
      * should the GPU buffer be shrunk when the data becomes smaller?
@@ -178,7 +195,7 @@ export class Buffer extends EventEmitter<{
 
         this._data = data as TypedArray;
 
-        size = size ?? (data as TypedArray)?.byteLength;
+        size ??= (data as TypedArray)?.byteLength;
 
         const mappedAtCreation = !!data;
 
@@ -201,6 +218,16 @@ export class Buffer extends EventEmitter<{
     set data(value: TypedArray)
     {
         this.setDataWithSize(value, value.length, true);
+    }
+
+    get dataInt32()
+    {
+        if (!this._dataInt32)
+        {
+            this._dataInt32 = new Int32Array((this.data as any).buffer);
+        }
+
+        return this._dataInt32;
     }
 
     /** whether the buffer is static or not */
@@ -247,11 +274,12 @@ export class Buffer extends EventEmitter<{
         const oldData = this._data;
 
         this._data = value;
+        this._dataInt32 = null;
 
         // Event handling
-        if (oldData.length !== value.length)
+        if (!oldData || oldData.length !== value.length)
         {
-            if (!this.shrinkToFit && value.byteLength < oldData.byteLength)
+            if (!this.shrinkToFit && oldData && value.byteLength < oldData.byteLength)
             {
                 if (syncGPU) this.emit('update', this);
             }
@@ -283,11 +311,24 @@ export class Buffer extends EventEmitter<{
         this.emit('update', this);
     }
 
+    /** Unloads the buffer from the GPU */
+    public unload()
+    {
+        /** Unloads the GPU data from the view container. */
+        this.emit('unload', this);
+        for (const key in this._gpuData)
+        {
+            this._gpuData[key]?.destroy();
+        }
+        this._gpuData = Object.create(null);
+    }
+
     /** Destroys the buffer */
     public destroy()
     {
         this.destroyed = true;
 
+        this.unload();
         this.emit('destroy', this);
         this.emit('change', this);
 

@@ -6,14 +6,30 @@ import type { ICanvas } from '../../../../../environment/canvas/ICanvas';
 import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
 import type { TextureSourceOptions } from './TextureSource';
 
+/**
+ * Options for creating a CanvasSource.
+ * @category rendering
+ * @advanced
+ */
 export interface CanvasSourceOptions extends TextureSourceOptions<ICanvas>
 {
-    /** should the canvas be resized to preserve its screen width and height regardless of the resolution of the renderer */
+    /**
+     * Should the canvas be resized to preserve its screen width and height regardless
+     * of the resolution of the renderer, this is only supported for HTMLCanvasElement
+     * and will be ignored if the canvas is an OffscreenCanvas.
+     */
     autoDensity?: boolean;
     /** if true, this canvas will be set up to be transparent where possible */
     transparent?: boolean;
 }
 
+/**
+ * A texture source that uses a canvas as its resource.
+ * It automatically resizes the canvas based on the width, height, and resolution.
+ * It also provides a 2D rendering context for drawing.
+ * @category rendering
+ * @advanced
+ */
 export class CanvasSource extends TextureSource<ICanvas>
 {
     public static extension: ExtensionMetadata = ExtensionType.TextureSource;
@@ -21,6 +37,8 @@ export class CanvasSource extends TextureSource<ICanvas>
     public uploadMethodId = 'image';
     public autoDensity: boolean;
     public transparent: boolean;
+
+    private _context2D: CanvasRenderingContext2D;
 
     constructor(options: CanvasSourceOptions)
     {
@@ -53,19 +71,14 @@ export class CanvasSource extends TextureSource<ICanvas>
 
         this.autoDensity = options.autoDensity;
 
-        const canvas = options.resource;
-
-        if (this.pixelWidth !== canvas.width || this.pixelWidth !== canvas.height)
-        {
-            this.resizeCanvas();
-        }
+        this.resizeCanvas();
 
         this.transparent = !!options.transparent;
     }
 
     public resizeCanvas()
     {
-        if (this.autoDensity)
+        if (this.autoDensity && 'style' in this.resource)
         {
             this.resource.style.width = `${this.width}px`;
             this.resource.style.height = `${this.height}px`;
@@ -95,5 +108,15 @@ export class CanvasSource extends TextureSource<ICanvas>
     {
         return (globalThis.HTMLCanvasElement && resource instanceof HTMLCanvasElement)
         || (globalThis.OffscreenCanvas && resource instanceof OffscreenCanvas);
+    }
+
+    /**
+     * Returns the 2D rendering context for the canvas.
+     * Caches the context after creating it.
+     * @returns The 2D rendering context of the canvas.
+     */
+    get context2D(): CanvasRenderingContext2D
+    {
+        return this._context2D || (this._context2D = this.resource.getContext('2d') as CanvasRenderingContext2D);
     }
 }

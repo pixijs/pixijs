@@ -1,8 +1,9 @@
-type TypedArray = Float32Array | Uint32Array | Int32Array | Uint8Array;
+import { type TypedArray } from '../../rendering/renderers/shared/buffer/Buffer';
 
 /**
  * Flexible wrapper around `ArrayBuffer` that also provides typed array views on demand.
- * @memberof utils
+ * @category utils
+ * @advanced
  */
 export class ViewableBuffer
 {
@@ -17,6 +18,7 @@ export class ViewableBuffer
 
     /** View on the raw binary data as a `Float32Array`. */
     public float32View: Float32Array;
+    /** View on the raw binary data as a `Uint16Array`. */
     public uint16View: Uint16Array;
 
     private _int8View: Int8Array;
@@ -44,7 +46,7 @@ export class ViewableBuffer
         }
         else if (sizeOrBuffer instanceof Uint8Array)
         {
-            this.rawBinaryData = sizeOrBuffer.buffer;
+            this.rawBinaryData = sizeOrBuffer.buffer as ArrayBuffer;
         }
         else
         {
@@ -138,13 +140,15 @@ export class ViewableBuffer
     public destroy(): void
     {
         this.rawBinaryData = null;
+        this.uint32View = null;
+        this.float32View = null;
+        this.uint16View = null;
         this._int8View = null;
         this._uint8View = null;
         this._int16View = null;
-        this.uint16View = null;
         this._int32View = null;
-        this.uint32View = null;
-        this.float32View = null;
+        this._float64Array = null;
+        this._bigUint64Array = null;
     }
 
     /**

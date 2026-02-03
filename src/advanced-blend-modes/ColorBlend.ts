@@ -6,6 +6,9 @@ import { hslgpu } from '../filters/blend-modes/hls/GPUhls';
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
 /**
+ * The final color has the hue and saturation of the top color, while using the luminosity of the bottom color.
+ * The effect preserves gray levels and can be used to colorize the foreground.
+ *
  * Available as `container.blendMode = 'color'` after importing `pixi.js/advanced-blend-modes`.
  * @example
  * import 'pixi.js/advanced-blend-modes';
@@ -13,7 +16,8 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'color'
- * @memberof filters
+ * @category filters
+ * @noInheritDoc
  */
 export class ColorBlend extends BlendModeFilter
 {
@@ -36,7 +40,7 @@ export class ColorBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                finalColor = vec4(blendColor(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendColor(back.rgb, front.rgb,front.a), blendedAlpha) * uBlend;
                 `
             },
             gpu: {
@@ -49,7 +53,7 @@ export class ColorBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                out = vec4<f32>(blendColorOpacity(back.rgb, front.rgb, front.a), blendUniforms.uBlend);
+                out = vec4<f32>(blendColorOpacity(back.rgb, front.rgb, front.a), blendedAlpha) * blendUniforms.uBlend;
                 `
             }
         });

@@ -1,8 +1,6 @@
-import type { Buffer } from '../../shared/buffer/Buffer';
-
+/** @internal */
 export class UboBatch
 {
-    private _buffer: Buffer;
     public data: Float32Array;
     private readonly _minUniformOffsetAlignment: number = 256;
 
@@ -58,9 +56,6 @@ export class UboBatch
 
     public destroy()
     {
-        this._buffer.destroy();
-        this._buffer = null;
-
         this.data = null;
     }
 }

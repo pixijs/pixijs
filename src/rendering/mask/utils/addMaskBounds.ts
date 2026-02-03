@@ -5,6 +5,12 @@ import type { Container } from '../../../scene/container/Container';
 
 const tempBounds = new Bounds();
 
+/**
+ * @param mask
+ * @param bounds
+ * @param skipUpdateTransform
+ * @internal
+ */
 export function addMaskBounds(mask: Container, bounds: Bounds, skipUpdateTransform: boolean): void
 {
     const boundsToMask = tempBounds;

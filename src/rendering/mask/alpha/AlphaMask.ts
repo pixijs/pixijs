@@ -10,12 +10,20 @@ import type { Container } from '../../../scene/container/Container';
 import type { Effect } from '../../../scene/container/Effect';
 import type { PoolItem } from '../../../utils/pool/Pool';
 
+/**
+ * AlphaMask is an effect that applies a mask to a container using the alpha channel of a sprite.
+ * It can be used to create complex masking effects by using a sprite as the mask.
+ * The mask can be inverted, and it can render the mask to a texture if the mask is not a sprite.
+ * @category rendering
+ * @advanced
+ */
 export class AlphaMask implements Effect, PoolItem
 {
     public static extension: ExtensionMetadata = ExtensionType.MaskEffect;
 
     public priority = 0;
     public mask: Container;
+    public inverse: boolean = false;
     public pipe = 'alphaMask';
     public renderMaskToTexture: boolean;
 
@@ -43,13 +51,17 @@ export class AlphaMask implements Effect, PoolItem
 
     public reset()
     {
+        if (this.mask === null) return;
         this.mask.measurable = true;
         this.mask = null;
     }
 
     public addBounds(bounds: Bounds, skipUpdateTransform?: boolean): void
     {
-        addMaskBounds(this.mask, bounds, skipUpdateTransform);
+        if (!this.inverse)
+        {
+            addMaskBounds(this.mask, bounds, skipUpdateTransform);
+        }
     }
 
     public addLocalBounds(bounds: Bounds, localRoot: Container): void

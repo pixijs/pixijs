@@ -40,8 +40,8 @@ const DDS_DX10_FIELDS = {
  * ones to their correct value)
  * @ignore
  */
-enum DXGI_FORMAT
-    {
+export enum DXGI_FORMAT
+{
     DXGI_FORMAT_UNKNOWN,
     DXGI_FORMAT_R32G32B32A32_TYPELESS,
     DXGI_FORMAT_R32G32B32A32_FLOAT,
@@ -170,8 +170,8 @@ enum DXGI_FORMAT
  * Possible values of the field {@link DDS_DX10_FIELDS.RESOURCE_DIMENSION}
  * @ignore
  */
-enum D3D10_RESOURCE_DIMENSION
-    {
+export enum D3D10_RESOURCE_DIMENSION
+{
     DDS_DIMENSION_TEXTURE1D = 2,
     DDS_DIMENSION_TEXTURE2D = 3,
     DDS_DIMENSION_TEXTURE3D = 6
@@ -185,11 +185,14 @@ function fourCCToInt32(value: string)
         + (value.charCodeAt(3) << 24);
 }
 
-// Four character codes for DXTn formats
-// https://learn.microsoft.com/en-us/windows/win32/direct3ddds/dx-graphics-dds-pguide
-// https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dformat
-enum D3DFMT
-    {
+/**
+ * Four character codes for DXTn formats
+ * https://learn.microsoft.com/en-us/windows/win32/direct3ddds/dx-graphics-dds-pguide
+ * https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dformat
+ * @internal
+ */
+export enum D3DFMT
+{
     UNKNOWN = 0,
     R8G8B8 = 20,
     A8R8G8B8 = 21,
@@ -333,6 +336,10 @@ export const DXGI_TO_TEXTURE_FORMAT: { [id: number]: TEXTURE_FORMATS } = {
 
 };
 
+/**
+ * Maps {@link DXGI_FORMAT} to {@link D3DFMT}
+ * @internal
+ */
 export const DDS = {
     MAGIC_VALUE: 0x20534444,
     MAGIC_SIZE: 4,
@@ -361,7 +368,7 @@ export const DDS = {
     D3DFMT
 };
 
-// formats and block size (in bytes)
+/** @internal */
 export const TEXTURE_FORMAT_BLOCK_SIZE: Record<string, number> = {
     'bc1-rgba-unorm':  8,
     'bc1-rgba-unorm-srgb':  8,

@@ -1,10 +1,16 @@
+import { DOMAdapter } from '../../../environment/adapter';
 import { ExtensionType } from '../../../extensions/Extensions';
 
 import type { System } from '../shared/system/System';
 import type { GpuPowerPreference } from '../types';
 import type { WebGPURenderer } from './WebGPURenderer';
 
-/** The GPU object. */
+/**
+ * The GPU object.
+ * Contains the GPU adapter and device.
+ * @category rendering
+ * @advanced
+ */
 export interface GPU
 {
     /** The GPU adapter */
@@ -20,7 +26,8 @@ export interface GPU
  * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
  * while setting to `'low-power'` will prioritize power saving over rendering performance.
  * @property {boolean} [forceFallbackAdapter=false] - Force the use of the fallback adapter
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export interface GpuContextOptions
 {
@@ -30,21 +37,22 @@ export interface GpuContextOptions
      * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
      * while setting to `'low-power'` will prioritize power saving over rendering performance.
      * @default undefined
-     * @memberof rendering.WebGPUOptions
      */
     powerPreference?: GpuPowerPreference;
     /**
      * Force the use of the fallback adapter
      * @default false
-     * @memberof rendering.WebGPUOptions
      */
     forceFallbackAdapter: boolean;
+    /** Using shared device and adaptor from other engine */
+    gpu?: GPU;
 }
 
 /**
  * System plugin to the renderer to manage the context.
  * @class
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class GpuDeviceSystem implements System<GpuContextOptions>
 {
@@ -88,7 +96,7 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
     {
         if (this._initPromise) return this._initPromise;
 
-        this._initPromise = this._createDeviceAndAdaptor(options)
+        this._initPromise = (options.gpu ? Promise.resolve(options.gpu) : this._createDeviceAndAdaptor(options))
             .then((gpu) =>
             {
                 this.gpu = gpu;
@@ -118,7 +126,7 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
     private async _createDeviceAndAdaptor(options: GpuContextOptions): Promise<GPU>
     {
         // TODO we only need one of these..
-        const adapter = await navigator.gpu.requestAdapter({
+        const adapter = await DOMAdapter.get().getNavigator().gpu.requestAdapter({
             powerPreference: options.powerPreference,
             forceFallbackAdapter: options.forceFallbackAdapter,
         });

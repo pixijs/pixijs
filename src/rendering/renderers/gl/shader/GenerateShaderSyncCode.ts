@@ -6,9 +6,10 @@ import type { Shader } from '../../shared/shader/Shader';
 import type { GlShaderSystem, ShaderSyncFunction } from './GlShaderSystem';
 
 /**
- * Generates the a function that will efficiantly sync shader resources with the GPU.
+ * Generates the a function that will efficiently sync shader resources with the GPU.
  * @param shader - The shader to generate the code for
  * @param shaderSystem - An instance of the shader system
+ * @internal
  */
 export function generateShaderSyncCode(shader: Shader, shaderSystem: GlShaderSystem): ShaderSyncFunction
 {
@@ -32,7 +33,6 @@ export function generateShaderSyncCode(shader: Shader, shaderSystem: GlShaderSys
     `];
 
     let addedTextreSystem = false;
-    let blockIndex = 0;
     let textureCount = 0;
 
     const programData = shaderSystem._getProgramData(shader.glProgram);
@@ -53,11 +53,13 @@ export function generateShaderSyncCode(shader: Shader, shaderSystem: GlShaderSys
             {
                 if (resource.ubo)
                 {
+                    const resName = shader._uniformBindMap[i][Number(j)];
+
                     funcFragments.push(`
                         sS.bindUniformBlock(
                             resources[${j}],
-                            sS._uniformBindMap[${i}[${j}],
-                            ${blockIndex++}
+                            '${resName}',
+                            ${shader.glProgram._uniformBlockData[resName].index}
                         );
                     `);
                 }
@@ -70,11 +72,13 @@ export function generateShaderSyncCode(shader: Shader, shaderSystem: GlShaderSys
             }
             else if (resource instanceof BufferResource)
             {
+                const resName = shader._uniformBindMap[i][Number(j)];
+
                 funcFragments.push(`
                     sS.bindUniformBlock(
                         resources[${j}],
-                        sS._uniformBindMap[${i}[${j}],
-                        ${blockIndex++}
+                        '${resName}',
+                        ${shader.glProgram._uniformBlockData[resName].index}
                     );
                 `);
             }

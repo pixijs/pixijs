@@ -1,5 +1,6 @@
 import type { BitmapFontData, RawCharData } from '../AbstractBitmapFont';
 
+/** @internal */
 export const bitmapFontXMLParser = {
     test(data: string | XMLDocument | BitmapFontData): boolean
     {

@@ -11,15 +11,19 @@ const validTXTMIME = 'text/plain';
 
 /**
  * A simple loader plugin for loading text data
- * @memberof assets
+ * @category assets
+ * @advanced
  */
 export const loadTxt = {
 
+    /** used for deprecation purposes */
     name: 'loadTxt',
+    id: 'text',
 
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.Low,
+        name: 'loadTxt',
     },
 
     test(url: string): boolean
@@ -35,4 +39,4 @@ export const loadTxt = {
 
         return txt;
     },
-} as LoaderParser;
+} satisfies LoaderParser<string>;

@@ -25,6 +25,11 @@ function stripVariable(value: string)
     return value.replace(regex, '');
 }
 
+/**
+ * @param fragments
+ * @param template
+ * @internal
+ */
 export function compileOutputs(fragments: any[], template: string)
 {
     // get all the inputs from the fragments..
@@ -64,10 +69,10 @@ export function compileOutputs(fragments: any[], template: string)
 
     // generate the return object
     const mainEnd = `return VSOutput(
-                ${results
-        .sort()
-        .map((inValue) => ` ${extractVariableName(inValue)}`)
-        .join(',\n')});`;
+            ${results
+                .sort()
+                .map((inValue) => ` ${extractVariableName(inValue)}`)
+                .join(',\n')});`;
 
     // Remove lines from original string
     let compiledCode = template.replace(/@out\s+[^;]+;\s*/g, '');

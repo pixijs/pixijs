@@ -1,11 +1,12 @@
-/* eslint-disable max-len */
-
 import { ExtensionType } from '../extensions/Extensions';
 import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
 /**
+ * Darkens values darker than 50% gray and lightens those brighter than 50% gray, creating a dramatic effect.
+ * It's essentially an extreme version of the Overlay mode, with a significant impact on midtones
+ *
  * Available as `container.blendMode = 'vivid-light'` after importing `pixi.js/advanced-blend-modes`.
  * @example
  * import 'pixi.js/advanced-blend-modes';
@@ -13,6 +14,8 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'vivid-light'
+ * @category filters
+ * @noInheritDoc
  */
 export class VividLightBlend extends BlendModeFilter
 {
@@ -54,7 +57,7 @@ export class VividLightBlend extends BlendModeFilter
                 }
             `,
                 main: `
-                finalColor = vec4(blendVividLight(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendVividLight(back.rgb, front.rgb,front.a), blendedAlpha) * uBlend;
             `
             },
             gpu: {
@@ -86,7 +89,7 @@ export class VividLightBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                out = vec4<f32>(blendVividLight(back.rgb, front.rgb, front.a), blendUniforms.uBlend);
+                out = vec4<f32>(blendVividLight(back.rgb, front.rgb, front.a), blendedAlpha) * blendUniforms.uBlend;
                 `
             }
         });

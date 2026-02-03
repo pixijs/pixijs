@@ -8,6 +8,7 @@ import type { UboElement } from '../../../shared/shader/types';
  * @param uboElement - the element to generate the array sync for
  * @param offsetToAdd - the offset to append at the start of the code
  * @returns - the generated code
+ * @internal
  */
 export function generateArraySyncSTD40(uboElement: UboElement, offsetToAdd: number): string
 {
@@ -15,6 +16,7 @@ export function generateArraySyncSTD40(uboElement: UboElement, offsetToAdd: numb
     const elementSize = (uboElement.data.value as Array<number>).length / uboElement.data.size;// size / rowSize;
 
     const remainder = (4 - (elementSize % 4)) % 4;
+    const data = uboElement.data.type.indexOf('i32') >= 0 ? 'dataInt32' : 'data';
 
     return `
         v = uv.${uboElement.data.name};
@@ -28,7 +30,7 @@ export function generateArraySyncSTD40(uboElement: UboElement, offsetToAdd: numb
         {
             for(var j = 0; j < ${elementSize}; j++)
             {
-                data[arrayOffset++] = v[t++];
+                ${data}[arrayOffset++] = v[t++];
             }
             ${remainder !== 0 ? `arrayOffset += ${remainder};` : ''}
         }

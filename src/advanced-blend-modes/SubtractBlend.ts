@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-
 import { ExtensionType } from '../extensions/Extensions';
 import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
@@ -7,6 +5,7 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
 
 /**
  * Subtracts the blend from the base color using each color channel
+ *
  * Available as `container.blendMode = 'subtract'` after importing `pixi.js/advanced-blend-modes`.
  * @example
  * import 'pixi.js/advanced-blend-modes';
@@ -14,7 +13,8 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'subtract'
- * @memberof filters
+ * @category filters
+ * @noInheritDoc
  */
 export class SubtractBlend extends BlendModeFilter
 {
@@ -46,7 +46,7 @@ export class SubtractBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                finalColor = vec4(blendSubtract(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendSubtract(back.rgb, front.rgb, front.a), blendedAlpha) * uBlend;
                 `
             },
             gpu: {
@@ -68,7 +68,7 @@ export class SubtractBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                out = vec4<f32>(blendSubtract(back.rgb, front.rgb, front.a), blendUniforms.uBlend);
+                out = vec4<f32>(blendSubtract(back.rgb, front.rgb, front.a), blendedAlpha) * blendUniforms.uBlend;
                 `
             }
         });

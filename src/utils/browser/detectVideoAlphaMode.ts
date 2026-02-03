@@ -1,3 +1,6 @@
+/* eslint-disable no-restricted-globals */
+import { DOMAdapter } from '../../environment/adapter';
+
 import type { ALPHA_MODES } from '../../rendering/renderers/shared/texture/const';
 
 let promise: Promise<ALPHA_MODES> | undefined;
@@ -11,15 +14,15 @@ let promise: Promise<ALPHA_MODES> | undefined;
  * the upload behavior by uploading a white 2x2 webm with 50% alpha
  * without `UNPACK_PREMULTIPLY_ALPHA_WEBGL` and then checking whether
  * the uploaded pixels are premultiplied.
- * @memberof utils
- * @function detectVideoAlphaMode
+ * @category utils
+ * @internal
  * @returns {Promise<ALPHA_MODES>} The correct alpha mode for video textures.
  */
 export async function detectVideoAlphaMode(): Promise<ALPHA_MODES>
 {
     promise ??= (async () =>
     {
-        const canvas = document.createElement('canvas');
+        const canvas = DOMAdapter.get().createCanvas(1, 1);
         const gl = canvas.getContext('webgl');
 
         if (!gl)

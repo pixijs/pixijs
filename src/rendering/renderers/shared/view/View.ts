@@ -1,6 +1,7 @@
 import type { Point } from '../../../../maths/point/Point';
-import type { Bounds, BoundsData } from '../../../../scene/container/bounds/Bounds';
+import type { BoundsData } from '../../../../scene/container/bounds/Bounds';
 
+/** @internal */
 export interface ViewObserver
 {
     onViewUpdate: () => void;
@@ -8,12 +9,13 @@ export interface ViewObserver
 
 /**
  * A view is something that is able to be rendered by the renderer.
- * @memberof scene
+ * @category scene
+ * @advanced
  */
 export interface View
 {
     /** a unique id for this view */
-    uid: number;
+    readonly uid: number;
 
     /** whether or not this view should be batched */
     batched: boolean;
@@ -22,10 +24,13 @@ export interface View
      * an identifier that is used to identify the type of system that will be used to render this renderable
      * eg, 'sprite' will use the sprite system (based on the systems name
      */
-    renderPipeId: string;
+    readonly renderPipeId: string;
 
     /** this is an int because it is packed directly into an attribute in the shader */
     _roundPixels: 0 | 1;
+
+    /** @private */
+    _lastUsed: number;
 
     /**
      *  Whether or not to round the x/y position of the object.
@@ -38,8 +43,6 @@ export interface View
     /** this is the AABB rectangle bounds of the view in local untransformed space. */
     bounds: BoundsData;
 
-    /** Adds the current bounds of this view to the supplied bounds */
-    addBounds: (bounds: Bounds) => void;
     /** Checks if the point is within the view */
     containsPoint: (point: Point) => boolean;
 }

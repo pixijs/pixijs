@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
+import { Graphics } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render svg graphics paths',

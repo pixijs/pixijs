@@ -12,14 +12,23 @@ import type { ResolvedAsset } from '../../assets/types';
 import type { TextureSourceOptions } from '../../rendering/renderers/shared/texture/sources/TextureSource';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 
-/** Loads KTX2 textures! */
+/**
+ * Loader parser for KTX2 textures.
+ * This parser loads KTX2 textures using a web worker for transcoding.
+ * It supports both single and multiple textures.
+ * @category assets
+ * @advanced
+ */
 export const loadKTX2 = {
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.High,
+        name: 'loadKTX2',
     },
 
+    /** used for deprecation purposes */
     name: 'loadKTX2',
+    id: 'ktx2',
 
     test(url: string): boolean
     {
@@ -37,7 +46,7 @@ export const loadKTX2 = {
         return createTexture(compressedTextureSource, loader, url);
     },
 
-    unload(texture: Texture | Texture[]): void
+    async unload(texture: Texture | Texture[]): Promise<void>
     {
         if (Array.isArray(texture))
         {
@@ -49,5 +58,5 @@ export const loadKTX2 = {
         }
     }
 
-} as LoaderParser<Texture | Texture[], TextureSourceOptions>;
+} satisfies LoaderParser<Texture | Texture[], TextureSourceOptions>;
 

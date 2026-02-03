@@ -1,3 +1,8 @@
+/**
+ * @param url
+ * @param mimes
+ * @internal
+ */
 export function checkDataUrl(url: string, mimes: string | string[]): boolean
 {
     if (Array.isArray(mimes))

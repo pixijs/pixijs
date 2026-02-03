@@ -1,0 +1,39 @@
+{"frames": {
+
+"loading_bg":
+{
+	"frame": {"x":4,"y":4,"w":1080,"h":1920},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1080,"h":1920},
+	"sourceSize": {"w":1080,"h":1920}
+},
+"paws_1":
+{
+	"frame": {"x":1089,"y":200,"w":129,"h":175},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":56,"y":121,"w":129,"h":175},
+	"sourceSize": {"w":361,"h":361}
+},
+"paws_2":
+{
+	"frame": {"x":1089,"y":4,"w":191,"h":189},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":153,"w":191,"h":189},
+	"sourceSize": {"w":361,"h":361}
+}},
+"animations": {
+	"paws": ["paws_1","paws_2"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.1",
+	"image": "sprite-sheet-trim.png",
+	"format": "RGBA8888",
+	"size": {"w":1282,"h":1928},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:9766161ac62f538b8703e6356b19c3a5:786e30e91f87cfdf8c0e505cf730e4b9:377406e8347ae0688a786d7b6936da08$"
+}
+}

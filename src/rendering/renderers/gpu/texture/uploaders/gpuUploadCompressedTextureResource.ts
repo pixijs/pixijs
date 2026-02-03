@@ -2,6 +2,7 @@ import type { CompressedSource } from '../../../shared/texture/sources/Compresse
 import type { GPU } from '../../GpuDeviceSystem';
 import type { GpuTextureUploader } from './GpuTextureUploader';
 
+/** @internal */
 export const blockDataMap: Record<string, {blockBytes: number, blockWidth: number, blockHeight: number}> = {
     'bc1-rgba-unorm': { blockBytes: 8, blockWidth: 4, blockHeight: 4 },
     'bc2-rgba-unorm': { blockBytes: 16, blockWidth: 4, blockHeight: 4 },
@@ -14,11 +15,12 @@ export const blockDataMap: Record<string, {blockBytes: number, blockWidth: numbe
 
 const defaultBlockData = { blockBytes: 4, blockWidth: 1, blockHeight: 1 };
 
+/** @internal */
 export const gpuUploadCompressedTextureResource = {
 
     type: 'compressed',
 
-    upload(source: CompressedSource, gpuTexture: GPUTexture, gpu: GPU)
+    upload(source: CompressedSource, gpuTexture: GPUTexture, gpu: GPU, originZOverride = 0)
     {
         let mipWidth = source.pixelWidth;
         let mipHeight = source.pixelHeight;
@@ -34,9 +36,10 @@ export const gpuUploadCompressedTextureResource = {
             gpu.device.queue.writeTexture(
                 {
                     texture: gpuTexture,
-                    mipLevel: i
+                    mipLevel: i,
+                    origin: { x: 0, y: 0, z: originZOverride },
                 },
-                levelBuffer,
+                levelBuffer as BufferSource,
                 {
                     offset: 0,
                     bytesPerRow,

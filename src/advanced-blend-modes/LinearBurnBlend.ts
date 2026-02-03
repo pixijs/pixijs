@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-
 import { ExtensionType } from '../extensions/Extensions';
 import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
@@ -16,7 +14,8 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'linear-burn'
- * @memberof filters
+ * @category filters
+ * @noInheritDoc
  */
 export class LinearBurnBlend extends BlendModeFilter
 {
@@ -48,7 +47,7 @@ export class LinearBurnBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                finalColor = vec4(blendLinearBurn(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendLinearBurn(back.rgb, front.rgb,front.a), blendedAlpha) * uBlend;
                 `
             },
             gpu: {
@@ -70,7 +69,7 @@ export class LinearBurnBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                out = vec4<f32>(blendLinearBurn(back.rgb, front.rgb, front.a), blendUniforms.uBlend);
+                out = vec4<f32>(blendLinearBurn(back.rgb, front.rgb, front.a), blendedAlpha) * blendUniforms.uBlend;
                 `
             }
         });

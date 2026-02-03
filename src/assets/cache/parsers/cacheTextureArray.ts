@@ -5,10 +5,14 @@ import type { CacheParser } from '../CacheParser';
 
 /**
  * Returns an object of textures from an array of textures to be cached
- * @memberof assets
+ * @category assets
+ * @internal
  */
 export const cacheTextureArray: CacheParser<Texture[]> = {
-    extension: ExtensionType.CacheParser,
+    extension: {
+        type: ExtensionType.CacheParser,
+        name: 'cacheTextureArray',
+    },
 
     test: (asset: any[]) => Array.isArray(asset) && asset.every((t) => t instanceof Texture),
 

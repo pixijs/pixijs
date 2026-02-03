@@ -1,7 +1,10 @@
 import { Color } from '../../../../color/Color';
+import { loadEnvironmentExtensions } from '../../../../environment/autoDetectEnvironment';
 import { Container } from '../../../../scene/container/Container';
 import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
+import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
+import { GlobalResourceRegistry } from '../../../../utils/pool/GlobalResourceRegistry';
 import { EventEmitter } from '../../../../utils/utils';
 import { CLEAR } from '../../gl/const';
 import { SystemRunner } from './SystemRunner';
@@ -19,9 +22,16 @@ import type { PipeConstructor } from '../instructions/RenderPipe';
 import type { RenderSurface } from '../renderTarget/RenderTargetSystem';
 import type { Texture } from '../texture/Texture';
 import type { ViewSystem, ViewSystemDestroyOptions } from '../view/ViewSystem';
+import type { SharedRendererOptions } from './SharedSystems';
 import type { System, SystemConstructor } from './System';
 
-interface RendererConfig
+/**
+ * The configuration for the renderer.
+ * This is used to define the systems and render pipes that will be used by the renderer.
+ * @category rendering
+ * @advanced
+ */
+export interface RendererConfig
 {
     type: number;
     name: string;
@@ -33,7 +43,8 @@ interface RendererConfig
 
 /**
  * The options for rendering a view.
- * @memberof rendering
+ * @category rendering
+ * @standard
  */
 export interface RenderOptions extends ClearOptions
 {
@@ -45,26 +56,59 @@ export interface RenderOptions extends ClearOptions
 
 /**
  * The options for clearing the render target.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export interface ClearOptions
 {
-    /** The render target to render. */
+    /**
+     * The render target to render. if this target is a canvas and  you are using the WebGL renderer,
+     * please ensure you have set `multiView` to `true` on renderer.
+     */
     target?: RenderSurface;
     /** The color to clear with. */
     clearColor?: ColorSource;
     /** The clear mode to use. */
     clear?: CLEAR_OR_BOOL
+
+    /**
+     * Mip level to render/clear to when the target is a texture-backed render surface.
+     * @default 0
+     *
+     * Note: When rendering to a {@link Texture} target, Pixi renders into the underlying {@link TextureSource}
+     * (via an internal {@link RenderTarget}). The texture's `frame` is interpreted in mip 0 space and is scaled/clamped
+     * to the requested mip level.
+     * @advanced
+     */
+    mipLevel?: number;
+
+    /**
+     * Array layer index to render/clear to when the target is an array-backed texture source (e.g. `arrayLayerCount > 1`).
+     *
+     * This maps to WebGPU's `GPUTextureViewDescriptor.baseArrayLayer` when creating render-attachment views.
+     * @default 0
+     * @advanced
+     */
+    layer?: number;
 }
 
-export type RendererDestroyOptions = TypeOrBool<ViewSystemDestroyOptions>;
+/**
+ * Options for destroying the renderer.
+ * This can be a boolean or an object.
+ * @category rendering
+ * @standard
+ */
+export type RendererDestroyOptions = TypeOrBool<ViewSystemDestroyOptions & {
+    /** Whether to clean up global resource pools/caches */
+    releaseGlobalResources?: boolean;
+}>;
 
 const defaultRunners = [
     'init',
     'destroy',
     'contextChange',
     'resolutionChange',
-    'reset',
+    'resetState',
     'renderEnd',
     'renderStart',
     'render',
@@ -75,7 +119,6 @@ const defaultRunners = [
 
 type DefaultRunners = typeof defaultRunners[number];
 type Runners = {[key in DefaultRunners]: SystemRunner} & {
-    // eslint-disable-next-line @typescript-eslint/ban-types
     [K: ({} & string) | ({} & symbol)]: SystemRunner;
 };
 
@@ -83,9 +126,9 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
 /**
  * The base class for a PixiJS Renderer. It contains the shared logic for all renderers.
  *
- * You should not use this class directly, but instead use {@linkrendering.WebGLRenderer}
- * or {@link rendering.WebGPURenderer}.
- * Alternatively, you can also use {@link rendering.autoDetectRenderer} if you want us to
+ * You should not use this class directly, but instead use {@link WebGLRenderer}
+ * or {@link WebGPURenderer}.
+ * Alternatively, you can also use {@link autoDetectRenderer} if you want us to
  * determine the best renderer for you.
  *
  * The renderer is composed of systems that manage specific tasks. The following systems are added by default
@@ -94,43 +137,41 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  *
  * | Generic Systems                      | Systems that manage functionality that all renderer types share               |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- * | {@link rendering.ViewSystem}              | This manages the main view of the renderer usually a Canvas              |
- * | {@link rendering.BackgroundSystem}        | This manages the main views background color and alpha                   |
- * | {@link events.EventSystem}           | This manages UI events.                                                       |
- * | {@link accessibility.AccessibilitySystem} | This manages accessibility features. Requires `import 'pixi.js/accessibility'`|
+ * | {@link ViewSystem}              | This manages the main view of the renderer usually a Canvas              |
+ * | {@link BackgroundSystem}        | This manages the main views background color and alpha                   |
+ * | {@link EventSystem}           | This manages UI events.                                                       |
+ * | {@link AccessibilitySystem} | This manages accessibility features. Requires `import 'pixi.js/accessibility'`|
  *
  * | Core Systems                   | Provide an optimised, easy to use API to work with WebGL/WebGPU               |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- * | {@link rendering.RenderGroupSystem} | This manages the what what we are rendering to (eg - canvas or texture)   |
- * | {@link rendering.GlobalUniformSystem} | This manages shaders, programs that run on the GPU to calculate 'em pixels.   |
- * | {@link rendering.TextureGCSystem}     | This will automatically remove textures from the GPU if they are not used.    |
+ * | {@link GlobalUniformSystem} | This manages shaders, programs that run on the GPU to calculate 'em pixels.   |
+ * | {@link TextureGCSystem}     | This will automatically remove textures from the GPU if they are not used.    |
  *
  * | PixiJS High-Level Systems            | Set of specific systems designed to work with PixiJS objects                  |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- * | {@link rendering.HelloSystem}               | Says hello, buy printing out the pixi version into the console log (along with the renderer type)       |
- * | {@link rendering.GenerateTextureSystem} | This adds the ability to generate textures from any Container       |
- * | {@link rendering.FilterSystem}          | This manages the filtering pipeline for post-processing effects.             |
- * | {@link rendering.PrepareSystem}               | This manages uploading assets to the GPU. Requires `import 'pixi.js/prepare'`|
- * | {@link rendering.ExtractSystem}               | This extracts image data from display objects.                               |
+ * | {@link HelloSystem}               | Says hello, buy printing out the pixi version into the console log (along with the renderer type)       |
+ * | {@link GenerateTextureSystem} | This adds the ability to generate textures from any Container       |
+ * | {@link FilterSystem}          | This manages the filtering pipeline for post-processing effects.             |
+ * | {@link PrepareSystem}               | This manages uploading assets to the GPU. Requires `import 'pixi.js/prepare'`|
+ * | {@link ExtractSystem}               | This extracts image data from display objects.                               |
  *
  * The breadth of the API surface provided by the renderer is contained within these systems.
  * @abstract
- * @memberof rendering
- * @property {rendering.HelloSystem} hello - HelloSystem instance.
- * @property {rendering.RenderGroupSystem} renderGroup - RenderGroupSystem instance.
- * @property {rendering.TextureGCSystem} textureGC - TextureGCSystem instance.
- * @property {rendering.FilterSystem} filter - FilterSystem instance.
- * @property {rendering.GlobalUniformSystem} globalUniforms - GlobalUniformSystem instance.
- * @property {rendering.TextureSystem} texture - TextureSystem instance.
- * @property {rendering.EventSystem} events - EventSystem instance.
- * @property {rendering.ExtractSystem} extract - ExtractSystem instance. Requires `import 'pixi.js/extract'`.
- * @property {rendering.PrepareSystem} prepare - PrepareSystem instance. Requires `import 'pixi.js/prepare'`.
- * @property {rendering.AccessibilitySystem} accessibility - AccessibilitySystem instance. Requires `import 'pixi.js/accessibility'`.
+ * @category rendering
+ * @advanced
+ * @property {HelloSystem} hello - HelloSystem instance.
+ * @property {TextureGCSystem} textureGC - TextureGCSystem instance.
+ * @property {FilterSystem} filter - FilterSystem instance.
+ * @property {GlobalUniformSystem} globalUniforms - GlobalUniformSystem instance.
+ * @property {TextureSystem} texture - TextureSystem instance.
+ * @property {EventSystem} events - EventSystem instance.
+ * @property {ExtractSystem} extract - ExtractSystem instance. Requires `import 'pixi.js/extract'`.
+ * @property {PrepareSystem} prepare - PrepareSystem instance. Requires `import 'pixi.js/prepare'`.
+ * @property {AccessibilitySystem} accessibility - AccessibilitySystem instance. Requires `import 'pixi.js/accessibility'`.
  */
-/* eslint-enable max-len */
 export class AbstractRenderer<
-    PIPES, OPTIONS extends PixiMixins.RendererOptions, CANVAS extends ICanvas = HTMLCanvasElement
-> extends EventEmitter<{resize: [number, number]}>
+    PIPES, OPTIONS extends SharedRendererOptions, CANVAS extends ICanvas = HTMLCanvasElement
+> extends EventEmitter<{resize: [screenWidth: number, screenHeight: number, resolution: number]}>
 {
     /** The default options for the renderer. */
     public static defaultOptions = {
@@ -169,13 +210,23 @@ export class AbstractRenderer<
         roundPixels: false
     };
 
+    /** @internal */
     public readonly type: number;
     /** The name of the renderer. */
     public readonly name: string;
 
+    /** The current tick of the renderer. */
+    public tick: number = 0;
+
+    /** @internal */
+    public readonly uid = uid('renderer');
+
+    /** @internal */
     public _roundPixels: 0 | 1;
 
+    /** @internal */
     public readonly runners: Runners = Object.create(null) as Runners;
+    /** @internal */
     public readonly renderPipes = Object.create(null) as PIPES;
     /** The view system manages the main canvas that is attached to the DOM */
     public view!: ViewSystem;
@@ -185,6 +236,7 @@ export class AbstractRenderer<
     public textureGenerator: GenerateTextureSystem;
 
     protected _initOptions: OPTIONS = {} as OPTIONS;
+    protected config: RendererConfig;
 
     private _systemsHash: Record<string, System> = Object.create(null);
     private _lastObjectRendered: Container;
@@ -199,13 +251,11 @@ export class AbstractRenderer<
         super();
         this.type = config.type;
         this.name = config.name;
+        this.config = config;
 
-        const combinedRunners = [...defaultRunners, ...(config.runners ?? [])];
+        const combinedRunners = [...defaultRunners, ...(this.config.runners ?? [])];
 
         this._addRunners(...combinedRunners);
-        this._addSystems(config.systems);
-        this._addPipes(config.renderPipes, config.renderPipeAdaptors);
-
         // Validation check that this environment support `new Function`
         this._unsafeEvalCheck();
     }
@@ -216,6 +266,13 @@ export class AbstractRenderer<
      */
     public async init(options: Partial<OPTIONS> = {})
     {
+        const skip = options.skipExtensionImports === true ? true : options.manageImports === false;
+
+        await loadEnvironmentExtensions(skip);
+
+        this._addSystems(this.config.systems);
+        this._addPipes(this.config.renderPipes, this.config.renderPipeAdaptors);
+
         // loop through all systems...
         for (const systemName in this._systemsHash)
         {
@@ -250,6 +307,8 @@ export class AbstractRenderer<
     public render(container: Container, options: {renderTexture: any}): void;
     public render(args: RenderOptions | Container, deprecated?: {renderTexture: any}): void
     {
+        this.tick++;
+
         let options = args;
 
         if (options instanceof Container)
@@ -259,7 +318,6 @@ export class AbstractRenderer<
             if (deprecated)
             {
                 // #if _DEBUG
-                // eslint-disable-next-line max-len
                 deprecation(v8_0_0, 'passing a second argument is deprecated, please use render options instead');
                 // #endif
 
@@ -274,7 +332,9 @@ export class AbstractRenderer<
         {
             // TODO get rid of this
             this._lastObjectRendered = options.container;
-            options.clearColor = this.background.colorRgba;
+
+            options.clearColor ??= this.background.colorRgba;
+            options.clear ??= this.background.clearBeforeRender;
         }
 
         if (options.clearColor)
@@ -289,6 +349,16 @@ export class AbstractRenderer<
             options.container.updateLocalTransform();
             options.transform = options.container.localTransform;
         }
+
+        // Check if the container is visible before proceeding with rendering
+        if (!options.container.visible)
+        {
+            return;
+        }
+
+        // lets ensure this object is a render group so we can render it!
+        // the renderer only likes to render - render groups.
+        options.container.enableRenderGroup();
 
         this.runners.prerender.emit(options);
         this.runners.renderStart.emit(options);
@@ -305,10 +375,24 @@ export class AbstractRenderer<
      */
     public resize(desiredScreenWidth: number, desiredScreenHeight: number, resolution?: number): void
     {
+        const previousResolution = this.view.resolution;
+
         this.view.resize(desiredScreenWidth, desiredScreenHeight, resolution);
-        this.emit('resize', this.view.screen.width, this.view.screen.height);
+        this.emit('resize', this.view.screen.width, this.view.screen.height, this.view.resolution);
+        if (resolution !== undefined && resolution !== previousResolution)
+        {
+            this.runners.resolutionChange.emit(resolution);
+        }
     }
 
+    /**
+     * Clears the render target.
+     * @param options - The options to use when clearing the render target.
+     * @param options.target - The render target to clear.
+     * @param options.clearColor - The color to clear with.
+     * @param options.clear - The clear mode to use.
+     * @advanced
+     */
     public clear(options: ClearOptions = {}): void
     {
         // override!
@@ -318,11 +402,11 @@ export class AbstractRenderer<
         options.clearColor ||= this.background.colorRgba;
         options.clear ??= CLEAR.ALL;
 
-        const { clear, clearColor, target } = options;
+        const { clear, clearColor, target, mipLevel, layer } = options;
 
         Color.shared.setValue(clearColor ?? this.background.colorRgba);
 
-        renderer.renderTarget.clear(target, clear, Color.shared.toArray() as RgbaArray);
+        renderer.renderTarget.clear(target, clear, Color.shared.toArray() as RgbaArray, mipLevel ?? 0, layer ?? 0);
     }
 
     /** The resolution / device pixel ratio of the renderer. */
@@ -339,7 +423,7 @@ export class AbstractRenderer<
 
     /**
      * Same as view.width, actual number of pixels in the canvas by horizontal.
-     * @member {number}
+     * @type {number}
      * @readonly
      * @default 800
      */
@@ -473,6 +557,8 @@ export class AbstractRenderer<
                 this as unknown as Renderer,
                 Adaptor ? new Adaptor() : null
             );
+
+            this.runners.destroy.add((this.renderPipes as any)[name]);
         });
     }
 
@@ -480,6 +566,11 @@ export class AbstractRenderer<
     {
         this.runners.destroy.items.reverse();
         this.runners.destroy.emit(options);
+
+        if (options === true || (typeof options === 'object' && options.releaseGlobalResources))
+        {
+            GlobalResourceRegistry.release();
+        }
 
         // destroy all runners
         Object.values(this.runners).forEach((runner) =>
@@ -513,7 +604,7 @@ export class AbstractRenderer<
     }
 
     /**
-     * Overrideable function by `pixi.js/unsafe-eval` to silence
+     * Overridable function by `pixi.js/unsafe-eval` to silence
      * throwing an error if platform doesn't support unsafe-evals.
      * @private
      * @ignore
@@ -525,5 +616,31 @@ export class AbstractRenderer<
             throw new Error('Current environment does not allow unsafe-eval, '
                + 'please use pixi.js/unsafe-eval module to enable support.');
         }
+    }
+    /**
+     * Resets the rendering state of the renderer.
+     * This is useful when you want to use the WebGL context directly and need to ensure PixiJS's internal state
+     * stays synchronized. When modifying the WebGL context state externally, calling this method before the next Pixi
+     * render will reset all internal caches and ensure it executes correctly.
+     *
+     * This is particularly useful when combining PixiJS with other rendering engines like Three.js:
+     * ```js
+     * // Reset Three.js state
+     * threeRenderer.resetState();
+     *
+     * // Render a Three.js scene
+     * threeRenderer.render(threeScene, threeCamera);
+     *
+     * // Reset PixiJS state since Three.js modified the WebGL context
+     * pixiRenderer.resetState();
+     *
+     * // Now render Pixi content
+     * pixiRenderer.render(pixiScene);
+     * ```
+     * @advanced
+     */
+    public resetState(): void
+    {
+        this.runners.resetState.emit();
     }
 }

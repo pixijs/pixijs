@@ -10,8 +10,7 @@ import type { WebGPURenderer } from './WebGPURenderer';
 
 const minUniformOffsetAlignment = 128;// 256 / 2;
 
-// TODO renderStart and renderFinish - perhaps just make them instructions to fit the architecture of the
-// rest of the system
+/** @internal */
 export class GpuUniformBatchPipe
 {
     /** @ignore */
@@ -62,11 +61,7 @@ export class GpuUniformBatchPipe
 
     private _resetBindGroups()
     {
-        for (const i in this._bindGroupHash)
-        {
-            this._bindGroupHash[i] = null;
-        }
-
+        this._bindGroupHash = Object.create(null);
         this._batchBuffer.clear();
     }
 
@@ -182,7 +177,7 @@ export class GpuUniformBatchPipe
     {
         for (let i = 0; i < this._bindGroups.length; i++)
         {
-            this._bindGroups[i].destroy();
+            this._bindGroups[i]?.destroy();
         }
 
         this._bindGroups = null;
@@ -202,7 +197,6 @@ export class GpuUniformBatchPipe
         this._bufferResources = null;
 
         this._batchBuffer.destroy();
-        this._bindGroupHash = null;
 
         this._renderer = null;
     }

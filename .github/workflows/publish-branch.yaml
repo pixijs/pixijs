@@ -1,0 +1,39 @@
+name: Publish Branch
+
+on:
+    workflow_call:
+
+jobs:
+    release_candidate:
+        runs-on: ubuntu-22.04
+        permissions:
+          id-token: write
+          contents: write
+        env:
+            BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.head_ref }}
+
+            - name: Setup Project
+              uses: ./.github/actions/setup
+              with:
+                  node-version: 24
+                  npm-version: latest
+
+            - name: Build Project
+              run: npm run build
+
+            - name: Get current package.json version
+              run: echo "PACKAGE_VERSION=$(npm pkg get version | tr -d '"')" >> $GITHUB_ENV
+
+            # get the sort SHA and add it into the environment variables
+            - name: Setup Branch Release Candidate Version
+              run: echo "BRANCH_VERSION=$PACKAGE_VERSION-$BRANCH_NAME.${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+            - name: Bump version
+              run: npm version $BRANCH_VERSION --no-git-tag-version --force
+
+            - name: Publish a new branch release candidate version
+              run: npm publish --tag $BRANCH_NAME

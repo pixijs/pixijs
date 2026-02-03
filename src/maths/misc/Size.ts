@@ -1,6 +1,7 @@
 /**
  * Defines a size with a width and a height.
- * @memberof maths
+ * @category maths
+ * @standard
  */
 export interface Size
 {

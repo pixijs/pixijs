@@ -5,7 +5,8 @@ import type { FormatDetectionParser } from '../types';
 
 /**
  * Detects if the browser supports the WebP image format.
- * @memberof assets
+ * @category assets
+ * @internal
  */
 export const detectWebp = {
     extension: {

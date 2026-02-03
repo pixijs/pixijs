@@ -7,7 +7,8 @@ import type { WebGPURenderer } from './WebGPURenderer';
 
 /**
  * This manages the stencil buffer. Used primarily for masking
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class GpuStencilSystem implements System
 {

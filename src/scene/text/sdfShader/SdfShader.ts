@@ -1,5 +1,4 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
-import { MAX_TEXTURES } from '../../../rendering/batcher/shared/const';
 import {
     compileHighShaderGlProgram,
     compileHighShaderGpuProgram
@@ -10,15 +9,22 @@ import {
     generateTextureBatchBitGl
 } from '../../../rendering/high-shader/shader-bits/generateTextureBatchBit';
 import { roundPixelsBit, roundPixelsBitGl } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
-import { batchSamplersUniformGroup } from '../../../rendering/renderers/gl/shader/batchSamplersUniformGroup';
+import { getBatchSamplersUniformGroup } from '../../../rendering/renderers/gl/shader/getBatchSamplersUniformGroup';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import { localUniformMSDFBit, localUniformMSDFBitGl } from './shader-bits/localUniformMSDFBit';
 import { mSDFBit, mSDFBitGl } from './shader-bits/mSDFBit';
 
+import type { GlProgram } from '../../../rendering/renderers/gl/shader/GlProgram';
+import type { GpuProgram } from '../../../rendering/renderers/gpu/shader/GpuProgram';
+
+let gpuProgram: GpuProgram;
+let glProgram: GlProgram;
+
+/** @internal */
 export class SdfShader extends Shader
 {
-    constructor()
+    constructor(maxTextures: number)
     {
         const uniforms = new UniformGroup({
             uColor: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
@@ -27,22 +33,22 @@ export class SdfShader extends Shader
             uRound: { value: 0, type: 'f32' },
         });
 
-        const gpuProgram = compileHighShaderGpuProgram({
+        gpuProgram ??= compileHighShaderGpuProgram({
             name: 'sdf-shader',
             bits: [
                 colorBit,
-                generateTextureBatchBit(MAX_TEXTURES),
+                generateTextureBatchBit(maxTextures),
                 localUniformMSDFBit,
                 mSDFBit,
                 roundPixelsBit
             ]
         });
 
-        const glProgram = compileHighShaderGlProgram({
+        glProgram ??= compileHighShaderGlProgram({
             name: 'sdf-shader',
             bits: [
                 colorBitGl,
-                generateTextureBatchBitGl(MAX_TEXTURES),
+                generateTextureBatchBitGl(maxTextures),
                 localUniformMSDFBitGl,
                 mSDFBitGl,
                 roundPixelsBitGl,
@@ -54,7 +60,7 @@ export class SdfShader extends Shader
             gpuProgram,
             resources: {
                 localUniforms: uniforms,
-                batchSamplers: batchSamplersUniformGroup,
+                batchSamplers: getBatchSamplersUniformGroup(maxTextures),
             }
         });
     }

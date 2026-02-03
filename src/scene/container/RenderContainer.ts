@@ -1,17 +1,37 @@
-import { Bounds, type BoundsData } from './bounds/Bounds';
-import { Container } from './Container';
+import { ViewContainer } from '../view/ViewContainer';
 
 import type { Point } from '../../maths/point/Point';
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
-import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Renderer } from '../../rendering/renderers/types';
+import type { Bounds, BoundsData } from './bounds/Bounds';
 import type { ContainerOptions } from './Container';
 
-type RenderFunction = (renderer: Renderer) => void;
+/**
+ * A function that takes a renderer and does the custom rendering logic.
+ * This is the function that will be called each frame.
+ * @param renderer - The current renderer
+ * @example
+ * ```js
+ * import { RenderContainer } from 'pixi.js';
+ *
+ * // create a new render container
+ * const renderContainer = new RenderContainer((renderer) => {
+ *     // custom render logic here
+ *     renderer.clear({
+ *         clearColor: 'green', // clear the screen to green when rendering this item
+ *     });
+ * });
+ * ```
+ * @category scene
+ * @advanced
+ */
+export type RenderFunction = (renderer: Renderer) => void;
 
 /**
- * Options for the {@link scene.RenderContainer} constructor.
- * @memberof scene
+ * Options for the {@link RenderContainer} constructor.
+ * @category scene
+ * @advanced
+ * @noInheritDoc
  */
 export interface RenderContainerOptions extends ContainerOptions
 {
@@ -53,37 +73,21 @@ export interface RenderContainerOptions extends ContainerOptions
  *     });
  * })
  * ```
- * @memberof scene
- * @extends scene.Container
+ * @category scene
+ * @advanced
  */
-export class RenderContainer extends Container implements View, Instruction
+export class RenderContainer extends ViewContainer implements Instruction
 {
+    /** @internal */
+    public override readonly renderPipeId: string = 'customRender';
+    /** @internal */
     public batched = false;
-    /**
-     *  Whether or not to round the x/y position of the sprite.
-     * @type {boolean}
-     */
-    public roundPixels: boolean;
-    public _roundPixels: 0 | 1;
 
-    /**
-     * The local bounds of the sprite.
-     * @type {rendering.Bounds}
-     */
-    public bounds = new Bounds();
-    /**
-     * Checks if the object contains the given point.
-     * @param point - The point to check
-     */
-    public containsPoint: (point: Point) => boolean;
     /**
      * Adds the bounds of this text to the bounds object.
      * @param bounds - The output bounds object.
      */
     public addBounds: (bounds: Bounds) => void;
-
-    public canBundle = false;
-    public renderPipeId = 'customRender';
 
     /**
      * @param options - The options for the container.
@@ -108,8 +112,16 @@ export class RenderContainer extends Container implements View, Instruction
         this.addBounds = options.addBounds ?? (() => false);
     }
 
+    /** @private */
+    protected updateBounds(): void
+    {
+        // NOTE: this is for backwards compatibility with the old bounds system
+        this._bounds.clear();
+        this.addBounds(this._bounds);
+    }
+
     /**
-     * An overrideable function that can be used to render the object using the current renderer.
+     * An overridable function that can be used to render the object using the current renderer.
      * @param _renderer - The current renderer
      */
     public render(_renderer: Renderer): void

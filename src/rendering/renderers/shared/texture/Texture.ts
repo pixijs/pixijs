@@ -4,15 +4,16 @@ import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { NOOP } from '../../../../utils/misc/NOOP';
-import { BufferImageSource } from './sources/BufferSource';
+import { BufferImageSource } from './sources/BufferImageSource';
 import { TextureSource } from './sources/TextureSource';
 import { TextureMatrix } from './TextureMatrix';
 
 import type { TextureResourceOrOptions } from './utils/textureFrom';
 
 /**
- * Stores the width of the non-scalable borders, for example when used with {@link scene.NineSlicePlane} texture.
- * @memberof rendering
+ * Stores the width of the non-scalable borders, for example when used with {@link NineSlicePlane} texture.
+ * @category rendering
+ * @advanced
  */
 export interface TextureBorders
 {
@@ -28,7 +29,8 @@ export interface TextureBorders
 
 /**
  * The UVs data structure for a texture.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export type UVs = {
     x0: number;
@@ -43,12 +45,13 @@ export type UVs = {
 
 /**
  * The options that can be passed to a new Texture
- * @memberof rendering
+ * @category rendering
+ * @standard
  */
-export interface TextureOptions
+export interface TextureOptions<TextureSourceType extends TextureSource = TextureSource>
 {
     /** the underlying texture data that this texture will use  */
-    source?: TextureSource;
+    source?: TextureSourceType;
     /** optional label, for debugging */
     label?: string;
     /** The rectangle frame of the texture to show */
@@ -63,15 +66,37 @@ export interface TextureOptions
     defaultBorders?: TextureBorders;
     /** indicates how the texture was rotated by texture packer. See {@link groupD8} */
     rotate?: number;
-    /** set to true if you plan on modifying the uvs of this texture - can affect performance with high numbers of sprites*/
+    /**
+     * Set to true if you plan on modifying this texture's frame, UVs, or swapping its source at runtime.
+     * This is false by default as it improves performance. Generally, it's recommended to create new
+     * textures and swap those rather than modifying an existing texture's properties unless you are
+     * working with a dynamic frames.
+     * Not setting this to true when modifying the texture can lead to visual artifacts.
+     *
+     * If this is false and you modify the texture, you can manually update the sprite's texture by calling
+     * `sprite.onViewUpdate()`.
+     */
     dynamic?: boolean;
 }
 
+/**
+ * A texture that can be bound to a shader as it has a texture source.
+ * @category rendering
+ * @advanced
+ */
 export interface BindableTexture
 {
     source: TextureSource;
 }
 
+/**
+ * A texture source can be a string, an image, a video, a canvas, or a texture resource.
+ * @category rendering
+ * @advanced
+ * @see {@link TextureSource}
+ * @see {@link TextureResourceOrOptions}
+ * @see {@link Texture.from}
+ */
 export type TextureSourceLike = TextureSource | TextureResourceOrOptions | string;
 
 /**
@@ -80,17 +105,17 @@ export type TextureSourceLike = TextureSource | TextureResourceOrOptions | strin
  * A texture must have a loaded resource passed to it to work. It does not contain any
  * loading mechanisms.
  *
- * The Assets class can be used to load an texture from a file. This is the recommended
+ * The Assets class can be used to load a texture from a file. This is the recommended
  * way as it will handle the loading and caching for you.
  *
  * ```js
  *
- * const texture = await Asset.load('assets/image.png');
+ * const texture = await Assets.load('assets/image.png');
  *
  * // once Assets has loaded the image it will be available via the from method
  * const sameTexture = Texture.from('assets/image.png');
- * // another way to acces the texture once loaded
- * const sameAgainTexture = Asset.get('assets/image.png');
+ * // another way to access the texture once loaded
+ * const sameAgainTexture = Assets.get('assets/image.png');
  *
  * const sprite1 = new Sprite(texture);
  *
@@ -104,17 +129,18 @@ export type TextureSourceLike = TextureSource | TextureResourceOrOptions | strin
  * ```js
  * import { Sprite, Texture } from 'pixi.js';
  *
- * const texture = await Asset.load('assets/image.png');
+ * const texture = await Assets.load('assets/image.png');
  * const sprite1 = new Sprite(texture);
  * const sprite2 = new Sprite(texture);
  * ```
  *
  * If you didn't pass the texture frame to constructor, it enables `noFrame` mode:
  * it subscribes on baseTexture events, it automatically resizes at the same time as baseTexture.
- * @memberof rendering
+ * @category rendering
  * @class
+ * @standard
  */
-export class Texture extends EventEmitter<{
+export class Texture<TextureSourceType extends TextureSource = TextureSource> extends EventEmitter<{
     update: Texture
     destroy: Texture
 }> implements BindableTexture
@@ -131,21 +157,22 @@ export class Texture extends EventEmitter<{
     /** label used for debugging */
     public label?: string;
     /** unique id for this texture */
-    public uid = uid('texture');
+    public readonly uid: number = uid('texture');
     /**
      * Has the texture been destroyed?
      * @readonly
      */
     public destroyed: boolean;
 
-    public _source: TextureSource;
+    /** @internal */
+    public _source: TextureSourceType;
 
     /**
      * Indicates whether the texture is rotated inside the atlas
      * set to 2 to compensate for texture packer rotation
      * set to 6 to compensate for spine packer rotation
      * can be used to rotate or mirror sprites
-     * See {@link maths.groupD8} for explanation
+     * See {@link groupD8} for explanation
      */
     public readonly rotate: number;
     /** A uvs object based on the given frame and the texture source */
@@ -159,7 +186,7 @@ export class Texture extends EventEmitter<{
     /**
      * Default width of the non-scalable border that is used if 9-slice plane is created with this texture.
      * @since 7.2.0
-     * @see scene.NineSliceSprite
+     * @see NineSliceSprite
      */
     public readonly defaultBorders?: TextureBorders;
     /**
@@ -202,7 +229,7 @@ export class Texture extends EventEmitter<{
     public readonly isTexture = true;
 
     /**
-     * @param {TextureOptions} param0 - Options for the texture
+     * @param {TextureOptions} options - Options for the texture
      */
     constructor({
         source,
@@ -214,12 +241,12 @@ export class Texture extends EventEmitter<{
         defaultBorders,
         rotate,
         dynamic
-    }: TextureOptions = {})
+    }: TextureOptions<TextureSourceType> = {})
     {
         super();
 
         this.label = label;
-        this.source = source?.source ?? new TextureSource();
+        this.source = (source?.source ?? new TextureSource()) as TextureSourceType;
 
         this.noFrame = !frame;
 
@@ -248,7 +275,7 @@ export class Texture extends EventEmitter<{
         this.updateUvs();
     }
 
-    set source(value: TextureSource)
+    set source(value: TextureSourceType)
     {
         if (this._source)
         {
@@ -263,7 +290,7 @@ export class Texture extends EventEmitter<{
     }
 
     /** the underlying source of the texture (equivalent of baseTexture in v7) */
-    get source(): TextureSource
+    get source(): TextureSourceType
     {
         return this._source;
     }
@@ -353,6 +380,8 @@ export class Texture extends EventEmitter<{
     {
         if (this._source)
         {
+            this._source.off('resize', this.update, this);
+
             if (destroySource)
             {
                 this._source.destroy();
@@ -366,7 +395,11 @@ export class Texture extends EventEmitter<{
         this.removeAllListeners();
     }
 
-    /** call this if you have modified the `texture outside` of the constructor */
+    /**
+     * Call this if you have modified the `texture outside` of the constructor.
+     *
+     * If you have modified this texture's source, you must separately call `texture.source.update()` to see those changes.
+     */
     public update(): void
     {
         if (this.noFrame)
@@ -392,7 +425,7 @@ export class Texture extends EventEmitter<{
     /** an Empty Texture used internally by the engine */
     public static EMPTY: Texture;
     /** a White texture used internally by the engine */
-    public static WHITE: Texture;
+    public static WHITE: Texture<BufferImageSource>;
 }
 
 Texture.EMPTY = new Texture({

@@ -12,8 +12,6 @@ import type { EmitterListeners, TrackingData } from './EventBoundaryTypes';
 import type { FederatedEvent } from './FederatedEvent';
 import type {
     Cursor, EventMode, FederatedEventHandler,
-    FederatedEventTarget,
-    IFederatedContainer
 } from './FederatedEventTarget';
 
 // The maximum iterations used in propagation. This prevent infinite loops.
@@ -76,7 +74,8 @@ const tempLocalMapping = new Point();
  *     }
  * }
  * ```
- * @memberof events
+ * @category events
+ * @advanced
  */
 export class EventBoundary
 {
@@ -98,7 +97,7 @@ export class EventBoundary
     public dispatch: EventEmitter = new EventEmitter();
 
     /** The cursor preferred by the event targets underneath this boundary. */
-    public cursor: Cursor | string;
+    public cursor: Cursor | (string & {});
 
     /**
      * This flag would emit `pointermove`, `touchmove`, and `mousemove` events on all Containers.
@@ -139,9 +138,9 @@ export class EventBoundary
     protected eventPool: Map<typeof FederatedEvent, FederatedEvent[]> = new Map();
 
     /** Every interactive element gathered from the scene. Only used in `pointermove` */
-    private readonly _allInteractiveElements: FederatedEventTarget[] = [];
+    private readonly _allInteractiveElements: Container[] = [];
     /** Every element that passed the hit test. Only used in `pointermove` */
-    private _hitElements: FederatedEventTarget[] = [];
+    private _hitElements: Container[] = [];
     /** Whether or not to collect all the interactive elements from the scene. Enabled in `pointermove` */
     private _isPointerMoveEvent = false;
 
@@ -270,7 +269,7 @@ export class EventBoundary
 
     /**
      * Propagate the passed event from from {@link EventBoundary.rootTarget this.rootTarget} to its
-     * target {@code e.target}.
+     * target `e.target`.
      * @param e - The event to propagate.
      * @param type - The type of event to propagate. Defaults to `e.type`.
      */
@@ -318,7 +317,7 @@ export class EventBoundary
     }
 
     /**
-     * Emits the event {@code e} to all interactive containers. The event is propagated in the bubbling phase always.
+     * Emits the event `e` to all interactive containers. The event is propagated in the bubbling phase always.
      *
      * This is used in the `globalpointermove` event.
      * @param e - The emitted event.
@@ -347,10 +346,10 @@ export class EventBoundary
 
     /**
      * Finds the propagation path from {@link EventBoundary.rootTarget rootTarget} to the passed
-     * {@code target}. The last element in the path is {@code target}.
+     * `target`. The last element in the path is `target`.
      * @param target - The target to find the propagation path to.
      */
-    public propagationPath(target: FederatedEventTarget): FederatedEventTarget[]
+    public propagationPath(target: Container): Container[]
     {
         const propagationPath = [target];
 
@@ -550,7 +549,7 @@ export class EventBoundary
     private _interactivePrune(container: Container): boolean
     {
         // If container is a mask, invisible, or not renderable then it cannot be hit directly.
-        if (!container || !container.visible || !container.renderable)
+        if (!container || !container.visible || !container.renderable || !container.measurable)
         {
             return true;
         }
@@ -574,7 +573,7 @@ export class EventBoundary
      * Checks whether the container or any of its children cannot pass the hit test at all.
      *
      * {@link EventBoundary}'s implementation uses the {@link Container.hitArea hitArea}
-     * and {@link Container._mask} for pruning.
+     * and {@link Container._maskEffect} for pruning.
      * @param container - The container to prune.
      * @param location - The location to test for overlap.
      */
@@ -647,10 +646,15 @@ export class EventBoundary
      */
     protected notifyTarget(e: FederatedEvent, type?: string): void
     {
-        type = type ?? e.type;
+        if (!e.currentTarget.isInteractive())
+        {
+            return;
+        }
+
+        type ??= e.type;
 
         // call the `on${type}` for the current target if it exists
-        const handlerKey = `on${type}` as keyof IFederatedContainer;
+        const handlerKey = `on${type}` as keyof Container;
 
         (e.currentTarget[handlerKey] as FederatedEventHandler<FederatedEvent>)?.(e);
 
@@ -1157,7 +1161,7 @@ export class EventBoundary
      * @param propagationPath - The propagation path was valid in the past.
      * @returns - The most specific event-target still mounted at the same location in the scene graph.
      */
-    protected findMountedTarget(propagationPath: FederatedEventTarget[]): FederatedEventTarget
+    protected findMountedTarget(propagationPath: Container[]): Container
     {
         if (!propagationPath)
         {
@@ -1184,17 +1188,17 @@ export class EventBoundary
     }
 
     /**
-     * Creates an event whose {@code originalEvent} is {@code from}, with an optional `type` and `target` override.
+     * Creates an event whose `originalEvent` is `from`, with an optional `type` and `target` override.
      *
      * The event is allocated using {@link EventBoundary#allocateEvent this.allocateEvent}.
-     * @param from - The {@code originalEvent} for the returned event.
+     * @param from - The `originalEvent` for the returned event.
      * @param [type=from.type] - The type of the returned event.
      * @param target - The target of the returned event.
      */
     protected createPointerEvent(
         from: FederatedPointerEvent,
         type?: string,
-        target?: FederatedEventTarget
+        target?: Container
     ): FederatedPointerEvent
     {
         const event = this.allocateEvent(FederatedPointerEvent);
@@ -1206,7 +1210,7 @@ export class EventBoundary
         event.nativeEvent = from.nativeEvent;
         event.originalEvent = from;
         event.target = target
-            ?? this.hitTest(event.global.x, event.global.y) as FederatedEventTarget
+            ?? this.hitTest(event.global.x, event.global.y) as Container
             ?? this._hitElements[0];
 
         if (typeof type === 'string')
@@ -1218,7 +1222,7 @@ export class EventBoundary
     }
 
     /**
-     * Creates a wheel event whose {@code originalEvent} is {@code from}.
+     * Creates a wheel event whose `originalEvent` is `from`.
      *
      * The event is allocated using {@link EventBoundary#allocateEvent this.allocateEvent}.
      * @param from - The upstream wheel event.
@@ -1239,7 +1243,7 @@ export class EventBoundary
     }
 
     /**
-     * Clones the event {@code from}, with an optional {@code type} override.
+     * Clones the event `from`, with an optional `type` override.
      *
      * The event is allocated using {@link EventBoundary#allocateEvent this.allocateEvent}.
      * @param from - The event to clone.
@@ -1265,7 +1269,7 @@ export class EventBoundary
     }
 
     /**
-     * Copies wheel {@link FederatedWheelEvent} data from {@code from} into {@code to}.
+     * Copies wheel {@link FederatedWheelEvent} data from `from` into `to`.
      *
      * The following properties are copied:
      * + deltaMode
@@ -1284,7 +1288,7 @@ export class EventBoundary
     }
 
     /**
-     * Copies pointer {@link FederatedPointerEvent} data from {@code from} into {@code to}.
+     * Copies pointer {@link FederatedPointerEvent} data from `from` into `to`.
      *
      * The following properties are copied:
      * + pointerId
@@ -1316,7 +1320,7 @@ export class EventBoundary
     }
 
     /**
-     * Copies mouse {@link FederatedMouseEvent} data from {@code from} to {@code to}.
+     * Copies mouse {@link FederatedMouseEvent} data from `from` to `to`.
      *
      * The following properties are copied:
      * + altKey
@@ -1354,7 +1358,7 @@ export class EventBoundary
     }
 
     /**
-     * Copies base {@link FederatedEvent} data from {@code from} into {@code to}.
+     * Copies base {@link FederatedEvent} data from `from` into `to`.
      *
      * The following properties are copied:
      * + isTrusted
@@ -1402,6 +1406,7 @@ export class EventBoundary
      * This allocation is constructor-agnostic, as long as it only takes one argument - this event
      * boundary.
      * @param constructor - The event's constructor.
+     * @returns An event of the given type.
      */
     protected allocateEvent<T extends FederatedEvent>(
         constructor: { new(boundary: EventBoundary): T }
@@ -1417,6 +1422,7 @@ export class EventBoundary
 
         event.eventPhase = event.NONE;
         event.currentTarget = null;
+        event.defaultPrevented = false;
         event.path = null;
         event.target = null;
 
@@ -1459,7 +1465,6 @@ export class EventBoundary
         const listeners = ((e.currentTarget as any)._events as EmitterListeners)[type];
 
         if (!listeners) return;
-        if (!e.currentTarget.isInteractive()) return;
 
         if ('fn' in listeners)
         {

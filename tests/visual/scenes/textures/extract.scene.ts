@@ -1,13 +1,11 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { DOMAdapter } from '../../../../src/environment/adapter';
-import { CanvasSource } from '../../../../src/rendering/renderers/shared/texture/sources/CanvasSource';
-import { ImageSource } from '../../../../src/rendering/renderers/shared/texture/sources/ImageSource';
-import { Texture } from '../../../../src/rendering/renderers/shared/texture/Texture';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
+import { Assets } from '~/assets';
+import { DOMAdapter } from '~/environment';
+import { CanvasSource, ImageSource, Texture } from '~/rendering';
+import { Sprite } from '~/scene';
 
-import type { Renderer } from '../../../../src/rendering/renderers/types';
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Renderer } from '~/rendering';
+import type { Container } from '~/scene';
 
 const cellSize = 35;
 
@@ -43,7 +41,7 @@ export const scene: TestScene = {
         addSprite(asCanvas, scene, { x: 0, y: 0 });
 
         // should generate image from Container (also tests base64 conversion, used by extract.image())
-        const image = await renderer.extract.image(container);
+        const image = await renderer.extract.image(container) as HTMLImageElement;
         const asImage = new Sprite(new Texture(new ImageSource({ resource: image })));
 
         addSprite(asImage, scene, { x: cellSize, y: 0 });

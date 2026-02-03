@@ -10,7 +10,8 @@ import type { FilterOptions } from '../../Filter';
 
 /**
  * Options for AlphaFilter
- * @memberof filters
+ * @category filters
+ * @standard
  */
 export interface AlphaFilterOptions extends FilterOptions
 {
@@ -33,13 +34,38 @@ export interface AlphaFilterOptions extends FilterOptions
  * 1. Assign a blendMode to this filter, blend all elements inside display object with background.
  *
  * 2. To use clipping in display coordinates, assign a filterArea to the same container that has this filter.
- * @memberof filters
+ * @category filters
+ * @standard
+ * @noInheritDoc
+ * @example
+ * import { AlphaFilter } from 'pixi.js';
+ *
+ * const filter = new AlphaFilter({ alpha: 0.5 });
+ * sprite.filters = filter;
+ *
+ * // update alpha
+ * filter.alpha = 0.8;
  */
 export class AlphaFilter extends Filter
 {
-    /** Default filter options */
-    public static readonly defaultOptions: AlphaFilterOptions = {
-        /** Amount of alpha from 0 to 1, where 0 is transparent */
+    /**
+     * Default options for the AlphaFilter.
+     * @example
+     * ```ts
+     * AlphaFilter.defaultOptions = {
+     *     alpha: 0.5, // Default alpha value
+     * };
+     * // Use default options
+     * const filter = new AlphaFilter(); // Uses default alpha of 0.5
+     * ```
+     */
+    public static defaultOptions: AlphaFilterOptions = {
+        /**
+         * Amount of alpha transparency to apply.
+         * - 0 = fully transparent
+         * - 1 = fully opaque (default)
+         * @default 1
+         */
         alpha: 1,
     };
 
@@ -81,8 +107,21 @@ export class AlphaFilter extends Filter
     }
 
     /**
-     * Coefficient for alpha multiplication
+     * The alpha value of the filter.
+     * Controls the transparency of the filtered display object.
+     * @example
+     * ```ts
+     * // Create filter with initial alpha
+     * const filter = new AlphaFilter({ alpha: 0.5 });
+     *
+     * // Update alpha value dynamically
+     * filter.alpha = 0.8;
+     * ```
      * @default 1
+     * @remarks
+     * - 0 = fully transparent
+     * - 1 = fully opaque
+     * - Values are clamped between 0 and 1
      */
     get alpha(): number { return this.resources.alphaUniforms.uniforms.uAlpha; }
     set alpha(value: number) { this.resources.alphaUniforms.uniforms.uAlpha = value; }

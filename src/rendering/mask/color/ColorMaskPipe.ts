@@ -8,12 +8,14 @@ import type { InstructionPipe } from '../../renderers/shared/instructions/Render
 import type { Renderer } from '../../renderers/types';
 import type { ColorMask } from './ColorMask';
 
+/** @internal */
 export interface ColorMaskInstruction extends Instruction
 {
     renderPipeId: 'colorMask',
     colorMask: number,
 }
 
+/** @internal */
 export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
 {
     /** @ignore */
@@ -101,6 +103,7 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
 
     public destroy()
     {
+        (this._renderer as null) = null;
         this._colorStack = null;
     }
 }

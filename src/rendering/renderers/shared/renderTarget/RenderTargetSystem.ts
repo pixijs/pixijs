@@ -21,10 +21,11 @@ import type { BindableTexture } from '../texture/Texture';
 
 /**
  * A render surface is a texture, canvas, or render target
- * @memberof rendering
+ * @category rendering
  * @see environment.ICanvas
- * @see rendering.Texture
- * @see rendering.RenderTarget
+ * @see Texture
+ * @see RenderTarget
+ * @advanced
  */
 export type RenderSurface = ICanvas | BindableTexture | RenderTarget;
 
@@ -37,7 +38,11 @@ interface RenderTargetAndFrame
     /** the render target */
     renderTarget: RenderTarget;
     /** the frame to use when using the render target */
-    frame: Rectangle
+    frame: Rectangle;
+    /** mip level to render to (subresource) */
+    mipLevel: number;
+    /** array layer to render to (subresource) */
+    layer: number;
 }
 
 /**
@@ -77,7 +82,11 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends GlRenderTarget | GpuR
         /** the color to clear to */
         clearColor?: RgbaArray,
         /** the viewport to use */
-        viewport?: Rectangle
+        viewport?: Rectangle,
+        /** mip level to render to (subresource) */
+        mipLevel?: number,
+        /** array layer to render to (subresource) */
+        layer?: number
     ): void
 
     /** clears the current render target to the specified color */
@@ -89,11 +98,21 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends GlRenderTarget | GpuR
         /** the color to clear to   */
         clearColor?: RgbaArray,
         /** the viewport to use */
-        viewport?: Rectangle
+        viewport?: Rectangle,
+        /** mip level to clear (subresource) */
+        mipLevel?: number,
+        /** array layer to clear (subresource) */
+        layer?: number
     ): void
 
     /** finishes the current render pass */
     finishRenderPass(renderTarget: RenderTarget): void
+
+    /** called after the render pass is finished */
+    postrender?(renderTarget: RenderTarget): void;
+
+    /** called before the render main pass is started */
+    prerender?(renderTarget: RenderTarget): void;
 
     /**
      * initializes a gpu render target. Both renderers use this function to initialize a gpu render target
@@ -108,6 +127,12 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends GlRenderTarget | GpuR
     resizeGpuRenderTarget(
         /** the render target to resize */
         renderTarget: RenderTarget
+    ): void
+
+    /** destroys the gpu render target */
+    destroyGpuRenderTarget(
+        /** the render target to destroy */
+        gpuRenderTarget: RENDER_TARGET
     ): void
 }
 
@@ -134,7 +159,8 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends GlRenderTarget | GpuR
  *
  * // draw something!
  * ```
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRenderTarget> implements System
 {
@@ -150,6 +176,10 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
     public renderSurface: RenderSurface;
     /** the current viewport that the gpu is using */
     public readonly viewport = new Rectangle();
+    /** the current mip level being rendered to (for texture subresources) */
+    public mipLevel = 0;
+    /** the current array layer being rendered to (for array-backed targets) */
+    public layer = 0;
     /**
      * a runner that lets systems know if the active render target has changed.
      * Eg the Stencil System needs to know so it can manage the stencil buffer
@@ -181,6 +211,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        renderer.gc.addCollection(this, '_gpuRenderTargetHash', 'hash');
     }
 
     /** called when dev wants to finish a render pass */
@@ -196,17 +227,24 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
      * @param options.clear - the clear mode to use. Can be true or a CLEAR number 'COLOR | DEPTH | STENCIL' 0b111
      * @param options.clearColor - the color to clear to
      * @param options.frame - the frame to render to
+     * @param options.mipLevel - the mip level to render to
+     * @param options.layer - The layer of the render target to render to. Used for array or 3D textures, or when rendering
+     * to a specific layer of a layered render target. Optional.
      */
     public renderStart({
         target,
         clear,
         clearColor,
-        frame
+        frame,
+        mipLevel,
+        layer
     }: {
         target: RenderSurface;
         clear: CLEAR_OR_BOOL;
         clearColor: RgbaArray;
-        frame?: Rectangle
+        frame?: Rectangle;
+        mipLevel?: number;
+        layer?: number;
     }): void
     {
         // TODO no need to reset this - use optimised index instead
@@ -216,12 +254,21 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
             target,
             clear,
             clearColor,
-            frame
+            frame,
+            mipLevel ?? 0,
+            layer ?? 0
         );
 
         this.rootViewPort.copyFrom(this.viewport);
         this.rootRenderTarget = this.renderTarget;
         this.renderingToScreen = isRenderingToScreen(this.rootRenderTarget);
+
+        this.adaptor.prerender?.(this.rootRenderTarget);
+    }
+
+    public postrender()
+    {
+        this.adaptor.postrender?.(this.rootRenderTarget);
     }
 
     /**
@@ -229,18 +276,33 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
      * It will take the RenderSurface (which can be a texture, canvas, or render target) and bind it to the renderer.
      * Once bound all draw calls will be rendered to the render surface.
      *
-     * If a frame is not provide and the render surface is a texture, the frame of the texture will be used.
+     * If a frame is not provided and the render surface is a {@link Texture}, the frame of the texture will be used.
+     *
+     * IMPORTANT:
+     * - `frame` is treated as **base mip (mip 0) pixel space**.
+     * - When `mipLevel > 0`, the viewport derived from `frame` is scaled by \(2^{mipLevel}\) and clamped to the
+     *   mip dimensions. This keeps "render the same region" semantics consistent across mip levels.
+     * - When `renderSurface` is a {@link Texture}, `renderer.render({ container, target: texture, mipLevel })` will
+     *   render into
+     *   the underlying {@link TextureSource} (Pixi will create/use a {@link RenderTarget} for the source) using the
+     *   texture's frame to define the region (in mip 0 space).
      * @param renderSurface - the render surface to bind
      * @param clear - the clear mode to use. Can be true or a CLEAR number 'COLOR | DEPTH | STENCIL' 0b111
      * @param clearColor - the color to clear to
      * @param frame - the frame to render to
+     * @param mipLevel - the mip level to render to
+     * @param layer - the layer (or slice) of the render surface to render to. For array textures,
+     * 3D textures, or cubemaps, this specifies the target layer or face. Defaults to 0 (the first layer/face).
+     * Ignored for surfaces that do not support layers.
      * @returns the render target that was bound
      */
     public bind(
         renderSurface: RenderSurface,
         clear: CLEAR_OR_BOOL = true,
         clearColor?: RgbaArray,
-        frame?: Rectangle
+        frame?: Rectangle,
+        mipLevel = 0,
+        layer = 0
     ): RenderTarget
     {
         const renderTarget = this.getRenderTarget(renderSurface);
@@ -263,10 +325,27 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
 
         const source = renderTarget.colorTexture;
         const viewport = this.viewport;
+        const arrayLayerCount = source.arrayLayerCount || 1;
 
-        const pixelWidth = source.pixelWidth;
-        const pixelHeight = source.pixelHeight;
+        if ((layer | 0) !== layer)
+        {
+            layer |= 0;
+        }
 
+        if (layer < 0 || layer >= arrayLayerCount)
+        {
+            throw new Error(`[RenderTargetSystem] layer ${layer} is out of bounds (arrayLayerCount=${arrayLayerCount}).`);
+        }
+
+        this.mipLevel = mipLevel | 0;
+        this.layer = layer | 0;
+
+        const pixelWidth = Math.max(source.pixelWidth >> mipLevel, 1);
+        const pixelHeight = Math.max(source.pixelHeight >> mipLevel, 1);
+
+        // If no explicit frame was provided, Texture targets default to their frame.
+        // IMPORTANT: frame is treated as base-level (mip 0) coordinates; when rendering to mip N,
+        // the viewport is scaled down by 2^N.
         if (!frame && renderSurface instanceof Texture)
         {
             frame = renderSurface.frame;
@@ -275,11 +354,31 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         if (frame)
         {
             const resolution = source._resolution;
+            const scale = 1 << Math.max(mipLevel | 0, 0);
 
-            viewport.x = ((frame.x * resolution) + 0.5) | 0;
-            viewport.y = ((frame.y * resolution) + 0.5) | 0;
-            viewport.width = ((frame.width * resolution) + 0.5) | 0;
-            viewport.height = ((frame.height * resolution) + 0.5) | 0;
+            // Convert frame to pixel units (mip 0), then scale to the requested mip level.
+            const baseX = ((frame.x * resolution) + 0.5) | 0;
+            const baseY = ((frame.y * resolution) + 0.5) | 0;
+            const baseW = ((frame.width * resolution) + 0.5) | 0;
+            const baseH = ((frame.height * resolution) + 0.5) | 0;
+
+            // Use floor for origin and ceil for size to avoid collapsing to zero due to rounding.
+            // (When mipLevel === 0, scale === 1 so this behaves like the base-level case.)
+            let x = Math.floor(baseX / scale);
+            let y = Math.floor(baseY / scale);
+            let w = Math.ceil(baseW / scale);
+            let h = Math.ceil(baseH / scale);
+
+            // Clamp to mip dimensions.
+            x = Math.min(Math.max(x, 0), pixelWidth - 1);
+            y = Math.min(Math.max(y, 0), pixelHeight - 1);
+            w = Math.min(Math.max(w, 1), pixelWidth - x);
+            h = Math.min(Math.max(h, 1), pixelHeight - y);
+
+            viewport.x = x;
+            viewport.y = y;
+            viewport.width = w;
+            viewport.height = h;
         }
         else
         {
@@ -297,7 +396,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
             !renderTarget.isRoot
         );
 
-        this.adaptor.startRenderPass(renderTarget, clear, clearColor, viewport);
+        this.adaptor.startRenderPass(renderTarget, clear, clearColor, viewport, mipLevel, layer);
 
         if (didChange)
         {
@@ -311,6 +410,8 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         target?: RenderSurface,
         clear: CLEAR_OR_BOOL = CLEAR.ALL,
         clearColor?: RgbaArray,
+        mipLevel = this.mipLevel,
+        layer = this.layer,
     )
     {
         if (!clear) return;
@@ -324,7 +425,9 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
             (target as RenderTarget) || this.renderTarget,
             clear,
             clearColor,
-            this.viewport
+            this.viewport,
+            mipLevel,
+            layer
         );
     }
 
@@ -339,19 +442,26 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
      * @param clear - the clear mode to use. Can be true or a CLEAR number 'COLOR | DEPTH | STENCIL' 0b111
      * @param clearColor - the color to clear to
      * @param frame - the frame to use when rendering to the render surface
+     * @param mipLevel - the mip level to render to
+     * @param layer - The layer of the render surface to render to. For array textures or cube maps, this specifies
+     * which layer or face to target. Defaults to 0 (the first layer).
      */
     public push(
         renderSurface: RenderSurface,
         clear: CLEAR | boolean = CLEAR.ALL,
         clearColor?: RgbaArray,
-        frame?: Rectangle
+        frame?: Rectangle,
+        mipLevel = 0,
+        layer = 0
     )
     {
-        const renderTarget = this.bind(renderSurface, clear, clearColor, frame);
+        const renderTarget = this.bind(renderSurface, clear, clearColor, frame, mipLevel, layer);
 
         this._renderTargetStack.push({
             renderTarget,
             frame,
+            mipLevel,
+            layer,
         });
 
         return renderTarget;
@@ -364,7 +474,14 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
 
         const currentRenderTargetData = this._renderTargetStack[this._renderTargetStack.length - 1];
 
-        this.bind(currentRenderTargetData.renderTarget, false, null, currentRenderTargetData.frame);
+        this.bind(
+            currentRenderTargetData.renderTarget,
+            false,
+            null,
+            currentRenderTargetData.frame,
+            currentRenderTargetData.mipLevel,
+            currentRenderTargetData.layer
+        );
     }
 
     /**
@@ -386,7 +503,32 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
     }
 
     /**
-     * Copies a render surface to another texture
+     * Copies a render surface to another texture.
+     *
+     * NOTE:
+     * for sourceRenderSurfaceTexture, The render target must be something that is written too by the renderer
+     *
+     * The following is not valid:
+     * @example
+     * const canvas = document.createElement('canvas')
+     * canvas.width = 200;
+     * canvas.height = 200;
+     *
+     * const ctx = canvas2.getContext('2d')!
+     * ctx.fillStyle = 'red'
+     * ctx.fillRect(0, 0, 200, 200);
+     *
+     * const texture = RenderTexture.create({
+     *   width: 200,
+     *   height: 200,
+     * })
+     * const renderTarget = renderer.renderTarget.getRenderTarget(canvas2);
+     *
+     * renderer.renderTarget.copyToTexture(renderTarget,texture, {x:0,y:0},{width:200,height:200},{x:0,y:0});
+     *
+     * The best way to copy a canvas is to create a texture from it. Then render with that.
+     *
+     * Parsing in a RenderTarget canvas context (with a 2d context)
      * @param sourceRenderSurfaceTexture - the render surface to copy from
      * @param destinationTexture - the texture to copy to
      * @param originSrc - the origin of the copy
@@ -447,7 +589,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         {
             this.renderTarget.stencil = true;
 
-            this.adaptor.startRenderPass(this.renderTarget, false, null, this.viewport);
+            this.adaptor.startRenderPass(this.renderTarget, false, null, this.viewport, 0, this.layer);
         }
     }
 
@@ -475,7 +617,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
 
         if (CanvasSource.test(renderSurface))
         {
-            renderSurface = getCanvasTexture(renderSurface as ICanvas);
+            renderSurface = getCanvasTexture(renderSurface as ICanvas).source;
         }
 
         if (renderSurface instanceof RenderTarget)
@@ -488,15 +630,25 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
                 colorTextures: [renderSurface],
             });
 
-            if (CanvasSource.test(renderSurface.source.resource))
+            if (renderSurface.source instanceof CanvasSource)
             {
                 renderTarget.isRoot = true;
             }
 
             // TODO add a test for this
-            renderSurface.on('destroy', () =>
+            renderSurface.once('destroy', () =>
             {
                 renderTarget.destroy();
+
+                this._renderSurfaceToRenderTargetHash.delete(renderSurface);
+
+                const gpuRenderTarget = this._gpuRenderTargetHash[renderTarget.uid];
+
+                if (gpuRenderTarget)
+                {
+                    this._gpuRenderTargetHash[renderTarget.uid] = null;
+                    this.adaptor.destroyGpuRenderTarget(gpuRenderTarget);
+                }
             });
         }
 
@@ -509,5 +661,11 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
     {
         return this._gpuRenderTargetHash[renderTarget.uid]
         || (this._gpuRenderTargetHash[renderTarget.uid] = this.adaptor.initGpuRenderTarget(renderTarget));
+    }
+
+    public resetState(): void
+    {
+        this.renderTarget = null;
+        this.renderSurface = null;
     }
 }

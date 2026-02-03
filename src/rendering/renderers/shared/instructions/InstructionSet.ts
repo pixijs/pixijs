@@ -1,5 +1,6 @@
 import { uid } from '../../../../utils/data/uid';
 
+import type { Renderable } from '../Renderable';
 import type { Instruction } from './Instruction';
 
 /**
@@ -10,12 +11,13 @@ import type { Instruction } from './Instruction';
  * Note:
  * InstructionSet.instructions contains all the instructions, but does not resize (for performance).
  * So for the true length of the instructions you need to use InstructionSet.instructionSize
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class InstructionSet
 {
     /** a unique id for this instruction set used through the renderer */
-    public readonly uid = uid('instructionSet');
+    public readonly uid: number = uid('instructionSet');
     /** the array of instructions */
     public readonly instructions: Instruction[] = [];
     /** the actual size of the array (any instructions passed this should be ignored) */
@@ -23,10 +25,27 @@ export class InstructionSet
     /** allows for access to the render pipes of the renderer */
     public renderPipes: any;
 
+    public renderables: Renderable[] = [];
+    /** used by the garbage collector to track when the instruction set was last used */
+    public gcTick = 0;
+
     /** reset the instruction set so it can be reused set size back to 0 */
     public reset()
     {
         this.instructionSize = 0;
+    }
+
+    /**
+     * Destroy the instruction set, clearing the instructions and renderables.
+     * @internal
+     */
+    public destroy()
+    {
+        this.instructions.length = 0;
+        this.renderables.length = 0;
+
+        this.renderPipes = null;
+        this.gcTick = 0;
     }
 
     /**
@@ -41,7 +60,6 @@ export class InstructionSet
     /**
      * Log the instructions to the console (for debugging)
      * @internal
-     * @ignore
      */
     public log()
     {

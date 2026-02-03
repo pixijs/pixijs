@@ -2,13 +2,12 @@ import { ensureDirSync, existsSync, readFileSync, writeFile } from 'fs-extra';
 import { dirname } from 'path';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
-import { Rectangle } from '../../src/maths/shapes/Rectangle';
-import { autoDetectRenderer } from '../../src/rendering/renderers/autoDetectRenderer';
-import { Container } from '../../src/scene/container/Container';
-import { Graphics } from '../../src/scene/graphics/shared/Graphics';
+import { Rectangle } from '~/maths';
+import { autoDetectRenderer } from '~/rendering';
+import { Container, Graphics } from '~/scene';
 
-import type { Renderer, RendererOptions } from '../../src/rendering/renderers/types';
 import type { RenderType } from './types';
+import type { Renderer, RendererOptions } from '~/rendering';
 
 function toArrayBuffer(buf: Buffer): ArrayBuffer
 {
@@ -94,28 +93,32 @@ export async function renderTest(
     const stage = new Container();
     const scene = new Container();
 
-    const { width, height } = rendererOptions;
+    const { width, height } = { ...rendererOptions, ...options };
 
     stage.addChild(new Graphics().rect(0, 0, width, height)).fill(renderer.background.color);
     stage.addChild(scene);
 
     await createFunction(scene, renderer);
 
+    const testId = `${id}-${rendererType}`;
+
     const canvas = renderer.extract.canvas({
         target: stage,
         frame: new Rectangle(0, 0, width, height)
     }) as HTMLCanvasElement;
 
-    const imageLocation = `./tests/visual/snapshots/${id}-${rendererType}.png`;
+    canvas.id = testId;
+
+    const imageLocation = `./tests/visual/snapshots/${testId}.png`;
 
     if (!existsSync(imageLocation))
     {
         await saveSnapShot(imageLocation, canvas);
     }
 
-    const prevSnapShot = loadSnapShot(imageLocation);
+    const { data: prevSnapShot, width: imgWidth, height: imgHeight } = loadSnapShot(imageLocation);
     const newSnapShot = createSnapShot(canvas);
-    const diff = new PNG({ width, height });
+    const diff = new PNG({ width: imgWidth, height: imgHeight });
 
     if (process.env.DEBUG_MODE)
     {
@@ -126,8 +129,8 @@ export async function renderTest(
         prevSnapShot,
         newSnapShot,
         diff.data,
-        width,
-        height,
+        imgWidth,
+        imgHeight,
         { threshold: 0.2 }
     );
 
@@ -175,9 +178,15 @@ function createSnapShot(canvas: HTMLCanvasElement)
  * returns an array of pixels of a saved image
  * @param input - the location of the saved image
  */
-function loadSnapShot(input: string): Uint8Array
+function loadSnapShot(input: string): { data: Uint8Array, width: number, height: number }
 {
-    return new Uint8Array(toArrayBuffer(PNG.sync.read(readFileSync(input)).data));
+    const pngData = PNG.sync.read(readFileSync(input));
+
+    return {
+        data: new Uint8Array(toArrayBuffer(pngData.data)),
+        width: pngData.width,
+        height: pngData.height,
+    };
 }
 
 /**

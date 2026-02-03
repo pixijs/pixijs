@@ -1,14 +1,18 @@
 import { ExtensionType } from '../../extensions/Extensions';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
-import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
-import { BigPool } from '../../utils/pool/PoolGroup';
-import { BatchableSprite } from '../sprite/BatchableSprite';
+import { GCManagedHash } from '../../utils/data/GCManagedHash';
+import { updateTextBounds } from '../text/utils/updateTextBounds';
+import { BatchableHTMLText } from './BatchableHTMLText';
 
+import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../rendering/renderers/types';
 import type { HTMLText } from './HTMLText';
-import type { HTMLTextStyle } from './HtmlTextStyle';
 
+/**
+ * The HTMLTextPipe class is responsible for rendering HTML text.
+ * @internal
+ */
 export class HTMLTextPipe implements RenderPipe<HTMLText>
 {
     /** @ignore */
@@ -22,188 +26,167 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     } as const;
 
     private _renderer: Renderer;
-
-    private _gpuText: Record<number, {
-        textureNeedsUploading: boolean;
-        generatingTexture: boolean;
-        texture: Texture,
-        currentKey: string,
-        batchableSprite: BatchableSprite,
-    }> = Object.create(null);
+    private readonly _managedTexts: GCManagedHash<HTMLText>;
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        renderer.runners.resolutionChange.add(this);
+        this._managedTexts = new GCManagedHash({
+            renderer,
+            type: 'renderable',
+            onUnload: this.onTextUnload.bind(this),
+            name: 'htmlText'
+        });
+    }
+
+    protected resolutionChange()
+    {
+        for (const key in this._managedTexts.items)
+        {
+            const text = this._managedTexts.items[key];
+
+            if (text?._autoResolution)
+            {
+                text.onViewUpdate();
+            }
+        }
     }
 
     public validateRenderable(htmlText: HTMLText): boolean
     {
         const gpuText = this._getGpuText(htmlText);
 
-        const newKey = htmlText._getKey();
-
-        if (gpuText.textureNeedsUploading)
-        {
-            gpuText.textureNeedsUploading = false;
-
-            return true;
-        }
+        const newKey = htmlText.styleKey;
 
         if (gpuText.currentKey !== newKey)
         {
-            // TODO - could look into optimising this a tad!
-            // if its a single texture, then we could just swap it?
-            // same for CanvasText..
             return true;
         }
 
         return false;
     }
 
-    public addRenderable(htmlText: HTMLText)
+    public addRenderable(htmlText: HTMLText, instructionSet: InstructionSet)
     {
-        const gpuText = this._getGpuText(htmlText);
-
-        const batchableSprite = gpuText.batchableSprite;
+        const batchableHTMLText = this._getGpuText(htmlText);
 
         if (htmlText._didTextUpdate)
         {
-            this._updateText(htmlText);
+            const resolution = htmlText._autoResolution ? this._renderer.resolution : htmlText.resolution;
+
+            if (batchableHTMLText.currentKey !== htmlText.styleKey || htmlText.resolution !== resolution)
+            {
+                // If the text has changed, we need to update the GPU text
+                this._updateGpuText(htmlText).catch((e) =>
+                {
+                    console.error(e);
+                });
+            }
+
+            htmlText._didTextUpdate = false;
+
+            updateTextBounds(batchableHTMLText, htmlText);
         }
 
-        this._renderer.renderPipes.batch.addToBatch(batchableSprite);
+        this._renderer.renderPipes.batch.addToBatch(batchableHTMLText, instructionSet);
     }
 
     public updateRenderable(htmlText: HTMLText)
     {
-        const gpuText = this._getGpuText(htmlText);
-        const batchableSprite = gpuText.batchableSprite;
+        const batchableHTMLText = this._getGpuText(htmlText);
 
-        if (htmlText._didTextUpdate)
-        {
-            this._updateText(htmlText);
-        }
-
-        batchableSprite.batcher.updateElement(batchableSprite);
-    }
-
-    public destroyRenderable(htmlText: HTMLText)
-    {
-        this._destroyRenderableById(htmlText.uid);
-    }
-
-    private _destroyRenderableById(htmlTextUid: number)
-    {
-        const gpuText = this._gpuText[htmlTextUid];
-
-        this._renderer.htmlText.decreaseReferenceCount(gpuText.currentKey);
-
-        BigPool.return(gpuText.batchableSprite);
-
-        this._gpuText[htmlTextUid] = null;
-    }
-
-    private _updateText(htmlText: HTMLText)
-    {
-        const newKey = htmlText._getKey();
-        const gpuText = this._getGpuText(htmlText);
-        const batchableSprite = gpuText.batchableSprite;
-
-        if (gpuText.currentKey !== newKey)
-        {
-            this._updateGpuText(htmlText).catch((e) =>
-            {
-                console.error(e);
-            });
-        }
-
-        htmlText._didTextUpdate = false;
-
-        const padding = htmlText._style.padding;
-
-        updateQuadBounds(batchableSprite.bounds, htmlText._anchor, batchableSprite.texture, padding);
+        batchableHTMLText._batcher.updateElement(batchableHTMLText);
     }
 
     private async _updateGpuText(htmlText: HTMLText)
     {
         htmlText._didTextUpdate = false;
+        const batchableHTMLText = this._getGpuText(htmlText);
 
-        const gpuText = this._getGpuText(htmlText);
+        if (batchableHTMLText.generatingTexture) return;
 
-        if (gpuText.generatingTexture) return;
+        // We need to preserve the current texture and don't release it until the new texture is generated.
+        // It's necessary to ensure that the texture won't be captured by another field and overwritten with their
+        // content, while our texture is still in progress.
+        const oldTexturePromise = batchableHTMLText.texturePromise;
 
-        const newKey = htmlText._getKey();
+        batchableHTMLText.texturePromise = null;
 
-        this._renderer.htmlText.decreaseReferenceCount(gpuText.currentKey);
+        batchableHTMLText.generatingTexture = true;
 
-        gpuText.generatingTexture = true;
+        htmlText._resolution = htmlText._autoResolution ? this._renderer.resolution : htmlText.resolution;
 
-        gpuText.currentKey = newKey;
+        let texturePromise = this._renderer.htmlText.getTexturePromise(htmlText);
 
-        const resolution = htmlText.resolution ?? this._renderer.resolution;
+        if (oldTexturePromise)
+        {
+            // Release old texture after new one is generated.
+            texturePromise = texturePromise.finally(() =>
+            {
+                this._renderer.htmlText.decreaseReferenceCount(batchableHTMLText.currentKey);
+                this._renderer.htmlText.returnTexturePromise(oldTexturePromise);
+            });
+        }
 
-        const texture = await this._renderer.htmlText.getManagedTexture(
-            htmlText.text,
-            resolution,
-            htmlText._style as HTMLTextStyle,
-            htmlText._getKey()
-        );
+        batchableHTMLText.texturePromise = texturePromise;
+        batchableHTMLText.currentKey = htmlText.styleKey;
 
-        const batchableSprite = gpuText.batchableSprite;
+        batchableHTMLText.texture = await texturePromise;
 
-        batchableSprite.texture = gpuText.texture = texture;
+        // need a rerender...
+        const renderGroup = htmlText.renderGroup || htmlText.parentRenderGroup;
 
-        gpuText.generatingTexture = false;
+        if (renderGroup)
+        {
+            // need a rebuild of the render group
+            renderGroup.structureDidChange = true;
+        }
 
-        gpuText.textureNeedsUploading = true;
-        htmlText.onViewUpdate();
+        batchableHTMLText.generatingTexture = false;
 
-        const padding = htmlText._style.padding;
-
-        updateQuadBounds(batchableSprite.bounds, htmlText._anchor, batchableSprite.texture, padding);
+        updateTextBounds(batchableHTMLText, htmlText);
     }
 
     private _getGpuText(htmlText: HTMLText)
     {
-        return this._gpuText[htmlText.uid] || this.initGpuText(htmlText);
+        return htmlText._gpuData[this._renderer.uid] || this.initGpuText(htmlText);
     }
 
     public initGpuText(htmlText: HTMLText)
     {
-        const gpuTextData: HTMLTextPipe['_gpuText'][number] = {
-            texture: Texture.EMPTY,
-            currentKey: '--',
-            batchableSprite: BigPool.get(BatchableSprite),
-            textureNeedsUploading: false,
-            generatingTexture: false,
-        };
+        const batchableHTMLText = new BatchableHTMLText();
 
-        const batchableSprite = gpuTextData.batchableSprite;
+        batchableHTMLText.renderable = htmlText;
+        batchableHTMLText.transform = htmlText.groupTransform;
+        batchableHTMLText.texture = Texture.EMPTY;
+        batchableHTMLText.bounds = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
+        batchableHTMLText.roundPixels = (this._renderer._roundPixels | htmlText._roundPixels) as 0 | 1;
 
-        batchableSprite.renderable = htmlText;
-        batchableSprite.texture = Texture.EMPTY;
-        batchableSprite.bounds = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
-        batchableSprite.roundPixels = (this._renderer._roundPixels | htmlText._roundPixels) as 0 | 1;
+        htmlText._resolution = htmlText._autoResolution ? this._renderer.resolution : htmlText.resolution;
+        htmlText._gpuData[this._renderer.uid] = batchableHTMLText;
 
-        this._gpuText[htmlText.uid] = gpuTextData;
+        this._managedTexts.add(htmlText);
 
-        // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
-        htmlText.on('destroyed', () =>
-        {
-            this.destroyRenderable(htmlText);
-        });
+        return batchableHTMLText;
+    }
 
-        return gpuTextData;
+    protected onTextUnload(text: HTMLText)
+    {
+        const gpuData = text._gpuData[this._renderer.uid];
+
+        if (!gpuData) return;
+
+        const { htmlText } = this._renderer;
+
+        htmlText.getReferenceCount(gpuData.currentKey) === null
+            ? htmlText.returnTexturePromise(gpuData.texturePromise)
+            : htmlText.decreaseReferenceCount(gpuData.currentKey);
     }
 
     public destroy()
     {
-        for (const i in this._gpuText)
-        {
-            this._destroyRenderableById(i as unknown as number);
-        }
-
-        this._gpuText = null;
+        this._managedTexts.destroy();
         this._renderer = null;
     }
 }

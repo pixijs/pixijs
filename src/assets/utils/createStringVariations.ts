@@ -23,6 +23,7 @@ function processX(base: string, ids: string[][], depth: number, result: string[]
  * const out2 = createStringVariations('name is {chicken,wolf,sheep}');
  * console.log(out2); // [ 'name is chicken', 'name is wolf', 'name is sheep' ]
  * @param string - The string to process
+ * @internal
  */
 export function createStringVariations(string: string): string[]
 {

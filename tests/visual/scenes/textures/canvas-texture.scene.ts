@@ -1,8 +1,8 @@
-import { Texture } from '../../../../src/rendering/renderers/shared/texture/Texture';
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
+import { Texture } from '~/rendering';
+import { Graphics } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should not clear a canvas after it has been resized',
@@ -34,6 +34,6 @@ export const scene: TestScene = {
 
         rect.clear();
         rect.rect(0, 0, 128, 128);
-        rect.fill({ texture });
+        rect.fill({ texture, textureSpace: 'global' });
     },
 };

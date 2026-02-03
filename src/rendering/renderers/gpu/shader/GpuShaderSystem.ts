@@ -1,9 +1,14 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 
-import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
 import type { GpuProgram } from './GpuProgram';
 
+/**
+ * Data structure for GPU program layout.
+ * Contains bind group layouts and pipeline layout.
+ * @category rendering
+ * @advanced
+ */
 export interface GPUProgramData
 {
     bindGroups: GPUBindGroupLayout[]
@@ -12,9 +17,10 @@ export interface GPUProgramData
 
 /**
  * A system that manages the rendering of GpuPrograms.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
-export class GpuShaderSystem implements System
+export class GpuShaderSystem
 {
     /** @ignore */
     public static extension = {

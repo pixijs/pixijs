@@ -3,18 +3,19 @@ import { Rectangle } from '../../maths/shapes/Rectangle';
 import { CanvasPool } from '../../rendering/renderers/shared/texture/CanvasPool';
 import { ImageSource } from '../../rendering/renderers/shared/texture/sources/ImageSource';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
+import { TextureStyle, type TextureStyleOptions } from '../../rendering/renderers/shared/texture/TextureStyle';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
 import { fontStringFromTextStyle } from '../text/canvas/utils/fontStringFromTextStyle';
 import { getCanvasFillStyle } from '../text/canvas/utils/getCanvasFillStyle';
+import { TextStyle } from '../text/TextStyle';
 import { AbstractBitmapFont } from './AbstractBitmapFont';
-import { resolveCharacters } from './utils/resolveCharacters';
 
 import type { ICanvasRenderingContext2D } from '../../environment/canvas/ICanvasRenderingContext2D';
 import type { CanvasAndContext } from '../../rendering/renderers/shared/texture/CanvasPool';
-import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
-import type { TextStyle } from '../text/TextStyle';
+import type { FontMetrics } from '../text/canvas/utils/types';
 
+/** @internal */
 export interface DynamicBitmapFontOptions
 {
     style: TextStyle
@@ -23,15 +24,23 @@ export interface DynamicBitmapFontOptions
     padding?: number
     overrideFill?: boolean
     overrideSize?: boolean
+    textureSize?: number
+    mipmap?: boolean
+    textureStyle?: TextureStyle | TextureStyleOptions
 }
 
 /**
  * A BitmapFont that generates its glyphs dynamically.
- * @memberof text
- * @ignore
+ * @category text
+ * @internal
  */
 export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 {
+    public static defaultOptions: DynamicBitmapFontOptions = {
+        textureSize: 512,
+        style: new TextStyle(),
+        mipmap: true,
+    };
     /**
      * this is a resolution modifier for the font size..
      * texture resolution will also be used to scale texture according to its font size also
@@ -40,14 +49,18 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
     /** The pages of the font. */
     public override readonly pages: {canvasAndContext?: CanvasAndContext, texture: Texture}[] = [];
 
-    private readonly _padding: number = 4;
+    private readonly _padding: number = 0;
     private readonly _measureCache: Record<string, number> = Object.create(null);
     private _currentChars: string[] = [];
     private _currentX = 0;
     private _currentY = 0;
+    private _currentMaxCharHeight = 0;
     private _currentPageIndex = -1;
     private readonly _style: TextStyle;
     private readonly _skipKerning: boolean = false;
+    private readonly _textureSize: number;
+    private readonly _mipmap: boolean;
+    private readonly _textureStyle?: TextureStyle;
 
     /**
      * @param options - The options for the dynamic bitmap font.
@@ -56,7 +69,11 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
     {
         super();
 
-        const dynamicOptions = options;
+        const dynamicOptions = { ...DynamicBitmapFont.defaultOptions, ...options };
+
+        this._textureSize = dynamicOptions.textureSize;
+        this._mipmap = dynamicOptions.mipmap;
+
         const style = dynamicOptions.style.clone();
 
         if (dynamicOptions.overrideFill)
@@ -67,6 +84,8 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
             style._fill.texture = Texture.WHITE;
             style._fill.fill = null;
         }
+
+        this.applyFillAsTint = dynamicOptions.overrideFill;
 
         const requestedFontSize = style.fontSize;
 
@@ -95,13 +114,20 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         this.resolution = dynamicOptions.resolution ?? 1;
         this._padding = dynamicOptions.padding ?? 4;
 
+        if (dynamicOptions.textureStyle)
+        {
+            this._textureStyle = dynamicOptions.textureStyle instanceof TextureStyle
+                ? dynamicOptions.textureStyle
+                : new TextureStyle(dynamicOptions.textureStyle);
+        }
+
         (this.fontMetrics as FontMetrics) = CanvasTextMetrics.measureFont(font);
         (this.lineHeight as number) = style.lineHeight || this.fontMetrics.fontSize || style.fontSize;
     }
 
     public ensureCharacters(chars: string): void
     {
-        const charList = resolveCharacters(chars)
+        const charList = CanvasTextMetrics.graphemeSegmenter(chars)
             .filter((char) => !this._currentChars.includes(char))
             .filter((char, index, self) => self.indexOf(char) === index);
         // filter returns..
@@ -128,13 +154,15 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 
         let currentX = this._currentX;
         let currentY = this._currentY;
+        let currentMaxCharHeight = this._currentMaxCharHeight;
 
         const fontScale = this.baseRenderedFontSize / this.baseMeasurementFontSize;
         const padding = this._padding * fontScale;
 
-        const widthScale = style.fontStyle === 'italic' ? 2 : 1;
-        let maxCharHeight = 0;
         let skipTexture = false;
+
+        const maxTextureWidth = canvas.width / this.resolution;
+        const maxTextureHeight = canvas.height / this.resolution;
 
         for (let i = 0; i < charList.length; i++)
         {
@@ -142,14 +170,17 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 
             const metrics = CanvasTextMetrics.measureText(char, style, canvas, false);
 
-            // override the line height.. we want this to be the glyps heigh
+            // override the line height.. we want this to be the glyps height
             // not the user specified one.
             metrics.lineHeight = metrics.height;
 
-            const width = (widthScale * metrics.width) * fontScale;
+            const width = metrics.width * fontScale;
+            // This is ugly - but italics are given more space so they don't overlap
+            const textureGlyphWidth = Math.ceil((style.fontStyle === 'italic' ? 2 : 1) * width);
+
             const height = (metrics.height) * fontScale;
 
-            const paddedWidth = width + (padding * 2);
+            const paddedWidth = textureGlyphWidth + (padding * 2);
             const paddedHeight = height + (padding * 2);
 
             skipTexture = false;
@@ -157,18 +188,18 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
             if (char !== '\n' && char !== '\r' && char !== '\t' && char !== ' ')
             {
                 skipTexture = true;
-                maxCharHeight = Math.ceil(Math.max(paddedHeight, maxCharHeight));// / 1.5;
+                currentMaxCharHeight = Math.ceil(Math.max(paddedHeight, currentMaxCharHeight));
             }
 
-            if (currentX + paddedWidth > 512)
+            if (currentX + paddedWidth > maxTextureWidth)
             {
-                currentY += maxCharHeight;
+                currentY += currentMaxCharHeight;
 
                 // reset the line x and height..
-                maxCharHeight = paddedHeight;
+                currentMaxCharHeight = paddedHeight;
                 currentX = 0;
 
-                if (currentY + maxCharHeight > 512)
+                if (currentY + currentMaxCharHeight > maxTextureHeight)
                 {
                     textureSource.update();
 
@@ -178,7 +209,9 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                     context = pageData.canvasAndContext.context;
                     textureSource = pageData.texture.source;
 
+                    currentX = 0;
                     currentY = 0;
+                    currentMaxCharHeight = 0;
                 }
             }
 
@@ -223,14 +256,13 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 
                 currentX += Math.ceil(paddedWidth);
             }
-
-            // now add it to the font data..
         }
 
         textureSource.update();
 
         this._currentX = currentX;
         this._currentY = currentY;
+        this._currentMaxCharHeight = currentMaxCharHeight;
 
         // now apply kerning..
         this._skipKerning && this._applyKerning(charList, context);
@@ -295,7 +327,11 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         this._currentPageIndex++;
 
         const textureResolution = this.resolution;
-        const canvasAndContext = CanvasPool.getOptimalCanvasAndContext(512, 512, textureResolution);
+        const canvasAndContext = CanvasPool.getOptimalCanvasAndContext(
+            this._textureSize,
+            this._textureSize,
+            textureResolution
+        );
 
         this._setupContext(canvasAndContext.context, this._style, textureResolution);
 
@@ -304,10 +340,16 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
             source: new ImageSource({
                 resource: canvasAndContext.canvas,
                 resolution,
-                alphaMode: 'premultiply-alpha-on-upload'
+                alphaMode: 'premultiply-alpha-on-upload',
+                autoGenerateMipmaps: this._mipmap,
             }),
 
         });
+
+        if (this._textureStyle)
+        {
+            texture.source.style = this._textureStyle;
+        }
 
         const pageData = {
             canvasAndContext,
@@ -390,14 +432,32 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         const descent = fontProperties.descent * fontScale;
         const lineHeight = metrics.lineHeight * fontScale;
 
+        let removeShadow = false;
+
         if (style.stroke && strokeThickness)
         {
+            removeShadow = true;
             context.strokeText(char, tx, ty + lineHeight - descent);
         }
 
+        const { shadowBlur, shadowOffsetX, shadowOffsetY } = context;
+
         if (style._fill)
         {
+            if (removeShadow)
+            {
+                context.shadowBlur = 0;
+                context.shadowOffsetX = 0;
+                context.shadowOffsetY = 0;
+            }
             context.fillText(char, tx, ty + lineHeight - descent);
+        }
+
+        if (removeShadow)
+        {
+            context.shadowBlur = shadowBlur;
+            context.shadowOffsetX = shadowOffsetX;
+            context.shadowOffsetY = shadowOffsetY;
         }
     }
 

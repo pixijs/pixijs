@@ -4,6 +4,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
 /**
+ * Implements the Negation blend mode which creates an inverted effect based on the brightness values.
+ *
  * Available as `container.blendMode = 'negation'` after importing `pixi.js/advanced-blend-modes`.
  * @example
  * import 'pixi.js/advanced-blend-modes';
@@ -11,6 +13,8 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'negation'
+ * @category filters
+ * @noInheritDoc
  */
 export class NegationBlend extends BlendModeFilter
 {
@@ -36,7 +40,7 @@ export class NegationBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                finalColor = vec4(blendNegation(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendNegation(back.rgb, front.rgb, front.a), blendedAlpha) * uBlend;
                 `
             },
             gpu: {
@@ -52,7 +56,7 @@ export class NegationBlend extends BlendModeFilter
                 }
             `,
                 main: `
-                out = vec4<f32>(blendNegationOpacity(back.rgb, front.rgb, front.a), blendUniforms.uBlend);
+                out = vec4<f32>(blendNegationOpacity(back.rgb, front.rgb, front.a), blendedAlpha) * blendUniforms.uBlend;
             `
             }
         });

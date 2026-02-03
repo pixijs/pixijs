@@ -1,7 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { getTextureBatchBindGroup } from '../../../rendering/batcher/gpu/getTextureBatchBindGroup';
-import { MAX_TEXTURES } from '../../../rendering/batcher/shared/const';
 import { compileHighShaderGpuProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
 import { colorBit } from '../../../rendering/high-shader/shader-bits/colorBit';
 import { generateTextureBatchBit } from '../../../rendering/high-shader/shader-bits/generateTextureBatchBit';
@@ -9,16 +8,18 @@ import { localUniformBitGroup2 } from '../../../rendering/high-shader/shader-bit
 import { roundPixelsBit } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
+import { type Renderer } from '../../../rendering/renderers/types';
 
 import type { Batch } from '../../../rendering/batcher/shared/Batcher';
 import type { GpuEncoderSystem } from '../../../rendering/renderers/gpu/GpuEncoderSystem';
 import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURenderer';
+import type { Topology } from '../../../rendering/renderers/shared/geometry/const';
 import type { Graphics } from '../shared/Graphics';
 import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
 
 /**
  * A GraphicsAdaptor that uses the GPU to render graphics.
- * @memberof rendering
+ * @category rendering
  * @ignore
  */
 export class GpuGraphicsAdaptor implements GraphicsAdaptor
@@ -33,7 +34,9 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
 
     public shader: Shader;
 
-    public init()
+    private _maxTextures = 0;
+
+    public contextChange(renderer: Renderer): void
     {
         const localUniforms = new UniformGroup({
             uTransformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
@@ -41,11 +44,13 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
             uRound: { value: 0, type: 'f32' },
         });
 
+        this._maxTextures = renderer.limits.maxBatchableTextures;
+
         const gpuProgram = compileHighShaderGpuProgram({
             name: 'graphics',
             bits: [
                 colorBit,
-                generateTextureBatchBit(MAX_TEXTURES),
+                generateTextureBatchBit(this._maxTextures),
 
                 localUniformBitGroup2,
                 roundPixelsBit
@@ -69,7 +74,7 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
         const contextSystem = renderer.graphicsContext;
 
         const {
-            geometry, instructions
+            batcher, instructions
         } = contextSystem.getContextRenderData(context);
 
         // WebGPU specific...
@@ -77,13 +82,7 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
         // TODO perf test this a bit...
         const encoder = renderer.encoder as GpuEncoderSystem;
 
-        encoder.setPipelineFromGeometryProgramAndState(
-            geometry,
-            shader.gpuProgram,
-            graphicsPipe.state
-        );
-
-        encoder.setGeometry(geometry);
+        encoder.setGeometry(batcher.geometry, shader.gpuProgram);
 
         const globalUniformsBindGroup = renderer.globalUniforms.bindGroup;
 
@@ -96,9 +95,23 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
 
         const batches = instructions.instructions as Batch[];
 
+        let topology: Topology = null;
+
         for (let i = 0; i < instructions.instructionSize; i++)
         {
             const batch = batches[i];
+
+            if (batch.topology !== topology)
+            {
+                topology = batch.topology;
+
+                encoder.setPipelineFromGeometryProgramAndState(
+                    batcher.geometry,
+                    shader.gpuProgram,
+                    graphicsPipe.state,
+                    batch.topology
+                );
+            }
 
             shader.groups[1] = batch.bindGroup;
 
@@ -106,7 +119,12 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
             {
                 const textureBatch = batch.textures;
 
-                batch.bindGroup = getTextureBatchBindGroup(textureBatch.textures, textureBatch.count);
+                batch.bindGroup = getTextureBatchBindGroup(
+                    textureBatch.textures,
+                    textureBatch.count,
+                    this._maxTextures
+                );
+
                 batch.gpuBindGroup = renderer.bindGroup.getBindGroup(
                     batch.bindGroup, shader.gpuProgram, 1
                 );

@@ -8,7 +8,8 @@ import type { BindableTexture } from '../texture/Texture';
 
 /**
  * Options for creating a render target.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export interface RenderTargetOptions
 {
@@ -39,7 +40,8 @@ export interface RenderTargetOptions
  *
  * If you need something more complex than a Texture to render to, you should use this class.
  * Under the hood, all textures you render to have a RenderTarget created on their behalf.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class RenderTarget
 {
@@ -63,7 +65,8 @@ export class RenderTarget
         isRoot: false
     };
 
-    public uid = uid('renderTarget');
+    /** unique id for this render target */
+    public readonly uid: number = uid('renderTarget');
 
     /**
      * An array of textures that can be written to by the GPU - mostly this has one texture in Pixi, but you could
@@ -81,6 +84,8 @@ export class RenderTarget
     public isRoot = false;
 
     private readonly _size = new Float32Array(2);
+    /** if true, then when the render target is destroyed, it will destroy all the textures that were created for it. */
+    private readonly _managedColorTextures: boolean = false;
 
     /**
      * @param [descriptor] - Options for creating a render target.
@@ -95,6 +100,8 @@ export class RenderTarget
 
         if (typeof descriptor.colorTextures === 'number')
         {
+            this._managedColorTextures = true;
+
             for (let i = 0; i < descriptor.colorTextures; i++)
             {
                 this.colorTextures.push(new TextureSource({
@@ -183,7 +190,6 @@ export class RenderTarget
      * This will ensure a depthStencil texture is created for this render target.
      * Most likely called by the mask system to make sure we have stencil buffer added.
      * @internal
-     * @ignore
      */
     public ensureDepthStencilTexture()
     {
@@ -222,6 +228,14 @@ export class RenderTarget
     public destroy()
     {
         this.colorTexture.source.off('resize', this.onSourceResize, this);
+
+        if (this._managedColorTextures)
+        {
+            this.colorTextures.forEach((texture) =>
+            {
+                texture.destroy();
+            });
+        }
 
         if (this.depthStencilTexture)
         {

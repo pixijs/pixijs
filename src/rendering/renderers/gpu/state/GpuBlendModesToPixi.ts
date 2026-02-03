@@ -1,5 +1,6 @@
 import type { BLEND_MODES } from '../../shared/state/const';
 
+/** @internal */
 export const GpuBlendModesToPixi: Partial<Record<BLEND_MODES, GPUBlendState>> = {};
 
 GpuBlendModesToPixi.normal = {
@@ -130,6 +131,32 @@ GpuBlendModesToPixi.erase = {
         srcFactor: 'zero',
         dstFactor: 'one-minus-src',
         operation: 'add',
+    },
+};
+
+GpuBlendModesToPixi.min = {
+    alpha: {
+        srcFactor: 'one',
+        dstFactor: 'one',
+        operation: 'min',
+    },
+    color: {
+        srcFactor: 'one',
+        dstFactor: 'one',
+        operation: 'min',
+    },
+};
+
+GpuBlendModesToPixi.max = {
+    alpha: {
+        srcFactor: 'one',
+        dstFactor: 'one',
+        operation: 'max',
+    },
+    color: {
+        srcFactor: 'one',
+        dstFactor: 'one',
+        operation: 'max',
     },
 };
 

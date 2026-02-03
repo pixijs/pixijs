@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import type { RenderTarget } from './RenderTarget';
 
 /**
@@ -5,6 +6,7 @@ import type { RenderTarget } from './RenderTarget';
  * Basically, is it a canvas element and is that canvas element in the DOM
  * @param renderTarget - the render target to check
  * @returns true if the render target is viewable on the screen
+ * @internal
  */
 export function isRenderingToScreen(renderTarget: RenderTarget): boolean
 {

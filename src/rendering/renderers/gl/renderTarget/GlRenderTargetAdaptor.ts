@@ -9,11 +9,12 @@ import type { RenderTarget } from '../../shared/renderTarget/RenderTarget';
 import type { RenderTargetAdaptor, RenderTargetSystem } from '../../shared/renderTarget/RenderTargetSystem';
 import type { Texture } from '../../shared/texture/Texture';
 import type { CLEAR_OR_BOOL } from '../const';
+import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 
 /**
  * The WebGL adaptor for the render target system. Allows the Render Target System to be used with the WebGL renderer
- * @memberof rendering
+ * @category rendering
  * @ignore
  */
 export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget>
@@ -22,6 +23,8 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
     private _renderer: WebGLRenderer<HTMLCanvasElement>;
     private _clearColorCache: RgbaArray = [0, 0, 0, 0];
     private _viewPortCache: Rectangle = new Rectangle();
+    /** Pre-computed draw buffers arrays for MRT, indexed by color attachment count */
+    private _drawBuffersCache: number[][];
 
     public init(renderer: WebGLRenderer, renderTargetSystem: RenderTargetSystem<GlRenderTarget>): void
     {
@@ -35,6 +38,16 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
     {
         this._clearColorCache = [0, 0, 0, 0];
         this._viewPortCache = new Rectangle();
+
+        // Pre-compute draw buffers arrays for all possible MRT configurations
+        const gl = this._renderer.gl;
+
+        this._drawBuffersCache = [];
+
+        for (let i = 1; i <= 16; i++)
+        {
+            this._drawBuffersCache[i] = Array.from({ length: i }, (_, j) => gl.COLOR_ATTACHMENT0 + j);
+        }
     }
 
     public copyToTexture(
@@ -72,7 +85,9 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         renderTarget: RenderTarget,
         clear: CLEAR_OR_BOOL = true,
         clearColor?: RgbaArray,
-        viewport?: Rectangle
+        viewport?: Rectangle,
+        mipLevel = 0,
+        layer = 0
     )
     {
         const renderTargetSystem = this._renderTargetSystem;
@@ -80,12 +95,33 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         const source = renderTarget.colorTexture;
         const gpuRenderTarget = renderTargetSystem.getGpuRenderTarget(renderTarget);
 
+        // validation..
+        if (layer !== 0 && this._renderer.context.webGLVersion < 2)
+        {
+            throw new Error('[RenderTargetSystem] Rendering to array layers requires WebGL2.');
+        }
+
+        if (mipLevel > 0)
+        {
+            if (gpuRenderTarget.msaa)
+            {
+                throw new Error('[RenderTargetSystem] Rendering to mip levels is not supported with MSAA render targets.');
+            }
+
+            if (this._renderer.context.webGLVersion < 2)
+            {
+                throw new Error('[RenderTargetSystem] Rendering to mip levels requires WebGL2.');
+            }
+        }
+
+        // do the work..
+
         let viewPortY = viewport.y;
 
         if (renderTarget.isRoot)
         {
             // /TODO this is the same logic?
-            viewPortY = source.pixelHeight - viewport.height;
+            viewPortY = source.pixelHeight - viewport.height - viewport.y;
         }
 
         // unbind the current render texture..
@@ -97,6 +133,80 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         const gl = this._renderer.gl;
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, gpuRenderTarget.framebuffer);
+
+        // Re-attach color textures at the requested mip level.
+        // (Framebuffer attachments are per-FBO, so we must re-attach when mipLevel changes.)
+        // IMPORTANT: This must also run when returning from mip>0 back to mip=0, because attachments are stateful.
+        if (
+            !renderTarget.isRoot
+            && (gpuRenderTarget._attachedMipLevel !== mipLevel
+                || gpuRenderTarget._attachedLayer !== layer)
+        )
+        {
+            renderTarget.colorTextures.forEach((colorTexture, i) =>
+            {
+                const glSource = this._renderer.texture.getGlSource(colorTexture);
+
+                if (glSource.target === gl.TEXTURE_2D)
+                {
+                    if (layer !== 0)
+                    {
+                        throw new Error('[RenderTargetSystem] layer must be 0 when rendering to 2D textures in WebGL.');
+                    }
+
+                    gl.framebufferTexture2D(
+                        gl.FRAMEBUFFER,
+                        gl.COLOR_ATTACHMENT0 + i,
+                        gl.TEXTURE_2D,
+                        glSource.texture,
+                        mipLevel
+                    );
+                }
+                else if (glSource.target === (gl as any).TEXTURE_2D_ARRAY)
+                {
+                    if (this._renderer.context.webGLVersion < 2)
+                    {
+                        throw new Error('[RenderTargetSystem] Rendering to 2D array textures requires WebGL2.');
+                    }
+
+                    (gl as any as WebGL2RenderingContext).framebufferTextureLayer(
+                        gl.FRAMEBUFFER,
+                        gl.COLOR_ATTACHMENT0 + i,
+                        glSource.texture,
+                        mipLevel,
+                        layer
+                    );
+                }
+                else if (glSource.target === gl.TEXTURE_CUBE_MAP)
+                {
+                    if (layer < 0 || layer > 5)
+                    {
+                        throw new Error('[RenderTargetSystem] Cube map layer must be between 0 and 5.');
+                    }
+
+                    gl.framebufferTexture2D(
+                        gl.FRAMEBUFFER,
+                        gl.COLOR_ATTACHMENT0 + i,
+                        gl.TEXTURE_CUBE_MAP_POSITIVE_X + layer,
+                        glSource.texture,
+                        mipLevel
+                    );
+                }
+                else
+                {
+                    throw new Error('[RenderTargetSystem] Unsupported texture target for render-to-layer in WebGL.');
+                }
+            });
+
+            gpuRenderTarget._attachedMipLevel = mipLevel;
+            gpuRenderTarget._attachedLayer = layer;
+        }
+
+        // Set draw buffers for multiple render targets (MRT)
+        if (renderTarget.colorTextures.length > 1)
+        {
+            this._setDrawBuffers(renderTarget, gl);
+        }
 
         const viewPortCache = this._viewPortCache;
 
@@ -162,9 +272,16 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         const glRenderTarget = new GlRenderTarget();
 
-        // we are rendering to a canvas..
-        if (CanvasSource.test(renderTarget.colorTexture.resource))
+        glRenderTarget._attachedMipLevel = 0;
+        glRenderTarget._attachedLayer = 0;
+
+        // we are rendering to the main canvas..
+        const colorTexture = renderTarget.colorTexture;
+
+        if (colorTexture instanceof CanvasSource)
         {
+            this._renderer.context.ensureCanvasSize(renderTarget.colorTexture.resource);
+
             glRenderTarget.framebuffer = null;
 
             return glRenderTarget;
@@ -179,9 +296,51 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         return glRenderTarget;
     }
 
-    public clear(_renderTarget: RenderTarget, clear: CLEAR_OR_BOOL, clearColor?: RgbaArray)
+    public destroyGpuRenderTarget(gpuRenderTarget: GlRenderTarget)
+    {
+        const gl = this._renderer.gl;
+
+        if (gpuRenderTarget.framebuffer)
+        {
+            gl.deleteFramebuffer(gpuRenderTarget.framebuffer);
+            gpuRenderTarget.framebuffer = null;
+        }
+
+        if (gpuRenderTarget.resolveTargetFramebuffer)
+        {
+            gl.deleteFramebuffer(gpuRenderTarget.resolveTargetFramebuffer);
+            gpuRenderTarget.resolveTargetFramebuffer = null;
+        }
+
+        if (gpuRenderTarget.depthStencilRenderBuffer)
+        {
+            gl.deleteRenderbuffer(gpuRenderTarget.depthStencilRenderBuffer);
+            gpuRenderTarget.depthStencilRenderBuffer = null;
+        }
+
+        gpuRenderTarget.msaaRenderBuffer.forEach((renderBuffer) =>
+        {
+            gl.deleteRenderbuffer(renderBuffer);
+        });
+
+        gpuRenderTarget.msaaRenderBuffer = null;
+    }
+
+    public clear(
+        _renderTarget: RenderTarget,
+        clear: CLEAR_OR_BOOL,
+        clearColor?: RgbaArray,
+        _viewport?: Rectangle,
+        _mipLevel = 0,
+        layer = 0
+    )
     {
         if (!clear) return;
+
+        if (layer !== 0)
+        {
+            throw new Error('[RenderTargetSystem] Clearing array layers is not supported in WebGL renderer.');
+        }
 
         const renderTargetSystem = this._renderTargetSystem;
 
@@ -227,7 +386,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         this._resizeColor(renderTarget, glRenderTarget);
 
-        if (renderTarget.stencil)
+        if (renderTarget.stencil || renderTarget.depth)
         {
             this._resizeStencil(glRenderTarget);
         }
@@ -249,7 +408,9 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         glRenderTarget.width = renderTarget.colorTexture.source.pixelWidth;
         glRenderTarget.height = renderTarget.colorTexture.source.pixelHeight;
 
-        renderTarget.colorTextures.forEach((colorTexture, i) =>
+        const colorTextures = renderTarget.colorTextures;
+
+        colorTextures.forEach((colorTexture, i) =>
         {
             const source = colorTexture.source;
 
@@ -271,11 +432,46 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
             const glTexture = glSource.texture;
 
-            gl.framebufferTexture2D(gl.FRAMEBUFFER,
-                gl.COLOR_ATTACHMENT0 + i,
-                3553, // texture.target,
-                glTexture,
-                0);// mipLevel);
+            // Initial attachment is mip 0, layer 0.
+            if (glSource.target === gl.TEXTURE_2D)
+            {
+                gl.framebufferTexture2D(
+                    gl.FRAMEBUFFER,
+                    gl.COLOR_ATTACHMENT0 + i,
+                    gl.TEXTURE_2D,
+                    glTexture,
+                    0
+                );
+            }
+            else if (glSource.target === (gl as any).TEXTURE_2D_ARRAY)
+            {
+                if (renderer.context.webGLVersion < 2)
+                {
+                    throw new Error('[RenderTargetSystem] TEXTURE_2D_ARRAY requires WebGL2.');
+                }
+
+                (gl as any as WebGL2RenderingContext).framebufferTextureLayer(
+                    gl.FRAMEBUFFER,
+                    gl.COLOR_ATTACHMENT0 + i,
+                    glTexture,
+                    0,
+                    0
+                );
+            }
+            else if (glSource.target === gl.TEXTURE_CUBE_MAP)
+            {
+                gl.framebufferTexture2D(
+                    gl.FRAMEBUFFER,
+                    gl.COLOR_ATTACHMENT0 + i,
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+                    glTexture,
+                    0
+                );
+            }
+            else
+            {
+                throw new Error('[RenderTargetSystem] Unsupported texture target for framebuffer attachment.');
+            }
         });
 
         if (glRenderTarget.msaa)
@@ -307,6 +503,10 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         glRenderTarget.width = source.pixelWidth;
         glRenderTarget.height = source.pixelHeight;
+        // After a resize, attachments are implicitly at mip 0 again (and non-zero mip allocations may have changed).
+        // Force a re-attach on next mip render.
+        glRenderTarget._attachedMipLevel = 0;
+        glRenderTarget._attachedLayer = 0;
 
         renderTarget.colorTextures.forEach((colorTexture, i) =>
         {
@@ -415,6 +615,61 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
                 glRenderTarget.width,
                 glRenderTarget.height
             );
+        }
+    }
+
+    public prerender(renderTarget: RenderTarget)
+    {
+        const resource = renderTarget.colorTexture.resource;
+
+        // if the render target is a canvas, ensure its size matches the source
+        if (this._renderer.context.multiView && CanvasSource.test(resource))
+        {
+            this._renderer.context.ensureCanvasSize(resource);
+        }
+    }
+
+    public postrender(renderTarget: RenderTarget)
+    {
+        // if multiView is not enabled, we don't need to do anything
+        if (!this._renderer.context.multiView) return;
+
+        // if the render target is a canvas, we need to copy the pixels from the gl canvas
+        // to the canvas target
+        if (CanvasSource.test(renderTarget.colorTexture.resource))
+        {
+            const contextCanvas = this._renderer.context.canvas;
+            const canvasSource = renderTarget.colorTexture as unknown as CanvasSource;
+
+            canvasSource.context2D.drawImage(
+                contextCanvas as CanvasImageSource,
+                0, canvasSource.pixelHeight - contextCanvas.height
+            );
+        }
+    }
+
+    private _setDrawBuffers(renderTarget: RenderTarget, gl: GlRenderingContext): void
+    {
+        const count = renderTarget.colorTextures.length;
+        const bufferArray = this._drawBuffersCache[count];
+
+        if (this._renderer.context.webGLVersion === 1)
+        {
+            const ext = this._renderer.context.extensions.drawBuffers;
+
+            if (!ext)
+            {
+                warn('[RenderTexture] This WebGL1 context does not support rendering to multiple targets');
+            }
+            else
+            {
+                ext.drawBuffersWEBGL(bufferArray);
+            }
+        }
+        else
+        {
+            // WebGL2 has built in support
+            gl.drawBuffers(bufferArray);
         }
     }
 }

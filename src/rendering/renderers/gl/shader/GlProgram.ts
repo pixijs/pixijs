@@ -9,14 +9,7 @@ import { stripVersion } from './program/preprocessors/stripVersion';
 import type { TypedArray } from '../../shared/buffer/Buffer';
 import type { ExtractedAttributeData } from './program/extractAttributesFromGlProgram';
 
-export interface GlAttributeData
-{
-    type: string;
-    size: number;
-    location: number;
-    name: string;
-}
-
+/** @internal */
 export interface GlUniformData
 {
     name: string;
@@ -27,6 +20,7 @@ export interface GlUniformData
     value: any;
 }
 
+/** @internal */
 export interface GlUniformBlockData
 {
     index: number;
@@ -37,7 +31,8 @@ export interface GlUniformBlockData
 
 /**
  * The options for the gl program
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export interface GlProgramOptions
 {
@@ -51,6 +46,8 @@ export interface GlProgramOptions
     preferredVertexPrecision?: string;
     /** the preferred fragment precision for the shader, this may not be used if the device does not support it  */
     preferredFragmentPrecision?: string;
+
+    transformFeedbackVaryings?: {names: string[], bufferMode: 'separate' | 'interleaved'};
 }
 
 const processes: Record<string, ((source: string, options: any, isFragment?: boolean) => string)> = {
@@ -96,7 +93,8 @@ const programCache: Record<string, GlProgram> = Object.create(null);
  * For optimal usage and best performance, its best to reuse programs as much as possible.
  * You should use the {@link GlProgram.from} helper function to create programs.
  * @class
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class GlProgram
 {
@@ -113,19 +111,16 @@ export class GlProgram
     /**
      * attribute data extracted from the program once created this happens when the program is used for the first time
      * @internal
-     * @ignore
      */
     public _attributeData: Record<string, ExtractedAttributeData>;
     /**
      * uniform data extracted from the program once created this happens when the program is used for the first time
      * @internal
-     * @ignore
      */
     public _uniformData: Record<string, GlUniformData>;
     /**
      * uniform data extracted from the program once created this happens when the program is used for the first time
      * @internal
-     * @ignore
      */
     public _uniformBlockData: Record<string, GlUniformBlockData>;
     /** details on how to use this program with transform feedback */
@@ -133,9 +128,13 @@ export class GlProgram
     /**
      * the key that identifies the program via its source vertex + fragment
      * @internal
-     * @ignore
      */
     public readonly _key: number;
+    /**
+     * A cache key used to identify the program instance.
+     * @internal
+     */
+    public _cacheKey: string;
 
     /**
      * Creates a shiny new GlProgram. Used by WebGL renderer.
@@ -178,6 +177,8 @@ export class GlProgram
         this.fragment = fragment;
         this.vertex = vertex;
 
+        this.transformFeedbackVaryings = options.transformFeedbackVaryings;
+
         this._key = createIdFromString(`${this.vertex}:${this.fragment}`, 'gl-program');
     }
 
@@ -192,6 +193,8 @@ export class GlProgram
         this._uniformBlockData = null;
 
         this.transformFeedbackVaryings = null;
+
+        programCache[this._cacheKey] = null;
     }
 
     /**
@@ -208,6 +211,7 @@ export class GlProgram
         if (!programCache[key])
         {
             programCache[key] = new GlProgram(options);
+            programCache[key]._cacheKey = key;
         }
 
         return programCache[key];

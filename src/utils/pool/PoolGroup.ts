@@ -1,3 +1,4 @@
+import { GlobalResourceRegistry } from './GlobalResourceRegistry';
 import { Pool } from './Pool';
 
 import type { PoolItem, PoolItemConstructor } from './Pool';
@@ -5,13 +6,15 @@ import type { PoolItem, PoolItemConstructor } from './Pool';
 /**
  * A type alias for a constructor of a Pool.
  * @template T The type of items in the pool. Must extend PoolItem.
- * @memberof utils
+ * @category utils
+ * @advanced
  */
 export type PoolConstructor<T extends PoolItem> = new () => Pool<T>;
 
 /**
  * A group of pools that can be used to store objects of different types.
- * @memberof utils
+ * @category utils
+ * @advanced
  */
 export class PoolGroupClass
 {
@@ -95,6 +98,18 @@ export class PoolGroupClass
 
         return stats;
     }
+
+    /** Clears all pools in the group. This will reset all pools and free their resources. */
+    public clear(): void
+    {
+        this._poolsByClass.forEach((pool) => pool.clear());
+        this._poolsByClass.clear();
+    }
 }
 
+/**
+ * A singleton instance of the PoolGroupClass that can be used throughout the application.
+ * @internal
+ */
 export const BigPool = new PoolGroupClass();
+GlobalResourceRegistry.register(BigPool);

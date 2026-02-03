@@ -1,21 +1,15 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { compileHighShaderGlProgram } from '../../high-shader/compileHighShaderToProgram';
-import { colorBitGl } from '../../high-shader/shader-bits/colorBit';
-import { generateTextureBatchBitGl } from '../../high-shader/shader-bits/generateTextureBatchBit';
-import { roundPixelsBitGl } from '../../high-shader/shader-bits/roundPixelsBit';
-import { batchSamplersUniformGroup } from '../../renderers/gl/shader/batchSamplersUniformGroup';
-import { Shader } from '../../renderers/shared/shader/Shader';
 import { State } from '../../renderers/shared/state/State';
-import { MAX_TEXTURES } from '../shared/const';
 
 import type { WebGLRenderer } from '../../renderers/gl/WebGLRenderer';
 import type { Geometry } from '../../renderers/shared/geometry/Geometry';
+import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { Batch } from '../shared/Batcher';
 import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
 
 /**
  * A BatcherAdaptor that uses WebGL to render batches.
- * @memberof rendering
+ * @category rendering
  * @ignore
  */
 export class GlBatchAdaptor implements BatcherAdaptor
@@ -28,52 +22,47 @@ export class GlBatchAdaptor implements BatcherAdaptor
         name: 'batch',
     } as const;
 
-    private _shader: Shader;
-    private _didUpload = false;
     private readonly _tempState = State.for2d();
 
+    /**
+     * We only want to sync the a batched shaders uniforms once on first use
+     * this is a hash of shader uids to a boolean value.  When the shader is first bound
+     * we set the value to true.  When the shader is bound again we check the value and
+     * if it is true we know that the uniforms have already been synced and we skip it.
+     */
+    private _didUploadHash: Record<string, boolean> = {};
     public init(batcherPipe: BatcherPipe): void
     {
-        const glProgram = compileHighShaderGlProgram({
-            name: 'batch',
-            bits: [
-                colorBitGl,
-                generateTextureBatchBitGl(MAX_TEXTURES),
-                roundPixelsBitGl,
-            ]
-        });
-
-        this._shader = new Shader({
-            glProgram,
-            resources: {
-                batchSamplers: batchSamplersUniformGroup,
-            }
-        });
-
         batcherPipe.renderer.runners.contextChange.add(this);
     }
 
     public contextChange(): void
     {
-        this._didUpload = false;
+        this._didUploadHash = {};
     }
 
-    public start(batchPipe: BatcherPipe, geometry: Geometry): void
+    public start(batchPipe: BatcherPipe, geometry: Geometry, shader: Shader): void
     {
         const renderer = batchPipe.renderer as WebGLRenderer;
 
-        renderer.shader.bind(this._shader, this._didUpload);
+        const didUpload = this._didUploadHash[shader.uid];
+
+        // only want to sync the shade ron its first bind!
+        renderer.shader.bind(shader, didUpload);
+
+        if (!didUpload)
+        {
+            this._didUploadHash[shader.uid] = true;
+        }
 
         renderer.shader.updateUniformGroup(renderer.globalUniforms.uniformGroup);
 
-        renderer.geometry.bind(geometry, this._shader.glProgram);
+        renderer.geometry.bind(geometry, shader.glProgram);
     }
 
     public execute(batchPipe: BatcherPipe, batch: Batch): void
     {
         const renderer = batchPipe.renderer as WebGLRenderer;
-
-        this._didUpload = true;
 
         this._tempState.blendMode = batch.blendMode;
 
@@ -81,17 +70,11 @@ export class GlBatchAdaptor implements BatcherAdaptor
 
         const textures = batch.textures.textures;
 
-        for (let i = 0; i < textures.length; i++)
+        for (let i = 0; i < batch.textures.count; i++)
         {
             renderer.texture.bind(textures[i], i);
         }
 
-        renderer.geometry.draw('triangle-list', batch.size, batch.start);
-    }
-
-    public destroy(): void
-    {
-        this._shader.destroy(true);
-        this._shader = null;
+        renderer.geometry.draw(batch.topology, batch.size, batch.start);
     }
 }

@@ -14,7 +14,7 @@ import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
 
 /**
  * The WebGL adaptor for the mesh system. Allows the Mesh System to be used with the WebGl renderer
- * @memberof rendering
+ * @category rendering
  * @ignore
  */
 export class GpuMeshAdapter implements MeshAdaptor
@@ -54,7 +54,7 @@ export class GpuMeshAdapter implements MeshAdaptor
 
     public execute(meshPipe: MeshPipe, mesh: Mesh)
     {
-        const renderer = meshPipe.renderer;
+        const renderer = meshPipe.renderer as WebGPURenderer;
 
         let shader: Shader = mesh._shader;
 
@@ -62,9 +62,7 @@ export class GpuMeshAdapter implements MeshAdaptor
         {
             shader = this._shader;
 
-            shader.resources.uTexture = mesh.texture.source;
-            shader.resources.uSampler = mesh.texture.source.style;
-            shader.resources.textureUniforms.uniforms.uTextureMatrix = mesh.texture.textureMatrix.mapCoord;
+            shader.groups[2] = renderer.texture.getTextureBindGroup(mesh.texture);
         }
         else if (!shader.gpuProgram)
         {

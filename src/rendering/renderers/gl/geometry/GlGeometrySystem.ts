@@ -1,4 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { type GPUData } from '../../../../scene/view/ViewContainer';
+import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
 import { getAttributeInfoFromFormat } from '../../shared/geometry/utils/getAttributeInfoFromFormat';
 import { ensureAttributes } from '../shader/program/ensureAttributes';
 import { getGlTypeFromFormat } from './utils/getGlTypeFromFormat';
@@ -19,8 +21,33 @@ const topologyToGlMap = {
 };
 
 /**
+ * Stores GPU-specific data for a Geometry instance in WebGL context.
+ *
+ * This class manages Vertex Array Object (VAO) caching for geometries,
+ * allowing efficient reuse of VAOs across different shader programs.
+ * Each geometry can have multiple VAOs cached, one for each unique
+ * shader program signature it's used with.
+ * @internal
+ */
+export class GlGeometryGpuData implements GPUData
+{
+    public vaoCache: Record<string, WebGLVertexArrayObject>;
+
+    constructor()
+    {
+        this.vaoCache = Object.create(null);
+    }
+
+    public destroy(): void
+    {
+        this.vaoCache = Object.create(null);
+    }
+}
+
+/**
  * System plugin to the renderer to manage geometry.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class GlGeometrySystem implements System
 {
@@ -46,9 +73,10 @@ export class GlGeometrySystem implements System
 
     protected gl: GlRenderingContext;
     protected _activeGeometry: Geometry;
-    protected _activeVao: WebGLVertexArrayObject;
-
-    protected _geometryVaoHash: Record<number, Record<string, WebGLVertexArrayObject>> = Object.create(null);
+    /** @internal */
+    public _activeVao: WebGLVertexArrayObject;
+    /** @internal */
+    public _managedGeometries: GCManagedHash<Geometry>;
 
     /** Renderer that owns this {@link GeometrySystem}. */
     private _renderer: WebGLRenderer;
@@ -62,6 +90,13 @@ export class GlGeometrySystem implements System
 
         this.hasVao = true;
         this.hasInstance = true;
+
+        this._managedGeometries = new GCManagedHash({
+            renderer,
+            type: 'resource',
+            onUnload: this.onGeometryUnload.bind(this),
+            name: 'glGeometry'
+        });
     }
 
     /** Sets up the renderer context and necessary buffers. */
@@ -74,6 +109,7 @@ export class GlGeometrySystem implements System
             throw new Error('[PixiJS] Vertex Array Objects are not supported on this device');
         }
 
+        this.destroyAll(true);
         const nativeVaoExtension = this._renderer.context.extensions.vertexArrayObject;
 
         if (nativeVaoExtension)
@@ -108,7 +144,6 @@ export class GlGeometrySystem implements System
 
         this._activeGeometry = null;
         this._activeVao = null;
-        this._geometryVaoHash = Object.create(null);
     }
 
     /**
@@ -118,7 +153,7 @@ export class GlGeometrySystem implements System
      */
     public bind(geometry?: Geometry, program?: GlProgram): void
     {
-        // shader = shader || this.renderer.shader.shader;
+        // shader ||= this.renderer.shader.shader;
 
         const gl = this.gl;
 
@@ -137,7 +172,7 @@ export class GlGeometrySystem implements System
     }
 
     /** Reset and unbind any active VAO and geometry. */
-    public reset(): void
+    public resetState(): void
     {
         this.unbind();
     }
@@ -155,6 +190,8 @@ export class GlGeometrySystem implements System
 
             bufferSystem.updateBuffer(buffer);
         }
+
+        geometry._gcLastUsed = this._renderer.gc.now;
     }
 
     /**
@@ -203,7 +240,7 @@ export class GlGeometrySystem implements System
 
     protected getVao(geometry: Geometry, program: GlProgram): WebGLVertexArrayObject
     {
-        return this._geometryVaoHash[geometry.uid]?.[program._key] || this.initGeometryVao(geometry, program);
+        return geometry._gpuData[this._renderer.uid]?.vaoCache[program._key] || this.initGeometryVao(geometry, program);
     }
 
     /**
@@ -226,15 +263,16 @@ export class GlGeometrySystem implements System
 
         const signature = this.getSignature(geometry, program);
 
-        if (!this._geometryVaoHash[geometry.uid])
-        {
-            this._geometryVaoHash[geometry.uid] = Object.create(null);
+        let gpuData = geometry._gpuData[this._renderer.uid];
 
-            geometry.on('destroy', this.onGeometryDestroy, this);
+        if (!gpuData)
+        {
+            gpuData = new GlGeometryGpuData();
+            geometry._gpuData[this._renderer.uid] = gpuData;
+            this._managedGeometries.add(geometry);
         }
 
-        const vaoObjectHash = this._geometryVaoHash[geometry.uid];
-
+        const vaoObjectHash = gpuData.vaoCache;
         let vao = vaoObjectHash[signature];
 
         if (vao)
@@ -277,33 +315,24 @@ export class GlGeometrySystem implements System
         return vao;
     }
 
-    /**
-     * Disposes geometry.
-     * @param geometry - Geometry with buffers. Only VAO will be disposed
-     * @param [contextLost=false] - If context was lost, we suppress deleteVertexArray
-     */
-    protected onGeometryDestroy(geometry: Geometry, contextLost?: boolean): void
+    protected onGeometryUnload(geometry: Geometry, contextLost = false): void
     {
-        const vaoObjectHash = this._geometryVaoHash[geometry.uid];
+        const gpuData = geometry._gpuData[this._renderer.uid];
 
-        const gl = this.gl;
+        if (!gpuData) return;
 
-        if (vaoObjectHash)
+        const vaoCache = gpuData.vaoCache;
+
+        if (!contextLost)
         {
-            if (contextLost)
+            for (const i in vaoCache)
             {
-                for (const i in vaoObjectHash)
+                if (this._activeVao !== vaoCache[i])
                 {
-                    if (this._activeVao !== vaoObjectHash[i])
-                    {
-                        this.unbind();
-                    }
-
-                    gl.deleteVertexArray(vaoObjectHash[i]);
+                    this.resetState();
                 }
+                this.gl.deleteVertexArray(vaoCache[i]);
             }
-
-            this._geometryVaoHash[geometry.uid] = null;
         }
     }
 
@@ -313,27 +342,7 @@ export class GlGeometrySystem implements System
      */
     public destroyAll(contextLost = false): void
     {
-        const gl = this.gl;
-
-        for (const i in this._geometryVaoHash)
-        {
-            if (contextLost)
-            {
-                for (const j in this._geometryVaoHash[i])
-                {
-                    const vaoObjectHash = this._geometryVaoHash[i];
-
-                    if (this._activeVao !== vaoObjectHash)
-                    {
-                        this.unbind();
-                    }
-
-                    gl.deleteVertexArray(vaoObjectHash[j]);
-                }
-            }
-
-            this._geometryVaoHash[i] = null;
-        }
+        this._managedGeometries.removeAll(contextLost);
     }
 
     /**
@@ -373,7 +382,7 @@ export class GlGeometrySystem implements System
                     lastBuffer = glBuffer;
                 }
 
-                const location = attribute.location;
+                const location = programAttrib.location;
 
                 // TODO introduce state again
                 // we can optimise this for older devices that have no VAOs
@@ -406,7 +415,11 @@ export class GlGeometrySystem implements System
                     // TODO calculate instance count based of this...
                     if (this.hasInstance)
                     {
-                        gl.vertexAttribDivisor(location, 1);// attribute.divisor);
+                        // Can't use truthiness check to determine if divisor is set,
+                        // since 0 is a valid value for divisor
+                        const divisor = attribute.divisor ?? 1;
+
+                        gl.vertexAttribDivisor(location, divisor);
                     }
                     else
                     {
@@ -426,22 +439,23 @@ export class GlGeometrySystem implements System
      *  drawing will start from the first vertex.
      * @param instanceCount - The number of instances of the set of elements to execute. If not specified,
      *  all instances will be drawn.
+     * @returns This instance of the geometry system.
      */
     public draw(topology?: Topology, size?: number, start?: number, instanceCount?: number): this
     {
         const { gl } = this._renderer;
         const geometry = this._activeGeometry;
 
-        const glTopology = topologyToGlMap[geometry.topology || topology];
+        const glTopology = topologyToGlMap[topology || geometry.topology];
 
-        instanceCount ||= geometry.instanceCount;
+        instanceCount ??= geometry.instanceCount;
 
         if (geometry.indexBuffer)
         {
             const byteSize = geometry.indexBuffer.data.BYTES_PER_ELEMENT;
             const glType = byteSize === 2 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
 
-            if (instanceCount > 1)
+            if (instanceCount !== 1)
             {
                 /* eslint-disable max-len */
                 gl.drawElementsInstanced(glTopology, size || geometry.indexBuffer.data.length, glType, (start || 0) * byteSize, instanceCount);
@@ -449,12 +463,10 @@ export class GlGeometrySystem implements System
             }
             else
             {
-                /* eslint-disable max-len */
                 gl.drawElements(glTopology, size || geometry.indexBuffer.data.length, glType, (start || 0) * byteSize);
-                /* eslint-enable max-len */
             }
         }
-        else if (instanceCount > 1)
+        else if (instanceCount !== 1)
         {
             // TODO need a better way to calculate size..
             gl.drawArraysInstanced(glTopology, start || 0, size || geometry.getSize(), instanceCount);
@@ -477,6 +489,7 @@ export class GlGeometrySystem implements System
 
     public destroy(): void
     {
+        this._managedGeometries.destroy();
         this._renderer = null;
         this.gl = null;
         this._activeVao = null;

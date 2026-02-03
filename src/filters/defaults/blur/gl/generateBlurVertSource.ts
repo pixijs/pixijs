@@ -12,7 +12,7 @@ const vertTemplate = `
     vec4 filterVertexPosition( void )
 {
     vec2 position = aPosition * uOutputFrame.zw + uOutputFrame.xy;
-    
+
     position.x = position.x * (2.0 / uOutputTexture.x) - 1.0;
     position.y = position.y * (2.0*uOutputTexture.z / uOutputTexture.y) - uOutputTexture.z;
 
@@ -34,6 +34,11 @@ const vertTemplate = `
         %blur%
     }`;
 
+/**
+ * @internal
+ * @param kernelSize - The size of the kernel.
+ * @param x - Whether to generate a horizontal or vertical blur program.
+ */
 export function generateBlurVertSource(kernelSize: number, x: boolean): string
 {
     const halfLength = Math.ceil(kernelSize / 2);

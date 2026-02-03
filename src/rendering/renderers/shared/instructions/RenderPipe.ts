@@ -1,6 +1,6 @@
 import type { Container } from '../../../../scene/container/Container';
 import type { Effect } from '../../../../scene/container/Effect';
-import type { BatchableObject } from '../../../batcher/shared/Batcher';
+import type { BatchableElement } from '../../../batcher/shared/Batcher';
 import type { Renderer } from '../../types';
 import type { Renderable } from '../Renderable';
 import type { Instruction } from './Instruction';
@@ -10,7 +10,8 @@ import type { InstructionSet } from './InstructionSet';
  * An interface for a pipe that can be used to build instructions for the renderer.
  * InstructionPipes are specifically  used to manage the state of the renderer.
  * For example, the BlendModePipe is used to set the blend mode of the renderer.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export interface InstructionPipe<INSTRUCTION extends Instruction>
 {
@@ -58,7 +59,8 @@ export interface InstructionPipe<INSTRUCTION extends Instruction>
 /**
  * An interface for a pipe that can be used to build instructions for the renderer.
  * RenderPipes are specifically used to render Renderables like a Mesh.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export interface RenderPipe<RENDERABLE = Renderable>
 {
@@ -79,29 +81,29 @@ export interface RenderPipe<RENDERABLE = Renderable>
      * This is only called in the render loop if the instructions set is being reused
      * from the last frame. Otherwise addRenderable is called.
      * @param renderable - the renderable that needs to be rendered
-     * @param instructionSet - the instruction set currently being built
      */
-    updateRenderable: (renderable: RENDERABLE, instructionSet?: InstructionSet) => void;
+    updateRenderable: (renderable: RENDERABLE) => void;
     /**
      * Called whenever a renderable is destroyed, often the pipes keep a webGL / webGPU specific representation
      * of the renderable that needs to be tidied up when the renderable is destroyed.
      * @param renderable - the renderable that needs to be rendered
-     * @returns
      */
-    destroyRenderable: (renderable: RENDERABLE) => void;
+    destroyRenderable?: (renderable: RENDERABLE) => void;
     /**
      * This function is called when the renderer is determining if it can use the same instruction set again to
-     * improve performance. If this function returns false, the renderer will rebuild the whole instruction set
+     * improve performance. If this function returns true, the renderer will rebuild the whole instruction set
      * for the scene. This is only called if the scene has not its changed its structure .
      * @param renderable
-     * @returns
+     * @returns {boolean}
      */
-    validateRenderable?: (renderable: RENDERABLE) => boolean;
+    validateRenderable: (renderable: RENDERABLE) => boolean;
 }
 
 /**
  * An interface for a pipe that can be used to build instructions for the renderer.
  * BatchPipes are specifically used to build and render Batches.
+ * @category rendering
+ * @advanced
  */
 export interface BatchPipe
 {
@@ -110,7 +112,7 @@ export interface BatchPipe
      * @param renderable - a batchable object that can be added to the batch
      * @param instructionSet - the instruction set currently being built
      */
-    addToBatch: (renderable: BatchableObject, instructionSet: InstructionSet) => void;
+    addToBatch: (renderable: BatchableElement, instructionSet: InstructionSet) => void;
     /**
      * Forces the batch to break. This can happen if for example you need to render everything and then
      * change the render target.
@@ -119,7 +121,11 @@ export interface BatchPipe
     break: (instructionSet: InstructionSet) => void;
 }
 
-/** A helpful type that can be used to create a new RenderPipe, BatchPipe or InstructionPipe */
+/**
+ * A helpful type that can be used to create a new RenderPipe, BatchPipe or InstructionPipe
+ * @category rendering
+ * @advanced
+ */
 export interface PipeConstructor
 {
     new (renderer: Renderer, adaptor?: any): RenderPipe | BatchPipe | InstructionPipe<any> ;

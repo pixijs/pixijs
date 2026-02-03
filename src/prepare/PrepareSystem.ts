@@ -32,7 +32,8 @@ import type { System } from '../rendering/renderers/shared/system/System';
  * app.renderer.prepare.upload(app.stage, () => {
  *     app.start();
  * });
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class PrepareSystem extends PrepareUpload implements System
 {
@@ -48,6 +49,8 @@ export class PrepareSystem extends PrepareUpload implements System
     /** Destroys the plugin, don't use after this. */
     public destroy(): void
     {
+        super.destroy();
+
         clearTimeout(this.timeout);
         this.renderer = null;
         this.queue = null;

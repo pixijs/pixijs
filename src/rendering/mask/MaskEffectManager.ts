@@ -11,15 +11,20 @@ interface MaskConversionTest
 }
 
 /**
+ * Represents a mask effect that can be applied to a container.
+ * @category rendering
+ * @advanced
+ */
+export type MaskEffect = {mask: unknown} & Effect;
+
+/**
  * A class that manages the conversion of masks to mask effects.
- * @memberof rendering
+ * @category rendering
  * @ignore
  */
 export class MaskEffectManagerClass
 {
-    /**
-     * @private
-     */
+    /** @private */
     public readonly _effectClasses: EffectConstructor[] = [];
     private readonly _tests: MaskConversionTest[] = [];
     private _initialized = false;
@@ -44,7 +49,7 @@ export class MaskEffectManagerClass
         this._tests.push(test);
     }
 
-    public getMaskEffect(item: any): Effect
+    public getMaskEffect(item: any): MaskEffect
     {
         if (!this._initialized) this.init();
 
@@ -54,7 +59,7 @@ export class MaskEffectManagerClass
 
             if (test.test(item))
             {
-                return BigPool.get(test.maskClass as PoolItemConstructor<Effect & PoolItem>, item);
+                return BigPool.get(test.maskClass as PoolItemConstructor<MaskEffect & PoolItem>, item);
             }
         }
 
@@ -67,6 +72,12 @@ export class MaskEffectManagerClass
     }
 }
 
+/**
+ * A class that manages the conversion of masks to mask effects.
+ * @class
+ * @category rendering
+ * @advanced
+ */
 export const MaskEffectManager = new MaskEffectManagerClass();
 
 // Handle registration of extensions

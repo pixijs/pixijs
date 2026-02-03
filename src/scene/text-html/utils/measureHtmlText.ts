@@ -1,8 +1,8 @@
-import { CanvasTextMetrics } from '../../text/canvas/CanvasTextMetrics';
+/* eslint-disable no-restricted-globals */
 import { HTMLTextRenderData } from '../HTMLTextRenderData';
 
 import type { Size } from '../../../maths/misc/Size';
-import type { HTMLTextStyle } from '../HtmlTextStyle';
+import type { HTMLTextStyle } from '../HTMLTextStyle';
 
 let tempHTMLTextRenderData: HTMLTextRenderData;
 
@@ -14,6 +14,7 @@ let tempHTMLTextRenderData: HTMLTextRenderData;
  * @param fontStyleCSS - The font css to use
  * @param htmlTextRenderData - The HTMLTextRenderData to write the SVG to
  * @returns - The size of the text
+ * @internal
  */
 export function measureHtmlText(
     text: string,
@@ -22,11 +23,11 @@ export function measureHtmlText(
     htmlTextRenderData?: HTMLTextRenderData
 ): Size
 {
-    htmlTextRenderData = htmlTextRenderData || tempHTMLTextRenderData || (tempHTMLTextRenderData = new HTMLTextRenderData());
+    htmlTextRenderData ||= tempHTMLTextRenderData || (tempHTMLTextRenderData = new HTMLTextRenderData());
 
     const { domElement, styleElement, svgRoot } = htmlTextRenderData;
 
-    domElement.innerHTML = `<style>${style.cssStyle}</style><div>${text}</div>`;
+    domElement.innerHTML = `<style>${style.cssStyle};</style><div style='padding:0'>${text}</div>`;
 
     domElement.setAttribute('style', 'transform-origin: top left; display: inline-block');
 
@@ -38,14 +39,31 @@ export function measureHtmlText(
     // Measure the contents using the shadow DOM
     document.body.appendChild(svgRoot);
 
-    const contentBounds = domElement.getBoundingClientRect();
+    // Use scrollWidth/scrollHeight instead of getBoundingClientRect
+    // This captures the full content size including any overflow
+    // (e.g., when wordWrap is true but long words can't break)
+    let contentWidth = domElement.scrollWidth;
+    let contentHeight = domElement.scrollHeight;
 
     svgRoot.remove();
 
-    const descenderPadding = CanvasTextMetrics.measureFont(style.fontStyle).descent;
+    // Account for drop shadow which extends beyond the layout bounds
+    // text-shadow is a visual effect not captured by scrollWidth/scrollHeight
+    if (style.dropShadow)
+    {
+        const { distance, angle, blur } = style.dropShadow;
+        const shadowOffsetX = Math.abs(Math.round(Math.cos(angle) * distance));
+        const shadowOffsetY = Math.abs(Math.round(Math.sin(angle) * distance));
+
+        contentWidth += shadowOffsetX + blur;
+        contentHeight += shadowOffsetY + blur;
+    }
+
+    // padding is included in the scroll dimensions, so we need to remove it here
+    const doublePadding = style.padding * 2;
 
     return {
-        width: contentBounds.width,
-        height: contentBounds.height + descenderPadding,
+        width: contentWidth - doublePadding,
+        height: contentHeight - doublePadding,
     };
 }

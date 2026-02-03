@@ -3,6 +3,8 @@
 // This file implements the dihedral group of order 16, also called
 // of degree 8. That's why its called groupD8.
 
+import { type RectangleLike } from '../../culling/Culler';
+import { type Rectangle } from '../shapes/Rectangle';
 import { Matrix } from './Matrix';
 
 /*
@@ -31,9 +33,7 @@ const rotationCayley: number[][] = [];
  */
 const rotationMatrices: Matrix[] = [];
 
-/*
- * Alias for {@code Math.sign}.
- */
+/** Alias for `Math.sign`. */
 const signum = Math.sign;
 
 /*
@@ -95,27 +95,18 @@ type GD8Symmetry = number;
  * The directions the U- and V- axes after rotation
  * of an angle of `a: GD8Constant` are the vectors `(uX(a), uY(a))`
  * and `(vX(a), vY(a))`. These aren't necessarily unit vectors.
- *
- * **Origin:**<br>
- *  This is the small part of gameofbombs.com portal system. It works.
- * @see maths.groupD8.E
- * @see maths.groupD8.SE
- * @see maths.groupD8.S
- * @see maths.groupD8.SW
- * @see maths.groupD8.W
- * @see maths.groupD8.NW
- * @see maths.groupD8.N
- * @see maths.groupD8.NE
- * @author Ivan @ivanpopelyshev
- * @namespace maths.groupD8
+ * @author Ivan: ivanpopelyshev
+ * @groupDescription groupD8
+ * @category maths
+ * @advanced
  */
 export const groupD8 = {
     /**
      * | Rotation | Direction |
      * |----------|-----------|
      * | 0°       | East      |
-     * @memberof maths.groupD8
-     * @constant {GD8Symmetry}
+     * @group groupD8
+     * @type {GD8Symmetry}
      */
     E: 0,
 
@@ -123,8 +114,8 @@ export const groupD8 = {
      * | Rotation | Direction |
      * |----------|-----------|
      * | 45°↻     | Southeast |
-     * @memberof maths.groupD8
-     * @constant {GD8Symmetry}
+     * @group groupD8
+     * @type {GD8Symmetry}
      */
     SE: 1,
 
@@ -132,8 +123,8 @@ export const groupD8 = {
      * | Rotation | Direction |
      * |----------|-----------|
      * | 90°↻     | South     |
-     * @memberof maths.groupD8
-     * @constant {GD8Symmetry}
+     * @group groupD8
+     * @type {GD8Symmetry}
      */
     S: 2,
 
@@ -141,8 +132,8 @@ export const groupD8 = {
      * | Rotation | Direction |
      * |----------|-----------|
      * | 135°↻    | Southwest |
-     * @memberof maths.groupD8
-     * @constant {GD8Symmetry}
+     * @group groupD8
+     * @type {GD8Symmetry}
      */
     SW: 3,
 
@@ -150,8 +141,8 @@ export const groupD8 = {
      * | Rotation | Direction |
      * |----------|-----------|
      * | 180°     | West      |
-     * @memberof maths.groupD8
-     * @constant {GD8Symmetry}
+     * @group groupD8
+     * @type {GD8Symmetry}
      */
     W: 4,
 
@@ -159,8 +150,8 @@ export const groupD8 = {
      * | Rotation    | Direction    |
      * |-------------|--------------|
      * | -135°/225°↻ | Northwest    |
-     * @memberof maths.groupD8
-     * @constant {GD8Symmetry}
+     * @group groupD8
+     * @type {GD8Symmetry}
      */
     NW: 5,
 
@@ -168,8 +159,8 @@ export const groupD8 = {
      * | Rotation    | Direction    |
      * |-------------|--------------|
      * | -90°/270°↻  | North        |
-     * @memberof maths.groupD8
-     * @constant {GD8Symmetry}
+     * @group groupD8
+     * @type {GD8Symmetry}
      */
     N: 6,
 
@@ -177,41 +168,41 @@ export const groupD8 = {
      * | Rotation    | Direction    |
      * |-------------|--------------|
      * | -45°/315°↻  | Northeast    |
-     * @memberof maths.groupD8
-     * @constant {GD8Symmetry}
+     * @group groupD8
+     * @type {GD8Symmetry}
      */
     NE: 7,
 
     /**
      * Reflection about Y-axis.
-     * @memberof maths.groupD8
-     * @constant {GD8Symmetry}
+     * @group groupD8
+     * @type {GD8Symmetry}
      */
     MIRROR_VERTICAL: 8,
 
     /**
      * Reflection about the main diagonal.
-     * @memberof maths.groupD8
-     * @constant {GD8Symmetry}
+     * @group groupD8
+     * @type {GD8Symmetry}
      */
     MAIN_DIAGONAL: 10,
 
     /**
      * Reflection about X-axis.
-     * @memberof maths.groupD8
-     * @constant {GD8Symmetry}
+     * @group groupD8
+     * @type {GD8Symmetry}
      */
     MIRROR_HORIZONTAL: 12,
 
     /**
      * Reflection about reverse diagonal.
-     * @memberof maths.groupD8
-     * @constant {GD8Symmetry}
+     * @group groupD8
+     * @type {GD8Symmetry}
      */
     REVERSE_DIAGONAL: 14,
 
     /**
-     * @memberof maths.groupD8
+     * @group groupD8
      * @param {GD8Symmetry} ind - sprite rotation angle.
      * @returns {GD8Symmetry} The X-component of the U-axis
      *    after rotating the axes.
@@ -219,7 +210,7 @@ export const groupD8 = {
     uX: (ind: GD8Symmetry): GD8Symmetry => ux[ind],
 
     /**
-     * @memberof maths.groupD8
+     * @group groupD8
      * @param {GD8Symmetry} ind - sprite rotation angle.
      * @returns {GD8Symmetry} The Y-component of the U-axis
      *    after rotating the axes.
@@ -227,7 +218,7 @@ export const groupD8 = {
     uY: (ind: GD8Symmetry): GD8Symmetry => uy[ind],
 
     /**
-     * @memberof maths.groupD8
+     * @group groupD8
      * @param {GD8Symmetry} ind - sprite rotation angle.
      * @returns {GD8Symmetry} The X-component of the V-axis
      *    after rotating the axes.
@@ -235,7 +226,7 @@ export const groupD8 = {
     vX: (ind: GD8Symmetry): GD8Symmetry => vx[ind],
 
     /**
-     * @memberof maths.groupD8
+     * @group groupD8
      * @param {GD8Symmetry} ind - sprite rotation angle.
      * @returns {GD8Symmetry} The Y-component of the V-axis
      *    after rotating the axes.
@@ -243,7 +234,7 @@ export const groupD8 = {
     vY: (ind: GD8Symmetry): GD8Symmetry => vy[ind],
 
     /**
-     * @memberof maths.groupD8
+     * @group groupD8
      * @param {GD8Symmetry} rotation - symmetry whose opposite
      *   is needed. Only rotations have opposite symmetries while
      *   reflections don't.
@@ -276,7 +267,7 @@ export const groupD8 = {
      * | N^=14 | N^  | W^  | S^  | E^  | N    | W     | S     | E     |
      *
      * [This is a Cayley table]{@link https://en.wikipedia.org/wiki/Cayley_table}
-     * @memberof maths.groupD8
+     * @group groupD8
      * @param {GD8Symmetry} rotationSecond - Second operation, which
      *   is the row in the above cayley table.
      * @param {GD8Symmetry} rotationFirst - First operation, which
@@ -289,7 +280,7 @@ export const groupD8 = {
 
     /**
      * Reverse of `add`.
-     * @memberof maths.groupD8
+     * @group groupD8
      * @param {GD8Symmetry} rotationSecond - Second operation
      * @param {GD8Symmetry} rotationFirst - First operation
      * @returns {GD8Symmetry} Result
@@ -301,7 +292,7 @@ export const groupD8 = {
     /**
      * Adds 180 degrees to rotation, which is a commutative
      * operation.
-     * @memberof maths.groupD8
+     * @group groupD8
      * @param {number} rotation - The number to rotate.
      * @returns {number} Rotated number
      */
@@ -310,7 +301,7 @@ export const groupD8 = {
     /**
      * Checks if the rotation angle is vertical, i.e. south
      * or north. It doesn't work for reflections.
-     * @memberof maths.groupD8
+     * @group groupD8
      * @param {GD8Symmetry} rotation - The number to check.
      * @returns {boolean} Whether or not the direction is vertical
      */
@@ -319,7 +310,7 @@ export const groupD8 = {
     /**
      * Approximates the vector `V(dx,dy)` into one of the
      * eight directions provided by `groupD8`.
-     * @memberof maths.groupD8
+     * @group groupD8
      * @param {number} dx - X-component of the vector
      * @param {number} dy - Y-component of the vector
      * @returns {GD8Symmetry} Approximation of the vector into
@@ -364,7 +355,7 @@ export const groupD8 = {
 
     /**
      * Helps sprite to compensate texture packer rotation.
-     * @memberof maths.groupD8
+     * @group groupD8
      * @param {Matrix} matrix - sprite world matrix
      * @param {GD8Symmetry} rotation - The rotation factor to use.
      * @param {number} tx - sprite anchoring
@@ -378,5 +369,68 @@ export const groupD8 = {
         mat.tx = tx;
         mat.ty = ty;
         matrix.append(mat);
+    },
+
+    /**
+     * Transforms rectangle coordinates based on texture packer rotation.
+     * Used when texture atlas pages are rotated and coordinates need to be adjusted.
+     * @group groupD8
+     * @param {RectangleLike} rect - Rectangle with original coordinates to transform
+     * @param {RectangleLike} sourceFrame - Source texture frame (includes offset and dimensions)
+     * @param {GD8Symmetry} rotation - The groupD8 rotation value
+     * @param {Rectangle} out - Rectangle to store the result
+     * @returns {Rectangle} Transformed coordinates (includes source frame offset)
+     */
+    transformRectCoords: (
+        rect: RectangleLike,
+        sourceFrame: RectangleLike,
+        rotation: GD8Symmetry,
+        out: Rectangle
+    ): Rectangle =>
+    {
+        const { x, y, width, height } = rect;
+        const { x: frameX, y: frameY, width: frameWidth, height: frameHeight } = sourceFrame;
+
+        if (rotation === groupD8.E)
+        {
+            // No rotation
+            out.set(x + frameX, y + frameY, width, height);
+
+            return out;
+        }
+        else if (rotation === groupD8.S)
+        {
+            // 90° clockwise rotation
+            return out.set(
+                (frameWidth - y - height) + frameX,
+                x + frameY,
+                height,
+                width
+            );
+        }
+        else if (rotation === groupD8.W)
+        {
+            // 180° rotation
+            return out.set(
+                (frameWidth - x - width) + frameX,
+                (frameHeight - y - height) + frameY,
+                width,
+                height
+            );
+        }
+        else if (rotation === groupD8.N)
+        {
+            // 270° clockwise rotation (90° counter-clockwise)
+            return out.set(
+                y + frameX,
+                (frameHeight - x - width) + frameY,
+                height,
+                width
+            );
+        }
+
+        // For other rotations (diagonal and reflections), fall back to no rotation
+        // These are less common in typical texture atlases
+        return out.set(x + frameX, y + frameY, width, height);
     },
 };

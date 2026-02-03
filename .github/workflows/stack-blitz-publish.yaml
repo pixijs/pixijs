@@ -1,0 +1,26 @@
+name: Stackblitz Publish
+
+on: [push, pull_request]
+
+concurrency:
+  group: ${{github.workflow}} - ${{github.ref}}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: github.repository == 'pixijs/pixijs'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Project
+        uses: ./.github/actions/setup
+
+      - name: Build
+        run: npm run stackblitz-ci
+
+      - name: Publish
+        run: npx pkg-pr-new@latest publish './' --template '.stackblitz/*'

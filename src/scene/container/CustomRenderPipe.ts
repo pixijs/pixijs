@@ -1,7 +1,7 @@
 import { ExtensionType } from '../../extensions/Extensions';
 
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
-import type { InstructionPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
+import type { InstructionPipe, RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../rendering/renderers/types';
 import type { RenderContainer } from './RenderContainer';
 
@@ -16,9 +16,10 @@ import type { RenderContainer } from './RenderContainer';
  *       clearColor: 'green', // clear the screen to green when rendering this item
  *     });
  * })
- * @memberof rendering
+ * @category rendering
+ * @internal
  */
-export class CustomRenderPipe implements InstructionPipe<RenderContainer>
+export class CustomRenderPipe implements InstructionPipe<RenderContainer>, RenderPipe<RenderContainer>
 {
     public static extension = {
         type: [
@@ -35,6 +36,10 @@ export class CustomRenderPipe implements InstructionPipe<RenderContainer>
     {
         this._renderer = renderer;
     }
+
+    public updateRenderable() { /** empty */ }
+    public destroyRenderable() { /** empty */ }
+    public validateRenderable() { return false; }
 
     public addRenderable(container: RenderContainer, instructionSet: InstructionSet): void
     {

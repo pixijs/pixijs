@@ -1,12 +1,13 @@
-/* eslint-disable max-len */
-
 import { ExtensionType } from '../extensions/Extensions';
 import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
 /**
- * Divides the blend from the base color using each color channel
+ * The Divide blend mode divides the RGB channel values of the bottom layer by those of the top layer.
+ * The darker the top layer, the brighter the bottom layer will appear.
+ * Blending any color with black yields white, and blending with white has no effect
+ *
  * Available as `container.blendMode = 'divide'` after importing `pixi.js/advanced-blend-modes`.
  * @example
  * import 'pixi.js/advanced-blend-modes';
@@ -14,7 +15,8 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'divide'
- * @memberof filters
+ * @category filters
+ * @noInheritDoc
  */
 export class DivideBlend extends BlendModeFilter
 {
@@ -46,7 +48,7 @@ export class DivideBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                finalColor = vec4(blendDivide(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendDivide(back.rgb, front.rgb,front.a), blendedAlpha) * uBlend;
                 `
             },
             gpu: {
@@ -67,7 +69,7 @@ export class DivideBlend extends BlendModeFilter
                 }
             `,
                 main: `
-                out = vec4<f32>(blendDivide(back.rgb, front.rgb, front.a), blendUniforms.uBlend);
+                out = vec4<f32>(blendDivide(back.rgb, front.rgb, front.a), blendedAlpha) * blendUniforms.uBlend;
             `
             }
         });

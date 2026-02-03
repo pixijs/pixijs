@@ -1,18 +1,27 @@
 import EventEmitter from 'eventemitter3';
 import { Bounds } from '../../../../scene/container/bounds/Bounds';
 import { uid } from '../../../../utils/data/uid';
+import { type GlGeometryGpuData } from '../../gl/geometry/GlGeometrySystem';
+import { type GPUDataOwner } from '../../types';
 import { Buffer } from '../buffer/Buffer';
+import { type GCable, type GCData } from '../GCSystem';
 import { ensureIsBuffer } from './utils/ensureIsBuffer';
 import { getGeometryBounds } from './utils/getGeometryBounds';
 
 import type { TypedArray } from '../buffer/Buffer';
 import type { Topology, VertexFormat } from './const';
 
+/**
+ * The index buffer array type used in geometries.
+ * @category rendering
+ * @advanced
+ */
 export type IndexBufferArray = Uint16Array | Uint32Array;
 
 /**
  * The attribute data for a geometries attributes
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export interface Attribute
 {
@@ -20,45 +29,54 @@ export interface Attribute
     buffer: Buffer;
     /** the format of the attribute */
     format?: VertexFormat;
-    /** set where the shader location is for this attribute */
-    location?: number;
-    /** the stride of the data in the buffer*/
+    /** the stride of the data in the buffer - in bytes*/
     stride?: number;
-    /** the offset of the attribute from the buffer, defaults to 0 */
+    /** the offset of the attribute from the buffer, defaults to 0 - in bytes*/
     offset?: number;
     /** is this an instanced buffer? (defaults to false) */
     instance?: boolean;
-    /**  The number of elements to be rendered. If not specified, all vertices after the starting vertex will be drawn. */
+    /** the number of elements to be rendered. If not specified, all vertices after the starting vertex will be drawn. */
     size?: number;
-    /** the type of attribute  */
-    type?: number;
     /**
-     * The starting vertex in the geometry to start drawing from. If not specified,
+     * the starting vertex in the geometry to start drawing from. If not specified,
      *  drawing will start from the first vertex.
      */
     start?: number;
+    /**
+     * attribute divisor for instanced rendering. Note: this is a **WebGL-only** feature, the WebGPU renderer will
+     * issue a warning if one of the attributes has divisor set.
+     */
+    divisor?: number;
 }
 
 /**
- * The attribute options used by the constructor for adding geometries attributes
- * extends {@link rendering.Attribute} but allows for the buffer to be a typed or number array
- * @memberof rendering
+ * The attribute option used by the constructor for adding geometries attributes
+ * extends {@link Attribute} but allows for the buffer to be a typed or number array
+ * @category rendering
+ * @advanced
  */
-type AttributeOption = Omit<Attribute, 'buffer'> & { buffer: Buffer | TypedArray | number[]}
+export type AttributeOption = Omit<Attribute, 'buffer'> & { buffer: Buffer | TypedArray | number[]}
 | Buffer | TypedArray | number[];
 
+/**
+ * The attribute options used by the constructor for adding geometries attributes
+ * extends {@link Attribute} but allows for the buffer to be a typed or number array
+ * @category rendering
+ * @advanced
+ */
 export type AttributeOptions = Record<string, AttributeOption>;
 
 /**
  * the interface that describes the structure of the geometry
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export interface GeometryDescriptor
 {
     /** an optional label to easily identify the geometry */
     label?: string;
     /** the attributes that make up the geometry */
-    attributes: AttributeOptions;
+    attributes?: AttributeOptions;
     /** optional index buffer for this geometry */
     indexBuffer?: Buffer | TypedArray | number[];
     /** the topology of the geometry, defaults to 'triangle-list' */
@@ -110,14 +128,24 @@ function ensureIsAttribute(attribute: AttributeOption): Attribute
  *     ]
  *   }
  * });
- * @memberof rendering
- * @class
+ * @category rendering
+ * @advanced
  */
 export class Geometry extends EventEmitter<{
     update: Geometry,
     destroy: Geometry,
-}>
+    unload: Geometry,
+}> implements GPUDataOwner, GCable
 {
+    /** @internal */
+    public _gpuData: Record<number, GlGeometryGpuData> = Object.create(null);
+    /** @internal */
+    public _gcData?: GCData;
+    /** If set to true, the resource will be garbage collected automatically when it is not used. */
+    public autoGarbageCollect = true;
+    /** @internal */
+    public _gcLastUsed = -1;
+
     /** The topology of the geometry. */
     public topology: Topology;
     /** The unique id of the geometry. */
@@ -127,13 +155,12 @@ export class Geometry extends EventEmitter<{
     /** The buffers that the attributes use */
     public readonly buffers: Buffer[];
     /** The index buffer of the geometry */
-    public readonly indexBuffer: Buffer;
+    public indexBuffer: Buffer;
 
     /**
      * the layout key will be generated by WebGPU all geometries that have the same structure
      * will have the same layout key. This is used to cache the pipeline layout
      * @internal
-     * @ignore
      */
     public _layoutKey = 0;
 
@@ -147,38 +174,29 @@ export class Geometry extends EventEmitter<{
      * Create a new instance of a geometry
      * @param options - The options for the geometry.
      */
-    constructor(options: GeometryDescriptor)
+    constructor(options: GeometryDescriptor = {})
     {
-        const { attributes, indexBuffer, topology } = options;
-
         super();
 
-        this.attributes = attributes as Record<string, Attribute>;
+        const { attributes, indexBuffer, topology } = options;
+
         this.buffers = [];
 
-        this.instanceCount = options.instanceCount || 1;
+        this.attributes = {};
 
-        for (const i in attributes)
+        if (attributes)
         {
-            const attribute = attributes[i] = ensureIsAttribute(attributes[i]);
-
-            const bufferIndex = this.buffers.indexOf(attribute.buffer);
-
-            if (bufferIndex === -1)
+            for (const i in attributes)
             {
-                this.buffers.push(attribute.buffer);
-
-                // two events here - one for a resize (new buffer change)
-                // and one for an update (existing buffer change)
-                attribute.buffer.on('update', this.onBufferUpdate, this);
-                attribute.buffer.on('change', this.onBufferUpdate, this);
+                this.addAttribute(i, attributes[i]);
             }
         }
 
+        this.instanceCount = options.instanceCount ?? 1;
+
         if (indexBuffer)
         {
-            this.indexBuffer = ensureIsBuffer(indexBuffer, true);
-            this.buffers.push(this.indexBuffer);
+            this.addIndex(indexBuffer);
         }
 
         this.topology = topology || 'triangle-list';
@@ -237,6 +255,39 @@ export class Geometry extends EventEmitter<{
         return 0;
     }
 
+    /**
+     * Adds an attribute to the geometry.
+     * @param name - The name of the attribute to add.
+     * @param attributeOption - The attribute option to add.
+     */
+    public addAttribute(name: string, attributeOption: AttributeOption): void
+    {
+        const attribute = ensureIsAttribute(attributeOption);
+
+        const bufferIndex = this.buffers.indexOf(attribute.buffer);
+
+        if (bufferIndex === -1)
+        {
+            this.buffers.push(attribute.buffer);
+
+            // two events here - one for a resize (new buffer change)
+            // and one for an update (existing buffer change)
+            attribute.buffer.on('update', this.onBufferUpdate, this);
+            attribute.buffer.on('change', this.onBufferUpdate, this);
+        }
+        this.attributes[name] = attribute;
+    }
+
+    /**
+     * Adds an index buffer to the geometry.
+     * @param indexBuffer - The index buffer to add. Can be a Buffer, TypedArray, or an array of numbers.
+     */
+    public addIndex(indexBuffer: Buffer | TypedArray | number[]): void
+    {
+        this.indexBuffer = ensureIsBuffer(indexBuffer, true);
+        this.buffers.push(this.indexBuffer);
+    }
+
     /** Returns the bounds of the geometry. */
     get bounds(): Bounds
     {
@@ -245,6 +296,18 @@ export class Geometry extends EventEmitter<{
         this._boundsDirty = false;
 
         return getGeometryBounds(this, 'aPosition', this._bounds);
+    }
+
+    /** Unloads the geometry from the GPU. */
+    public unload(): void
+    {
+        /** Unloads the GPU data from the view container. */
+        this.emit('unload', this);
+        for (const key in this._gpuData)
+        {
+            this._gpuData[key]?.destroy();
+        }
+        this._gpuData = Object.create(null);
     }
 
     /**
@@ -262,10 +325,12 @@ export class Geometry extends EventEmitter<{
             this.buffers.forEach((buffer) => buffer.destroy());
         }
 
+        this.unload();
+
+        this.indexBuffer?.destroy();
         (this.attributes as null) = null;
         (this.buffers as null) = null;
         (this.indexBuffer as null) = null;
         (this._bounds as null) = null;
     }
 }
-

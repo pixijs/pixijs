@@ -5,8 +5,10 @@
 
 import type { UNIFORM_TYPES } from '../../rendering/renderers/shared/shader/types';
 
+/** @internal */
 export type UniformUploadFunction = (name: string, cu: any, cv: any, v: any, ud: any, uv: any, gl: any) => void;
 
+/** @internal */
 export const uniformSingleParserFunctions: Record<UNIFORM_TYPES | string, UniformUploadFunction> = {
     f32(name: string, cu: any, cv: any, v: any, ud: any, _uv: any, gl: any): void
     {
@@ -174,6 +176,7 @@ export const uniformSingleParserFunctions: Record<UNIFORM_TYPES | string, Unifor
     },
 };
 
+/** @internal */
 export const uniformArrayParserFunctions: Record<UNIFORM_TYPES | string, UniformUploadFunction> = {
     f32(name: string, _cu: any, _cv: any, v: any, ud: any, _uv: any, gl: any): void
     {
@@ -253,6 +256,8 @@ export const uniformArrayParserFunctions: Record<UNIFORM_TYPES | string, Uniform
     },
 };
 
+// eslint-disable-next-line jsdoc/require-param
+/** @internal */
 export const uniformParserFunctions: UniformUploadFunction[] = [
     (name: string, _cu: any, _cv: any, _v: any, ud: any, uv: any, gl: any): void =>
     {

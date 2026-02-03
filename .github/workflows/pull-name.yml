@@ -1,0 +1,25 @@
+name: Pull Request Title Format
+
+on:
+  pull_request:
+    branches:
+      - '**'
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
+
+jobs:
+  prTitle:
+    name: Check
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Check PR Title
+        uses: clowdhaus/actions/pr-title@v0.5.0
+        with:
+          on-fail-message: "Your PR title doesn't match the required format. The title should be in this format: \n\n```\nchore: update Text docs\nfix: text not rendering\nfeat: add new feature to Text\nbreaking: remove Text#resolution \n```"
+          title-regex: '^(chore|feat|fix|breaking)?(!)?\:\s.*$'
+          github-token: ${{ secrets.GITHUB_TOKEN }}

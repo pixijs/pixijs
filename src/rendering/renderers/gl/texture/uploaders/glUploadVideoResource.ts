@@ -5,16 +5,26 @@ import type { GlRenderingContext } from '../../context/GlRenderingContext';
 import type { GlTexture } from '../GlTexture';
 import type { GLTextureUploader } from './GLTextureUploader';
 
+/** @internal */
 export const glUploadVideoResource = {
 
     id: 'video',
 
-    upload(source: VideoSource, glTexture: GlTexture, gl: GlRenderingContext, webGLVersion: number)
+    upload(
+        source: VideoSource,
+        glTexture: GlTexture,
+        gl: GlRenderingContext,
+        webGLVersion: number,
+        targetOverride?: number,
+        forceAllocation?: boolean
+    )
     {
         if (!source.isValid)
         {
+            const target = targetOverride ?? glTexture.target;
+
             gl.texImage2D(
-                glTexture.target,
+                target,
                 0,
                 glTexture.internalFormat,
                 1,
@@ -28,7 +38,7 @@ export const glUploadVideoResource = {
             return;
         }
 
-        glUploadImageResource.upload(source, glTexture, gl, webGLVersion);
+        glUploadImageResource.upload(source as any, glTexture, gl, webGLVersion, targetOverride, forceAllocation);
     }
 } as GLTextureUploader;
 

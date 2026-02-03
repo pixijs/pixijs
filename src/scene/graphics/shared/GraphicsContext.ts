@@ -3,88 +3,51 @@ import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../../color/Color';
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { Point } from '../../../maths/point/Point';
+import { type GCable, type GCData } from '../../../rendering/renderers/shared/GCSystem';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { uid } from '../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { Bounds } from '../../container/bounds/Bounds';
+import { type GpuGraphicsContext } from './GraphicsContextSystem';
 import { GraphicsPath } from './path/GraphicsPath';
 import { SVGParser } from './svg/SVGParser';
-import { convertFillInputToFillStyle } from './utils/convertFillInputToFillStyle';
+import { toFillStyle, toStrokeStyle } from './utils/convertFillInputToFillStyle';
 
 import type { PointData } from '../../../maths/point/PointData';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { TextureDestroyOptions, TypeOrBool } from '../../container/destroyTypes';
-import type { LineCap, LineJoin } from './const';
-import type { FillGradient } from './fill/FillGradient';
-import type { FillPattern } from './fill/FillPattern';
+import type { ConvertedFillStyle, ConvertedStrokeStyle, FillInput, StrokeInput } from './FillTypes';
 import type { RoundedPoint } from './path/roundShape';
-
-/**
- * A fill style object.
- * @memberof scene
- */
-export interface FillStyle
-{
-    /** The color to use for the fill. */
-    color?: ColorSource;
-    /** The alpha value to use for the fill. */
-    alpha?: number;
-    /** The texture to use for the fill. */
-    texture?: Texture | null;
-    /** The matrix to apply. */
-    matrix?: Matrix | null;
-    /** The fill pattern to use. */
-    fill?: FillPattern | FillGradient | null;
-}
-
-export type ConvertedFillStyle = Omit<Required<FillStyle>, 'color'> & { color: number };
-
-export interface PatternFillStyle
-{
-    fill?: FillPattern | FillGradient;
-    color?: number;
-    alpha?: number;
-}
-
-/**
- * A stroke style object.
- * @memberof scene
- */
-export interface StrokeStyle extends FillStyle
-{
-    /** The width of the stroke. */
-    width?: number;
-    /** The alignment of the stroke. */
-    alignment?: number;
-    // native?: boolean;
-    /** The line cap style to use. */
-    cap?: LineCap;
-    /** The line join style to use. */
-    join?: LineJoin;
-    /** The miter limit to use. */
-    miterLimit?: number;
-}
-
-export type ConvertedStrokeStyle = Omit<StrokeStyle, 'color'> & ConvertedFillStyle;
 
 const tmpPoint = new Point();
 
+/**
+ * The mode for batching graphics instructions.
+ *
+ * It can be:
+ * - 'auto': Automatically determines whether to batch based on the number of instructions.
+ * - 'batch': Forces batching of all instructions.
+ * - 'no-batch': Disables batching, processing each instruction individually.
+ * @category scene
+ * @advanced
+ */
 export type BatchMode = 'auto' | 'batch' | 'no-batch';
 
-export type FillStyleInputs = ColorSource | FillGradient | CanvasPattern | PatternFillStyle | FillStyle | ConvertedFillStyle | StrokeStyle | ConvertedStrokeStyle;
-
+/** @internal */
 export interface FillInstruction
 {
     action: 'fill' | 'cut'
     data: { style: ConvertedFillStyle, path: GraphicsPath, hole?: GraphicsPath }
 }
 
+/** @internal */
 export interface StrokeInstruction
 {
     action: 'stroke'
     data: { style: ConvertedStrokeStyle, path: GraphicsPath, hole?: GraphicsPath }
 }
 
+/** @internal */
 export interface TextureInstruction
 {
     action: 'texture'
@@ -103,6 +66,7 @@ export interface TextureInstruction
     }
 }
 
+/** @internal */
 export type GraphicsInstructions = FillInstruction | StrokeInstruction | TextureInstruction;
 
 const tempMatrix = new Matrix();
@@ -113,13 +77,24 @@ const tempMatrix = new Matrix();
  *
  * This sharing of a `GraphicsContext` means that the intensive task of converting graphics instructions into GPU-ready geometry is done once, and the results are reused,
  * much like sprites reusing textures.
- * @memberof scene
+ * @category scene
+ * @standard
  */
 export class GraphicsContext extends EventEmitter<{
     update: GraphicsContext
     destroy: GraphicsContext
-}>
+    unload: GraphicsContext
+}> implements GCable
 {
+    /** @internal */
+    public _gpuData: Record<number | string, GpuGraphicsContext> = Object.create(null);
+    /** @internal */
+    public _gcData?: GCData;
+    /** If set to true, the resource will be garbage collected automatically when it is not used. */
+    public autoGarbageCollect = true;
+    /** @internal */
+    public _gcLastUsed = -1;
+
     /** The default fill style to use when none is provided. */
     public static defaultFillStyle: ConvertedFillStyle = {
         /** The color to use for the fill. */
@@ -132,6 +107,8 @@ export class GraphicsContext extends EventEmitter<{
         matrix: null,
         /** The fill pattern to use. */
         fill: null,
+        /** Whether coordinates are 'global' or 'local' */
+        textureSpace: 'local',
     };
 
     /** The default stroke style to use when none is provided. */
@@ -156,13 +133,34 @@ export class GraphicsContext extends EventEmitter<{
         matrix: null,
         /** The fill pattern to use. */
         fill: null,
+        /** Whether coordinates are 'global' or 'local' */
+        textureSpace: 'local',
+        /** If the stroke is a pixel line. */
+        pixelLine: false,
     };
 
-    public uid = uid('graphicsContext');
+    /**
+     * unique id for this graphics context
+     * @internal
+     */
+    public readonly uid: number = uid('graphicsContext');
+    /**
+     * Indicates whether content is updated and have to be re-rendered.
+     * @internal
+     */
     public dirty = true;
+    /** The batch mode for this graphics context. It can be 'auto', 'batch', or 'no-batch'. */
     public batchMode: BatchMode = 'auto';
+    /** @internal */
     public instructions: GraphicsInstructions[] = [];
+    /**
+     * Custom shader to apply to the graphics when rendering.
+     * @advanced
+     */
     public customShader?: Shader;
+
+    /** Whether the graphics context has been destroyed. */
+    public destroyed = false;
 
     private _activePath: GraphicsPath = new GraphicsPath();
     private _transform: Matrix = new Matrix();
@@ -206,9 +204,9 @@ export class GraphicsContext extends EventEmitter<{
         return this._fillStyle;
     }
 
-    set fillStyle(value: FillStyleInputs)
+    set fillStyle(value: FillInput)
     {
-        this._fillStyle = convertFillInputToFillStyle(value, GraphicsContext.defaultFillStyle);
+        this._fillStyle = toFillStyle(value, GraphicsContext.defaultFillStyle);
     }
 
     /**
@@ -219,9 +217,9 @@ export class GraphicsContext extends EventEmitter<{
         return this._strokeStyle;
     }
 
-    set strokeStyle(value: FillStyleInputs)
+    set strokeStyle(value: FillInput)
     {
-        this._strokeStyle = convertFillInputToFillStyle(value, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
+        this._strokeStyle = toStrokeStyle(value, GraphicsContext.defaultStrokeStyle);
     }
 
     /**
@@ -231,9 +229,9 @@ export class GraphicsContext extends EventEmitter<{
      *                or a FillStyle or ConvertedFillStyle object.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
-    public setFillStyle(style: FillStyleInputs): this
+    public setFillStyle(style: FillInput): this
     {
-        this._fillStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultFillStyle);
+        this._fillStyle = toFillStyle(style, GraphicsContext.defaultFillStyle);
 
         return this;
     }
@@ -245,29 +243,37 @@ export class GraphicsContext extends EventEmitter<{
      *                or a StrokeStyle or ConvertedStrokeStyle object.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
-    public setStrokeStyle(style: FillStyleInputs): this
+    public setStrokeStyle(style: StrokeInput): this
     {
-        this._strokeStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
+        this._strokeStyle = toFillStyle(style, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
 
         return this;
     }
 
     /**
-     * Adds a texture to the graphics context. This method supports multiple overloads for specifying the texture, tint, and dimensions.
-     * If only a texture is provided, it uses the texture's width and height for drawing. Additional parameters allow for specifying
-     * a tint color, and custom dimensions for the texture drawing area.
+     * Adds a texture to the graphics context. This method supports multiple overloads for specifying the texture.
+     * If only a texture is provided, it uses the texture's width and height for drawing.
      * @param texture - The Texture object to use.
-     * @param tint - (Optional) A ColorSource to tint the texture. If not provided, defaults to white (0xFFFFFF).
-     * @param dx - (Optional) The x-coordinate in the destination canvas at which to place the top-left corner of the source image.
-     * @param dy - (Optional) The y-coordinate in the destination canvas at which to place the top-left corner of the source image.
-     * @param dw - (Optional) The width of the rectangle within the source image to draw onto the destination canvas. If not provided, uses the texture's frame width.
-     * @param dh - (Optional) The height of the rectangle within the source image to draw onto the destination canvas. If not provided, uses the texture's frame height.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
     public texture(texture: Texture): this;
-    public texture(texture: Texture, tint: ColorSource): this;
-    public texture(texture: Texture, tint: ColorSource, dx: number, dy: number): this;
-    public texture(texture: Texture, tint: ColorSource, dx: number, dy: number, dw: number, dh: number): this;
+    /**
+     * Adds a texture to the graphics context. This method supports multiple overloads for specifying the texture,
+     * tint, and dimensions. If only a texture is provided, it uses the texture's width and height for drawing.
+     * Additional parameters allow for specifying a tint color, and custom dimensions for the texture drawing area.
+     * @param texture - The Texture object to use.
+     * @param tint - (Optional) A ColorSource to tint the texture. If not provided, defaults to white (0xFFFFFF).
+     * @param dx - (Optional) The x-coordinate in the destination canvas at which to place the top-left corner of
+     * the source image.
+     * @param dy - (Optional) The y-coordinate in the destination canvas at which to place the top-left corner of
+     * the source image.
+     * @param dw - (Optional) The width of the rectangle within the source image to draw onto the destination canvas.
+     * If not provided, uses the texture's frame width.
+     * @param dh - (Optional) The height of the rectangle within the source image to draw onto the destination canvas.
+     * If not provided, uses the texture's frame height.
+     * @returns The instance of the current GraphicsContext for method chaining.
+     */
+    public texture(texture: Texture, tint?: ColorSource, dx?: number, dy?: number, dw?: number, dh?: number): this;
     public texture(texture: Texture, tint?: ColorSource, dx?: number, dy?: number, dw?: number, dh?: number): this
     {
         this.instructions.push({
@@ -283,7 +289,7 @@ export class GraphicsContext extends EventEmitter<{
 
                 transform: this._transform.clone(),
                 alpha: this._fillStyle.alpha,
-                style: tint ? Color.shared.setValue(tint).toNumber() : 0xFFFFFF,
+                style: (tint || tint === 0) ? Color.shared.setValue(tint).toNumber() : 0xFFFFFF,
             }
         });
 
@@ -306,20 +312,20 @@ export class GraphicsContext extends EventEmitter<{
 
     /**
      * Fills the current or given path with the current fill style. This method can optionally take
-     * a color and alpha for a simple fill, or a more complex FillStyleInputs object for advanced fills.
+     * a color and alpha for a simple fill, or a more complex FillInput object for advanced fills.
      * @param style - (Optional) The style to fill the path with. Can be a color, gradient, pattern, or a complex style object. If omitted, uses the current fill style.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
-    public fill(style?: FillStyleInputs): this;
+    public fill(style?: FillInput): this;
     /** @deprecated 8.0.0 */
     public fill(color: ColorSource, alpha: number): this;
-    public fill(style?: FillStyleInputs, alpha?: number): this
+    public fill(style?: FillInput, alpha?: number): this
     {
         let path: GraphicsPath;
 
         const lastInstruction = this.instructions[this.instructions.length - 1];
 
-        if (this._tick === 0 && lastInstruction && lastInstruction.action === 'stroke')
+        if (this._tick === 0 && lastInstruction?.action === 'stroke')
         {
             path = lastInstruction.data.path;
         }
@@ -341,7 +347,7 @@ export class GraphicsContext extends EventEmitter<{
 
                 style = { color: style, alpha };
             }
-            this._fillStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultFillStyle);
+            this._fillStyle = toFillStyle(style, GraphicsContext.defaultFillStyle);
         }
 
         // TODO not a fan of the clone!!
@@ -370,17 +376,17 @@ export class GraphicsContext extends EventEmitter<{
 
     /**
      * Strokes the current path with the current stroke style. This method can take an optional
-     * FillStyleInputs parameter to define the stroke's appearance, including its color, width, and other properties.
+     * FillInput parameter to define the stroke's appearance, including its color, width, and other properties.
      * @param style - (Optional) The stroke style to apply. Can be defined as a simple color or a more complex style object. If omitted, uses the current stroke style.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
-    public stroke(style?: FillStyleInputs): this
+    public stroke(style?: StrokeInput): this
     {
         let path: GraphicsPath;
 
         const lastInstruction = this.instructions[this.instructions.length - 1];
 
-        if (this._tick === 0 && lastInstruction && lastInstruction.action === 'fill')
+        if (this._tick === 0 && lastInstruction?.action === 'fill')
         {
             path = lastInstruction.data.path;
         }
@@ -394,7 +400,7 @@ export class GraphicsContext extends EventEmitter<{
         // eslint-disable-next-line no-eq-null, eqeqeq
         if (style != null)
         {
-            this._strokeStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultStrokeStyle);
+            this._strokeStyle = toStrokeStyle(style, GraphicsContext.defaultStrokeStyle);
         }
 
         // TODO not a fan of the clone!!
@@ -977,6 +983,13 @@ export class GraphicsContext extends EventEmitter<{
     /**
      * Sets the current transformation matrix of the graphics context to the specified matrix or values.
      * This replaces the current transformation matrix.
+     * @param transform - The matrix to set as the current transformation matrix.
+     * @returns The instance of the current GraphicsContext for method chaining.
+     */
+    public setTransform(transform: Matrix): this;
+    /**
+     * Sets the current transformation matrix of the graphics context to the specified matrix or values.
+     * This replaces the current transformation matrix.
      * @param a - The value for the a property of the matrix, or a Matrix object to use directly.
      * @param b - The value for the b property of the matrix.
      * @param c - The value for the c property of the matrix.
@@ -985,7 +998,6 @@ export class GraphicsContext extends EventEmitter<{
      * @param dy - The value for the ty (translate y) property of the matrix.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
-    public setTransform(transform: Matrix): this;
     public setTransform(a: number, b: number, c: number, d: number, dx: number, dy: number): this;
     public setTransform(a: number | Matrix, b?: number, c?: number, d?: number, dx?: number, dy?: number): this
     {
@@ -1002,7 +1014,15 @@ export class GraphicsContext extends EventEmitter<{
     }
 
     /**
-     * Applies the specified transformation matrix to the current graphics context by multiplying the current matrix with the specified matrix.
+     * Applies the specified transformation matrix to the current graphics context by multiplying
+     * the current matrix with the specified matrix.
+     * @param transform - The matrix to apply to the current transformation.
+     * @returns The instance of the current GraphicsContext for method chaining.
+     */
+    public transform(transform: Matrix): this;
+    /**
+     * Applies the specified transformation matrix to the current graphics context by multiplying
+     * the current matrix with the specified matrix.
      * @param a - The value for the a property of the matrix, or a Matrix object to use directly.
      * @param b - The value for the b property of the matrix.
      * @param c - The value for the c property of the matrix.
@@ -1011,7 +1031,6 @@ export class GraphicsContext extends EventEmitter<{
      * @param dy - The value for the ty (translate y) property of the matrix.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
-    public transform(transform: Matrix): this;
     public transform(a: number, b: number, c: number, d: number, dx: number, dy: number): this;
     public transform(a: number | Matrix, b?: number, c?: number, d?: number, dx?: number, dy?: number): this
     {
@@ -1048,6 +1067,7 @@ export class GraphicsContext extends EventEmitter<{
      */
     public clear(): this
     {
+        this._activePath.clear();
         this.instructions.length = 0;
         this.resetTransform();
 
@@ -1058,17 +1078,23 @@ export class GraphicsContext extends EventEmitter<{
 
     protected onUpdate(): void
     {
-        if (this.dirty) return;
+        // Every time the content is updated - we must invalidate bounds, regardless rendering `dirty` state.
+        // Bounds can be read multiple times per frame.
+        this._boundsDirty = true;
 
+        // Visual updates happen only once per frame.
+        // There is no need to dispatch an `update` in if it was already dispatched this frame.
+        if (this.dirty) return;
         this.emit('update', this, 0x10);
         this.dirty = true;
-        this._boundsDirty = true;
     }
 
     /** The bounds of the graphic shape. */
     get bounds(): Bounds
     {
         if (!this._boundsDirty) return this._bounds;
+
+        this._boundsDirty = false;
 
         // TODO switch to idy dirty with tick..
         const bounds = this._bounds;
@@ -1096,15 +1122,17 @@ export class GraphicsContext extends EventEmitter<{
             {
                 const data = instruction.data as StrokeInstruction['data'];
 
-                const padding = data.style.width / 2;
+                const alignment = data.style.alignment;
+
+                const outerPadding = (data.style.width * (1 - alignment));
 
                 const _bounds = data.path.bounds;
 
                 bounds.addFrame(
-                    _bounds.minX - padding,
-                    _bounds.minY - padding,
-                    _bounds.maxX + padding,
-                    _bounds.maxY + padding
+                    _bounds.minX - outerPadding,
+                    _bounds.minY - outerPadding,
+                    _bounds.maxX + outerPadding,
+                    _bounds.maxY + outerPadding
                 );
             }
         }
@@ -1153,7 +1181,9 @@ export class GraphicsContext extends EventEmitter<{
                 }
                 else
                 {
-                    hasHit = shape.strokeContains(transformedPoint.x, transformedPoint.y, (style as ConvertedStrokeStyle).width);
+                    const strokeStyle = (style as ConvertedStrokeStyle);
+
+                    hasHit = shape.strokeContains(transformedPoint.x, transformedPoint.y, strokeStyle.width, strokeStyle.alignment);
                 }
 
                 const holes = data.hole;
@@ -1184,18 +1214,34 @@ export class GraphicsContext extends EventEmitter<{
         return hasHit;
     }
 
+    /** Unloads the GPU data from the graphics context. */
+    public unload(): void
+    {
+        this.emit('unload', this);
+        for (const key in this._gpuData)
+        {
+            this._gpuData[key]?.destroy();
+        }
+        this._gpuData = Object.create(null);
+    }
+
     /**
      * Destroys the GraphicsData object.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the fill/stroke style?
-     * @param {boolean} [options.textureSource=false] - Should it destroy the texture source of the fill/stroke style?
+     * @example
+     * context.destroy();
+     * context.destroy(true);
+     * context.destroy({ texture: true, textureSource: true });
      */
     public destroy(options: TypeOrBool<TextureDestroyOptions> = false): void
     {
+        if (this.destroyed) return;
+        this.destroyed = true;
         this._stateStack.length = 0;
         this._transform = null;
 
+        this.unload();
         this.emit('destroy', this);
         this.removeAllListeners();
 
@@ -1207,12 +1253,16 @@ export class GraphicsContext extends EventEmitter<{
 
             if (this._fillStyle.texture)
             {
-                this._fillStyle.texture.destroy(destroyTextureSource);
+                this._fillStyle.fill && 'uid' in this._fillStyle.fill
+                    ? this._fillStyle.fill.destroy()
+                    : this._fillStyle.texture.destroy(destroyTextureSource);
             }
 
             if (this._strokeStyle.texture)
             {
-                this._strokeStyle.texture.destroy(destroyTextureSource);
+                this._strokeStyle.fill && 'uid' in this._strokeStyle.fill
+                    ? this._strokeStyle.fill.destroy()
+                    : this._strokeStyle.texture.destroy(destroyTextureSource);
             }
         }
 

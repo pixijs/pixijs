@@ -4,6 +4,9 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
 /**
+ * The final color is the result of multiply if the bottom color is darker, or screen if the bottom color is lighter.
+ * This blend mode is equivalent to hard-light but with the layers swapped.
+ *
  * Available as `container.blendMode = 'overlay'` after importing `pixi.js/advanced-blend-modes`.
  * @example
  * import 'pixi.js/advanced-blend-modes';
@@ -11,6 +14,8 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'overlay'
+ * @category filters
+ * @noInheritDoc
  */
 export class OverlayBlend extends BlendModeFilter
 {
@@ -27,7 +32,7 @@ export class OverlayBlend extends BlendModeFilter
                 functions: `
                 float overlay(float base, float blend)
                 {
-                    return (blend < 0.5) ? (2.0*base*blend) : (1.0-2.0*(1.0-base)*(1.0-blend));
+                    return (base < 0.5) ? (2.0*base*blend) : (1.0-2.0*(1.0-base)*(1.0-blend));
                 }
 
                 vec3 blendOverlay(vec3 base, vec3 blend, float opacity)
@@ -42,7 +47,7 @@ export class OverlayBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                finalColor = vec4(blendOverlay(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendOverlay(back.rgb, front.rgb,front.a), blendedAlpha) * uBlend;
                 `,
             },
             gpu: {
@@ -64,7 +69,7 @@ export class OverlayBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                out = vec4<f32>(blendOverlay(back.rgb, front.rgb, front.a), blendUniforms.uBlend);
+                out = vec4<f32>(blendOverlay(back.rgb, front.rgb, front.a), blendedAlpha) * blendUniforms.uBlend;
                 `,
             }
         });

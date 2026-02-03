@@ -1,4 +1,4 @@
-import type { HTMLTextStyle } from '../HtmlTextStyle';
+import type { HTMLTextStyle } from '../HTMLTextStyle';
 
 /**
  * Extracts font families from text. It will extract font families from the style, tagStyles and any font families
@@ -6,6 +6,7 @@ import type { HTMLTextStyle } from '../HtmlTextStyle';
  * @param  text - The text to extract font families from
  * @param style - The style to extract font families from
  * @returns {string[]} - The font families as an array of strings
+ * @internal
  */
 export function extractFontFamilies(text: string, style: HTMLTextStyle): string[]
 {

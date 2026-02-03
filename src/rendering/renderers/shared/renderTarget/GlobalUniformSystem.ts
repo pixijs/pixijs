@@ -13,6 +13,12 @@ import type { WebGPURenderer } from '../../gpu/WebGPURenderer';
 import type { UboSystem } from '../shader/UboSystem';
 import type { System } from '../system/System';
 
+/**
+ * Type definition for the global uniforms used in the renderer.
+ * This includes projection matrix, world transform matrix, world color, and resolution.
+ * @category rendering
+ * @advanced
+ */
 export type GlobalUniformGroup = UniformGroup<{
     uProjectionMatrix: { value: Matrix; type: 'mat3x3<f32>' }
     uWorldTransformMatrix: { value: Matrix; type: 'mat3x3<f32>' }
@@ -20,6 +26,12 @@ export type GlobalUniformGroup = UniformGroup<{
     uResolution: { value: number[]; type: 'vec2<f32>' }
 }>;
 
+/**
+ * Options for the global uniforms system.
+ * This includes size, projection matrix, world transform matrix, world color, and offset.
+ * @category rendering
+ * @advanced
+ */
 export interface GlobalUniformOptions
 {
     size?: number[],
@@ -29,6 +41,12 @@ export interface GlobalUniformOptions
     offset?: PointData
 }
 
+/**
+ * Data structure for the global uniforms used in the renderer.
+ * This includes the projection matrix, world transform matrix, world color, resolution, and bind group.
+ * @category rendering
+ * @advanced
+ */
 export interface GlobalUniformData
 {
     projectionMatrix: Matrix
@@ -39,7 +57,8 @@ export interface GlobalUniformData
     bindGroup: BindGroup
 }
 
-interface GlobalUniformRenderer
+/** @internal */
+export interface GlobalUniformRenderer
 {
     renderTarget: GlRenderTargetSystem | GpuRenderTargetSystem
     renderPipes: Renderer['renderPipes'];
@@ -49,7 +68,8 @@ interface GlobalUniformRenderer
 
 /**
  * System plugin to the renderer to manage global uniforms for the renderer.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class GlobalUniformSystem implements System
 {
@@ -197,6 +217,11 @@ export class GlobalUniformSystem implements System
         return this._currentGlobalUniformData.bindGroup;
     }
 
+    get globalUniformData()
+    {
+        return this._currentGlobalUniformData;
+    }
+
     get uniformGroup()
     {
         return this._currentGlobalUniformData.bindGroup.resources[0] as UniformGroup;
@@ -220,5 +245,11 @@ export class GlobalUniformSystem implements System
     public destroy()
     {
         (this._renderer as null) = null;
+        this._globalUniformDataStack.length = 0;
+        this._uniformsPool.length = 0;
+        this._activeUniforms.length = 0;
+        this._bindGroupPool.length = 0;
+        this._activeBindGroups.length = 0;
+        this._currentGlobalUniformData = null;
     }
 }

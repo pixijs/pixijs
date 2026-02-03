@@ -6,7 +6,10 @@ import { injectBits } from './utils/injectBits';
 
 import type { HighShaderBit, HighShaderSource } from './types';
 
-/** A high template consists of vertex and fragment source */
+/**
+ * A high template consists of vertex and fragment source
+ * @internal
+ */
 export interface HighShaderTemplate
 {
     name?: string;
@@ -14,6 +17,7 @@ export interface HighShaderTemplate
     vertex: string;
 }
 
+/** @internal */
 export interface CompileHighShaderOptions
 {
     template: HighShaderTemplate;
@@ -30,6 +34,7 @@ let CACHE_UID = 0;
  * @param options
  * @param options.template
  * @param options.bits
+ * @internal
  */
 export function compileHighShader({
     template,
@@ -47,6 +52,15 @@ export function compileHighShader({
     return cacheMap[cacheId];
 }
 
+/**
+ * This function will take a HighShader template, some High fragments and then merge them in to a shader source.
+ * It is specifically for WebGL and does not compile inputs and outputs.
+ * @param options
+ * @param options.template - The HighShader template containing vertex and fragment source.
+ * @param options.bits - An array of HighShaderBit objects to be compiled into the shader.
+ * @returns A HighShaderSource object containing the compiled vertex and fragment shaders.
+ * @internal
+ */
 export function compileHighShaderGl({
     template,
     bits

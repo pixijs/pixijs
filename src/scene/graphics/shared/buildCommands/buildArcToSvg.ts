@@ -145,6 +145,19 @@ const getArcCenter = (
     out.ang2 = ang2;
 };
 
+/**
+ * @param points
+ * @param px
+ * @param py
+ * @param cx
+ * @param cy
+ * @param rx
+ * @param ry
+ * @param xAxisRotation
+ * @param largeArcFlag
+ * @param sweepFlag
+ * @internal
+ */
 export function buildArcToSvg(
     points: number[],
     px: number,

@@ -1,3 +1,5 @@
+import { ExtensionType } from '../../../../extensions/Extensions';
+
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { ShapeBuildCommand } from './ShapeBuildCommand';
 
@@ -9,8 +11,12 @@ import type { ShapeBuildCommand } from './ShapeBuildCommand';
  * @private
  */
 export const buildRectangle: ShapeBuildCommand<Rectangle> = {
+    extension: {
+        type: ExtensionType.ShapeBuilder,
+        name: 'rectangle',
+    },
 
-    build(shape: Rectangle, points: number[]): number[]
+    build(shape: Rectangle, points: number[]): boolean
     {
         const rectData = shape;
         const x = rectData.x;
@@ -18,9 +24,9 @@ export const buildRectangle: ShapeBuildCommand<Rectangle> = {
         const width = rectData.width;
         const height = rectData.height;
 
-        if (!(width >= 0 && height >= 0))
+        if (!(width > 0 && height > 0))
         {
-            return points;
+            return false;
         }
 
         points[0] = x;
@@ -32,7 +38,7 @@ export const buildRectangle: ShapeBuildCommand<Rectangle> = {
         points[6] = x;
         points[7] = y + height;
 
-        return points;
+        return true;
     },
 
     triangulate(

@@ -1,7 +1,5 @@
-import { ColorMatrixFilter } from '../../../../src/filters/defaults/color-matrix/ColorMatrixFilter';
-import { NoiseFilter } from '../../../../src/filters/defaults/noise/NoiseFilter';
-import { Container } from '../../../../src/scene/container/Container';
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
+import { ColorMatrixFilter, NoiseFilter } from '~/filters';
+import { Container, Graphics } from '~/scene';
 
 import type { TestScene } from '../../types';
 

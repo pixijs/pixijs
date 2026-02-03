@@ -65,6 +65,7 @@ fn mainFragment(
 
    var back =  textureSample(uBackTexture, uSampler, uv);
    var front = textureSample(uTexture, uSampler, uv);
+   var blendedAlpha = front.a + back.a * (1.0 - front.a);
    
    var out = vec4<f32>(0.0,0.0,0.0,0.0);
 

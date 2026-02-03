@@ -1,11 +1,13 @@
 import type { TEXTURE_FORMATS } from '../../rendering/renderers/shared/texture/const';
 
+/** @internal */
 export type LIBKTXModuleCreator = (config: {
     locateFile: (file: string) => string
 }) => {
     then: (result: (libktx: LIBKTXModule) => void) => void
 };
 
+/** @internal */
 export interface KTXTexture
 {
     getImageData(level: number, layer: number, face: number): Uint8Array;
@@ -19,6 +21,7 @@ export interface KTXTexture
     needsTranscoding: boolean;
 }
 
+/** @internal */
 export interface LIBKTXModule
 {
     ErrorCode: any;
@@ -26,4 +29,5 @@ export interface LIBKTXModule
     ktxTexture: new (data: Uint8Array) => KTXTexture;
 }
 
+/** @internal */
 export type COMPRESSED_TEXTURE_FORMATS = TEXTURE_FORMATS | 'rgb8unorm' | 'rgb8unorm-srgb';

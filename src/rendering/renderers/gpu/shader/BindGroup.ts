@@ -1,3 +1,5 @@
+import { type GCable } from '../../shared/GCSystem';
+
 import type { BindResource } from './BindResource';
 
 /**
@@ -24,7 +26,8 @@ import type { BindResource } from './BindResource';
  *
  * This bind group class will also watch for changes in its resources ensuring that the changes
  * are reflected in the WebGPU BindGroup.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class BindGroup
 {
@@ -33,7 +36,6 @@ export class BindGroup
     /**
      * a key used internally to match it up to a WebGPU Bindgroup
      * @internal
-     * @ignore
      */
     public _key: string;
     private _dirty = true;
@@ -60,7 +62,6 @@ export class BindGroup
      * Updates the key if its flagged as dirty. This is used internally to
      * match this bind group to a WebGPU BindGroup.
      * @internal
-     * @ignore
      */
     public _updateKey(): void
     {
@@ -118,16 +119,17 @@ export class BindGroup
     /**
      * Used internally to 'touch' each resource, to ensure that the GC
      * knows that all resources in this bind group are still being used.
+     * @param now - The current time in milliseconds.
      * @param tick - The current tick.
      * @internal
-     * @ignore
      */
-    public _touch(tick: number)
+    public _touch(now: number, tick: number): void
     {
         const resources = this.resources;
 
         for (const i in resources)
         {
+            (resources[i] as BindResource & GCable)._gcLastUsed = now;
             resources[i]._touched = tick;
         }
     }
@@ -141,7 +143,7 @@ export class BindGroup
         {
             const resource = resources[i];
 
-            resource.off?.('change', this.onResourceChange, this);
+            resource?.off?.('change', this.onResourceChange, this);
         }
 
         this.resources = null;

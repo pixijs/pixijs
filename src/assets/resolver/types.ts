@@ -3,7 +3,8 @@ import type { ResolvedAsset } from '../types';
 
 /**
  * A prefer order lets the resolver know which assets to prefer depending on the various parameters passed to it.
- * @memberof assets
+ * @category assets
+ * @standard
  */
 export interface PreferOrder
 {
@@ -16,7 +17,8 @@ export interface PreferOrder
 
 /**
  * Format for url parser, will test a string and if it pass will then parse it, turning it into an ResolvedAsset
- * @memberof assets
+ * @category assets
+ * @advanced
  */
 export interface ResolveURLParser
 {
@@ -26,5 +28,5 @@ export interface ResolveURLParser
     /** the test to perform on the url to determine if it should be parsed */
     test: (url: string) => boolean;
     /** the function that will convert the url into an object */
-    parse: (value: string) => ResolvedAsset;
+    parse: (value: string) => ResolvedAsset & {[key: string]: any};
 }

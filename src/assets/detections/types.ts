@@ -2,7 +2,8 @@ import type { ExtensionMetadata } from '../../extensions/Extensions';
 
 /**
  * Format detection is useful for detecting feature support on the current platform.
- * @memberof assets
+ * @category assets
+ * @advanced
  */
 export interface FormatDetectionParser
 {

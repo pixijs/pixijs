@@ -12,14 +12,21 @@ import type { ResolvedAsset } from '../../assets/types';
 import type { TextureSourceOptions } from '../../rendering/renderers/shared/texture/sources/TextureSource';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 
-/** Loads KTX textures! */
+/**
+ * Loads Basis textures using a web worker.
+ * @category assets
+ * @advanced
+ */
 export const loadBasis = {
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.High,
+        name: 'loadBasis',
     },
 
+    /** used for deprecation purposes */
     name: 'loadBasis',
+    id: 'basis',
 
     test(url: string): boolean
     {
@@ -49,5 +56,4 @@ export const loadBasis = {
         }
     }
 
-} as LoaderParser<Texture | Texture[], TextureSourceOptions>;
-
+} satisfies LoaderParser<Texture | Texture[], TextureSourceOptions>;

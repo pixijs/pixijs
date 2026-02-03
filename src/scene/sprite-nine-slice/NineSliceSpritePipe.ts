@@ -1,14 +1,36 @@
 import { ExtensionType } from '../../extensions/Extensions';
-import { BigPool } from '../../utils/pool/PoolGroup';
+import { GCManagedHash } from '../../utils/data/GCManagedHash';
 import { BatchableMesh } from '../mesh/shared/BatchableMesh';
+import { type GPUData } from '../view/ViewContainer';
 import { NineSliceGeometry } from './NineSliceGeometry';
 
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../rendering/renderers/types';
-import type { PoolItem } from '../../utils/pool/Pool';
 import type { NineSliceSprite } from './NineSliceSprite';
 
+/**
+ * GPU data for NineSliceSprite.
+ * @internal
+ */
+export class NineSliceSpriteGpuData extends BatchableMesh implements GPUData
+{
+    constructor()
+    {
+        super();
+        this.geometry = new NineSliceGeometry();
+    }
+
+    public destroy()
+    {
+        this.geometry.destroy();
+    }
+}
+
+/**
+ * The NineSliceSpritePipe is a render pipe for rendering NineSliceSprites.
+ * @internal
+ */
 export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 {
     /** @ignore */
@@ -22,101 +44,81 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
     } as const;
 
     private readonly _renderer: Renderer;
-    private readonly _gpuSpriteHash: Record<number, BatchableMesh> = Object.create(null);
+    private readonly _managedSprites: GCManagedHash<NineSliceSprite>;
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._managedSprites = new GCManagedHash({ renderer, type: 'renderable', name: 'nineSliceSprite' });
     }
 
-    public addRenderable(sprite: NineSliceSprite, _instructionSet: InstructionSet)
+    public addRenderable(sprite: NineSliceSprite, instructionSet: InstructionSet)
     {
         const gpuSprite = this._getGpuSprite(sprite);
 
-        if (sprite._didSpriteUpdate) this._updateBatchableSprite(sprite, gpuSprite);
+        if (sprite.didViewUpdate) this._updateBatchableSprite(sprite, gpuSprite);
 
-        this._renderer.renderPipes.batch.addToBatch(gpuSprite);
+        this._renderer.renderPipes.batch.addToBatch(gpuSprite, instructionSet);
     }
 
     public updateRenderable(sprite: NineSliceSprite)
     {
-        const gpuSprite = this._gpuSpriteHash[sprite.uid];
+        const gpuSprite = this._getGpuSprite(sprite);
 
-        if (sprite._didSpriteUpdate) this._updateBatchableSprite(sprite, gpuSprite);
+        if (sprite.didViewUpdate) this._updateBatchableSprite(sprite, gpuSprite);
 
-        gpuSprite.batcher.updateElement(gpuSprite);
+        gpuSprite._batcher.updateElement(gpuSprite);
     }
 
     public validateRenderable(sprite: NineSliceSprite): boolean
     {
-        const texture = sprite._texture;
         const gpuSprite = this._getGpuSprite(sprite);
 
-        if (gpuSprite.texture._source !== texture._source)
-        {
-            return !gpuSprite.batcher.checkAndUpdateTexture(gpuSprite, texture);
-        }
-
-        return false;
-    }
-
-    public destroyRenderable(sprite: NineSliceSprite)
-    {
-        const batchableSprite = this._gpuSpriteHash[sprite.uid];
-
-        // this will call reset!
-        BigPool.return(batchableSprite as PoolItem);
-
-        this._gpuSpriteHash[sprite.uid] = null;
+        return !gpuSprite._batcher.checkAndUpdateTexture(
+            gpuSprite,
+            sprite._texture
+        );
     }
 
     private _updateBatchableSprite(sprite: NineSliceSprite, batchableSprite: BatchableMesh)
     {
-        sprite._didSpriteUpdate = false;
         (batchableSprite.geometry as NineSliceGeometry)
             .update(sprite);
 
         // = sprite.bounds;
-        batchableSprite.texture = sprite._texture;
+        batchableSprite.setTexture(sprite._texture);
     }
 
-    private _getGpuSprite(sprite: NineSliceSprite): BatchableMesh
+    private _getGpuSprite(sprite: NineSliceSprite): NineSliceSpriteGpuData
     {
-        return this._gpuSpriteHash[sprite.uid] || this._initGPUSprite(sprite);
+        return sprite._gpuData[this._renderer.uid] || this._initGPUSprite(sprite);
     }
 
-    private _initGPUSprite(sprite: NineSliceSprite): BatchableMesh
+    private _initGPUSprite(sprite: NineSliceSprite): NineSliceSpriteGpuData
     {
-        const batchableMesh = new BatchableMesh();
+        const gpuData = sprite._gpuData[this._renderer.uid] = new NineSliceSpriteGpuData();
 
-        batchableMesh.geometry = new NineSliceGeometry();
+        const batchableMesh = gpuData;
 
-        batchableMesh.mesh = sprite;
-
+        batchableMesh.renderable = sprite;
+        batchableMesh.transform = sprite.groupTransform;
         batchableMesh.texture = sprite._texture;
         batchableMesh.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;
 
-        this._gpuSpriteHash[sprite.uid] = batchableMesh;
+        this._managedSprites.add(sprite);
 
-        // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
-        sprite.on('destroyed', () =>
+        // if the sprite has not been updated by the view, we need to update the batchable mesh now.
+        if (!sprite.didViewUpdate)
         {
-            this.destroyRenderable(sprite);
-        });
+            this._updateBatchableSprite(sprite, batchableMesh);
+        }
 
-        return batchableMesh;
+        return gpuData;
     }
 
     public destroy()
     {
-        for (const i in this._gpuSpriteHash)
-        {
-            const batchableMesh = this._gpuSpriteHash[i];
-
-            batchableMesh.geometry.destroy();
-        }
-
-        (this._gpuSpriteHash as null) = null;
+        this._managedSprites.destroy();
         (this._renderer as null) = null;
     }
 }

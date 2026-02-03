@@ -1,34 +1,46 @@
+import { extensions, ExtensionType } from '../../../../extensions/Extensions';
+import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { buildSimpleUvs, buildUvs } from '../../../../rendering/renderers/shared/geometry/utils/buildUvs';
 import { transformVertices } from '../../../../rendering/renderers/shared/geometry/utils/transformVertices';
 import { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
 import { BigPool } from '../../../../utils/pool/PoolGroup';
 import { BatchableGraphics } from '../BatchableGraphics';
-import { buildCircle } from '../buildCommands/buildCircle';
+import { buildCircle, buildEllipse, buildRoundedRectangle } from '../buildCommands/buildCircle';
 import { buildLine } from '../buildCommands/buildLine';
+import { buildPixelLine } from '../buildCommands/buildPixelLine';
 import { buildPolygon } from '../buildCommands/buildPolygon';
 import { buildRectangle } from '../buildCommands/buildRectangle';
 import { buildTriangle } from '../buildCommands/buildTriangle';
+import { generateTextureMatrix as generateTextureFillMatrix } from './generateTextureFillMatrix';
 import { triangulateWithHoles } from './triangulateWithHoles';
 
 import type { Polygon } from '../../../../maths/shapes/Polygon';
+import type { Topology } from '../../../../rendering/renderers/shared/geometry/const';
 import type { ShapeBuildCommand } from '../buildCommands/ShapeBuildCommand';
-import type { ConvertedFillStyle, GraphicsContext, TextureInstruction } from '../GraphicsContext';
+import type { ConvertedFillStyle, ConvertedStrokeStyle } from '../FillTypes';
+import type { GraphicsContext, TextureInstruction } from '../GraphicsContext';
 import type { GpuGraphicsContext } from '../GraphicsContextSystem';
-import type { GraphicsPath } from '../path/GraphicsPath';
-import type { ShapePath } from '../path/ShapePath';
+import type { ShapePath, ShapePrimitiveWithHoles } from '../path/ShapePath';
 
-const buildMap: Record<string, ShapeBuildCommand> = {
-    rectangle: buildRectangle,
-    polygon: buildPolygon,
-    triangle: buildTriangle,
-    circle: buildCircle,
-    ellipse: buildCircle,
-    roundedRectangle: buildCircle,
-};
+/**
+ * A record of shape builders, keyed by shape type.
+ * @category scene
+ * @advanced
+ */
+export const shapeBuilders: Record<string, ShapeBuildCommand> = {};
+
+extensions.handleByMap(ExtensionType.ShapeBuilder, shapeBuilders);
+extensions.add(buildRectangle, buildPolygon, buildTriangle, buildCircle, buildEllipse, buildRoundedRectangle);
 
 const tempRect = new Rectangle();
+const tempTextureMatrix = new Matrix();
 
+/**
+ * @param context
+ * @param gpuContext
+ * @internal
+ */
 export function buildContextBatches(context: GraphicsContext, gpuContext: GpuGraphicsContext)
 {
     const { geometryData, batches } = gpuContext;
@@ -61,10 +73,16 @@ export function buildContextBatches(context: GraphicsContext, gpuContext: GpuGra
 
             if (isStroke && hole)
             {
-                addShapePathToGeometryData(hole.shapePath, style, null, true, batches, geometryData);
+                addShapePathToGeometryData(hole.shapePath, style, true, batches, geometryData);
             }
 
-            addShapePathToGeometryData(shapePath, style, hole, isStroke, batches, geometryData);
+            if (hole)
+            {
+                // add the holes to the last shape primitive
+                shapePath.shapePrimitives[shapePath.shapePrimitives.length - 1].holes = hole.shapePath.shapePrimitives;
+            }
+
+            addShapePathToGeometryData(shapePath, style, isStroke, batches, geometryData);
         }
     }
 }
@@ -79,18 +97,11 @@ function addTextureToGeometryData(
     }
 )
 {
-    const { vertices, uvs, indices } = geometryData;
-
-    const indexOffset = indices.length;
-    const vertOffset = vertices.length / 2;
-
     const points: number[] = [];
 
-    const build = buildMap.rectangle;
+    const build = shapeBuilders.rectangle;
 
     const rect = tempRect;
-
-    const texture = data.image;
 
     rect.x = data.dx;
     rect.y = data.dy;
@@ -100,7 +111,15 @@ function addTextureToGeometryData(
     const matrix = data.transform;
 
     // TODO - this can be cached...
-    build.build(rect, points);
+    if (!build.build(rect, points))
+    {
+        return;
+    }
+
+    const { vertices, uvs, indices } = geometryData;
+
+    const indexOffset = indices.length;
+    const vertOffset = vertices.length / 2;
 
     if (matrix)
     {
@@ -109,6 +128,7 @@ function addTextureToGeometryData(
 
     build.triangulate(points, vertices, 2, vertOffset, indices, indexOffset);
 
+    const texture = data.image;
     const textureUvs = texture.uvs;
 
     uvs.push(
@@ -123,10 +143,10 @@ function addTextureToGeometryData(
     graphicsBatch.indexOffset = indexOffset;
     graphicsBatch.indexSize = indices.length - indexOffset;
 
-    graphicsBatch.vertexOffset = vertOffset;
-    graphicsBatch.vertexSize = (vertices.length / 2) - vertOffset;
+    graphicsBatch.attributeOffset = vertOffset;
+    graphicsBatch.attributeSize = (vertices.length / 2) - vertOffset;
 
-    graphicsBatch.color = data.style;
+    graphicsBatch.baseColor = data.style;
     graphicsBatch.alpha = data.alpha;
 
     graphicsBatch.texture = texture;
@@ -137,8 +157,7 @@ function addTextureToGeometryData(
 
 function addShapePathToGeometryData(
     shapePath: ShapePath,
-    style: ConvertedFillStyle,
-    hole: GraphicsPath,
+    style: ConvertedFillStyle | ConvertedStrokeStyle,
     isStroke: boolean,
     batches: BatchableGraphics[],
     geometryData: {
@@ -149,22 +168,24 @@ function addShapePathToGeometryData(
 )
 {
     const { vertices, uvs, indices } = geometryData;
-    const lastIndex = shapePath.shapePrimitives.length - 1;
 
-    shapePath.shapePrimitives.forEach(({ shape, transform: matrix }, i) =>
+    shapePath.shapePrimitives.forEach(({ shape, transform: matrix, holes }) =>
     {
-        const indexOffset = indices.length;
-        const vertOffset = vertices.length / 2;
-
         const points: number[] = [];
-
-        const build = buildMap[shape.type];
-
+        const build = shapeBuilders[shape.type];
         // TODO - this can be cached...
         // TODO - THIS IS DONE TWICE!!!!!!
         // ONCE FOR STROKE AND ONCE FOR FILL
         // move to the ShapePath2D class itself?
-        build.build(shape, points);
+
+        if (!build.build(shape, points))
+        {
+            return;
+        }
+
+        const indexOffset = indices.length;
+        const vertOffset = vertices.length / 2;
+        let topology: Topology = 'triangle-list';
 
         if (matrix)
         {
@@ -173,18 +194,13 @@ function addShapePathToGeometryData(
 
         if (!isStroke)
         {
-            if (hole && lastIndex === i)
+            if (holes)
             {
-                if (lastIndex !== 0)
-                {
-                    console.warn('[Pixi Graphics] only the last shape have be cut out');
-                }
-
                 const holeIndices: number[] = [];
 
                 const otherPoints = points.slice();
 
-                const holeArrays = getHoleArrays(hole.shapePath);
+                const holeArrays = getHoleArrays(holes);
 
                 holeArrays.forEach((holePoints) =>
                 {
@@ -202,9 +218,17 @@ function addShapePathToGeometryData(
         else
         {
             const close = (shape as Polygon).closePath ?? true;
-            const lineStyle = style;
+            const lineStyle = style as ConvertedStrokeStyle;
 
-            buildLine(points, lineStyle, false, close, vertices, 2, vertOffset, indices, indexOffset);
+            if (!lineStyle.pixelLine)
+            {
+                buildLine(points, lineStyle, false, close, vertices, indices);
+            }
+            else
+            {
+                buildPixelLine(points, close, vertices, indices);
+                topology = 'line-list';
+            }
         }
 
         const uvsOffset = uvs.length / 2;
@@ -213,13 +237,7 @@ function addShapePathToGeometryData(
 
         if (texture !== Texture.WHITE)
         {
-            const textureMatrix = style.matrix;
-
-            if (matrix)
-            {
-                // todo can prolly do this before calculating uvs..
-                textureMatrix.append(matrix.clone().invert());
-            }
+            const textureMatrix = generateTextureFillMatrix(tempTextureMatrix, style, shape, matrix);
 
             buildUvs(vertices, 2, vertOffset, uvs, uvsOffset, 2, (vertices.length / 2) - vertOffset, textureMatrix);
         }
@@ -233,25 +251,22 @@ function addShapePathToGeometryData(
         graphicsBatch.indexOffset = indexOffset;
         graphicsBatch.indexSize = indices.length - indexOffset;
 
-        graphicsBatch.vertexOffset = vertOffset;
-        graphicsBatch.vertexSize = (vertices.length / 2) - vertOffset;
+        graphicsBatch.attributeOffset = vertOffset;
+        graphicsBatch.attributeSize = (vertices.length / 2) - vertOffset;
 
-        graphicsBatch.color = style.color as number;
+        graphicsBatch.baseColor = style.color;
         graphicsBatch.alpha = style.alpha;
 
         graphicsBatch.texture = texture;
         graphicsBatch.geometryData = geometryData;
+        graphicsBatch.topology = topology;
 
         batches.push(graphicsBatch);
     });
 }
 
-function getHoleArrays(shape: ShapePath)
+function getHoleArrays(holePrimitives: ShapePrimitiveWithHoles[])
 {
-    if (!shape) return [];
-
-    const holePrimitives = shape.shapePrimitives;
-
     const holeArrays = [];
 
     for (let k = 0; k < holePrimitives.length; k++)
@@ -261,11 +276,12 @@ function getHoleArrays(shape: ShapePath)
         // TODO - need to transform the points via there transform here..
         const holePoints: number[] = [];
 
-        const holeBuilder = buildMap[holePrimitive.type] as ShapeBuildCommand;
+        const holeBuilder = shapeBuilders[holePrimitive.type] as ShapeBuildCommand;
 
-        holeBuilder.build(holePrimitive, holePoints);
-
-        holeArrays.push(holePoints);
+        if (holeBuilder.build(holePrimitive, holePoints))
+        {
+            holeArrays.push(holePoints);
+        }
     }
 
     return holeArrays;

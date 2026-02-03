@@ -1,11 +1,16 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
-import { warn } from '../../../utils/logging/warn';
 import { boundsPool, matrixPool } from './utils/matrixAndBoundsPool';
 
 import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
 import type { Container } from '../Container';
 import type { Bounds } from './Bounds';
 
+/**
+ * @param target
+ * @param bounds
+ * @param relativeMatrix
+ * @internal
+ */
 export function getLocalBounds(target: Container, bounds: Bounds, relativeMatrix?: Matrix): Bounds
 {
     bounds.clear();
@@ -66,7 +71,7 @@ function _getLocalBounds(
         if (target.renderPipeId)
         {
             bounds.matrix = relativeTransform;
-            (target as Renderable).addBounds(bounds);
+            bounds.addBounds((target as Renderable).bounds);
         }
 
         const children = target.children;
@@ -91,28 +96,5 @@ function _getLocalBounds(
     }
 
     matrixPool.return(relativeTransform);
-}
-
-export function getParent(target: Container, root: Container, matrix: Matrix)
-{
-    const parent = target.parent;
-
-    if (!parent)
-    {
-        // we have reach the top of the tree!
-        // #if _DEBUG
-        warn('Item is not inside the root container');
-        // #endif
-
-        return;
-    }
-
-    if (parent !== root)
-    {
-        getParent(parent, root, matrix);
-
-        parent.updateLocalTransform();
-        matrix.append(parent.localTransform);
-    }
 }
 

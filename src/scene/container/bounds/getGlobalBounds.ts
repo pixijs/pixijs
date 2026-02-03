@@ -5,6 +5,14 @@ import type { Renderable } from '../../../rendering/renderers/shared/Renderable'
 import type { Container } from '../Container';
 import type { Bounds } from './Bounds';
 
+/**
+ * Gets the global bounds of a container, including all its children
+ * @param target - The target container to get the bounds from
+ * @param skipUpdateTransform - If true, the transform will not be updated before calculating bounds.
+ * @param bounds - The output bounds object.
+ * @returns The bounds.
+ * @internal
+ */
 export function getGlobalBounds(target: Container, skipUpdateTransform: boolean, bounds: Bounds): Bounds
 {
     bounds.clear();
@@ -46,7 +54,7 @@ export function getGlobalBounds(target: Container, skipUpdateTransform: boolean,
     return bounds;
 }
 
-export function _getGlobalBounds(
+function _getGlobalBounds(
     target: Container,
     bounds: Bounds,
     parentTransform: Matrix,
@@ -84,12 +92,13 @@ export function _getGlobalBounds(
     }
     else
     {
-        if ((target as Renderable).addBounds)
+        const renderableBounds = (target as Renderable).bounds;
+
+        if (renderableBounds && !renderableBounds.isEmpty())
         {
             // save a copy
             bounds.matrix = worldTransform;
-
-            (target as Renderable).addBounds(bounds);
+            bounds.addBounds(renderableBounds);
         }
 
         for (let i = 0; i < target.children.length; i++)
@@ -116,6 +125,11 @@ export function _getGlobalBounds(
     }
 }
 
+/**
+ * @param target
+ * @param parentTransform
+ * @internal
+ */
 export function updateTransformBackwards(target: Container, parentTransform: Matrix)
 {
     const parent = target.parent;

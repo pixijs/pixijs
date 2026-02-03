@@ -1,0 +1,33 @@
+{
+  "frames": {
+    "pic1": {
+      "frame": {"x": 0, "y": 0, "w": 300, "h": 300},
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {"x": 0, "y": 0, "w": 150, "h": 150},
+      "sourceSize": {"w": 150, "h": 150},
+      "anchor": {"x":  0, "y": 0}
+    },
+    "pic2": {
+      "frame": {"x": 300, "y": 0, "w": 300, "h": 300},
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {"x": 0, "y": 0, "w": 200, "h": 200},
+      "sourceSize": {"w": 200, "h": 200},
+      "anchor": {"x":  0, "y": 0}
+    },
+    "pic3": {
+      "frame": {"x": 0, "y": 300, "w": 300, "h": 300},
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {"x": 0, "y": 0, "w": 210, "h": 210},
+      "sourceSize": {"w": 210, "h": 210},
+      "anchor": {"x":  0, "y": 0}
+    }
+  },
+  "meta": {
+    "app": "InkScape Portable",
+    "image": "svgSpritesheet.svg",
+    "format": "RGBA8888"
+  }
+}

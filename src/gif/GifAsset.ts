@@ -1,0 +1,41 @@
+import { DOMAdapter } from '../environment/adapter';
+import { ExtensionType } from '../extensions/Extensions';
+import { path } from '../utils/path';
+import { type GifBufferOptions, GifSource } from './GifSource';
+
+import type { AssetExtension } from '../assets/AssetExtension';
+
+/**
+ * Handle the loading of GIF images. Registering this loader plugin will
+ * load all `.gif` images as an ArrayBuffer and transform into an
+ * GifSource object.
+ * @category gif
+ * @advanced
+ */
+const GifAsset: AssetExtension<GifSource, GifBufferOptions> = {
+    extension: ExtensionType.Asset,
+    detection: {
+        test: async () => true,
+        add: async (formats) => [...formats, 'gif'],
+        remove: async (formats) => formats.filter((format) => format !== 'gif'),
+    },
+    loader: {
+        /** used for deprecation purposes */
+        name: 'gifLoader',
+        id: 'gif',
+        test: (url) => path.extname(url) === '.gif' || url.startsWith('data:image/gif'),
+        load: async (url, asset) =>
+        {
+            const response = await DOMAdapter.get().fetch(url);
+            const buffer = await response.arrayBuffer();
+
+            return GifSource.from(buffer, asset?.data);
+        },
+        unload: async (asset) =>
+        {
+            asset.destroy();
+        },
+    }
+};
+
+export { GifAsset };

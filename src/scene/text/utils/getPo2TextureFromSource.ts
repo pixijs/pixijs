@@ -1,3 +1,4 @@
+import { type ImageLike } from '../../../environment/ImageLike';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { Bounds } from '../../container/bounds/Bounds';
 
@@ -14,9 +15,10 @@ const tempBounds = new Bounds();
  * @param height - the frame height of the texture
  * @param resolution - The resolution of the texture
  * @returns - The texture
+ * @internal
  */
 export function getPo2TextureFromSource(
-    image: HTMLImageElement | HTMLCanvasElement | ICanvas,
+    image: ImageLike | HTMLCanvasElement | ICanvas,
     width: number,
     height: number,
     resolution: number

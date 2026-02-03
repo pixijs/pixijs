@@ -1,19 +1,21 @@
 import glob from 'glob';
 import path from 'path';
-import { Assets } from '../../src/assets/Assets';
-import { TexturePool } from '../../src/rendering/renderers/shared/texture/TexturePool';
-import { isCI } from '../assets/basePath';
+import '~/environment-browser/browserAll';
+import { isCI } from '../utils/basePath';
 import { renderTest } from './tester';
-import '../../src/environment-browser/browserAll';
+import { Assets } from '~/assets';
+import { TexturePool } from '~/rendering';
 
 import type { RenderType, RenderTypeFlags } from './types';
 
-const paths = glob.sync('**/*.scene.ts', { cwd: path.join(process.cwd(), './tests') });
+const sceneFilter = process.env.SCENE_FILTER;
+const globPattern = sceneFilter ? `**/${sceneFilter}` : '**/*.scene.ts';
+const paths = glob.sync(globPattern, { cwd: path.join(process.cwd(), './tests') });
 const scenes = paths.map((p) =>
 {
     const relativePath = path.relative('visual/', p);
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
+    // eslint-disable-next-line global-require , @typescript-eslint/no-require-imports
     return { path: p, data: require(`./${relativePath}`).scene };
 });
 
@@ -43,7 +45,7 @@ function setAssetBasePath(): void
         : 'http://127.0.0.1:8080/tests/visual/assets/';
 
     Assets.init({
-        basePath
+        basePath,
     }).catch((e) => console.error(e));
 }
 
@@ -61,10 +63,9 @@ describe('Visual Tests', () =>
 
         const renderers = {
             ...defaultRenderers,
-            ...scene.data.renderers
+            ...scene.data.renderers,
         };
 
-        // eslint-disable-next-line no-loop-func
         Object.keys(renderers).forEach((renderer) =>
         {
             if (!renderers[renderer])
@@ -86,14 +87,14 @@ describe('Visual Tests', () =>
                 Assets.reset();
                 setAssetBasePath();
 
-                const pixelMatch = scene.data.pixelMatch || 100;
+                const pixelMatch = isCI ? (scene.data.pixelMatch ?? 100) : (scene.data.pixelMatchLocal ?? 100);
 
                 const res = await renderTest(
                     id,
                     scene.data.create,
                     renderer as RenderType,
                     scene.data.options ?? {},
-                    pixelMatch
+                    pixelMatch,
                 );
 
                 expect(res).toBeLessThanOrEqual(pixelMatch);

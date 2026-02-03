@@ -1,14 +1,14 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/matrix/Matrix';
-import { MAX_TEXTURES } from '../../../rendering/batcher/shared/const';
 import { compileHighShaderGlProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
 import { colorBitGl } from '../../../rendering/high-shader/shader-bits/colorBit';
 import { generateTextureBatchBitGl } from '../../../rendering/high-shader/shader-bits/generateTextureBatchBit';
 import { localUniformBitGl } from '../../../rendering/high-shader/shader-bits/localUniformBit';
 import { roundPixelsBitGl } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
-import { batchSamplersUniformGroup } from '../../../rendering/renderers/gl/shader/batchSamplersUniformGroup';
+import { getBatchSamplersUniformGroup } from '../../../rendering/renderers/gl/shader/getBatchSamplersUniformGroup';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
+import { type Renderer } from '../../../rendering/renderers/types';
 
 import type { Batch } from '../../../rendering/batcher/shared/Batcher';
 import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRenderer';
@@ -17,7 +17,7 @@ import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
 
 /**
  * A GraphicsAdaptor that uses WebGL to render graphics.
- * @memberof rendering
+ * @category rendering
  * @ignore
  */
 export class GlGraphicsAdaptor implements GraphicsAdaptor
@@ -32,7 +32,7 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
 
     public shader: Shader;
 
-    public init()
+    public contextChange(renderer: Renderer): void
     {
         const uniforms = new UniformGroup({
             uColor: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
@@ -40,11 +40,13 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
             uRound: { value: 0, type: 'f32' },
         });
 
+        const maxTextures = renderer.limits.maxBatchableTextures;
+
         const glProgram = compileHighShaderGlProgram({
             name: 'graphics',
             bits: [
                 colorBitGl,
-                generateTextureBatchBitGl(MAX_TEXTURES),
+                generateTextureBatchBitGl(maxTextures),
                 localUniformBitGl,
                 roundPixelsBitGl,
             ]
@@ -54,7 +56,7 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
             glProgram,
             resources: {
                 localUniforms: uniforms,
-                batchSamplers: batchSamplersUniformGroup,
+                batchSamplers: getBatchSamplersUniformGroup(maxTextures),
             }
         });
     }
@@ -67,15 +69,17 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         const contextSystem = renderer.graphicsContext;
 
         const {
-            geometry, instructions,
+            batcher, instructions,
         } = contextSystem.getContextRenderData(context);
 
         // WebGL specific..
         shader.groups[0] = renderer.globalUniforms.bindGroup;
 
+        renderer.state.set(graphicsPipe.state);
+
         renderer.shader.bind(shader);
 
-        renderer.geometry.bind(geometry, shader.glProgram);
+        renderer.geometry.bind(batcher.geometry, shader.glProgram);
 
         const batches = instructions.instructions as Batch[];
 
@@ -85,12 +89,12 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
 
             if (batch.size)
             {
-                for (let j = 0; j < batch.textures.textures.length; j++)
+                for (let j = 0; j < batch.textures.count; j++)
                 {
                     renderer.texture.bind(batch.textures.textures[j], j);
                 }
 
-                renderer.geometry.draw('triangle-list', batch.size, batch.start);
+                renderer.geometry.draw(batch.topology, batch.size, batch.start);
             }
         }
     }

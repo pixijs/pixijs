@@ -62,6 +62,10 @@ function generateSampleSrc(maxTextures: number): string
     return src.join('\n');
 }
 
+/**
+ * @param maxTextures
+ * @internal
+ */
 export function generateTextureBatchBit(maxTextures: number): HighShaderBit
 {
     if (!textureBatchBitGpuCache[maxTextures])
@@ -86,14 +90,14 @@ export function generateTextureBatchBit(maxTextures: number): HighShaderBit
             fragment: {
                 header: `
                 @in @interpolate(flat) vTextureId: u32;
-    
-                ${generateBindingSrc(16)}
+
+                ${generateBindingSrc(maxTextures)}
             `,
                 main: `
                 var uvDx = dpdx(vUV);
                 var uvDy = dpdy(vUV);
-    
-                ${generateSampleSrc(16)}
+
+                ${generateSampleSrc(maxTextures)}
             `
             }
         };
@@ -133,6 +137,10 @@ function generateSampleGlSrc(maxTextures: number): string
     return src.join('\n');
 }
 
+/**
+ * @param maxTextures
+ * @internal
+ */
 export function generateTextureBatchBitGl(maxTextures: number): HighShaderBit
 {
     if (!textureBatchBitGlCache[maxTextures])
@@ -143,7 +151,7 @@ export function generateTextureBatchBitGl(maxTextures: number): HighShaderBit
                 header: `
                 in vec2 aTextureIdAndRound;
                 out float vTextureId;
-              
+
             `,
                 main: `
                 vTextureId = aTextureIdAndRound.y;
@@ -158,13 +166,13 @@ export function generateTextureBatchBitGl(maxTextures: number): HighShaderBit
             fragment: {
                 header: `
                 in float vTextureId;
-    
+
                 uniform sampler2D uTextures[${maxTextures}];
-              
+
             `,
                 main: `
-    
-                ${generateSampleGlSrc(16)}
+
+                ${generateSampleGlSrc(maxTextures)}
             `
             }
         };

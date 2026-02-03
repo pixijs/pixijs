@@ -1,8 +1,10 @@
+/** @internal */
 export const scaleModeToGlFilter = {
     linear: 9729,
     nearest: 9728,
 };
 
+/** @internal */
 export const mipmapScaleModeToGlFilter = {
     linear: {
         linear: 9987,
@@ -14,12 +16,14 @@ export const mipmapScaleModeToGlFilter = {
     }
 };
 
+/** @internal */
 export const wrapModeToGlAddress = {
     'clamp-to-edge': 33071,
     repeat: 10497,
     'mirror-repeat': 33648,
 };
 
+/** @internal */
 export const compareModeToGlCompare = {
     never: 512,
     less: 513,

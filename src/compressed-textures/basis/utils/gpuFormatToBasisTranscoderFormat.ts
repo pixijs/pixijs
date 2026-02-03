@@ -8,6 +8,10 @@ const gpuFormatToBasisTranscoderFormatMap: Record<string, number> = {
     rgba4unorm: 16, // cTFRGBA4444,
 };
 
+/**
+ * @param transcoderFormat
+ * @internal
+ */
 export function gpuFormatToBasisTranscoderFormat(transcoderFormat: string): number
 {
     const format = gpuFormatToBasisTranscoderFormatMap[transcoderFormat];

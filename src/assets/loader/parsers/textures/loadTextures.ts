@@ -1,4 +1,5 @@
 import { DOMAdapter } from '../../../../environment/adapter';
+import { type ImageLike } from '../../../../environment/ImageLike';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { ImageSource } from '../../../../rendering/renderers/shared/texture/sources/ImageSource';
 import { getResolutionOfUrl } from '../../../../utils/network/getResolutionOfUrl';
@@ -23,9 +24,10 @@ const validImageMIMEs = [
 ];
 
 /**
- * Configuration for the [loadTextures]{@link assets.loadTextures} plugin.
- * @see assets.loadTextures
- * @memberof assets
+ * Configuration for the [loadTextures]{@link loadTextures} plugin.
+ * @see loadTextures
+ * @category assets
+ * @advanced
  */
 export interface LoadTextureConfig
 {
@@ -47,7 +49,7 @@ export interface LoadTextureConfig
      * The crossOrigin value to use for images when `preferCreateImageBitmap` is `false`.
      * @default 'anonymous'
      */
-    crossOrigin: HTMLImageElement['crossOrigin'];
+    crossOrigin: ImageLike['crossOrigin'];
 }
 
 /**
@@ -57,7 +59,7 @@ export interface LoadTextureConfig
  * @param url - The image to load an image bitmap for
  * @ignore
  */
-export async function loadImageBitmap(url: string): Promise<ImageBitmap>
+export async function loadImageBitmap(url: string, asset?: ResolvedAsset<TextureSourceOptions<any>>): Promise<ImageBitmap>
 {
     const response = await DOMAdapter.get().fetch(url);
 
@@ -68,9 +70,10 @@ export async function loadImageBitmap(url: string): Promise<ImageBitmap>
     }
 
     const imageBlob = await response.blob();
-    const imageBitmap = await createImageBitmap(imageBlob);
 
-    return imageBitmap;
+    return asset?.data?.alphaMode === 'premultiplied-alpha'
+        ? createImageBitmap(imageBlob, { premultiplyAlpha: 'none' })
+        : createImageBitmap(imageBlob);
 }
 
 /**
@@ -80,7 +83,7 @@ export async function loadImageBitmap(url: string): Promise<ImageBitmap>
  * We can then use the `ImageBitmap` as a source for a Pixi texture
  *
  * You can customize the behavior of this loader by setting the `config` property.
- * Which can be found [here]{@link assets.LoadTextureConfig}
+ * Which can be found [here]{@link LoadTextureConfig}
  * ```js
  * // Set the config
  * import { loadTextures } from 'pixi.js';
@@ -94,15 +97,19 @@ export async function loadImageBitmap(url: string): Promise<ImageBitmap>
  *    crossOrigin: 'anonymous',
  * };
  * ```
- * @memberof assets
+ * @category assets
+ * @advanced
  */
-export const loadTextures = {
+export const loadTextures: LoaderParser<Texture, TextureSourceOptions, LoadTextureConfig> = {
 
+    /** used for deprecation purposes */
     name: 'loadTextures',
+    id: 'texture',
 
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.High,
+        name: 'loadTextures',
     },
 
     config: {
@@ -124,18 +131,18 @@ export const loadTextures = {
         {
             if (this.config.preferWorkers && await WorkerManager.isImageBitmapSupported())
             {
-                src = await WorkerManager.loadImageBitmap(url);
+                src = await WorkerManager.loadImageBitmap(url, asset);
             }
             else
             {
-                src = await loadImageBitmap(url);
+                src = await loadImageBitmap(url, asset);
             }
         }
         else
         {
-            src = await new Promise((resolve) =>
+            src = await new Promise((resolve, reject) =>
             {
-                src = new Image();
+                src = DOMAdapter.get().createImage();
                 src.crossOrigin = this.config.crossOrigin;
 
                 src.src = url;
@@ -149,6 +156,7 @@ export const loadTextures = {
                     {
                         resolve(src);
                     };
+                    src.onerror = reject;
                 }
             });
         }
@@ -167,4 +175,4 @@ export const loadTextures = {
     {
         texture.destroy(true);
     }
-} as LoaderParser<Texture, TextureSourceOptions, LoadTextureConfig>;
+};

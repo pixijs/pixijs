@@ -20,9 +20,16 @@ const colors = [
 
 let colorTick = 0;
 
+/**
+ * @param container
+ * @param depth
+ * @param data
+ * @param data.color
+ * @internal
+ */
 export function logScene(container: Container, depth = 0, data: {color?: string} = { color: '#000000' })
 {
-    if (container.isRenderGroupRoot)
+    if (container.renderGroup)
     {
         data.color = colors[colorTick++];
     }
@@ -45,7 +52,7 @@ export function logScene(container: Container, depth = 0, data: {color?: string}
     // eslint-disable-next-line max-len
     let output = `%c ${spaces}|- ${label} (worldX:${container.worldTransform.tx}, relativeRenderX:${container.relativeGroupTransform.tx}, renderX:${container.groupTransform.tx}, localX:${container.x})`;
 
-    if (container.isRenderGroupRoot)
+    if (container.renderGroup)
     {
         output += ' (RenderGroup)';
     }
@@ -67,6 +74,14 @@ export function logScene(container: Container, depth = 0, data: {color?: string}
     }
 }
 
+/**
+ * @param renderGroup
+ * @param depth
+ * @param data
+ * @param data.index
+ * @param data.color
+ * @internal
+ */
 export function logRenderGroupScene(
     renderGroup: RenderGroup, depth = 0,
     data: {index: number, color?: string} = { index: 0, color: '#000000' }

@@ -2,7 +2,7 @@
  * SystemRunner is used internally by the renderers as an efficient way for systems to
  * be notified about what the renderer is up to during the rendering phase.
  *
- * ```
+ * ```ts
  * import { SystemRunner } from 'pixi.js';
  *
  * const myObject = {
@@ -21,7 +21,7 @@
  * ```
  *
  * Or for handling calling the same function on many items
- * ```
+ * ```ts
  * import { SystemRunner } from 'pixi.js';
  *
  * const myGame = {
@@ -38,7 +38,8 @@
  *
  * myGame.update.emit(time);
  * ```
- * @memberof rendering
+ * @category rendering
+ * @internal
  */
 export class SystemRunner
 {
@@ -54,12 +55,12 @@ export class SystemRunner
         this._name = name;
     }
 
-    /* eslint-disable jsdoc/require-param, jsdoc/check-param-names */
+    /* jsdoc/check-param-names */
     /**
      * Dispatch/Broadcast Runner to all listeners added to the queue.
      * @param {...any} params - (optional) parameters to pass to each listener
      */
-    /*  eslint-enable jsdoc/require-param, jsdoc/check-param-names */
+    /* jsdoc/check-param-names */
     public emit(a0?: unknown, a1?: unknown, a2?: unknown, a3?: unknown,
         a4?: unknown, a5?: unknown, a6?: unknown, a7?: unknown): this
     {
@@ -82,7 +83,7 @@ export class SystemRunner
      *
      * Eg A listener passed to this Runner will require a 'complete' function.
      *
-     * ```
+     * ```ts
      * import { Runner } from 'pixi.js';
      *
      * const complete = new Runner('complete');

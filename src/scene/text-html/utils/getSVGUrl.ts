@@ -1,5 +1,5 @@
 import type { HTMLTextRenderData } from '../HTMLTextRenderData';
-import type { HTMLTextStyle } from '../HtmlTextStyle';
+import type { HTMLTextStyle } from '../HTMLTextStyle';
 
 /**
  * takes all the data and returns a svg url string can be loaded by an image element
@@ -9,6 +9,7 @@ import type { HTMLTextStyle } from '../HtmlTextStyle';
  * @param fontCSS - The font css to use
  * @param htmlTextData - The HTMLTextRenderData to write the SVG to
  * @returns - The SVG as a url string
+ * @internal
  */
 export function getSVGUrl(
     text: string,
@@ -20,7 +21,7 @@ export function getSVGUrl(
 {
     const { domElement, styleElement, svgRoot } = htmlTextData;
 
-    domElement.innerHTML = `<style>${style.cssStyle}</style><div>${text}</div>`;
+    domElement.innerHTML = `<style>${style.cssStyle}</style><div style='padding:0;'>${text}</div>`;
     domElement.setAttribute('style', `transform: scale(${resolution});transform-origin: top left; display: inline-block`);
     styleElement.textContent = fontCSS;
 

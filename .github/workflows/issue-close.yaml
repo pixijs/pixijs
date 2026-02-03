@@ -1,0 +1,21 @@
+name: Issue - Close Needs Reproduction
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  close-issues:
+    if: github.repository == 'pixijs/pixijs'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write # for actions-cool/issues-helper to update issues
+      pull-requests: write # for actions-cool/issues-helper to update PRs
+    steps:
+      - name: needs reproduction
+        uses: actions-cool/issues-helper@a610082f8ac0cf03e357eb8dd0d5e2ba075e017e # v3
+        with:
+          actions: "close-issues"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          labels: "Needs Reproduction"
+          inactive-day: 7

@@ -1,6 +1,7 @@
 // TODO eventually we should not use this bit, but instead use the localUniformBit
 // have the MSDF bit be merged in with the localUniformBit
 
+/** @internal */
 export const localUniformMSDFBit = {
     name: 'local-uniform-msdf-bit',
     vertex: {
@@ -35,13 +36,14 @@ export const localUniformMSDFBit = {
 
             @group(2) @binding(0) var<uniform> localUniforms : LocalUniforms;
          `,
-        main: /* wgsl */` 
-            outColor = vColor * calculateMSDFAlpha(outColor, localUniforms.uDistance);
+        main: /* wgsl */`
+            outColor = vec4<f32>(calculateMSDFAlpha(outColor, vColor, localUniforms.uDistance));
         `
 
     }
 };
 
+/** @internal */
 export const localUniformMSDFBitGl = {
     name: 'local-uniform-msdf-bit',
     vertex: {
@@ -65,8 +67,8 @@ export const localUniformMSDFBitGl = {
         header: /* glsl */`
             uniform float uDistance;
          `,
-        main: /* glsl */` 
-            outColor = vColor * calculateMSDFAlpha(outColor, uDistance);
+        main: /* glsl */`
+            outColor = vec4(calculateMSDFAlpha(outColor, vColor, uDistance));
         `
 
     }

@@ -14,7 +14,8 @@ import type { WebGPURenderer } from './WebGPURenderer';
 
 /**
  * This manages the WebGPU bind groups. this is how data is bound to a shader when rendering
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class BindGroupSystem implements System
 {
@@ -107,9 +108,7 @@ export class BindGroupSystem implements System
             {
                 const texture = resource as TextureSource;
 
-                gpuResource = renderer.texture.getGpuSource(texture).createView({
-
-                });
+                gpuResource = renderer.texture.getTextureView(texture);
             }
 
             entries.push({
@@ -132,13 +131,7 @@ export class BindGroupSystem implements System
 
     public destroy(): void
     {
-        for (const key of Object.keys(this._hash))
-        {
-            this._hash[key] = null;
-        }
-
         this._hash = null;
-
         (this._renderer as null) = null;
     }
 }

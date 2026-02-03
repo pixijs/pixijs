@@ -3,11 +3,11 @@ import { FilterEffect } from '../../../filters/FilterEffect';
 import { MaskFilter } from '../../../filters/mask/MaskFilter';
 import { Bounds } from '../../../scene/container/bounds/Bounds';
 import { getGlobalBounds } from '../../../scene/container/bounds/getGlobalBounds';
-import { collectAllRenderables } from '../../../scene/container/utils/buildInstructions';
 import { Sprite } from '../../../scene/sprite/Sprite';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { Texture } from '../../renderers/shared/texture/Texture';
 import { TexturePool } from '../../renderers/shared/texture/TexturePool';
+import { RendererType } from '../../renderers/types';
 
 import type { Container } from '../../../scene/container/Container';
 import type { Effect } from '../../../scene/container/Effect';
@@ -23,15 +23,19 @@ type MaskMode = 'pushMaskBegin' | 'pushMaskEnd' | 'popMaskBegin' | 'popMaskEnd';
 
 const tempBounds = new Bounds();
 
+/** @internal */
 class AlphaMaskEffect extends FilterEffect implements PoolItem
 {
     constructor()
     {
-        super({
-            filters: [new MaskFilter({
-                sprite: new Sprite(Texture.EMPTY)
-            })]
-        });
+        super();
+
+        this.filters = [new MaskFilter({
+            sprite: new Sprite(Texture.EMPTY),
+            inverse: false,
+            resolution: 'inherit',
+            antialias: 'inherit'
+        })];
     }
 
     get sprite(): Sprite
@@ -44,18 +48,31 @@ class AlphaMaskEffect extends FilterEffect implements PoolItem
         (this.filters[0] as MaskFilter).sprite = value;
     }
 
+    get inverse(): boolean
+    {
+        return (this.filters[0] as MaskFilter).inverse;
+    }
+
+    set inverse(value: boolean)
+    {
+        (this.filters[0] as MaskFilter).inverse = value;
+    }
+
     public init: () => void;
 }
 
+/** @internal */
 export interface AlphaMaskInstruction extends Instruction
 {
     renderPipeId: 'alphaMask',
     action: MaskMode,
     mask: AlphaMask,
+    inverse: boolean;
     maskedContainer: Container,
     renderMask: boolean,
 }
 
+/** @internal */
 export interface AlphaMaskData
 {
     filterEffect: AlphaMaskEffect,
@@ -64,6 +81,7 @@ export interface AlphaMaskData
     filterTexture?: Texture,
 }
 
+/** @internal */
 export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
 {
     /** @ignore */
@@ -94,9 +112,12 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
             renderPipeId: 'alphaMask',
             action: 'pushMaskBegin',
             mask,
+            inverse: maskedContainer._maskOptions.inverse,
             canBundle: false,
             maskedContainer
         } as AlphaMaskInstruction);
+
+        (mask as AlphaMask).inverse = maskedContainer._maskOptions.inverse;
 
         if ((mask as AlphaMask).renderMaskToTexture)
         {
@@ -104,10 +125,10 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
 
             maskContainer.includeInBuild = true;
 
-            collectAllRenderables(
-                maskContainer,
+            maskContainer.collectRenderables(
                 instructionSet,
-                renderer.renderPipes
+                renderer,
+                null
             );
 
             maskContainer.includeInBuild = false;
@@ -120,6 +141,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
             action: 'pushMaskEnd',
             mask,
             maskedContainer,
+            inverse: maskedContainer._maskOptions.inverse,
             canBundle: false,
         } as AlphaMaskInstruction);
     }
@@ -134,6 +156,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
             renderPipeId: 'alphaMask',
             action: 'popMaskEnd',
             mask,
+            inverse: _maskedContainer._maskOptions.inverse,
             canBundle: false,
         } as AlphaMaskInstruction);
     }
@@ -147,6 +170,8 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
         {
             const filterEffect = BigPool.get(AlphaMaskEffect);
 
+            filterEffect.inverse = instruction.inverse;
+
             if (renderMask)
             {
                 instruction.mask.mask.measurable = true;
@@ -157,11 +182,12 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
 
                 bounds.ceil();
 
+                const colorTextureSource = renderer.renderTarget.renderTarget.colorTexture.source;
                 const filterTexture = TexturePool.getOptimalTexture(
                     bounds.width,
                     bounds.height,
-                    1,
-                    false
+                    colorTextureSource._resolution,
+                    colorTextureSource.antialias
                 );
 
                 renderer.renderTarget.push(filterTexture, true);
@@ -200,6 +226,12 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
 
             if (renderMask)
             {
+                // WebGPU blit's automatically, but WebGL does not!
+                if (renderer.type === RendererType.WEBGL)
+                {
+                    renderer.renderTarget.finishRenderPass();
+                }
+
                 renderer.renderTarget.pop();
                 renderer.globalUniforms.pop();
             }

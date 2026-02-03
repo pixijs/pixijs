@@ -34,13 +34,11 @@ coverage.lcov
 dist
 lib
 out
-src/*/**/index.ts
 
 # jetBrains IDE ignores
 .idea
 
 # VSCode ignores
-.vscode
 pixi.code-workspace
 
 # IntelliJ

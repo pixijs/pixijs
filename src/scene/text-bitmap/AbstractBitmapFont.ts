@@ -2,9 +2,12 @@ import EventEmitter from 'eventemitter3';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
-import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
+import type { FontMetrics } from '../text/canvas/utils/types';
 
-/** @memberof text */
+/**
+ * @category text
+ * @advanced
+ */
 export interface CharData
 {
     /** Unique id of character */
@@ -23,7 +26,8 @@ export interface CharData
 
 /**
  * The raw data of a character in a bitmap font.
- * @memberof text
+ * @category text
+ * @advanced
  */
 export interface RawCharData extends Omit<CharData, 'texture'>
 {
@@ -43,7 +47,8 @@ export interface RawCharData extends Omit<CharData, 'texture'>
 
 /**
  * The raw data of a bitmap font.
- * @memberof text
+ * @category text
+ * @advanced
  */
 export interface BitmapFontData
 {
@@ -80,7 +85,8 @@ interface BitmapFontEvents<Type>
 
 /**
  * An abstract representation of a bitmap font.
- * @memberof text
+ * @category text
+ * @advanced
  */
 export abstract class AbstractBitmapFont<FontType>
     extends EventEmitter<BitmapFontEvents<FontType>>
@@ -111,6 +117,8 @@ export abstract class AbstractBitmapFont<FontType>
     public readonly distanceField: BitmapFontData['distanceField'] = { type: 'none', range: 0 };
     /** The map of base page textures (i.e., sheets of glyphs). */
     public readonly pages: { texture: Texture }[] = [];
+    /** should the fill for this font be applied as a tint to the text. */
+    public applyFillAsTint = true;
 
     /** The size of the font face in pixels. */
     public readonly baseMeasurementFontSize: number = 100;
@@ -176,7 +184,6 @@ export abstract class AbstractBitmapFont<FontType>
     public get distanceFieldType(): NonNullable<BitmapFontData['distanceField']>['type']
     {
         // #if _DEBUG
-        // eslint-disable-next-line max-len
         deprecation(v8_0_0, 'BitmapFont.distanceFieldType is deprecated, please use BitmapFont.distanceField.type instead.');
         // #endif
 
@@ -191,7 +198,8 @@ export abstract class AbstractBitmapFont<FontType>
 
         for (const i in this.chars)
         {
-            this.chars[i].texture.destroy();
+            // texture may not exist if the char is " ", \n, \r, or \t.
+            this.chars[i].texture?.destroy();
         }
 
         (this.chars as null) = null;

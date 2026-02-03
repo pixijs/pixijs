@@ -9,20 +9,23 @@ import type { ExtractedAttributeData } from '../../gl/shader/program/extractAttr
 import type { StructsAndGroups } from './utils/extractStructAndGroups';
 
 /**
- * a WebGPU descriptions of how the program is layed out
+ * a WebGPU descriptions of how the program is laid out
  * @see https://gpuweb.github.io/gpuweb/#gpupipelinelayout
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export type ProgramPipelineLayoutDescription = GPUBindGroupLayoutEntry[][];
 /**
  * a map the maps names of uniforms to group indexes
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export type ProgramLayout = Record<string, number>[];
 
 /**
  * the program source
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export interface ProgramSource
 {
@@ -34,7 +37,8 @@ export interface ProgramSource
 
 /**
  * The options for the gpu program
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export interface GpuProgramOptions
 {
@@ -88,7 +92,8 @@ const programCache: Record<string, GpuProgram> = Object.create(null);
  * While WebGL allows extraction of program information directly from its compiled state,
  * WebGPU does not offer such a capability. Therefore, in the context of WebGPU, we're required
  * to manually extract the program layout information from the source code itself.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class GpuProgram
 {
@@ -124,11 +129,13 @@ export class GpuProgram
      */
     public readonly gpuLayout: ProgramPipelineLayoutDescription;
 
-    /**
-     * @internal
-     * @ignore
-     */
+    /** @internal */
     public _layoutKey = 0;
+    /** @internal */
+    public _cacheKey: string;
+
+    /** @internal */
+    public _attributeLocationsKey = 0;
 
     /** the structs and groups extracted from the shader sources */
     public readonly structsAndGroups: StructsAndGroups;
@@ -209,6 +216,7 @@ export class GpuProgram
         (this.structsAndGroups as null) = null;
         (this.fragment as null) = null;
         (this.vertex as null) = null;
+        programCache[this._cacheKey] = null;
     }
 
     /**
@@ -226,6 +234,7 @@ export class GpuProgram
         if (!programCache[key])
         {
             programCache[key] = new GpuProgram(options);
+            programCache[key]._cacheKey = key;
         }
 
         return programCache[key];

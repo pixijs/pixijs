@@ -10,6 +10,8 @@
         "./types"
     ],
     "exclude": [
-        "./src/bundle.*"
+        "./src/bundle.*",
+        "**/__tests__",
+        "./tests"
     ]
 }

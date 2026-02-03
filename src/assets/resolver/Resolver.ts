@@ -17,7 +17,8 @@ import type { PreferOrder, ResolveURLParser } from './types';
 
 /**
  * Options for how the resolver deals with generating bundle ids
- * @memberof assets
+ * @category assets
+ * @advanced
  */
 export interface BundleIdentifierOptions
 {
@@ -71,15 +72,13 @@ export interface BundleIdentifierOptions
  *
  * It is not intended that this class is created by developers - its part of the Asset class
  * This is the third major system of PixiJS' main Assets class
- * @memberof assets
+ * @category assets
+ * @advanced
  */
 export class Resolver
 {
     /**
      * The prefix that denotes a URL is for a retina asset.
-     * @static
-     * @name RETINA_PREFIX
-     * @type {RegExp}
      * @default /@([0-9\.]+)x/
      * @example `@2x`
      */
@@ -480,7 +479,12 @@ export class Resolver
         assetArray.forEach((asset) =>
         {
             const { src } = asset;
-            let { data, format, loadParser } = asset;
+            let {
+                data,
+                format,
+                loadParser: userDefinedLoadParser,
+                parser: userDefinedParser,
+            } = asset;
 
             // src can contain an unresolved asset itself
             // so we need to merge that data with the current asset
@@ -502,6 +506,17 @@ export class Resolver
             // loop through all the srcs and generate a resolve asset for each src
             const resolvedAssets: ResolvedAsset[] = [];
 
+            // Helper function to parse a URL string using registered parsers
+            const parseUrl = (url: string): ResolvedAsset =>
+            {
+                const parser = this._parsers.find((p) => p.test(url));
+
+                return {
+                    src: url,
+                    ...parser?.parse(url),
+                };
+            };
+
             srcsToUse.forEach((srcs) =>
             {
                 srcs.forEach((src) =>
@@ -510,26 +525,21 @@ export class Resolver
 
                     if (typeof src !== 'object')
                     {
-                        formattedAsset.src = src;
                         // first see if it contains any {} tags...
-                        for (let i = 0; i < this._parsers.length; i++)
-                        {
-                            const parser = this._parsers[i];
-
-                            if (parser.test(src))
-                            {
-                                formattedAsset = parser.parse(src);
-                                break;
-                            }
-                        }
+                        formattedAsset = parseUrl(src);
                     }
                     else
                     {
                         data = src.data ?? data;
                         format = src.format ?? format;
-                        loadParser = src.loadParser ?? loadParser;
+                        if (src.loadParser || src.parser)
+                        {
+                            userDefinedLoadParser = src.loadParser ?? userDefinedLoadParser;
+                            userDefinedParser = src.parser ?? userDefinedParser;
+                        }
+
                         formattedAsset = {
-                            ...formattedAsset,
+                            ...parseUrl(src.src),
                             ...src,
                         };
                     }
@@ -544,7 +554,9 @@ export class Resolver
                         aliases: aliasesToUse,
                         data,
                         format,
-                        loadParser,
+                        loadParser: userDefinedLoadParser,
+                        parser: userDefinedParser,
+                        progressSize: asset.progressSize,
                     });
 
                     resolvedAssets.push(formattedAsset);
@@ -755,7 +767,7 @@ export class Resolver
     {
         for (let i = 0; i < assets.length; i++)
         {
-            const asset = assets[0];
+            const asset = assets[i];
 
             const preferred = this._preferredOrder.find((preference: PreferOrder) =>
                 preference.params.format.includes(asset.format));
@@ -787,10 +799,12 @@ export class Resolver
         aliases?: string[],
         data?: Record<string, unknown>
         loadParser?: string,
+        parser?: string,
         format?: string,
+        progressSize?: number,
     }): ResolvedAsset
     {
-        const { aliases, data: assetData, loadParser, format } = data;
+        const { aliases, data: assetData, loadParser, parser, format, progressSize } = data;
 
         if (this._basePath || this._rootPath)
         {
@@ -801,12 +815,21 @@ export class Resolver
         formattedAsset.src = this._appendDefaultSearchParams(formattedAsset.src);
         formattedAsset.data = { ...assetData || {}, ...formattedAsset.data };
         formattedAsset.loadParser = loadParser ?? formattedAsset.loadParser;
+        formattedAsset.parser = parser ?? formattedAsset.parser;
         formattedAsset.format = format ?? formattedAsset.format ?? getUrlExtension(formattedAsset.src);
+        if (progressSize !== undefined)
+        {
+            formattedAsset.progressSize = progressSize;
+        }
 
         return formattedAsset;
     }
 }
 
+/**
+ * @param url
+ * @internal
+ */
 export function getUrlExtension(url: string)
 {
     return url.split('.').pop().split('?').shift()

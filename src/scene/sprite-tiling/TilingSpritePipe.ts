@@ -1,10 +1,12 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
 import { ExtensionType } from '../../extensions/Extensions';
+import { getAdjustedBlendModeBlend } from '../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
 import { State } from '../../rendering/renderers/shared/state/State';
 import { type Renderer, RendererType } from '../../rendering/renderers/types';
+import { GCManagedHash } from '../../utils/data/GCManagedHash';
 import { color32BitToUniform } from '../graphics/gpu/colorToUniform';
 import { BatchableMesh } from '../mesh/shared/BatchableMesh';
 import { MeshGeometry } from '../mesh/shared/MeshGeometry';
+import { type GPUData } from '../view/ViewContainer';
 import { TilingSpriteShader } from './shader/TilingSpriteShader';
 import { QuadGeometry } from './utils/QuadGeometry';
 import { setPositions } from './utils/setPositions';
@@ -15,17 +17,38 @@ import type { InstructionSet } from '../../rendering/renderers/shared/instructio
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { TilingSprite } from './TilingSprite';
 
-interface RenderableData
-{
-    canBatch: boolean;
-    renderable: TilingSprite
-    batchableMesh?: BatchableMesh;
-    geometry?: MeshGeometry;
-    shader?: TilingSpriteShader;
-}
-
 const sharedQuad = new QuadGeometry();
 
+/** @internal */
+export class TilingSpriteGpuData implements GPUData
+{
+    public canBatch: boolean = true;
+    public renderable: TilingSprite;
+    public batchableMesh?: BatchableMesh;
+    public geometry?: MeshGeometry;
+    public shader?: TilingSpriteShader;
+
+    constructor()
+    {
+        this.geometry = new MeshGeometry({
+            indices: sharedQuad.indices.slice(),
+            positions: sharedQuad.positions.slice(),
+            uvs: sharedQuad.uvs.slice(),
+        });
+    }
+
+    public destroy()
+    {
+        this.geometry.destroy();
+        this.shader?.destroy();
+    }
+}
+
+/**
+ * The TilingSpritePipe is a render pipe for rendering TilingSprites.
+ * It handles the batching and rendering of TilingSprites using a shader.
+ * @internal
+ */
 export class TilingSpritePipe implements RenderPipe<TilingSprite>
 {
     /** @ignore */
@@ -39,12 +62,13 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
     } as const;
 
     private _renderer: Renderer;
-
-    private readonly _tilingSpriteDataHash: Record<number, RenderableData> = Object.create(null);
+    private readonly _state: State = State.default2d;
+    private readonly _managedTilingSprites: GCManagedHash<TilingSprite>;
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._managedTilingSprites = new GCManagedHash({ renderer, type: 'renderable', name: 'tilingSprite' });
     }
 
     public validateRenderable(renderable: TilingSprite): boolean
@@ -61,10 +85,10 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
         {
             const { batchableMesh } = tilingSpriteData;
 
-            // we are batching.. check a texture change!
-            if (batchableMesh.texture._source !== renderable.texture._source)
-
-            { return !batchableMesh.batcher.checkAndUpdateTexture(batchableMesh, renderable.texture); }
+            return !batchableMesh._batcher.checkAndUpdateTexture(
+                batchableMesh,
+                renderable.texture
+            );
         }
 
         return (couldBatch !== canBatch);
@@ -92,20 +116,19 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
             const batchableMesh = tilingSpriteData.batchableMesh;
 
-            if (tilingSprite._didTilingSpriteUpdate)
+            if (tilingSprite.didViewUpdate)
             {
-                tilingSprite._didTilingSpriteUpdate = false;
-
                 this._updateBatchableMesh(tilingSprite);
 
                 batchableMesh.geometry = geometry;
-                batchableMesh.mesh = tilingSprite;
-                batchableMesh.texture = tilingSprite._texture;
+                batchableMesh.renderable = tilingSprite;
+                batchableMesh.transform = tilingSprite.groupTransform;
+                batchableMesh.setTexture(tilingSprite._texture);
             }
 
             batchableMesh.roundPixels = (this._renderer._roundPixels | tilingSprite._roundPixels) as 0 | 1;
 
-            batcher.addToBatch(batchableMesh);
+            batcher.addToBatch(batchableMesh, instructionSet);
         }
         else
         {
@@ -121,7 +144,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
     public execute(tilingSprite: TilingSprite)
     {
-        const { shader } = this._tilingSpriteDataHash[tilingSprite.uid];
+        const { shader } = this._getTilingSpriteData(tilingSprite);
 
         shader.groups[0] = this._renderer.globalUniforms.bindGroup;
 
@@ -137,10 +160,12 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
             0
         );
 
+        this._state.blendMode = getAdjustedBlendModeBlend(tilingSprite.groupBlendMode, tilingSprite.texture._source);
+
         this._renderer.encoder.draw({
             geometry: sharedQuad,
             shader,
-            state: State.default2d,
+            state: this._state,
         });
     }
 
@@ -154,11 +179,11 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
         {
             const { batchableMesh } = tilingSpriteData;
 
-            if (tilingSprite._didTilingSpriteUpdate) this._updateBatchableMesh(tilingSprite);
+            if (tilingSprite.didViewUpdate) this._updateBatchableMesh(tilingSprite);
 
-            batchableMesh.batcher.updateElement(batchableMesh);
+            batchableMesh._batcher.updateElement(batchableMesh);
         }
-        else if (tilingSprite._didTilingSpriteUpdate)
+        else if (tilingSprite.didViewUpdate)
         {
             const { shader } = tilingSpriteData;
             // now update uniforms...
@@ -172,46 +197,23 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
                 tilingSprite.texture,
             );
         }
-
-        tilingSprite._didTilingSpriteUpdate = false;
     }
 
-    public destroyRenderable(tilingSprite: TilingSprite)
+    private _getTilingSpriteData(renderable: TilingSprite): TilingSpriteGpuData
     {
-        const tilingSpriteData = this._getTilingSpriteData(tilingSprite);
-
-        tilingSpriteData.batchableMesh = null;
-
-        tilingSpriteData.shader?.destroy();
-
-        this._tilingSpriteDataHash[tilingSprite.uid] = null;
+        return renderable._gpuData[this._renderer.uid] || this._initTilingSpriteData(renderable);
     }
 
-    private _getTilingSpriteData(renderable: TilingSprite): RenderableData
+    private _initTilingSpriteData(tilingSprite: TilingSprite): TilingSpriteGpuData
     {
-        return this._tilingSpriteDataHash[renderable.uid] || this._initTilingSpriteData(renderable);
-    }
+        const gpuData = new TilingSpriteGpuData();
 
-    private _initTilingSpriteData(tilingSprite: TilingSprite): RenderableData
-    {
-        const geometry = new MeshGeometry({
-            indices: sharedQuad.indices,
-            positions: sharedQuad.positions.slice(),
-            uvs: sharedQuad.uvs.slice(),
-        });
+        gpuData.renderable = tilingSprite;
+        tilingSprite._gpuData[this._renderer.uid] = gpuData;
 
-        this._tilingSpriteDataHash[tilingSprite.uid] = {
-            canBatch: true,
-            renderable: tilingSprite,
-            geometry,
-        };
+        this._managedTilingSprites.add(tilingSprite);
 
-        tilingSprite.on('destroyed', () =>
-        {
-            this.destroyRenderable(tilingSprite);
-        });
-
-        return this._tilingSpriteDataHash[tilingSprite.uid];
+        return gpuData;
     }
 
     private _updateBatchableMesh(tilingSprite: TilingSprite)
@@ -234,12 +236,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
     public destroy()
     {
-        for (const i in this._tilingSpriteDataHash)
-        {
-            this.destroyRenderable(this._tilingSpriteDataHash[i].renderable);
-        }
-
-        (this._tilingSpriteDataHash as null) = null;
+        this._managedTilingSprites.destroy();
         this._renderer = null;
     }
 

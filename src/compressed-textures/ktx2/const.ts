@@ -1,7 +1,7 @@
 import type { TEXTURE_FORMATS } from '../../rendering/renderers/shared/texture/const';
 
+/** @internal */
 export enum GL_INTERNAL_FORMAT
-// eslint-disable-next-line @typescript-eslint/indent
 {
     RGBA8_SNORM = 0x8F97,
     RGBA = 0x1908,
@@ -71,7 +71,6 @@ export enum GL_INTERNAL_FORMAT
 }
 
 enum GL_FORMATS
-// eslint-disable-next-line @typescript-eslint/indent
 {
     RGBA = 6408,
     RGB = 6407,
@@ -89,7 +88,6 @@ enum GL_FORMATS
 }
 
 enum GL_TYPES
-// eslint-disable-next-line @typescript-eslint/indent
 {
     UNSIGNED_BYTE = 5121,
     UNSIGNED_SHORT = 5123,
@@ -300,6 +298,10 @@ const INTERNAL_FORMAT_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
     [GL_INTERNAL_FORMAT.COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT]: 1,
 };
 
+/**
+ * The KTX file format constants.
+ * @internal
+ */
 export const KTX = {
     FILE_HEADER_SIZE,
     FILE_IDENTIFIER,

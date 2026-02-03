@@ -1,4 +1,10 @@
 /* eslint-disable camelcase */
+
+/**
+ * WebGL extensions for compressed textures using the PVRTC format.
+ * @category rendering
+ * @advanced
+ */
 export interface WEBGL_compressed_texture_pvrtc
 {
     COMPRESSED_RGB_PVRTC_4BPPV1_IMG: number;
@@ -6,6 +12,12 @@ export interface WEBGL_compressed_texture_pvrtc
     COMPRESSED_RGB_PVRTC_2BPPV1_IMG: number;
     COMPRESSED_RGBA_PVRTC_2BPPV1_IMG: number;
 }
+
+/**
+ * WebGL extensions for texture compression using the ETC format.
+ * @category rendering
+ * @advanced
+ */
 export interface WEBGL_compressed_texture_etc
 {
     COMPRESSED_R11_EAC: number;
@@ -19,10 +31,22 @@ export interface WEBGL_compressed_texture_etc
     COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2: number;
     COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2: number;
 }
+
+/**
+ * WebGL extensions for texture compression using the ETC1 format.
+ * @category rendering
+ * @advanced
+ */
 export interface WEBGL_compressed_texture_etc1
 {
     COMPRESSED_RGB_ETC1_WEBGL: number;
 }
+
+/**
+ * WebGL extensions for texture compression using the ATC format.
+ * @category rendering
+ * @advanced
+ */
 export interface WEBGL_compressed_texture_atc
 {
     COMPRESSED_RGB_ATC_WEBGL: number;
@@ -30,6 +54,11 @@ export interface WEBGL_compressed_texture_atc
     COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL: number;
 }
 
+/**
+ * WebGL extensions for texture compression using the BPTC format.
+ * @category rendering
+ * @advanced
+ */
 export interface EXT_texture_compression_bptc
 {
     COMPRESSED_RGBA_BPTC_UNORM_EXT: number;
@@ -38,6 +67,11 @@ export interface EXT_texture_compression_bptc
     COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT: number;
 }
 
+/**
+ * WebGL extensions for texture compression using the RGTC format.
+ * @category rendering
+ * @advanced
+ */
 export interface EXT_texture_compression_rgtc
 {
     COMPRESSED_RED_RGTC1_EXT: number;
@@ -46,6 +80,11 @@ export interface EXT_texture_compression_rgtc
     COMPRESSED_SIGNED_RED_GREEN_RGTC2_EXT: number;
 }
 
+/**
+ * WebGL extensions that are available in the current context.
+ * @category rendering
+ * @advanced
+ */
 export interface WebGLExtensions
 {
     drawBuffers?: WEBGL_draw_buffers;

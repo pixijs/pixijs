@@ -1,8 +1,6 @@
-/* eslint-disable max-len */
-import { Assets } from '../../../../src/assets/Assets';
-import { ColorMatrixFilter } from '../../../../src/filters/defaults/color-matrix/ColorMatrixFilter';
-import { Container } from '../../../../src/scene/container/Container';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
+import { Assets } from '~/assets';
+import { ColorMatrixFilter } from '~/filters';
+import { Container, Sprite } from '~/scene';
 
 import type { TestScene } from '../../types';
 

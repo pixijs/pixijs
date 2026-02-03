@@ -13,12 +13,15 @@ import type { Sprite } from '../../scene/sprite/Sprite';
 import type { FilterOptions } from '../Filter';
 import type { FilterSystem } from '../FilterSystem';
 
+/** @internal */
 export interface MaskFilterOptions extends FilterOptions
 {
     sprite: Sprite,
+    inverse?: boolean;
     scale?: number | { x: number, y: number },
 }
 
+/** @internal */
 export class MaskFilter extends Filter
 {
     public sprite: Sprite;
@@ -34,6 +37,7 @@ export class MaskFilter extends Filter
             uFilterMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
             uMaskClamp: { value: textureMatrix.uClampFrame, type: 'vec4<f32>' },
             uAlpha: { value: 1, type: 'f32' },
+            uInverse: { value: options.inverse ? 1 : 0, type: 'f32' },
         });
 
         const gpuProgram = GpuProgram.from({
@@ -57,6 +61,7 @@ export class MaskFilter extends Filter
             ...rest,
             gpuProgram,
             glProgram,
+            clipToViewport: false,
             resources: {
                 filterUniforms,
                 uMaskTexture: sprite.texture.source,
@@ -66,6 +71,16 @@ export class MaskFilter extends Filter
         this.sprite = sprite;
 
         this._textureMatrix = textureMatrix;
+    }
+
+    set inverse(value: boolean)
+    {
+        this.resources.filterUniforms.uniforms.uInverse = value ? 1 : 0;
+    }
+
+    get inverse(): boolean
+    {
+        return this.resources.filterUniforms.uniforms.uInverse === 1;
     }
 
     public apply(

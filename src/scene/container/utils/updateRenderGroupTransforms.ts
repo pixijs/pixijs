@@ -1,22 +1,30 @@
 import { Container, UPDATE_BLEND, UPDATE_COLOR, UPDATE_VISIBLE } from '../Container';
-import { mixColors } from './mixColors';
+import { clearList } from './clearList';
+import { multiplyColors } from './multiplyColors';
 
+import type { ViewContainer } from '../../view/ViewContainer';
 import type { RenderGroup } from '../RenderGroup';
 
 const tempContainer = new Container();
+const UPDATE_BLEND_COLOR_VISIBLE = UPDATE_VISIBLE | UPDATE_COLOR | UPDATE_BLEND;
 
+/**
+ * @param renderGroup
+ * @param updateChildRenderGroups
+ * @internal
+ */
 export function updateRenderGroupTransforms(renderGroup: RenderGroup, updateChildRenderGroups = false)
 {
     updateRenderGroupTransform(renderGroup);
 
     const childrenToUpdate = renderGroup.childrenToUpdate;
 
-    const updateTick = renderGroup.updateTick;
-
-    renderGroup.updateTick++;
+    const updateTick = renderGroup.updateTick++;
 
     for (const j in childrenToUpdate)
     {
+        const renderGroupDepth = Number(j);
+
         const childrenAtDepth = childrenToUpdate[j];
 
         const list = childrenAtDepth.list;
@@ -24,8 +32,19 @@ export function updateRenderGroupTransforms(renderGroup: RenderGroup, updateChil
 
         for (let i = 0; i < index; i++)
         {
-            updateTransformAndChildren(list[i], updateTick, 0);
+            const child = list[i];
+
+            // check that these things match our layer and depth - if the renderGroup does not match,
+            // the child has been re-parented into another rendergroup since it asked to be updated so we can ignore it here
+            // secondly if the relativeRenderGroupDepth has changed, then the it means it will have been nested at a
+            // different different level in the render group - so we can wait for the update that does in fact match
+            if (child.parentRenderGroup === renderGroup && child.relativeRenderGroupDepth === renderGroupDepth)
+            {
+                updateTransformAndChildren(child, updateTick, 0);
+            }
         }
+
+        clearList(list, index);
 
         childrenAtDepth.index = 0;
     }
@@ -39,6 +58,10 @@ export function updateRenderGroupTransforms(renderGroup: RenderGroup, updateChil
     }
 }
 
+/**
+ * @param renderGroup
+ * @internal
+ */
 export function updateRenderGroupTransform(renderGroup: RenderGroup)
 {
     const root = renderGroup.root;
@@ -54,7 +77,7 @@ export function updateRenderGroupTransform(renderGroup: RenderGroup)
             renderGroupParent.worldTransform,
         );
 
-        renderGroup.worldColor = mixColors(
+        renderGroup.worldColor = multiplyColors(
             root.groupColor,
             renderGroupParent.worldColor,
         );
@@ -76,6 +99,12 @@ export function updateRenderGroupTransform(renderGroup: RenderGroup)
             + (((worldAlpha * 255) | 0) << 24);
 }
 
+/**
+ * @param container
+ * @param updateTick
+ * @param updateFlags
+ * @internal
+ */
 export function updateTransformAndChildren(container: Container, updateTick: number, updateFlags: number)
 {
     if (updateTick === container.updateTick) return;
@@ -89,16 +118,16 @@ export function updateTransformAndChildren(container: Container, updateTick: num
 
     const parent = container.parent;
 
-    if ((parent && !parent.isRenderGroupRoot))
+    if ((parent && !parent.renderGroup))
     {
-        updateFlags = updateFlags | container._updateFlags;
+        updateFlags |= container._updateFlags;
 
         container.relativeGroupTransform.appendFrom(
             localTransform,
             parent.relativeGroupTransform,
         );
 
-        if (updateFlags)
+        if (updateFlags & UPDATE_BLEND_COLOR_VISIBLE)
         {
             updateColorBlendVisibility(container, parent, updateFlags);
         }
@@ -109,14 +138,14 @@ export function updateTransformAndChildren(container: Container, updateTick: num
 
         container.relativeGroupTransform.copyFrom(localTransform);
 
-        if (updateFlags)
+        if (updateFlags & UPDATE_BLEND_COLOR_VISIBLE)
         {
             updateColorBlendVisibility(container, tempContainer, updateFlags);
         }
     }
 
     // don't update children if its a layer..
-    if (!container.isRenderGroupRoot)
+    if (!container.renderGroup)
     {
         const children = container.children;
         const length = children.length;
@@ -126,11 +155,12 @@ export function updateTransformAndChildren(container: Container, updateTick: num
             updateTransformAndChildren(children[i], updateTick, updateFlags);
         }
 
-        const renderGroup = container.renderGroup;
+        const renderGroup = container.parentRenderGroup;
+        const renderable = container as ViewContainer;
 
-        if (container.renderPipeId && !renderGroup.structureDidChange)
+        if (renderable.renderPipeId && !renderGroup.structureDidChange)
         {
-            renderGroup.updateRenderable(container);
+            renderGroup.updateRenderable(renderable);
         }
     }
 }
@@ -143,7 +173,7 @@ function updateColorBlendVisibility(
 {
     if (updateFlags & UPDATE_COLOR)
     {
-        container.groupColor = mixColors(
+        container.groupColor = multiplyColors(
             container.localColor,
             parent.groupColor
         );

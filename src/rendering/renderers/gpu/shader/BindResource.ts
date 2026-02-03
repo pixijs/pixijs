@@ -2,7 +2,8 @@ import type { BindGroup } from './BindGroup';
 
 /**
  * an interface that allows a resource to be bound to the gpu in a bind group
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export interface BindResource
 {
@@ -34,6 +35,6 @@ export interface BindResource
      * This is important as it allows the renderer to know that it needs to rebind the resource
      */
     on?(event: 'change', listenerFunction: (resource: BindResource) => void, listener: BindGroup): void
-    /** @todo */
+    /** todo */
     off?(event: 'change', listenerFunction: (resource: BindResource) => void, listener: BindGroup): void
 }

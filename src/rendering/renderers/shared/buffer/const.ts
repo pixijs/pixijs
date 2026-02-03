@@ -1,10 +1,10 @@
 /**
  * Buffer usage flags. they can be combined using the bitwise OR operator
  * eg : BufferUsage.VERTEX | BufferUsage.INDEX
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export enum BufferUsage
-// eslint-disable-next-line @typescript-eslint/indent
 {
     /**
      * The buffer can be mapped for reading. (Example: calling mapAsync() with GPUMapMode.READ)

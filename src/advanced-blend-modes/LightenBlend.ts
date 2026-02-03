@@ -4,6 +4,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
 /**
+ * The final color is composed of the lightest values of each color channel.
+ *
  * Available as `container.blendMode = 'lighten'` after importing `pixi.js/advanced-blend-modes`.
  * @example
  * import 'pixi.js/advanced-blend-modes';
@@ -11,7 +13,8 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'lighten'
- * @memberof filters
+ * @category filters
+ * @noInheritDoc
  */
 export class LightenBlend extends BlendModeFilter
 {
@@ -32,7 +35,7 @@ export class LightenBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                finalColor = vec4(blendLighten(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendLighten(back.rgb, front.rgb,front.a), blendedAlpha) * uBlend;
                 `
             },
             gpu: {
@@ -43,7 +46,7 @@ export class LightenBlend extends BlendModeFilter
                 }
             `,
                 main: `
-                out = vec4<f32>(blendLighten(back.rgb, front.rgb, front.a), blendUniforms.uBlend);
+                out = vec4<f32>(blendLighten(back.rgb, front.rgb, front.a), blendedAlpha) * blendUniforms.uBlend;
             `
             }
         });

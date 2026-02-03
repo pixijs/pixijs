@@ -23,16 +23,16 @@ const bigTriangleGeometry = new Geometry({
 
 /**
  * The options for the back buffer system.
- * @memberof rendering
+ * @category rendering
  * @property {boolean} [useBackBuffer=false] - if true will use the back buffer where required
  * @property {boolean} [antialias=false] - if true will ensure the texture is antialiased
+ * @advanced
  */
 export interface GlBackBufferOptions
 {
     /**
      * if true will use the back buffer where required
      * @default false
-     * @memberof rendering.WebGLOptions
      */
     useBackBuffer?: boolean;
     /** if true will ensure the texture is antialiased */
@@ -43,7 +43,7 @@ export interface GlBackBufferOptions
  * For blend modes you need to know what pixels you are actually drawing to. For this to be possible in WebGL
  * we need to render to a texture and then present that texture to the screen. This system manages that process.
  *
- * As the main scene is rendered to a texture, it means we can sample it anc copy its pixels,
+ * As the main scene is rendered to a texture, it means we can sample it and copy its pixels,
  * something not possible on the main canvas.
  *
  * If antialiasing is set to to true and useBackBuffer is set to true, then the back buffer will be antialiased.
@@ -52,7 +52,8 @@ export interface GlBackBufferOptions
  * You only need to activate this back buffer if you are using a blend mode that requires it.
  *
  * to activate is simple, you pass `useBackBuffer:true` to your render options
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class GlBackBufferSystem implements System<GlBackBufferOptions>
 {

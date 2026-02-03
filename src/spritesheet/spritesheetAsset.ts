@@ -6,17 +6,26 @@ import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { path } from '../utils/path';
 import { Spritesheet } from './Spritesheet';
 
-import type { AssetExtension } from '../assets/AssetExtension';
+import type { AssetExtensionAdvanced } from '../assets/AssetExtension';
 import type { Loader } from '../assets/loader/Loader';
-import type { ResolvedAsset, UnresolvedAsset } from '../assets/types';
+import type { ResolvedAsset } from '../assets/types';
+import type { TextureSourceOptions } from '../rendering/renderers/shared/texture/sources/TextureSource';
 import type { SpritesheetData } from './Spritesheet';
 
+/**
+ * Interface for the JSON data structure of a spritesheet.
+ * This is used to define the structure of the JSON file that describes a spritesheet.
+ * It includes metadata about the spritesheet and the frames it contains.
+ * @see {@link Spritesheet}
+ * @see {@link SpritesheetData}
+ * @category assets
+ * @advanced
+ */
 export interface SpriteSheetJson extends SpritesheetData
 {
     meta: {
         image: string;
         scale: string;
-        // eslint-disable-next-line camelcase
         related_multi_packs?: string[];
     };
 }
@@ -35,7 +44,7 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
 
     Object.keys(asset.textures).forEach((key) =>
     {
-        out[key] = asset.textures[key];
+        out[`${asset.cachePrefix}${key}`] = asset.textures[key];
     });
 
     if (!ignoreMultiPack)
@@ -63,10 +72,14 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
  *     src: 'path/to/spritesheet.json',
  *     data: {
  *         ignoreMultiPack: true,
+ *         textureOptions: {
+ *             scaleMode: "nearest"
+ *         }
  *     }
  * })
  * @type {AssetExtension}
- * @memberof assets
+ * @category assets
+ * @advanced
  */
 export const spritesheetAsset = {
     extension: ExtensionType.Asset,
@@ -77,6 +90,10 @@ export const spritesheetAsset = {
     },
     /** Resolve the resolution of the asset. */
     resolver: {
+        extension: {
+            type: ExtensionType.ResolveParser,
+            name: 'resolveSpritesheet',
+        },
         test: (value: string): boolean =>
         {
             const tempURL = value.split('?')[0];
@@ -86,7 +103,7 @@ export const spritesheetAsset = {
 
             return extension === 'json' && validImages.includes(format);
         },
-        parse: (value: string): UnresolvedAsset =>
+        parse: (value: string) =>
         {
             const split = value.split('.');
 
@@ -104,11 +121,14 @@ export const spritesheetAsset = {
      * All textures in the sprite sheet are then added to the cache
      */
     loader: {
+        /** used for deprecation purposes */
         name: 'spritesheetLoader',
+        id: 'spritesheet',
 
         extension: {
             type: ExtensionType.LoadParser,
             priority: LoaderParserPriority.Normal,
+            name: 'spritesheetLoader',
         },
 
         async testParse(asset: SpriteSheetJson, options: ResolvedAsset): Promise<boolean>
@@ -118,13 +138,21 @@ export const spritesheetAsset = {
 
         async parse(
             asset: SpriteSheetJson,
-            options: ResolvedAsset<{texture: Texture, imageFilename: string, ignoreMultiPack: boolean}>,
-            loader: Loader
+            options: ResolvedAsset<{
+                texture?: Texture,
+                imageFilename?: string,
+                ignoreMultiPack?: boolean,
+                textureOptions?: TextureSourceOptions,
+                cachePrefix?: string,
+            }>,
+            loader?: Loader
         ): Promise<Spritesheet>
         {
             const {
                 texture: imageTexture, // if user need to use preloaded texture
-                imageFilename // if user need to use custom filename (not from jsonFile.meta.image)
+                imageFilename, // if user need to use custom filename (not from jsonFile.meta.image)
+                textureOptions, // if user need to set texture options on texture
+                cachePrefix, // if user need to use custom cache prefix
             } = options?.data ?? {};
 
             let basePath = path.dirname(options.src);
@@ -144,21 +172,21 @@ export const spritesheetAsset = {
             {
                 const imagePath = copySearchParams(basePath + (imageFilename ?? asset.meta.image), options.src);
 
-                const assets = await loader.load<Texture>([imagePath]);
+                const assets = await loader.load<Texture>([{ src: imagePath, data: textureOptions }]);
 
                 texture = assets[imagePath];
             }
 
-            const spritesheet = new Spritesheet(
-                texture.source,
-                asset,
-            );
+            const spritesheet = new Spritesheet({
+                texture: texture.source,
+                data: asset,
+                cachePrefix
+            });
 
             await spritesheet.parse();
 
             // Check and add the multi atlas
             // Heavily influenced and based on https://github.com/rocket-ua/pixi-tps-loader/blob/master/src/ResourceLoader.js
-            // eslint-disable-next-line camelcase
             const multiPacks = asset?.meta?.related_multi_packs;
 
             if (Array.isArray(multiPacks))
@@ -185,6 +213,7 @@ export const spritesheetAsset = {
                     promises.push(loader.load<Spritesheet<SpriteSheetJson>>({
                         src: itemUrl,
                         data: {
+                            textureOptions,
                             ignoreMultiPack: true,
                         }
                     }));
@@ -208,5 +237,5 @@ export const spritesheetAsset = {
 
             spritesheet.destroy(false);
         },
-    },
-} as AssetExtension<Spritesheet | SpriteSheetJson>;
+    }
+} satisfies AssetExtensionAdvanced<SpriteSheetJson, Spritesheet, Spritesheet, Spritesheet>;

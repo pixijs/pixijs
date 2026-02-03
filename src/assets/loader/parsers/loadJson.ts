@@ -11,7 +11,8 @@ const validJSONMIME = 'application/json';
 
 /**
  * A simple loader plugin for loading json data
- * @memberof assets
+ * @category assets
+ * @advanced
  */
 export const loadJson = {
     extension: {
@@ -19,7 +20,9 @@ export const loadJson = {
         priority: LoaderParserPriority.Low,
     },
 
+    /** used for deprecation purposes */
     name: 'loadJson',
+    id: 'json',
 
     test(url: string): boolean
     {
@@ -34,4 +37,4 @@ export const loadJson = {
 
         return json as T;
     },
-} as LoaderParser;
+} satisfies LoaderParser<string>;

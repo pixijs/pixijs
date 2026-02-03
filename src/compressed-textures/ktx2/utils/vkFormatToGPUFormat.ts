@@ -7,6 +7,10 @@ const vkFormatToGPUFormatMap: Record<number, COMPRESSED_TEXTURE_FORMATS> = {
     // TODO add more!
 };
 
+/**
+ * @param vkFormat
+ * @internal
+ */
 export function vkFormatToGPUFormat(vkFormat: number): COMPRESSED_TEXTURE_FORMATS
 {
     const format = vkFormatToGPUFormatMap[vkFormat];

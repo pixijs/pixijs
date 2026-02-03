@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { warn } from '../../../../utils/logging/warn';
 import { ensureAttributes } from '../../gl/shader/program/ensureAttributes';
 import { STENCIL_MODES } from '../../shared/state/const';
 import { createIdFromString } from '../../shared/utils/createIdFromString';
@@ -46,16 +47,19 @@ function getGraphicsStateKey(
 // stencilState = 8; // 3 bits // 8 states // value 0-7;
 // renderTarget = 1; // 2 bit // 3 states // value 0-3; // none, stencil, depth, depth-stencil
 // multiSampleCount = 1; // 1 bit // 2 states // value 0-1;
+// colorTargetCount = 4; // 2 bits // 4 states // value 0-3; // supports 1-4 color targets
 function getGlobalStateKey(
     stencilStateId: number,
     multiSampleCount: number,
     colorMask: number,
     renderTarget: number,
+    colorTargetCount: number,
 ): number
 {
-    return (colorMask << 6) // Allocate the 4 bits for colorMask at the top
-         | (stencilStateId << 3) // Next 3 bits for stencilStateId
-         | (renderTarget << 1) // 2 bits for renderTarget
+    return (colorMask << 8) // Allocate the 4 bits for colorMask at the top
+         | (stencilStateId << 5) // Next 3 bits for stencilStateId
+         | (renderTarget << 3) // 2 bits for renderTarget
+         | (colorTargetCount << 1) // 2 bits for colorTargetCount
          | multiSampleCount; // And 1 bit for multiSampleCount at the least significant position
 }
 
@@ -76,7 +80,8 @@ type PipeHash = Record<number, GPURenderPipeline>;
  * using getStateKey for global state and getGraphicsStateKey for draw-specific settings. These keys are
  * then then used to caching the pipe. The next time we need a pipe we can check
  * the cache by first looking at the state cache and then the pipe cache.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class PipelineSystem implements System
 {
@@ -91,6 +96,7 @@ export class PipelineSystem implements System
 
     private _moduleCache: Record<string, GPUShaderModule> = Object.create(null);
     private _bufferLayoutsCache: Record<number, GPUVertexBufferLayout[]> = Object.create(null);
+    private readonly _bindingNamesCache: Record<string, Record<string, string>> = Object.create(null);
 
     private _pipeCache: PipeHash = Object.create(null);
     private readonly _pipeStateCaches: Record<number, PipeHash> = Object.create(null);
@@ -101,6 +107,7 @@ export class PipelineSystem implements System
     private _stencilMode: STENCIL_MODES;
     private _colorMask = 0b1111;
     private _multisampleCount = 1;
+    private _colorTargetCount = 1;
     private _depthStencilAttachment: 0 | 1;
 
     constructor(renderer: WebGPURenderer)
@@ -129,7 +136,7 @@ export class PipelineSystem implements System
     {
         this._multisampleCount = renderTarget.msaaSamples;
         this._depthStencilAttachment = renderTarget.descriptor.depthStencilAttachment ? 1 : 0;
-
+        this._colorTargetCount = renderTarget.colorTargetCount;
         this._updatePipeHash();
     }
 
@@ -174,10 +181,9 @@ export class PipelineSystem implements System
             this._generateBufferKey(geometry);
         }
 
-        topology = topology || geometry.topology;
+        topology ||= geometry.topology;
 
         // now we have set the Ids - the key is different...
-        // eslint-disable-next-line max-len
         const key = getGraphicsStateKey(
             geometry._layoutKey,
             program._layoutKey,
@@ -197,11 +203,17 @@ export class PipelineSystem implements System
     {
         const device = this._gpu.device;
 
-        const buffers = this._createVertexBufferLayouts(geometry);
+        const buffers = this._createVertexBufferLayouts(geometry, program);
 
-        const blendModes = this._renderer.state.getColorTargets(state);
+        const blendModes = this._renderer.state.getColorTargets(state, this._colorTargetCount);
 
-        blendModes[0].writeMask = this._stencilMode === STENCIL_MODES.RENDERING_MASK_ADD ? 0 : this._colorMask;
+        // Apply write mask to all color targets
+        const writeMask = this._stencilMode === STENCIL_MODES.RENDERING_MASK_ADD ? 0 : this._colorMask;
+
+        for (let i = 0; i < blendModes.length; i++)
+        {
+            blendModes[i].writeMask = writeMask;
+        }
 
         const layout = this._renderer.shader.getProgramData(program).pipeline;
 
@@ -276,24 +288,91 @@ export class PipelineSystem implements System
         {
             const attribute = geometry.attributes[attributeKeys[i]];
 
-            keyGen[index++] = attribute.location;
             keyGen[index++] = attribute.offset;
             keyGen[index++] = attribute.format;
             keyGen[index++] = attribute.stride;
+            keyGen[index++] = attribute.instance;
         }
 
-        const stringKey = keyGen.join('');
+        const stringKey = keyGen.join('|');
 
         geometry._layoutKey = createIdFromString(stringKey, 'geometry');
 
         return geometry._layoutKey;
     }
 
-    private _createVertexBufferLayouts(geometry: Geometry): GPUVertexBufferLayout[]
+    private _generateAttributeLocationsKey(program: GpuProgram): number
     {
-        if (this._bufferLayoutsCache[geometry._layoutKey])
+        const keyGen = [];
+        let index = 0;
+        // generate a key..
+
+        const attributeKeys = Object.keys(program.attributeData).sort();
+
+        for (let i = 0; i < attributeKeys.length; i++)
         {
-            return this._bufferLayoutsCache[geometry._layoutKey];
+            const attribute = program.attributeData[attributeKeys[i]];
+
+            keyGen[index++] = attribute.location;
+        }
+
+        const stringKey = keyGen.join('|');
+
+        program._attributeLocationsKey = createIdFromString(stringKey, 'programAttributes');
+
+        return program._attributeLocationsKey;
+    }
+
+    /**
+     * Returns a hash of buffer names mapped to bind locations.
+     * This is used to bind the correct buffer to the correct location in the shader.
+     * @param geometry - The geometry where to get the buffer names
+     * @param program - The program where to get the buffer names
+     * @returns An object of buffer names mapped to the bind location.
+     */
+    public getBufferNamesToBind(geometry: Geometry, program: GpuProgram): Record<string, string>
+    {
+        const key = (geometry._layoutKey << 16) | program._attributeLocationsKey;
+
+        if (this._bindingNamesCache[key]) return this._bindingNamesCache[key];
+
+        const data = this._createVertexBufferLayouts(geometry, program);
+
+        // now map the data to the buffers..
+        const bufferNamesToBind: Record<string, string> = Object.create(null);
+
+        const attributeData = program.attributeData;
+
+        for (let i = 0; i < data.length; i++)
+        {
+            const attributes = Object.values(data[i].attributes);
+
+            const shaderLocation = attributes[0].shaderLocation;
+
+            for (const j in attributeData)
+            {
+                if (attributeData[j].location === shaderLocation)
+                {
+                    bufferNamesToBind[i] = j;
+                    break;
+                }
+            }
+        }
+
+        this._bindingNamesCache[key] = bufferNamesToBind;
+
+        return bufferNamesToBind;
+    }
+
+    private _createVertexBufferLayouts(geometry: Geometry, program: GpuProgram): GPUVertexBufferLayout[]
+    {
+        if (!program._attributeLocationsKey) this._generateAttributeLocationsKey(program);
+
+        const key = (geometry._layoutKey << 16) | program._attributeLocationsKey;
+
+        if (this._bufferLayoutsCache[key])
+        {
+            return this._bufferLayoutsCache[key];
         }
 
         const vertexBuffersLayout: GPUVertexBufferLayout[] = [];
@@ -308,9 +387,17 @@ export class PipelineSystem implements System
 
             const bufferEntryAttributes = bufferEntry.attributes as GPUVertexAttribute[];
 
-            for (const i in geometry.attributes)
+            for (const i in program.attributeData)
             {
                 const attribute = geometry.attributes[i];
+
+                if ((attribute.divisor ?? 1) !== 1)
+                {
+                    // TODO: Maybe emulate divisor with storage_buffers/float_textures?
+                    // For now just issue a warning
+                    warn(`Attribute ${i} has an invalid divisor value of '${attribute.divisor}'. `
+                        + 'WebGPU only supports a divisor value of 1');
+                }
 
                 if (attribute.buffer === buffer)
                 {
@@ -318,7 +405,7 @@ export class PipelineSystem implements System
                     bufferEntry.stepMode = attribute.instance ? 'instance' : 'vertex';
 
                     bufferEntryAttributes.push({
-                        shaderLocation: attribute.location,
+                        shaderLocation: program.attributeData[i].location,
                         offset: attribute.offset,
                         format: attribute.format,
                     });
@@ -331,7 +418,7 @@ export class PipelineSystem implements System
             }
         });
 
-        this._bufferLayoutsCache[geometry._layoutKey] = vertexBuffersLayout;
+        this._bufferLayoutsCache[key] = vertexBuffersLayout;
 
         return vertexBuffersLayout;
     }
@@ -342,7 +429,8 @@ export class PipelineSystem implements System
             this._stencilMode,
             this._multisampleCount,
             this._colorMask,
-            this._depthStencilAttachment
+            this._depthStencilAttachment,
+            this._colorTargetCount,
         );
 
         if (!this._pipeStateCaches[key])
