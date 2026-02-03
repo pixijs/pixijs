@@ -530,55 +530,6 @@ export class GlTextureSystem implements System, CanvasGenerator
         gl.texParameteri(glTexture.target, gl.TEXTURE_MAX_LEVEL, maxLevel);
     }
 
-    /**
-     * Allocates storage for all mip levels > 0 for an "empty" 2D texture (no CPU resource backing).
-     * This is required if you want to render into mip levels via FBO attachment (WebGL2).
-     * @param glTexture - The GL texture wrapper (format/type info is used).
-     * @param source - The texture source describing size/mipLevelCount.
-     */
-    private _allocateEmpty2DMipChain(glTexture: GlTexture, source: TextureSource): void
-    {
-        const gl = this._gl;
-
-        let w = Math.max(source.pixelWidth >> 1, 1);
-        let h = Math.max(source.pixelHeight >> 1, 1);
-
-        for (let level = 1; level < source.mipLevelCount; level++)
-        {
-            gl.texImage2D(
-                gl.TEXTURE_2D,
-                level,
-                glTexture.internalFormat,
-                w,
-                h,
-                0,
-                glTexture.format,
-                glTexture.type,
-                null,
-            );
-
-            w = Math.max(w >> 1, 1);
-            h = Math.max(h >> 1, 1);
-        }
-    }
-
-    /**
-     * Applies a mip range to the currently-bound texture so WebGL2 considers the texture "mipmap complete"
-     * for the declared `mipLevelCount` (especially important for partial mip chains rendered via FBO).
-     * @param glTexture - The GL texture wrapper.
-     * @param source - The texture source describing mipLevelCount.
-     */
-    private _applyMipRange(glTexture: GlTexture, source: TextureSource): void
-    {
-        if (this._renderer.context.webGLVersion !== 2) return;
-
-        const gl = this._gl as WebGL2RenderingContext;
-        const maxLevel = Math.max((source.mipLevelCount | 0) - 1, 0);
-
-        gl.texParameteri(glTexture.target, gl.TEXTURE_BASE_LEVEL, 0);
-        gl.texParameteri(glTexture.target, gl.TEXTURE_MAX_LEVEL, maxLevel);
-    }
-
     private _initSampler(style: TextureStyle): WebGLSampler
     {
         const gl = this._gl;
