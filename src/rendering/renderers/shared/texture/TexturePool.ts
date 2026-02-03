@@ -98,8 +98,14 @@ export class TexturePoolClass
         po2Width = nextPow2(po2Width);
         po2Height = nextPow2(po2Height);
 
-        const mipmapBit = autoGenerateMipmaps ? 1 : 0;
-        const key = (po2Width << 17) + (po2Height << 1) + (antialias ? 1 : 0) + (mipmapBit << 2);
+        // Pack flags in lower bits, then dimensions in higher bits to avoid collisions
+        // Bit 0: antialias flag
+        // Bit 1: mipmap flag
+        // Bits 2-16: height (15 bits, supports up to 32768)
+        // Bits 17-31: width (15 bits, supports up to 32768)
+        const antialiasFlag = antialias ? 1 : 0;
+        const mipmapFlag = autoGenerateMipmaps ? 1 : 0;
+        const key = (po2Width << 17) + (po2Height << 2) + (mipmapFlag << 1) + antialiasFlag;
 
         if (!this._texturePool[key])
         {

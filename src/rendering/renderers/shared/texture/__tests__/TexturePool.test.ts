@@ -66,6 +66,65 @@ describe('TexturePool', () =>
             // Should be different instances
             expect(noMipmapTexture).not.toBe(mipmappedTexture);
         });
+
+        it('should not collide keys with small po2 heights (1-3) and mipmap flag', () =>
+        {
+            // Test edge case: small heights where bits might collide
+            // New bit packing (fixed):
+            // Bit 0: antialias
+            // Bit 1: mipmap
+            // Bits 2-16: height (shifted left 2)
+            // Bits 17+: width (shifted left 17)
+            // This ensures flags don't overlap with dimension values
+
+            const texture1 = pool.getOptimalTexture(64, 1, 1, false, false); // height=1, no mipmap
+            const texture2 = pool.getOptimalTexture(64, 1, 1, false, true); // height=1, with mipmap
+            const texture3 = pool.getOptimalTexture(64, 2, 1, false, false); // height=2, no mipmap
+            const texture4 = pool.getOptimalTexture(64, 2, 1, false, true); // height=2, with mipmap
+            const texture5 = pool.getOptimalTexture(64, 3, 1, false, false); // height=3, no mipmap
+
+            // All should be different instances
+            expect(texture1).not.toBe(texture2);
+            expect(texture1).not.toBe(texture3);
+            expect(texture1).not.toBe(texture4);
+            expect(texture1).not.toBe(texture5);
+            expect(texture2).not.toBe(texture3);
+            expect(texture2).not.toBe(texture4);
+            expect(texture2).not.toBe(texture5);
+            expect(texture3).not.toBe(texture4);
+            expect(texture3).not.toBe(texture5);
+            expect(texture4).not.toBe(texture5);
+
+            // Verify mipmap settings are preserved
+            expect(texture1.source.autoGenerateMipmaps).toBe(false);
+            expect(texture2.source.autoGenerateMipmaps).toBe(true);
+            expect(texture3.source.autoGenerateMipmaps).toBe(false);
+            expect(texture4.source.autoGenerateMipmaps).toBe(true);
+            expect(texture5.source.autoGenerateMipmaps).toBe(false);
+
+            // Return to pool and get again to verify pooling works correctly
+            pool.returnTexture(texture2);
+            pool.returnTexture(texture4);
+
+            const texture2Again = pool.getOptimalTexture(64, 1, 1, false, true);
+            const texture4Again = pool.getOptimalTexture(64, 2, 1, false, true);
+
+            expect(texture2Again).toBe(texture2);
+            expect(texture4Again).toBe(texture4);
+
+            // CRITICAL TEST: Check for collision between texture4 (h=2 mipmap) and texture5 (h=3 no-mipmap)
+            // With fixed encoding: h=2 mipmap = (64<<17)+(2<<2)+(1<<1) = 8388618
+            //                      h=3 no-mipmap = (64<<17)+(4<<2)+(0<<1) = 8388624
+            // Now different keys!
+            pool.returnTexture(texture4); // height=2 with mipmap
+
+            // Try to get height=3 no-mipmap - should NOT return texture4
+            const texture5Again = pool.getOptimalTexture(64, 3, 1, false, false);
+
+            // This should pass with the fixed encoding
+            expect(texture5Again).not.toBe(texture4);
+            expect(texture5Again.source.autoGenerateMipmaps).toBe(false);
+        });
     });
 
     describe('Bit Shift Operations', () =>
