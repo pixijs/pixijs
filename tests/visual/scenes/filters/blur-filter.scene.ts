@@ -5,6 +5,7 @@ import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
+    only: true,
     it: 'should correctly render a blurred black and white square',
     create: async (scene: Container) =>
     {

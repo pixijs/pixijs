@@ -4,7 +4,9 @@ import { Filter } from '../../Filter';
 import { generateBlurGlProgram } from './gl/generateBlurGlProgram';
 import { generateBlurProgram } from './gpu/generateBlurProgram';
 
+import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURenderer';
 import type { RenderSurface } from '../../../rendering/renderers/shared/renderTarget/RenderTargetSystem';
+import type { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { FilterSystem } from '../../FilterSystem';
 import type { BlurFilterOptions } from './BlurFilter';
@@ -54,6 +56,7 @@ export class BlurFilterPass extends Filter
 
     private _quality: number;
     private readonly _uniforms: any;
+    private readonly _blurUniforms: UniformGroup;
 
     /**
      * @param options
@@ -88,7 +91,9 @@ export class BlurFilterPass extends Filter
 
         this.blur = options.strength;
 
-        this._uniforms = this.resources.blurUniforms.uniforms;
+        // Store reference to the UniformGroup before any resource swapping
+        this._blurUniforms = this.resources.blurUniforms as UniformGroup;
+        this._uniforms = this._blurUniforms.uniforms;
     }
 
     /**
@@ -120,10 +125,21 @@ export class BlurFilterPass extends Filter
 
             this._state.blend = false;
 
+            const renderer = filterManager.renderer;
+
+            const isWebGPU = renderer.type === RendererType.WEBGPU;
+            const uboBatcher = isWebGPU ? (renderer as WebGPURenderer).renderPipes.uniformBatch : null;
             const shouldClear = filterManager.renderer.type === RendererType.WEBGPU;
 
             for (let i = 0; i < this.passes - 1; i++)
             {
+                // For WebGPU, use the UBO batcher to ensure each pass gets its own uniform values
+                // This is needed because writeBuffer executes immediately but draws are batched
+                if (uboBatcher)
+                {
+                    this.groups[1].setResource(uboBatcher.getUboResource(this._blurUniforms), 0);
+                }
+
                 filterManager.applyFilter(this, flip, flop, i === 0 ? true : shouldClear);
 
                 const temp = flop;
@@ -134,6 +150,12 @@ export class BlurFilterPass extends Filter
                 this._uniforms.uStrength *= 0.5;
             }
 
+            // Final pass - also need to batch uniforms for WebGPU
+            if (uboBatcher)
+            {
+                this.groups[1].setResource(uboBatcher.getUboResource(this._blurUniforms), 0);
+            }
+
             this._state.blend = true;
             filterManager.applyFilter(this, flip, output, clearMode);
             TexturePool.returnTexture(tempTexture);
@@ -141,22 +163,24 @@ export class BlurFilterPass extends Filter
     }
 
     /**
-     * Calculates the strength for the initial blur pass, so that the total blur amount of all passes will match the filter's
-     * strength.
-     * @returns The strength for the initial blur pass.
+     * Calculates the initial strength for the first blur pass so that the combined
+     * effect of all passes matches the filter's target strength.
+     *
+     * Uses variance addition property: for Gaussian blurs, σ_combined² = Σσᵢ²
+     * With halving scheme (s, s/2, s/4, ...), sum of squared coefficients = 4/3
      */
     private _calculateInitialStrength(): number
     {
-        let total = 1;
-        let current = 0.5;
+        let sumOfSquares = 1;
+        let coefficient = 0.5;
 
         for (let i = 1; i < this.passes; i++)
         {
-            total += current;
-            current *= 0.5;
+            sumOfSquares += coefficient * coefficient;
+            coefficient *= 0.5;
         }
 
-        return this.strength / Math.sqrt(total);
+        return this.strength / Math.sqrt(sumOfSquares);
     }
 
     /**
