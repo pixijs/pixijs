@@ -67,6 +67,36 @@ describe('ExternalSource', () =>
         renderer.destroy();
     });
 
+    it('should initialize WebGL placeholder with 1x1 pixel texture', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const gl = renderer.gl;
+
+        mockIsTexture(gl);
+
+        const bindTextureSpy = jest.spyOn(gl, 'bindTexture');
+        const texImage2DSpy = jest.spyOn(gl, 'texImage2D');
+
+        const source = new ExternalSource({ renderer });
+
+        // Verify placeholder texture was bound and initialized
+        expect(bindTextureSpy).toHaveBeenCalledWith(gl.TEXTURE_2D, source.resource);
+        expect(texImage2DSpy).toHaveBeenCalledWith(
+            gl.TEXTURE_2D,
+            0,
+            gl.RGBA,
+            1,
+            1,
+            0,
+            gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            null
+        );
+
+        source.destroy();
+        renderer.destroy();
+    });
+
     it('should create without resource but with explicit dimensions', async () =>
     {
         const renderer = await getWebGLRenderer();
