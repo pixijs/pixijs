@@ -158,10 +158,10 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
      */
     public addManagedHash<T>(context: T, hash: string): void
     {
-        // #if _DEBUG
+        // `#if` _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('8.15.0', 'RenderableGCSystem.addManagedHash is deprecated, please use the GCSystem.addResourceHash instead.');
-        // #endif
+        deprecation('8.15.0', 'RenderableGCSystem.addManagedHash is deprecated, please use the GCSystem.addCollection instead.');
+        // `#endif`
         this._renderer.gc.addCollection(context, hash, 'hash');
     }
 
@@ -172,10 +172,10 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
      */
     public addManagedArray<T>(context: T, hash: string): void
     {
-        // #if _DEBUG
+        // `#if` _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('8.15.0', 'RenderableGCSystem.addManagedArray is deprecated, please use the GCSystem.addResourceArray instead.');
-        // #endif
+        deprecation('8.15.0', 'RenderableGCSystem.addManagedArray is deprecated, please use the GCSystem.addCollection instead.');
+        // `#endif`
         this._renderer.gc.addCollection(context, hash, 'array');
     }
 
