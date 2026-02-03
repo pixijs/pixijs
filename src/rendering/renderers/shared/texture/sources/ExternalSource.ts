@@ -21,7 +21,16 @@ function getPlaceholder(renderer: Renderer): GPUTexture | WebGLTexture
         return placeholderGpu[renderer.uid];
     }
 
-    placeholderGl[renderer.uid] ||= (renderer as any).gl.createTexture();
+    if (!placeholderGl[renderer.uid])
+    {
+        const gl = (renderer as any).gl as WebGLRenderingContext;
+        const texture = gl.createTexture();
+
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+        placeholderGl[renderer.uid] = texture;
+    }
 
     return placeholderGl[renderer.uid];
 }
