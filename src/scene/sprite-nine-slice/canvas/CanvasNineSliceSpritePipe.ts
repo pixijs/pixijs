@@ -102,9 +102,11 @@ export class CanvasNineSliceSpritePipe implements RenderPipe<NineSliceSprite>
             context[smoothProperty] = shouldSmooth;
         }
 
-        const finalSource = tint === 0xFFFFFF
-            ? drawSource
-            : canvasUtils.getTintedCanvas({ texture }, tint) as CanvasImageSource;
+        // Use getTintedCanvas when tinted OR when texture is rotated (handles rotation compensation)
+        const needsProcessing = tint !== 0xFFFFFF || texture.rotate !== 0;
+        const finalSource = needsProcessing
+            ? canvasUtils.getTintedCanvas({ texture }, tint) as CanvasImageSource
+            : drawSource;
 
         const {
             leftWidth,
@@ -147,7 +149,7 @@ export class CanvasNineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         let sw = (texture.frame.width) * resolution;
         let sh = (texture.frame.height) * resolution;
 
-        if (finalSource !== drawSource)
+        if (needsProcessing)
         {
             sx = 0;
             sy = 0;

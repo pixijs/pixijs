@@ -127,7 +127,18 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
 
             const rotate = texture.rotate;
 
-            if (rotate)
+            const uvs = texture.uvs;
+            const uvMin = Math.min(uvs.x0, uvs.x1, uvs.x2, uvs.x3, uvs.y0, uvs.y1, uvs.y2, uvs.y3);
+            const uvMax = Math.max(uvs.x0, uvs.x1, uvs.x2, uvs.x3, uvs.y0, uvs.y1, uvs.y2, uvs.y3);
+            const needsRepeat = repeat !== 'no-repeat' && (uvMin < 0 || uvMax > 1);
+
+            // Determine if we'll use getTintedCanvas (which handles rotation internally)
+            // Use it for tinting OR rotation (for non-repeat path)
+            const willUseProcessedCanvas = !needsRepeat && (tint !== 0xFFFFFF || rotate);
+            // Only apply rotation transform when NOT using processed canvas (which handles rotation itself)
+            const applyRotateTransform = rotate && !willUseProcessedCanvas;
+
+            if (applyRotateTransform)
             {
                 CanvasBatchAdaptor._tempPatternMatrix.copyFrom(quad.transform);
                 groupD8.matrixAppendRotationInv(
@@ -155,23 +166,23 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
                 );
             }
 
-            const drawX = rotate ? 0 : dx;
-            const drawY = rotate ? 0 : dy;
+            const drawX = applyRotateTransform ? 0 : dx;
+            const drawY = applyRotateTransform ? 0 : dy;
             const drawW = dw;
             const drawH = dh;
-
-            const uvs = texture.uvs;
-            const uvMin = Math.min(uvs.x0, uvs.x1, uvs.x2, uvs.x3, uvs.y0, uvs.y1, uvs.y2, uvs.y3);
-            const uvMax = Math.max(uvs.x0, uvs.x1, uvs.x2, uvs.x3, uvs.y0, uvs.y1, uvs.y2, uvs.y3);
-            const needsRepeat = repeat !== 'no-repeat' && (uvMin < 0 || uvMax > 1);
 
             if (needsRepeat)
             {
                 // We can now allow tinting for PMA textures because getCanvasSource
                 // returns an un-premultiplied (straight alpha) version for Canvas.
+                // NOTE: Don't use getTintedCanvas when rotated because it applies rotation compensation,
+                // but the repeat path uses UV-based pattern transforms that expect the original rotated source.
                 let patternSource = source;
 
-                if (tint !== 0xFFFFFF && frame.width <= texture.source.width && frame.height <= texture.source.height)
+                const canTint = tint !== 0xFFFFFF && !rotate;
+                const fitsFrame = frame.width <= texture.source.width && frame.height <= texture.source.height;
+
+                if (canTint && fitsFrame)
                 {
                     patternSource = canvasUtils.getTintedCanvas({ texture }, tint) as CanvasImageSource;
                 }
@@ -215,18 +226,20 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
             {
                 // We can now allow tinting for PMA textures because getCanvasSource
                 // returns an un-premultiplied (straight alpha) version for Canvas.
-                const tintedSource = tint === 0xFFFFFF
-                    ? source
-                    : canvasUtils.getTintedCanvas({ texture }, tint) as CanvasImageSource;
+                // getTintedCanvas handles rotation internally, so use it for rotated textures too
+                const needsProcessing = tint !== 0xFFFFFF || rotate;
+                const processedSource = needsProcessing
+                    ? canvasUtils.getTintedCanvas({ texture }, tint) as CanvasImageSource
+                    : source;
 
-                const isTinted = tintedSource !== source;
+                const isProcessed = processedSource !== source;
 
                 context.drawImage(
-                    tintedSource,
-                    isTinted ? 0 : sx,
-                    isTinted ? 0 : sy,
-                    isTinted ? (tintedSource as any).width : sw,
-                    isTinted ? (tintedSource as any).height : sh,
+                    processedSource,
+                    isProcessed ? 0 : sx,
+                    isProcessed ? 0 : sy,
+                    isProcessed ? (processedSource as any).width : sw,
+                    isProcessed ? (processedSource as any).height : sh,
                     drawX,
                     drawY,
                     drawW,

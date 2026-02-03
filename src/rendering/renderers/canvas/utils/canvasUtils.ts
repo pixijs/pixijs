@@ -1,8 +1,10 @@
 import { Color } from '../../../../color/Color';
 import { DOMAdapter } from '../../../../environment/adapter';
+import { groupD8 } from '../../../../maths/matrix/groupD8';
 import { canUseNewCanvasBlendModes } from './canUseNewCanvasBlendModes';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
+import type { ICanvasRenderingContext2D } from '../../../../environment/canvas/ICanvasRenderingContext2D';
 import type { ImageLike } from '../../../../environment/ImageLike';
 import type { TextureSource } from '../../shared/texture/sources/TextureSource';
 import type { Texture } from '../../shared/texture/Texture';
@@ -221,34 +223,17 @@ export const canvasUtils = {
             return pattern;
         }
 
-        let source: CanvasImageSource;
-
-        if (color === 0xFFFFFF)
-        {
-            source = canvasUtils.getCanvasSource(texture);
-        }
-        else
-        {
-            if (!canvasUtils.canvas)
-            {
-                canvasUtils.canvas = DOMAdapter.get().createCanvas();
-            }
-
-            const tintCanvas = canvasUtils.canvas!;
-
-            canvasUtils.tintMethod(texture, color, tintCanvas);
-
-            source = tintCanvas as unknown as CanvasImageSource;
-        }
-
         if (!canvasUtils.canvas)
         {
             canvasUtils.canvas = DOMAdapter.get().createCanvas();
         }
 
-        const context = canvasUtils.canvas!.getContext('2d');
+        // Always use tintMethod to handle frame cropping correctly (matching v7 approach)
+        canvasUtils.tintMethod(texture, color, canvasUtils.canvas);
 
-        pattern = context.createPattern(source, 'repeat');
+        const context = canvasUtils.canvas.getContext('2d');
+
+        pattern = context.createPattern(canvasUtils.canvas, 'repeat');
 
         pattern.tintId = resourceId;
         cache[stringColor] = pattern;
@@ -301,18 +286,24 @@ export const canvasUtils = {
         const context = canvas.getContext('2d');
         const crop = texture.frame.clone();
         const resolution = texture.source._resolution ?? texture.source.resolution ?? 1;
+        const rotate = texture.rotate;
 
         crop.x *= resolution;
         crop.y *= resolution;
         crop.width *= resolution;
         crop.height *= resolution;
 
-        canvas.width = Math.ceil(crop.width);
-        canvas.height = Math.ceil(crop.height);
+        // When texture is rotated 90° or 270°, output dimensions are swapped
+        const isVertical = groupD8.isVertical(rotate);
+        const outWidth = isVertical ? crop.height : crop.width;
+        const outHeight = isVertical ? crop.width : crop.height;
+
+        canvas.width = Math.ceil(outWidth);
+        canvas.height = Math.ceil(outHeight);
 
         context.save();
         context.fillStyle = Color.shared.setValue(color).toHex();
-        context.fillRect(0, 0, crop.width, crop.height);
+        context.fillRect(0, 0, outWidth, outHeight);
 
         context.globalCompositeOperation = 'multiply';
 
@@ -323,6 +314,12 @@ export const canvasUtils = {
             context.restore();
 
             return;
+        }
+
+        // Apply inverse rotation to compensate for spritesheet packing
+        if (rotate)
+        {
+            canvasUtils._applyInverseRotation(context, rotate, crop.width, crop.height);
         }
 
         context.drawImage(
@@ -357,19 +354,25 @@ export const canvasUtils = {
         const context = canvas.getContext('2d');
         const crop = texture.frame.clone();
         const resolution = texture.source._resolution ?? texture.source.resolution ?? 1;
+        const rotate = texture.rotate;
 
         crop.x *= resolution;
         crop.y *= resolution;
         crop.width *= resolution;
         crop.height *= resolution;
 
-        canvas.width = Math.ceil(crop.width);
-        canvas.height = Math.ceil(crop.height);
+        // When texture is rotated 90° or 270°, output dimensions are swapped
+        const isVertical = groupD8.isVertical(rotate);
+        const outWidth = isVertical ? crop.height : crop.width;
+        const outHeight = isVertical ? crop.width : crop.height;
+
+        canvas.width = Math.ceil(outWidth);
+        canvas.height = Math.ceil(outHeight);
 
         context.save();
         context.globalCompositeOperation = 'copy';
         context.fillStyle = Color.shared.setValue(color).toHex();
-        context.fillRect(0, 0, crop.width, crop.height);
+        context.fillRect(0, 0, outWidth, outHeight);
 
         context.globalCompositeOperation = 'destination-atop';
         const source = canvasUtils.getCanvasSource(texture);
@@ -379,6 +382,12 @@ export const canvasUtils = {
             context.restore();
 
             return;
+        }
+
+        // Apply inverse rotation to compensate for spritesheet packing
+        if (rotate)
+        {
+            canvasUtils._applyInverseRotation(context, rotate, crop.width, crop.height);
         }
 
         context.drawImage(
@@ -400,14 +409,20 @@ export const canvasUtils = {
         const context = canvas.getContext('2d');
         const crop = texture.frame.clone();
         const resolution = texture.source._resolution ?? texture.source.resolution ?? 1;
+        const rotate = texture.rotate;
 
         crop.x *= resolution;
         crop.y *= resolution;
         crop.width *= resolution;
         crop.height *= resolution;
 
-        canvas.width = Math.ceil(crop.width);
-        canvas.height = Math.ceil(crop.height);
+        // When texture is rotated 90° or 270°, output dimensions are swapped
+        const isVertical = groupD8.isVertical(rotate);
+        const outWidth = isVertical ? crop.height : crop.width;
+        const outHeight = isVertical ? crop.width : crop.height;
+
+        canvas.width = Math.ceil(outWidth);
+        canvas.height = Math.ceil(outHeight);
 
         context.save();
         context.globalCompositeOperation = 'copy';
@@ -418,6 +433,12 @@ export const canvasUtils = {
             context.restore();
 
             return;
+        }
+
+        // Apply inverse rotation to compensate for spritesheet packing
+        if (rotate)
+        {
+            canvasUtils._applyInverseRotation(context, rotate, crop.width, crop.height);
         }
 
         context.drawImage(
@@ -432,11 +453,13 @@ export const canvasUtils = {
             crop.height
         );
 
+        context.restore();
+
         const r = (color >> 16) & 0xFF;
         const g = (color >> 8) & 0xFF;
         const b = color & 0xFF;
 
-        const imageData = context.getImageData(0, 0, crop.width, crop.height);
+        const imageData = context.getImageData(0, 0, outWidth, outHeight);
         const data = imageData.data;
 
         for (let i = 0; i < data.length; i += 4)
@@ -447,7 +470,36 @@ export const canvasUtils = {
         }
 
         context.putImageData(imageData, 0, 0);
-        context.restore();
+    },
+
+    /**
+     * Applies inverse rotation transform to context for texture packer rotation compensation.
+     * Supports all 16 groupD8 symmetries (rotations and reflections).
+     * @param context - Canvas 2D context
+     * @param rotate - The groupD8 rotation value
+     * @param srcWidth - Source crop width (before rotation)
+     * @param srcHeight - Source crop height (before rotation)
+     */
+    _applyInverseRotation: (
+        context: ICanvasRenderingContext2D,
+        rotate: number,
+        srcWidth: number,
+        srcHeight: number
+    ): void =>
+    {
+        // Get inverse rotation matrix components using groupD8 utilities
+        const inv = groupD8.inv(rotate);
+        const a = groupD8.uX(inv);
+        const b = groupD8.uY(inv);
+        const c = groupD8.vX(inv);
+        const d = groupD8.vY(inv);
+
+        // Calculate translation to keep content at origin after transform
+        // Same approach as matrixAppendRotationInv
+        const tx = -Math.min(0, a * srcWidth, c * srcHeight, (a * srcWidth) + (c * srcHeight));
+        const ty = -Math.min(0, b * srcWidth, d * srcHeight, (b * srcWidth) + (d * srcHeight));
+
+        context.transform(a, b, c, d, tx, ty);
     },
 };
 
