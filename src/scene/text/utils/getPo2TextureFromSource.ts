@@ -1,5 +1,4 @@
 import { type ImageLike } from '../../../environment/ImageLike';
-import { TextureSource } from '../../../rendering/renderers/shared/texture/sources/TextureSource';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { Bounds } from '../../container/bounds/Bounds';
 
@@ -15,6 +14,7 @@ const tempBounds = new Bounds();
  * @param width - the frame width of the texture
  * @param height - the frame height of the texture
  * @param resolution - The resolution of the texture
+ * @param autoGenerateMipmaps - Whether to generate mipmaps for the texture
  * @returns - The texture
  * @internal
  */
@@ -22,7 +22,8 @@ export function getPo2TextureFromSource(
     image: ImageLike | HTMLCanvasElement | ICanvas,
     width: number,
     height: number,
-    resolution: number
+    resolution: number,
+    autoGenerateMipmaps = false
 ): Texture
 {
     const bounds = tempBounds;
@@ -38,7 +39,7 @@ export function getPo2TextureFromSource(
         bounds.height,
         resolution,
         false,
-        TextureSource.defaultOptions.autoGenerateMipmaps
+        autoGenerateMipmaps
     );
 
     texture.source.uploadMethodId = 'image';

@@ -80,7 +80,7 @@ export abstract class AbstractTextSystem implements System
             options.text = options.text.toString();
         }
 
-        const { text, style, textureStyle } = options;
+        const { text, style, textureStyle, autoGenerateMipmaps } = options;
 
         const resolution = options.resolution ?? this._renderer.resolution;
 
@@ -90,7 +90,13 @@ export abstract class AbstractTextSystem implements System
             resolution,
         });
 
-        const texture = getPo2TextureFromSource(canvasAndContext.canvas, frame.width, frame.height, resolution);
+        const texture = getPo2TextureFromSource(
+            canvasAndContext.canvas,
+            frame.width,
+            frame.height,
+            resolution,
+            autoGenerateMipmaps
+        );
 
         if (textureStyle) texture.source.style = textureStyle as TextureStyle;
 
@@ -200,6 +206,7 @@ export abstract class AbstractTextSystem implements System
             style: text.style,
             resolution: text._resolution,
             textureStyle: text.textureStyle,
+            autoGenerateMipmaps: text.autoGenerateMipmaps,
         });
 
         this._activeTextures[textKey] = {
