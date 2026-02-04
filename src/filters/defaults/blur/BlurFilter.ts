@@ -451,4 +451,24 @@ export class BlurFilter extends Filter
         this._repeatEdgePixels = value;
         this.updatePadding();
     }
+
+    /**
+     * Returns a CSS filter string for Canvas2D rendering.
+     * @internal
+     */
+    public getCanvasFilterString(): string | null
+    {
+        const strengthX = this.strengthX;
+        const strengthY = this.strengthY;
+
+        if (!Number.isFinite(strengthX) || !Number.isFinite(strengthY))
+        {
+            return null;
+        }
+
+        const quality = Math.max(1, this.quality);
+        const blur = Math.max(0, ((strengthX + strengthY) / 2) / Math.sqrt(quality));
+
+        return `blur(${blur}px)`;
+    }
 }

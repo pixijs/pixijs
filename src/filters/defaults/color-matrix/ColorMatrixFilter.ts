@@ -57,6 +57,9 @@ export type ColorMatrix = ArrayFixed<number, 20>;
  */
 export class ColorMatrixFilter extends Filter
 {
+    private _canvasFilterParts: string[] | null = null;
+    private _pendingCanvasFilter: { part: string; multiply: boolean } | null = null;
+
     constructor(options: FilterOptions = {})
     {
         const colorMatrixUniforms = new UniformGroup({
@@ -125,6 +128,59 @@ export class ColorMatrixFilter extends Filter
 
         this.resources.colorMatrixUniforms.uniforms.uColorMatrix = newMatrix;
         this.resources.colorMatrixUniforms.update();
+
+        const pendingCanvasFilter = this._pendingCanvasFilter;
+
+        if (pendingCanvasFilter)
+        {
+            if (!this._canvasFilterParts || !pendingCanvasFilter.multiply)
+            {
+                this._canvasFilterParts = [];
+            }
+
+            this._canvasFilterParts.push(pendingCanvasFilter.part);
+        }
+        else
+        {
+            this._canvasFilterParts = null;
+        }
+
+        this._pendingCanvasFilter = null;
+    }
+
+    private _prepareCanvasFilter(part: string | null, multiply?: boolean): void
+    {
+        if (!part)
+        {
+            this._pendingCanvasFilter = null;
+
+            return;
+        }
+
+        this._pendingCanvasFilter = {
+            part,
+            multiply: !!multiply,
+        };
+    }
+
+    private _clampCanvasValue(value: number, min: number, max?: number): number | null
+    {
+        if (!Number.isFinite(value)) return null;
+
+        if (max !== undefined)
+        {
+            return Math.min(max, Math.max(min, value));
+        }
+
+        return Math.max(min, value);
+    }
+
+    private _isIdentityMatrix(matrix: ColorMatrix): boolean
+    {
+        return matrix[0] === 1 && matrix[1] === 0 && matrix[2] === 0 && matrix[3] === 0 && matrix[4] === 0
+            && matrix[5] === 0 && matrix[6] === 1 && matrix[7] === 0 && matrix[8] === 0 && matrix[9] === 0
+            && matrix[10] === 0 && matrix[11] === 0 && matrix[12] === 1 && matrix[13] === 0 && matrix[14] === 0
+            && matrix[15] === 0 && matrix[16] === 0 && matrix[17] === 0 && matrix[18] === 1 && matrix[19] === 0;
     }
 
     /**
@@ -211,6 +267,7 @@ export class ColorMatrixFilter extends Filter
      */
     public brightness(b: number, multiply: boolean): void
     {
+        const brightness = this._clampCanvasValue(b, 0);
         const matrix: ColorMatrix = [
             b, 0, 0, 0, 0,
             0, b, 0, 0, 0,
@@ -218,6 +275,10 @@ export class ColorMatrixFilter extends Filter
             0, 0, 0, 1, 0,
         ];
 
+        this._prepareCanvasFilter(
+            brightness === null ? null : `brightness(${brightness})`,
+            multiply
+        );
         this._loadMatrix(matrix, multiply);
     }
 
@@ -285,6 +346,7 @@ export class ColorMatrixFilter extends Filter
      */
     public greyscale(scale: number, multiply: boolean): void
     {
+        const grayscale = this._clampCanvasValue(scale, 0, 1);
         const matrix: ColorMatrix = [
             scale, scale, scale, 0, 0,
             scale, scale, scale, 0, 0,
@@ -292,6 +354,14 @@ export class ColorMatrixFilter extends Filter
             0, 0, 0, 1, 0,
         ];
 
+        let canvasPart: string | null = null;
+
+        if (grayscale !== null)
+        {
+            canvasPart = grayscale <= 0 ? 'brightness(0)' : 'grayscale(1)';
+        }
+
+        this._prepareCanvasFilter(canvasPart, multiply);
         this._loadMatrix(matrix, multiply);
     }
 
@@ -354,6 +424,7 @@ export class ColorMatrixFilter extends Filter
             0, 0, 0, 1, 0,
         ];
 
+        this._prepareCanvasFilter('grayscale(1)', multiply);
         this._loadMatrix(matrix, multiply);
     }
 
@@ -386,6 +457,10 @@ export class ColorMatrixFilter extends Filter
      */
     public hue(rotation: number, multiply: boolean): void
     {
+        const rotationDegrees = Number.isFinite(rotation) ? rotation : 0;
+
+        this._prepareCanvasFilter(`hue-rotate(${rotationDegrees}deg)`, multiply);
+
         rotation = (rotation || 0) / 180 * Math.PI;
 
         const cosR = Math.cos(rotation);
@@ -468,6 +543,12 @@ export class ColorMatrixFilter extends Filter
             0, 0, 0, 1, 0,
         ];
 
+        const contrast = this._clampCanvasValue(v, 0);
+
+        this._prepareCanvasFilter(
+            contrast === null ? null : `contrast(${contrast})`,
+            multiply
+        );
         this._loadMatrix(matrix, multiply);
     }
 
@@ -509,6 +590,12 @@ export class ColorMatrixFilter extends Filter
             0, 0, 0, 1, 0,
         ];
 
+        const saturation = this._clampCanvasValue(x, 0);
+
+        this._prepareCanvasFilter(
+            saturation === null ? null : `saturate(${saturation})`,
+            multiply
+        );
         this._loadMatrix(matrix, multiply);
     }
 
@@ -565,6 +652,7 @@ export class ColorMatrixFilter extends Filter
             0, 0, 0, 1, 0,
         ];
 
+        this._prepareCanvasFilter('invert(1)', multiply);
         this._loadMatrix(matrix, multiply);
     }
 
@@ -598,6 +686,7 @@ export class ColorMatrixFilter extends Filter
             0, 0, 0, 1, 0,
         ];
 
+        this._prepareCanvasFilter('sepia(1)', multiply);
         this._loadMatrix(matrix, multiply);
     }
 
@@ -1042,6 +1131,27 @@ export class ColorMatrixFilter extends Filter
     set matrix(value: ColorMatrix)
     {
         this.resources.colorMatrixUniforms.uniforms.uColorMatrix = value;
+    }
+
+    /**
+     * Returns a CSS filter string for Canvas2D rendering.
+     * @internal
+     */
+    public getCanvasFilterString(): string | null
+    {
+        const alpha = this.alpha;
+
+        if (!Number.isFinite(alpha) || Math.abs(alpha - 1) > 1e-6)
+        {
+            return null;
+        }
+
+        if (!this._canvasFilterParts || this._canvasFilterParts.length === 0)
+        {
+            return this._isIdentityMatrix(this.matrix) ? '' : null;
+        }
+
+        return this._canvasFilterParts.join(' ');
     }
 
     /**

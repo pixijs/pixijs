@@ -6,7 +6,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render nested filters correctly with proper positioning',
-    excludeRenderers: ['canvas'],
     create: async (scene: Container) =>
     {
         const container = new Container();

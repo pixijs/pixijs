@@ -6,7 +6,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should nested masks correctly',
-    excludeRenderers: ['canvas'],
     create: async (scene: Container) =>
     {
         const filter = new ColorMatrixFilter();

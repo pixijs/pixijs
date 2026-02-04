@@ -8,7 +8,6 @@ import type { Renderer } from '~/rendering';
 import type { Container } from '~/scene';
 
 export const scene: TestScene = {
-    excludeRenderers: ['canvas'],
     it: 'Filter should render correctly when a render texture frame is not  0, 0',
     create: async (scene: Container, renderer: Renderer) =>
     {
