@@ -1,6 +1,5 @@
-import { BitmapFont } from '../../../../src/scene/text-bitmap/BitmapFont';
 import { Assets } from '~/assets';
-import { BitmapText } from '~/scene';
+import { BitmapFont, BitmapText } from '~/scene';
 
 import type { TestScene } from '../../types';
 import type { Container } from '~/scene';

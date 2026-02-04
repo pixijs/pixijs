@@ -4,7 +4,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should alpha tint scenes correctly',
-    only: true,
     create: async (scene: Container) =>
     {
         // layer green container..

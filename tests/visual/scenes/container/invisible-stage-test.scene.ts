@@ -1,8 +1,7 @@
-import { type Container } from '../../../../src/scene/container/Container';
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
-import { Text } from '../../../../src/scene/text/Text';
+import { Graphics, Text } from '~/scene';
 
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should demonstrate stage visibility fix - invisible stage should render nothing',

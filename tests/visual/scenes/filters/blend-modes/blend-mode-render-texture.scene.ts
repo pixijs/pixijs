@@ -2,7 +2,7 @@ import '~/advanced-blend-modes/init';
 import { OverlayBlend } from '~/advanced-blend-modes';
 import { Container, Graphics, Sprite } from '~/scene';
 
-import type { TestScene } from '../../types';
+import type { TestScene } from '../../../types';
 import type { Renderer } from '~/rendering';
 
 export const scene: TestScene = {

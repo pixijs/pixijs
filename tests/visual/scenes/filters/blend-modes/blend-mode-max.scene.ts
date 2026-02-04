@@ -1,6 +1,6 @@
 import { Graphics } from '~/scene';
 
-import type { TestScene } from '../../types';
+import type { TestScene } from '../../../types';
 import type { Container } from '~/scene';
 
 export const scene: TestScene = {

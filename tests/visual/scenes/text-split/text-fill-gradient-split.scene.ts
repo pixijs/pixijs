@@ -1,6 +1,5 @@
 import { Assets } from '~/assets';
-import { SplitText, Text } from '~/scene';
-import { type Container, FillGradient, type TextureSpace } from '~/scene';
+import { type Container, FillGradient, SplitText, Text, type TextureSpace } from '~/scene';
 
 import type { TestScene } from '../../types';
 

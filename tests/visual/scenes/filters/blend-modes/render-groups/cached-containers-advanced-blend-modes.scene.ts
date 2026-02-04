@@ -1,4 +1,4 @@
-import { type TestScene } from '../../../types';
+import { type TestScene } from '../../../../types';
 import { Assets } from '~/assets';
 import { type BLEND_MODES, Texture } from '~/rendering';
 import { Container, Graphics, Sprite } from '~/scene';
