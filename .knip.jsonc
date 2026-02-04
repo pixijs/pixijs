@@ -30,6 +30,10 @@
         "http-server",
         // Used internaly as dependences like "node:*" or "worker:*"
         "node",
-        "worker"
+        "worker",
+        // Used in bump script
+        "semver",
+        "@types/semver",
+        "inquirer"
     ]
 }

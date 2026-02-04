@@ -1,6 +1,4 @@
-import { Container } from '../../../../src/scene/container/Container';
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
-import { Text } from '../../../../src/scene/text/Text';
+import { Container, Graphics, Text } from '~/scene';
 
 import type { TestScene } from '../../types';
 

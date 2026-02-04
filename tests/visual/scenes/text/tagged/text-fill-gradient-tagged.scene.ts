@@ -1,6 +1,5 @@
-import { Text } from '../../../../../src/scene/text/Text';
 import { Assets } from '~/assets';
-import { type Container, FillGradient, type TextureSpace } from '~/scene';
+import { type Container, FillGradient, Text, type TextureSpace } from '~/scene';
 
 import type { TestScene } from '../../../types';
 
