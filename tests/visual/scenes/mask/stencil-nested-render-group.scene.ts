@@ -5,7 +5,6 @@ import type { TestScene } from '../../types';
 import type { Container } from '~/scene';
 
 export const scene: TestScene = {
-    excludeRenderers: ['canvas'],
     it: 'should handle nested masks in render group correctly',
     create: async (scene: Container) =>
     {

@@ -36,9 +36,7 @@ function createHierarchy(scene: Container)
 }
 
 export const scene: TestScene = {
-    excludeRenderers: ['canvas'],
     it: 'should render nested containers',
-    // skip: true,
     create: async (scene: Container) =>
     {
         // Nested w/ scale/transforms
