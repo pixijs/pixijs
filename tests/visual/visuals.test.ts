@@ -40,9 +40,11 @@ function setAssetBasePath(): void
 {
     const branchPath = process.env.GITHUB_SHA ?? 'next-v8';
 
+    const serverPort = process.env.SERVER_PORT || '8080';
+
     const basePath = process.env.GITHUB_ACTIONS
         ? `https://raw.githubusercontent.com/pixijs/pixijs/${branchPath}/tests/visual/assets/`
-        : 'http://127.0.0.1:8080/tests/visual/assets/';
+        : `http://127.0.0.1:${serverPort}/tests/visual/assets/`;
 
     Assets.init({
         basePath,

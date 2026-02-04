@@ -6,9 +6,14 @@ module.exports = async function ()
 {
     if (!process.env.GITHUB_ACTIONS)
     {
+        const { default: getPort } = await import('get-port');
+        const port = await getPort();
+
+        process.env.SERVER_PORT = String(port);
+
         const httpServerProcess = spawn(
             'http-server',
-            ['-c-1', `${join(process.cwd(), './')}`],
+            ['-c-1', '-p', String(port), `${join(process.cwd(), './')}`],
             {
                 // See https://nodejs.org/api/child_process.html#spawning-bat-and-cmd-files-on-windows
                 shell: process.platform === 'win32',
