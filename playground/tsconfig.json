@@ -4,9 +4,11 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "strict": true,
+    "skipLibCheck": true,
+    "types": ["vite/client"],
     "paths": {
       "pixi.js": ["../src/index.ts"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "vite.config.ts"]
 }

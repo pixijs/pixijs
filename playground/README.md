@@ -29,7 +29,7 @@ A local development sandbox for testing PixiJS code during development.
 
 ## File Structure
 
-```
+```text
 playground/
 ├── src/
 │   ├── main.ts                  # Selector UI (don't edit)

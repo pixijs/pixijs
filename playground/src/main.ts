@@ -57,14 +57,17 @@ async function checkBuildStatus()
         if (response.ok)
         {
             const data = await response.json();
-            const newStatus = data.status;
+            const newStatus = data.status as string;
+
+            // Validate status is known before using it
+            if (!(newStatus in STATUS_CONFIG)) return;
 
             if (newStatus !== lastStatus)
             {
                 const wasCompiling = lastStatus === 'compiling';
 
                 lastStatus = newStatus;
-                updateStatusIndicator(newStatus);
+                updateStatusIndicator(newStatus as keyof typeof STATUS_CONFIG);
 
                 // If just finished compiling, reload to pick up changes
                 if (newStatus === 'ready' && wasCompiling)

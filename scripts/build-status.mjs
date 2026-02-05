@@ -26,3 +26,8 @@ else if (status === 'done')
         completedAt: Date.now()
     }));
 }
+else
+{
+    console.error('Usage: node scripts/build-status.mjs <start|done>');
+    process.exit(1);
+}

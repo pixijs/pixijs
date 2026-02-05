@@ -1,7 +1,9 @@
 import { existsSync, readFileSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
-import { defineConfig } from 'vite';
+import { defineConfig, type ViteDevServer } from 'vite';
+
+import type { IncomingMessage, ServerResponse } from 'http';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const buildStatusPath = resolve(__dirname, '../.build-status.json');
@@ -15,9 +17,9 @@ export default defineConfig({
     plugins: [
         {
             name: 'serve-build-status',
-            configureServer(server)
+            configureServer(server: ViteDevServer)
             {
-                server.middlewares.use((req, res, next) =>
+                server.middlewares.use((req: IncomingMessage, res: ServerResponse, next: () => void) =>
                 {
                     if (req.url?.startsWith('/.build-status.json'))
                     {
