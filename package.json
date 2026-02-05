@@ -44,7 +44,7 @@
     "dist": "run-s build docs && copyfiles -u 1 \"dist/**/*\" .s3_uploads/ && copyfiles -f dist/pixi.min.mjs dist/pixi.min.mjs.map .s3_uploads/docs/",
     "watch": "nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
     "watch:lib": "cross-env LIB_ONLY=1 nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
-    "watch:build": "run-s build:status:start build:tsc:silent build:index build:pkg build:pkg build:rollup build:dts build:status:done",
+    "watch:build": "run-s build:status:start build:tsc:silent build:index build:pkg build:rollup build:dts build:status:done",
     "build:status:start": "node ./scripts/build-status.mjs start",
     "build:status:done": "node ./scripts/build-status.mjs done",
     "test": "run-s test:unit test:scene",
