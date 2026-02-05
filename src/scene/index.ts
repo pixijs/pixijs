@@ -78,6 +78,7 @@ export * from './graphics/shared/utils/buildContextBatches';
 export * from './graphics/shared/utils/buildGeometryFromPath';
 export * from './graphics/shared/utils/convertFillInputToFillStyle';
 export * from './graphics/shared/utils/generateTextureFillMatrix';
+export * from './graphics/shared/utils/getMaxMiterRatio';
 export * from './graphics/shared/utils/getOrientationOfPoints';
 export * from './graphics/shared/utils/triangulateWithHoles';
 export * from './layers/RenderLayer';
