@@ -32,6 +32,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     {
         this._renderer = renderer;
         renderer.runners.resolutionChange.add(this);
+        renderer.runners.contextChange.add(this);
         this._managedTexts = new GCManagedHash({
             renderer,
             type: 'renderable',
@@ -50,6 +51,36 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
             {
                 text.onViewUpdate();
             }
+        }
+    }
+
+    /**
+     * Called when the WebGL/WebGPU context is restored after being lost.
+     * Forces all managed HTML text objects to regenerate their textures since
+     * the previous GPU textures were destroyed when the context was lost.
+     */
+    public contextChange(): void
+    {
+        for (const key in this._managedTexts.items)
+        {
+            const htmlText = this._managedTexts.items[key];
+
+            if (!htmlText) continue;
+
+            const gpuData = htmlText._gpuData[this._renderer.uid];
+
+            if (gpuData)
+            {
+                // Clear stale texture reference - the GPU texture was destroyed
+                // when context was lost, so reset to empty texture
+                gpuData.texture = Texture.EMPTY;
+                gpuData.texturePromise = null;
+                gpuData.currentKey = '--';
+                gpuData.generatingTexture = false;
+            }
+
+            // Force text to regenerate its texture on next render
+            htmlText._didTextUpdate = true;
         }
     }
 

@@ -28,6 +28,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
     {
         this._renderer = renderer;
         renderer.runners.resolutionChange.add(this);
+        renderer.runners.contextChange.add(this);
         this._managedTexts = new GCManagedHash({
             renderer,
             type: 'renderable',
@@ -43,6 +44,34 @@ export class CanvasTextPipe implements RenderPipe<Text>
             const text = this._managedTexts.items[key];
 
             if (text?._autoResolution) text.onViewUpdate();
+        }
+    }
+
+    /**
+     * Called when the WebGL/WebGPU context is restored after being lost.
+     * Forces all managed text objects to regenerate their textures since
+     * the previous GPU textures were destroyed when the context was lost.
+     */
+    public contextChange(): void
+    {
+        for (const key in this._managedTexts.items)
+        {
+            const text = this._managedTexts.items[key];
+
+            if (!text) continue;
+
+            const gpuData = text._gpuData[this._renderer.uid];
+
+            if (gpuData)
+            {
+                // Clear stale texture reference - the GPU texture was destroyed
+                // when context was lost, so we shouldn't try to release it
+                gpuData.texture = null;
+                gpuData.currentKey = '--';
+            }
+
+            // Force text to regenerate its texture on next render
+            text._didTextUpdate = true;
         }
     }
 
