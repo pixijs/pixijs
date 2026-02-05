@@ -1,8 +1,7 @@
-import { FillGradient } from '../../../../src/scene/graphics/shared/fill/FillGradient';
-import { Text } from '../../../../src/scene/text/Text';
+import { FillGradient, Text } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render multiline FillGradient in text and its stroke',
