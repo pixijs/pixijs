@@ -770,7 +770,7 @@ export class Ticker
     set minFPS(fps: number)
     {
         // Minimum must be below the maxFPS
-        const minFPS = Math.min(this.maxFPS, fps);
+        const minFPS = this.maxFPS ? Math.min(this.maxFPS, fps) : fps;
 
         // Must be at least 0, but below 1 / Ticker.targetFPMS
         const minFPMS = Math.min(Math.max(0, minFPS) / 1000, Ticker.targetFPMS);
