@@ -1427,7 +1427,12 @@ export class EventBoundary
         event.target = null;
 
         // Reset mouse/pointer-specific state to prevent stale modifier keys
-        // and button state from leaking between pooled event reuses
+        // and button state from leaking between pooled event reuses.
+        // Default values follow the W3C PointerEvent spec:
+        // - button: -1 (no button pressed, per pointermove spec)
+        // - buttons: 0 (no buttons active)
+        // - modifier keys: false
+        // @see https://w3c.github.io/pointerevents/#dom-pointerevent-button
         if (event instanceof FederatedMouseEvent)
         {
             event.altKey = false;

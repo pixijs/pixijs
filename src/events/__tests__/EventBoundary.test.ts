@@ -1,5 +1,6 @@
 import { EventBoundary } from '../EventBoundary';
 import { FederatedPointerEvent } from '../FederatedPointerEvent';
+import { FederatedMouseEvent } from '../FederatedMouseEvent';
 import { getApp } from '@test-utils';
 import { Container, Graphics } from '~/scene';
 
@@ -470,5 +471,158 @@ describe('EventBoundary', () =>
         expect(eventSpy2).not.toHaveBeenCalled();
         expect(eventSpy3).not.toHaveBeenCalled();
         expect(eventSpy4).not.toHaveBeenCalled();
+    });
+
+    describe('modifier keys & button state (issue #11879)', () =>
+    {
+        it('should default modifier keys to false and button to -1 on a fresh FederatedMouseEvent', () =>
+        {
+            const stage = new Container();
+            const boundary = new EventBoundary(stage);
+            const event = new FederatedPointerEvent(boundary);
+
+            expect(event.altKey).toBe(false);
+            expect(event.ctrlKey).toBe(false);
+            expect(event.metaKey).toBe(false);
+            expect(event.shiftKey).toBe(false);
+            expect(event.button).toBe(-1);
+            expect(event.buttons).toBe(0);
+        });
+
+        it('should propagate modifier keys through pointerdown dispatch', () =>
+        {
+            const stage = new Container();
+            const boundary = new EventBoundary(stage);
+            const target = stage.addChild(graphicsWithRect(0, 0, 100, 100));
+
+            target.interactive = true;
+
+            const receivedEvent = { altKey: false, ctrlKey: false, metaKey: false, shiftKey: false };
+            const eventSpy = jest.fn((e: FederatedPointerEvent) =>
+            {
+                receivedEvent.altKey = e.altKey;
+                receivedEvent.ctrlKey = e.ctrlKey;
+                receivedEvent.metaKey = e.metaKey;
+                receivedEvent.shiftKey = e.shiftKey;
+            });
+
+            target.addEventListener('pointerdown', eventSpy);
+
+            const event = new FederatedPointerEvent(boundary);
+
+            event.pointerId = 1;
+            event.button = 0;
+            event.type = 'pointerdown';
+            event.global.set(50, 50);
+            event.altKey = true;
+            event.ctrlKey = true;
+            event.metaKey = false;
+            event.shiftKey = true;
+
+            boundary.mapEvent(event);
+
+            expect(eventSpy).toHaveBeenCalledOnce();
+            expect(receivedEvent.altKey).toBe(true);
+            expect(receivedEvent.ctrlKey).toBe(true);
+            expect(receivedEvent.metaKey).toBe(false);
+            expect(receivedEvent.shiftKey).toBe(true);
+        });
+
+        it('should reset modifier keys on pooled event reuse via allocateEvent', () =>
+        {
+            const stage = new Container();
+            const boundary = new EventBoundary(stage);
+
+            // Allocate an event, set modifier keys, free it, then allocate again
+            const event1 = boundary.allocateEvent(FederatedPointerEvent);
+
+            event1.altKey = true;
+            event1.ctrlKey = true;
+            event1.metaKey = true;
+            event1.shiftKey = true;
+            event1.button = 2;
+            event1.buttons = 6;
+
+            boundary.freeEvent(event1);
+
+            // The next allocation should reuse the pooled event with reset state
+            const event2 = boundary.allocateEvent(FederatedPointerEvent);
+
+            expect(event2.altKey).toBe(false);
+            expect(event2.ctrlKey).toBe(false);
+            expect(event2.metaKey).toBe(false);
+            expect(event2.shiftKey).toBe(false);
+            expect(event2.button).toBe(-1);
+            expect(event2.buttons).toBe(0);
+        });
+
+        it('should propagate button and buttons correctly through dispatch', () =>
+        {
+            const stage = new Container();
+            const boundary = new EventBoundary(stage);
+            const target = stage.addChild(graphicsWithRect(0, 0, 100, 100));
+
+            target.interactive = true;
+
+            let receivedButton = -1;
+            let receivedButtons = 0;
+
+            target.addEventListener('pointerdown', (e: FederatedPointerEvent) =>
+            {
+                receivedButton = e.button;
+                receivedButtons = e.buttons;
+            });
+
+            const event = new FederatedPointerEvent(boundary);
+
+            event.pointerId = 1;
+            event.button = 2;
+            event.buttons = 2;
+            event.type = 'pointerdown';
+            event.global.set(50, 50);
+
+            boundary.mapEvent(event);
+
+            expect(receivedButton).toBe(2);
+            expect(receivedButtons).toBe(2);
+        });
+
+        it('should not leak modifier state between consecutive dispatches', () =>
+        {
+            const stage = new Container();
+            const boundary = new EventBoundary(stage);
+            const target = stage.addChild(graphicsWithRect(0, 0, 100, 100));
+
+            target.interactive = true;
+
+            const capturedModifiers: boolean[] = [];
+
+            target.addEventListener('pointermove', (e: FederatedPointerEvent) =>
+            {
+                capturedModifiers.push(e.ctrlKey);
+            });
+
+            // First event with ctrlKey = true
+            const event1 = new FederatedPointerEvent(boundary);
+
+            event1.pointerId = 1;
+            event1.type = 'pointermove';
+            event1.global.set(50, 50);
+            event1.ctrlKey = true;
+
+            boundary.mapEvent(event1);
+
+            // Second event with ctrlKey = false (default)
+            const event2 = new FederatedPointerEvent(boundary);
+
+            event2.pointerId = 1;
+            event2.type = 'pointermove';
+            event2.global.set(50, 50);
+            // ctrlKey defaults to false — not explicitly set
+
+            boundary.mapEvent(event2);
+
+            expect(capturedModifiers).toEqual([true, false]);
+        });
     });
 });

@@ -49,25 +49,51 @@ export class FederatedMouseEvent extends FederatedEvent<
 MouseEvent | PointerEvent | PixiTouch
 > implements MouseEvent
 {
-    /** Whether the "alt" key was pressed when this mouse event occurred. */
+    /**
+     * Whether the "alt" key was pressed when this mouse event occurred.
+     * @default false
+     */
     public altKey: boolean = false;
 
-    /** The specific button that was pressed in this mouse event. */
+    /**
+     * The specific button that was pressed in this mouse event.
+     *
+     * Values: 0 (primary/left), 1 (auxiliary/middle), 2 (secondary/right),
+     * -1 (no button action, default for pointermove events).
+     * @default -1
+     * @see https://w3c.github.io/pointerevents/#dom-pointerevent-button
+     */
     public button: number = -1;
 
-    /** The button depressed when this event occurred. */
+    /**
+     * A bitmask indicating which buttons are currently depressed.
+     *
+     * Values: 0 (none), 1 (primary), 2 (secondary), 4 (auxiliary),
+     * or a combination using bitwise OR.
+     * @default 0
+     * @see https://w3c.github.io/pointerevents/#dom-pointerevent-buttons
+     */
     public buttons: number = 0;
 
-    /** Whether the "control" key was pressed when this mouse event occurred. */
+    /**
+     * Whether the "control" key was pressed when this mouse event occurred.
+     * @default false
+     */
     public ctrlKey: boolean = false;
 
-    /** Whether the "meta" key was pressed when this mouse event occurred. */
+    /**
+     * Whether the "meta" key (⌘ on macOS, ⊞ on Windows) was pressed when this mouse event occurred.
+     * @default false
+     */
     public metaKey: boolean = false;
 
     /** This is currently not implemented in the Federated Events API. */
     public relatedTarget: EventTarget;
 
-    /** Whether the "shift" key was pressed when this mouse event occurred. */
+    /**
+     * Whether the "shift" key was pressed when this mouse event occurred.
+     * @default false
+     */
     public shiftKey: boolean = false;
 
     /** The coordinates of the mouse event relative to the canvas. */
@@ -174,7 +200,11 @@ MouseEvent | PointerEvent | PixiTouch
 
     /**
      * Whether the modifier key was pressed when this event natively occurred.
-     * @param key - The modifier key.
+     *
+     * Delegates to the native event's `getModifierState` if available.
+     * @param key - The modifier key identifier (e.g. `"Alt"`, `"Control"`, `"Meta"`, `"Shift"`).
+     * @returns `true` if the modifier key was active during the native event, `false` otherwise.
+     * @see https://w3c.github.io/uievents/#dom-keyboardevent-getmodifierstate
      */
     public getModifierState(key: string): boolean
     {

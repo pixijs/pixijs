@@ -994,7 +994,8 @@ export class EventSystem implements System<EventSystemOptions>
                 if (typeof touch.layerY === 'undefined') touch.layerY = touch.offsetY = touch.clientY;
 
                 // Copy modifier keys from the parent TouchEvent, as individual Touch objects
-                // do not carry modifier key state (W3C Touch Events spec)
+                // do not carry modifier key state per the W3C Touch Events specification.
+                // @see https://w3c.github.io/touch-events/#touchevent-interface
                 if (typeof touch.altKey === 'undefined') touch.altKey = event.altKey;
                 if (typeof touch.ctrlKey === 'undefined') touch.ctrlKey = event.ctrlKey;
                 if (typeof touch.metaKey === 'undefined') touch.metaKey = event.metaKey;
@@ -1118,8 +1119,18 @@ export class EventSystem implements System<EventSystemOptions>
 
     /**
      * Transfers base & mouse event data from the `nativeEvent` to the federated event.
-     * @param event
-     * @param nativeEvent
+     *
+     * The following properties are copied from the native event:
+     * + isTrusted
+     * + srcElement
+     * + type
+     * + altKey, ctrlKey, metaKey, shiftKey
+     * + button, buttons
+     * + clientX, clientY
+     * + movementX, movementY
+     * + pageX, pageY
+     * @param event - The federated mouse event to populate.
+     * @param nativeEvent - The native DOM MouseEvent to transfer data from.
      */
     private _transferMouseData(event: FederatedMouseEvent, nativeEvent: MouseEvent): void
     {
@@ -1144,12 +1155,24 @@ export class EventSystem implements System<EventSystemOptions>
     }
 }
 
+/**
+ * Cross-browser CSS style declaration with vendor-prefixed Microsoft touch properties.
+ * Used internally to configure touch-action and content-zooming on the event target element.
+ * @internal
+ */
 interface CrossCSSStyleDeclaration extends CSSStyleDeclaration
 {
     msContentZooming: string;
     msTouchAction: string;
 }
 
+/**
+ * Extended PointerEvent interface used by PixiJS during pointer event normalization.
+ *
+ * Adds the `isNormalized` flag to track whether the event has already been
+ * processed through {@link EventSystem._normalizeToPointerData}.
+ * @internal
+ */
 interface PixiPointerEvent extends PointerEvent
 {
     isPrimary: boolean;
