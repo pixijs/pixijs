@@ -50,25 +50,25 @@ MouseEvent | PointerEvent | PixiTouch
 > implements MouseEvent
 {
     /** Whether the "alt" key was pressed when this mouse event occurred. */
-    public altKey: boolean;
+    public altKey: boolean = false;
 
     /** The specific button that was pressed in this mouse event. */
-    public button: number;
+    public button: number = -1;
 
     /** The button depressed when this event occurred. */
-    public buttons: number;
+    public buttons: number = 0;
 
     /** Whether the "control" key was pressed when this mouse event occurred. */
-    public ctrlKey: boolean;
+    public ctrlKey: boolean = false;
 
     /** Whether the "meta" key was pressed when this mouse event occurred. */
-    public metaKey: boolean;
+    public metaKey: boolean = false;
 
     /** This is currently not implemented in the Federated Events API. */
     public relatedTarget: EventTarget;
 
     /** Whether the "shift" key was pressed when this mouse event occurred. */
-    public shiftKey: boolean;
+    public shiftKey: boolean = false;
 
     /** The coordinates of the mouse event relative to the canvas. */
     public client: Point = new Point();

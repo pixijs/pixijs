@@ -993,6 +993,13 @@ export class EventSystem implements System<EventSystemOptions>
                 if (typeof touch.layerX === 'undefined') touch.layerX = touch.offsetX = touch.clientX;
                 if (typeof touch.layerY === 'undefined') touch.layerY = touch.offsetY = touch.clientY;
 
+                // Copy modifier keys from the parent TouchEvent, as individual Touch objects
+                // do not carry modifier key state (W3C Touch Events spec)
+                if (typeof touch.altKey === 'undefined') touch.altKey = event.altKey;
+                if (typeof touch.ctrlKey === 'undefined') touch.ctrlKey = event.ctrlKey;
+                if (typeof touch.metaKey === 'undefined') touch.metaKey = event.metaKey;
+                if (typeof touch.shiftKey === 'undefined') touch.shiftKey = event.shiftKey;
+
                 // mark the touch as normalized, just so that we know we did it
                 touch.isNormalized = true;
                 touch.type = event.type;

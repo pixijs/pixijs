@@ -1426,6 +1426,18 @@ export class EventBoundary
         event.path = null;
         event.target = null;
 
+        // Reset mouse/pointer-specific state to prevent stale modifier keys
+        // and button state from leaking between pooled event reuses
+        if (event instanceof FederatedMouseEvent)
+        {
+            event.altKey = false;
+            event.button = -1;
+            event.buttons = 0;
+            event.ctrlKey = false;
+            event.metaKey = false;
+            event.shiftKey = false;
+        }
+
         return event;
     }
 

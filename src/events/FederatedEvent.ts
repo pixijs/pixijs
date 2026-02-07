@@ -79,6 +79,18 @@ export interface PixiTouch extends Touch
 
     /** The type of touch event */
     type: string;
+
+    /** Whether the "alt" key was pressed when this touch event occurred. */
+    altKey?: boolean;
+
+    /** Whether the "ctrl" key was pressed when this touch event occurred. */
+    ctrlKey?: boolean;
+
+    /** Whether the "meta" key was pressed when this touch event occurred. */
+    metaKey?: boolean;
+
+    /** Whether the "shift" key was pressed when this touch event occurred. */
+    shiftKey?: boolean;
 }
 
 /**
