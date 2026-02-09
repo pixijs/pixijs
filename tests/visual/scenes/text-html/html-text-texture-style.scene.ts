@@ -1,3 +1,4 @@
+import { setTimeout } from 'node:timers/promises';
 import { HTMLText } from '~/scene';
 
 import type { TestScene } from '../../types';
@@ -26,6 +27,6 @@ export const scene: TestScene = {
         text.scale = 10;
 
         renderer.render(scene);
-        await new Promise((resolve) => setTimeout(resolve, 350));
+        await setTimeout(350);
     },
 };

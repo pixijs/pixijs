@@ -1,5 +1,7 @@
+import { setTimeout } from 'node:timers/promises';
+
 export function nextTick(): Promise<void>
 {
-    return new Promise((resolve) => setTimeout(resolve, 0));
+    return setTimeout(0);
 }
 

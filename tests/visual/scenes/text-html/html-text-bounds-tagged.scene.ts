@@ -1,3 +1,4 @@
+import { setTimeout } from 'node:timers/promises';
 import { Assets } from '~/assets';
 import { Graphics, HTMLText } from '~/scene';
 
@@ -66,6 +67,6 @@ export const scene: TestScene = {
         scene.addChild(textRect2);
 
         renderer.render(scene);
-        await new Promise((resolve) => setTimeout(resolve, 350));
+        await setTimeout(350);
     },
 };

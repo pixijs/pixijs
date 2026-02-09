@@ -1,3 +1,4 @@
+import { setTimeout } from 'node:timers/promises';
 import { BitmapText, Text, TextStyle } from '~/scene';
 
 import type { TestScene } from '../../types';
@@ -18,7 +19,7 @@ export const scene: TestScene = {
         scene.addChild(text1);
         scene.addChild(text2);
 
-        const delay = () => new Promise((resolve) => setTimeout(resolve, 200));
+        const delay = () => setTimeout(200);
         const setText = (text: string) =>
         {
             bText1.text = `B${text}`;
