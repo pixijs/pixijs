@@ -1,5 +1,5 @@
-import { type NOOP } from '../../../../utils/misc/NOOP';
 import { GCSystem } from '../GCSystem';
+import { type NOOP } from '~/utils';
 
 import type { Renderer } from '../../types';
 import type { GCable, GCSystemOptions } from '../GCSystem';

@@ -1,7 +1,7 @@
-import { Application } from '../../app/Application';
 import { Culler } from '../Culler';
 import { CullerPlugin } from '../CullerPlugin';
 import { basePath } from '@test-utils';
+import { Application } from '~/app';
 import { Assets, loadTextures } from '~/assets';
 import { extensions } from '~/extensions';
 import { AlphaFilter } from '~/filters';

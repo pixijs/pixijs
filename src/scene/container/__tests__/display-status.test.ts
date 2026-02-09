@@ -1,5 +1,5 @@
-import { Application } from '../../../app/Application';
 import { Container } from '../Container';
+import { Application } from '~/app';
 
 describe('Container Display Status', () =>
 {
