@@ -30,7 +30,7 @@ export class ScissorMask implements Effect, PoolItem
     };
 
     public priority = 0;
-    public mask: Container;
+    public mask: Container | null = null;
     public pipe = 'scissorMask';
 
     constructor(options?: {mask: Container})
@@ -48,9 +48,9 @@ export class ScissorMask implements Effect, PoolItem
         this.mask.measurable = false;
     }
 
-    public reset()
+    public reset(): void
     {
-        if (this.mask === null) return;
+        if (!this.mask) return;
         this.mask.measurable = true;
         this.mask.includeInBuild = true;
         this.mask = null;
@@ -91,6 +91,11 @@ export class ScissorMask implements Effect, PoolItem
     public static test(mask: any): boolean
     {
         if (!(mask instanceof Graphics)) return false;
+
+        // Check that the mask's world transform is axis-aligned (no rotation or skew)
+        const wt = mask.worldTransform;
+
+        if (wt.b !== 0 || wt.c !== 0) return false;
 
         const context = mask.context;
 

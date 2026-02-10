@@ -116,6 +116,8 @@ export class ScissorMaskPipe implements InstructionPipe<ScissorMaskInstruction>
 
         const localRect = ScissorMask.getLocalRect(maskContainer);
 
+        if (!localRect) return new Rectangle(0, 0, 0, 0);
+
         // Get the world transform of the mask
         const wt = maskContainer.worldTransform;
 

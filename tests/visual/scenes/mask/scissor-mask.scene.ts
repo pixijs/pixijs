@@ -6,7 +6,7 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render scissor mask',
-    create: async (scene: Container) =>
+    create: async (scene: Container, _renderer) =>
     {
         const rect = new Graphics()
             .rect(0, 0, 128, 128)
