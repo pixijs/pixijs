@@ -171,7 +171,7 @@ export const loadWebFont = {
             {
                 const weight = weights[i];
 
-                const font = new FontFace(name, `url(${encodeURIWhenNeeded(url)})`, {
+                const font = new FontFace(name, `url('${encodeURIWhenNeeded(url)}')`, {
                     ...data,
                     weight,
                 });

@@ -6,6 +6,7 @@ import config from '@pixi/eslint-config';
 import requireExport from './scripts/plugins/eslint-require-export.mjs';
 import requireMemberAPI from './scripts/plugins/eslint-require-modifier.mjs';
 import stylistic from '@stylistic/eslint-plugin';
+import requireTildeImports from './scripts/plugins/eslint-require-tilde-imports.mjs';
 
 export default tseslint.config(
     ...config,
@@ -140,6 +141,15 @@ export default tseslint.config(
                     additionalTestBlockFunctions: [''],
                 },
             ],
+        },
+    },
+    {
+        files: ['**/*.test.ts', '**/*.scene.ts'],
+        plugins: {
+            requireTildeImports,
+        },
+        rules: {
+            'requireTildeImports/require-tilde-imports': 'error',
         },
     },
     {
