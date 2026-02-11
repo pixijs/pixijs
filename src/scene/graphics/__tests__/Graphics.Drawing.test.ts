@@ -189,6 +189,28 @@ describe('Graphics Drawing', () =>
         });
     });
 
+    describe('getLocalBounds', () =>
+    {
+        it('should return updated bounds when called between graphics operations in the same frame', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.rect(0, 0, 50, 50).fill(0xFF0000);
+
+            const bounds1 = graphics.getLocalBounds();
+
+            expect(bounds1.width).toBe(50);
+            expect(bounds1.height).toBe(50);
+
+            graphics.rect(0, 0, 100, 100).fill(0xFF0000);
+
+            const bounds2 = graphics.getLocalBounds();
+
+            expect(bounds2.width).toBe(100);
+            expect(bounds2.height).toBe(100);
+        });
+    });
+
     describe('lineStyle', () =>
     {
         it('should support a list of parameters', () =>

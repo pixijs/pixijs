@@ -1079,15 +1079,9 @@ export class GraphicsContext extends EventEmitter<{
 
     protected onUpdate(): void
     {
-        // Every time the content is updated - we must invalidate bounds, regardless rendering `dirty` state.
-        // Bounds can be read multiple times per frame.
         this._boundsDirty = true;
-
-        // Visual updates happen only once per frame.
-        // There is no need to dispatch an `update` in if it was already dispatched this frame.
-        if (this.dirty) return;
-        this.emit('update', this, 0x10);
         this.dirty = true;
+        this.emit('update', this, 0x10);
     }
 
     /** The bounds of the graphic shape. */
