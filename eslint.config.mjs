@@ -5,8 +5,8 @@ import tseslint from 'typescript-eslint';
 import config from '@pixi/eslint-config';
 import requireExport from './scripts/plugins/eslint-require-export.mjs';
 import requireMemberAPI from './scripts/plugins/eslint-require-modifier.mjs';
-import stylistic from '@stylistic/eslint-plugin';
 import requireTildeImports from './scripts/plugins/eslint-require-tilde-imports.mjs';
+import stylistic from '@stylistic/eslint-plugin';
 
 export default tseslint.config(
     ...config,
