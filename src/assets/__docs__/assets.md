@@ -1,6 +1,7 @@
 ---
 title: Overview
 category: assets
+description: Learn how to load, cache, and manage assets in PixiJS using the Assets API, including textures, fonts, spritesheets, and bundles with format detection and background loading.
 children:
   - ./resolver.md
   - ./manifest.md

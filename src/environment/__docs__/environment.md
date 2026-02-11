@@ -1,6 +1,7 @@
 ---
 title: Overview
 category: environment
+description: Learn how to configure PixiJS for different environments including browsers, Web Workers, and custom platforms using the DOMAdapter system.
 ---
 
 # Environment
