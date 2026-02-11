@@ -5,9 +5,11 @@
     "moduleResolution": "bundler",
     "strict": true,
     "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
     "types": ["vite/client"],
     "paths": {
-      "pixi.js": ["../src/index.ts"]
+      "pixi.js": ["../../src/index.ts"]
     }
   },
   "include": ["src", "vite.config.ts"]

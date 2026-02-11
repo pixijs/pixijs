@@ -26,8 +26,7 @@
   ],
   "scripts": {
     "prepare": "husky install",
-    "start": "run-s watch",
-    "dev": "run-p watch playground:dev",
+    "start": "run-p watch:lib playground:dev",
     "playground:dev": "npm run dev --prefix playground",
     "clean": "run-s clean:*",
     "clean:build": "rimraf \"{lib,dist}\" --glob",

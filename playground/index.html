@@ -2,9 +2,11 @@
 <html>
 <head>
   <title>PixiJS Playground</title>
-  <style>body { margin: 0; }</style>
+  <style>body { margin: 0; overflow: hidden; width: 100vw; height: 100vh; background: #1a1a2e; }</style>
 </head>
 <body>
-  <script type="module" src="/src/main.ts"></script>
+  <div id="viewer"></div>
+  <div id="app" style="position:fixed;top:0;left:0;width:0;height:0;overflow:visible;z-index:9000;pointer-events:none;"></div>
+  <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

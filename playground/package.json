@@ -6,7 +6,12 @@
     "dev": "vite",
     "build": "vite build"
   },
+  "dependencies": {
+    "preact": "^10.25.0",
+    "pixelmatch": "^6.0.0"
+  },
   "devDependencies": {
+    "@preact/preset-vite": "^2.9.0",
     "vite": "^6.0.0",
     "typescript": "^5.0.0"
   }

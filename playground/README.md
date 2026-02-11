@@ -32,7 +32,7 @@ A local development sandbox for testing PixiJS code during development.
 ```text
 playground/
 ├── src/
-│   ├── main.ts                  # Selector UI (don't edit)
+│   ├── main.tsx                 # Selector UI (don't edit)
 │   ├── default.playground.ts    # Example template
 │   └── *.playground.ts          # Your test files (gitignored)
 └── assets/
