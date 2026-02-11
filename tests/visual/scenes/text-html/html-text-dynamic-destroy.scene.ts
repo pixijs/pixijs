@@ -35,7 +35,7 @@ export const scene: TestScene = {
         scene.addChild(container);
 
         renderer.render(scene);
-        await new Promise((resolve) => setTimeout(resolve, 250));
+        await new Promise((resolve) => setTimeout(resolve, 350));
         container.destroy({ children: true });
 
         container = new Container();
@@ -66,6 +66,6 @@ export const scene: TestScene = {
         container.addChild(text2);
         scene.addChild(container);
         renderer.render(scene);
-        await new Promise((resolve) => setTimeout(resolve, 250));
+        await new Promise((resolve) => setTimeout(resolve, 350));
     },
 };

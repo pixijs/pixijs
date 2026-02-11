@@ -35,10 +35,10 @@ export const scene: TestScene = {
         scene.addChild(text);
 
         renderer.render(scene);
-        await new Promise((resolve) => setTimeout(resolve, 250));
+        await new Promise((resolve) => setTimeout(resolve, 350));
         text.style.dropShadow.color = 'green';
 
         renderer.render(scene);
-        await new Promise((resolve) => setTimeout(resolve, 250));
+        await new Promise((resolve) => setTimeout(resolve, 350));
     },
 };

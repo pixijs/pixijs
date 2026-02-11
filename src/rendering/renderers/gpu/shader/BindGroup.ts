@@ -95,11 +95,7 @@ export class BindGroup
 
         if (resource === currentResource) return;
 
-        if (currentResource)
-        {
-            resource.off?.('change', this.onResourceChange, this);
-        }
-
+        currentResource?.off?.('change', this.onResourceChange, this);
         resource.on?.('change', this.onResourceChange, this);
 
         this.resources[index] = resource;
