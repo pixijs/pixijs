@@ -117,21 +117,62 @@ export class BlurFilterPass extends Filter
     {
         if (this.legacy)
         {
-            this._uniforms.uStrength = this.strength / this.passes;
+            this._applyLegacy(filterManager, input, output, clearMode);
         }
         else
         {
-            let sumOfSquares = 1;
-            let coefficient = 0.5;
+            this._applyOptimized(filterManager, input, output, clearMode);
+        }
+    }
 
-            for (let i = 1; i < this.passes; i++)
+    private _applyLegacy(
+        filterManager: FilterSystem,
+        input: Texture,
+        output: RenderSurface,
+        clearMode: boolean
+    ): void
+    {
+        this._uniforms.uStrength = this.strength / this.passes;
+
+        if (this.passes === 1)
+        {
+            filterManager.applyFilter(this, input, output, clearMode);
+        }
+        else
+        {
+            const tempTexture = TexturePool.getSameSizeTexture(input);
+
+            let flip = input;
+            let flop = tempTexture;
+
+            this._state.blend = false;
+
+            const shouldClear = filterManager.renderer.type === RendererType.WEBGPU;
+
+            for (let i = 0; i < this.passes - 1; i++)
             {
-                sumOfSquares += coefficient * coefficient;
-                coefficient *= 0.5;
+                filterManager.applyFilter(this, flip, flop, i === 0 ? true : shouldClear);
+
+                const temp = flop;
+
+                flop = flip;
+                flip = temp;
             }
 
-            this._uniforms.uStrength = this.strength / Math.sqrt(sumOfSquares);
+            this._state.blend = true;
+            filterManager.applyFilter(this, flip, output, clearMode);
+            TexturePool.returnTexture(tempTexture);
         }
+    }
+
+    private _applyOptimized(
+        filterManager: FilterSystem,
+        input: Texture,
+        output: RenderSurface,
+        clearMode: boolean
+    ): void
+    {
+        this._uniforms.uStrength = this._calculateInitialStrength();
 
         if (this.passes === 1)
         {
@@ -149,32 +190,23 @@ export class BlurFilterPass extends Filter
             const renderer = filterManager.renderer;
 
             const isWebGPU = renderer.type === RendererType.WEBGPU;
-            const uboBatcher = (!this.legacy && isWebGPU)
-                ? (renderer as WebGPURenderer).renderPipes.uniformBatch
-                : null;
+            const uboBatcher = isWebGPU ? (renderer as WebGPURenderer).renderPipes.uniformBatch : null;
 
             for (let i = 0; i < this.passes - 1; i++)
             {
-                // For WebGPU, use the UBO batcher to ensure each pass gets its own uniform values
-                // This is needed because writeBuffer executes immediately but draws are batched
                 if (uboBatcher)
                 {
                     this.groups[1].setResource(uboBatcher.getUboResource(this._blurUniforms), 0);
                 }
 
-                const passClear = (this.legacy && i === 0) || isWebGPU;
-
-                filterManager.applyFilter(this, flip, flop, passClear);
+                filterManager.applyFilter(this, flip, flop, isWebGPU);
 
                 const temp = flop;
 
                 flop = flip;
                 flip = temp;
 
-                if (!this.legacy)
-                {
-                    this._uniforms.uStrength *= 0.5;
-                }
+                this._uniforms.uStrength *= 0.5;
             }
 
             if (uboBatcher)
@@ -186,6 +218,27 @@ export class BlurFilterPass extends Filter
             filterManager.applyFilter(this, flip, output, clearMode);
             TexturePool.returnTexture(tempTexture);
         }
+    }
+
+    /**
+     * Calculates the initial strength for the first blur pass so that the combined
+     * effect of all passes matches the filter's target strength.
+     *
+     * Uses variance addition property: for Gaussian blurs, σ_combined² = Σσᵢ²
+     * With halving scheme (s, s/2, s/4, ...), sum of squared coefficients = 4/3
+     */
+    private _calculateInitialStrength(): number
+    {
+        let sumOfSquares = 1;
+        let coefficient = 0.5;
+
+        for (let i = 1; i < this.passes; i++)
+        {
+            sumOfSquares += coefficient * coefficient;
+            coefficient *= 0.5;
+        }
+
+        return this.strength / Math.sqrt(sumOfSquares);
     }
 
     /**
