@@ -6,6 +6,7 @@
         "**/lib/**",
         "**/out/**",
         "examples",
-        "src/**/__docs__/examples"
+        "src/**/__docs__/examples",
+        "playground"
     ]
 }

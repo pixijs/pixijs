@@ -1,16 +1,33 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "strict": true,
-    "skipLibCheck": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable", "WebWorker"],
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
-    "types": ["vite/client"],
+
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "..",
     "paths": {
-      "pixi.js": ["../../src/index.ts"]
-    }
+      "pixi.js": ["./src/index.ts"],
+      "pixi.js/*": ["./src/*"],
+      "~/*": ["./src/*"]
+    },
+
+    "strict": true,
+    "strictNullChecks": false,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    "downlevelIteration": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "types": ["vite/client", "node", "@webgpu/types"]
   },
-  "include": ["src", "vite.config.ts"]
+  "include": [".", "../types", "../src/**/*.d.ts"]
 }
