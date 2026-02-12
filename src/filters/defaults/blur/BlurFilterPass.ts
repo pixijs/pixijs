@@ -129,7 +129,6 @@ export class BlurFilterPass extends Filter
 
             const isWebGPU = renderer.type === RendererType.WEBGPU;
             const uboBatcher = isWebGPU ? (renderer as WebGPURenderer).renderPipes.uniformBatch : null;
-            const shouldClear = filterManager.renderer.type === RendererType.WEBGPU;
 
             for (let i = 0; i < this.passes - 1; i++)
             {
@@ -140,7 +139,7 @@ export class BlurFilterPass extends Filter
                     this.groups[1].setResource(uboBatcher.getUboResource(this._blurUniforms), 0);
                 }
 
-                filterManager.applyFilter(this, flip, flop, i === 0 ? true : shouldClear);
+                filterManager.applyFilter(this, flip, flop, isWebGPU);
 
                 const temp = flop;
 
