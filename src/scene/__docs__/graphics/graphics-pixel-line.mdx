@@ -1,0 +1,144 @@
+---
+title: Graphics Pixel Line
+description: Learn how to use the pixelLine property in PixiJS Graphics API to create crisp, pixel-perfect lines that remain consistent under scaling and transformations.
+category: scene
+---
+
+# Pixel Lines
+
+Normal stroked lines get thicker when you scale a Graphics object. Setting `pixelLine: true` on a stroke keeps lines exactly 1 screen pixel wide regardless of any transforms, zoom, or scaling applied to the object.
+
+---
+
+@stackblitz(pixelLine)
+
+## Basic usage
+
+```ts
+// Create a Graphics object and draw a pixel-perfect line
+let graphics = new Graphics().moveTo(0, 0).lineTo(100, 100).stroke({ color: 0xff0000, pixelLine: true });
+
+// Add it to the stage
+app.stage.addChild(graphics);
+
+// Even if we scale the Graphics object, the line remains 1 pixel wide
+graphics.scale.set(2);
+```
+
+In this example, no matter how you transform or zoom the `Graphics` object, the red line will always appear 1 pixel thick on the screen.
+
+---
+
+## Why use `pixelLine`?
+
+Common use cases:
+
+### 1. **Retro or pixel art games**
+
+- Pixel art games need sharp, precise visuals. `pixelLine` ensures lines don't blur or scale inconsistently.
+- Example: pixel-perfect grids for tile-based maps.
+
+```ts
+const grid = new Graphics();
+
+for (let i = 0; i < 10; i++) {
+  grid.moveTo(i * 10, 0).lineTo(i * 10, 100); // vertical
+  grid.moveTo(0, i * 10).lineTo(100, i * 10); // horizontal
+}
+
+grid.stroke({ color: 0xffffff, pixelLine: true });
+```
+
+---
+
+### 2. **UI and HUD elements**
+
+- For borders, separators, or underlines, a consistent 1-pixel thickness provides a clean look.
+- Example: a separator line in a menu or a progress bar border.
+
+```ts
+// Create a separator line that will always be 1 pixel thick
+const separator = new Graphics()
+  // Start at x=0, y=50
+  .moveTo(0, 50)
+  // Draw a horizontal line 200 pixels to the right
+  .lineTo(200, 50)
+  // Stroke in green with pixel-perfect 1px width
+  .stroke({ color: 0x00ff00, pixelLine: true });
+```
+
+---
+
+### 3. **Debugging and prototyping**
+
+- Pixel-perfect lines are useful for debugging layouts, collision boxes, or grids. Since they don't scale, they provide a consistent reference point.
+- Example: displaying collision boundaries in a physics-based game.
+
+```ts
+// Create a debug box with pixel-perfect stroke
+const graphicsBox = new Graphics().rect(0, 0, 100, 100).stroke({ color: 0xff00ff, pixelLine: true });
+
+/**
+ * Updates the debug box to match the bounds of a given object
+ * @param {Container} obj - The object to draw bounds for
+ */
+function drawDebugBounds(obj) {
+  // Get the bounds of the object
+  const bounds = obj.getBounds();
+
+  // Position and scale the debug box to match the bounds
+  // this is faster than using `moveTo` and `lineTo` each frame!
+  graphicsBox.position.set(bounds.x, bounds.y);
+  graphicsBox.scale.set(bounds.width / 100, bounds.height / 100);
+}
+```
+
+---
+
+## How it works
+
+Under the hood, `pixelLine` uses WebGL or WebGPU's native line rendering methods.
+
+Pixel lines are faster to draw than regular lines for two reasons:
+
+1. **Simpler drawing process**: Regular lines require extra steps. PixiJS calculates line thickness and builds a shape from triangles.
+
+2. **Direct line drawing**: With `pixelLine`, the GPU draws a line from point A to point B directly, skipping triangle construction.
+
+## Caveats and gotchas
+
+### 1. **Always 1px thick**
+
+- The line is always 1px thick. There's no way to change this because the GPU draws the line directly.
+
+### 2. **Hardware may render differently**
+
+- Different GPUs may render the line with slight variations in position or anti-aliasing. This is an inherent limitation of GPU line rendering.
+
+### 3. **Scaling behavior**
+
+- Line thickness remains constant, but other properties (position, start/end points) are still affected by scaling. This can create unexpected results when combined with other scaled objects.
+
+### Example: box with pixel-perfect stroke
+
+A filled box with a pixel-perfect stroke. The box scales, but the stroke remains 1 pixel wide:
+
+```ts
+// Create a Graphics object and draw a filled box with a pixel-perfect stroke
+let box = new Graphics().rect(0, 0, 100, 100).fill('white').stroke({ color: 0xff0000, pixelLine: true });
+
+// Add it to the stage
+app.stage.addChild(box);
+
+// Scale the box
+box.scale.set(2);
+```
+
+The box grows as it scales, but the red stroke stays at 1 pixel thickness.
+
+---
+
+## When to avoid `pixelLine`
+
+- You want a line thicker than 1px.
+- You want the line to scale with the object.

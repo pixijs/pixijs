@@ -24,6 +24,8 @@ directories.forEach((directory) =>
             '**/index.ts',
             // Tests
             '**/__tests__/**',
+            // Docs / examples (internal only, not part of public API)
+            '**/__docs__/**',
             // ignore documents
             '**/_documents/*.md',
         ],

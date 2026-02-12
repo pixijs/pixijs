@@ -1,0 +1,16 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+        "noImplicitAny": false,
+        "noEmit": true,
+        "baseUrl": "..",
+        "paths": {
+            "pixi.js": ["./src/index.ts"],
+            "pixi.js/*": ["./src/*"],
+            "~/*": ["./src/*"]
+        }
+    },
+    "include": [".", "../types", "../src/**/*.d.ts", "../src/**/__docs__/examples"],
+}
