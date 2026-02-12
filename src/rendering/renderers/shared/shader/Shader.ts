@@ -71,7 +71,7 @@ export interface ShaderWithGroupsDescriptor
     groupMap?: Record<string, Record<string, any>>;
 }
 
-interface ShaderWithResourcesDescriptor
+interface ShaderWithResourcesDescriptor<R = ShaderResources>
 {
     /**
      * A key value of uniform resources used by the shader.
@@ -79,7 +79,7 @@ interface ShaderWithResourcesDescriptor
      * the resources are mapped. Its up to you to make sure the resource key
      * matches the uniform name in the webGPU program. WebGL is a little more forgiving!
      */
-    resources?: Record<string, any>;
+    resources?: R;
 }
 
 interface GroupsData
@@ -109,20 +109,20 @@ export type ShaderWithGroups = ShaderWithGroupsDescriptor & ShaderWith;
  * @category rendering
  * @advanced
  */
-export type ShaderWithResources = ShaderWithResourcesDescriptor & ShaderWith;
+export type ShaderWithResources<R = ShaderResources> = ShaderWithResourcesDescriptor<R> & ShaderWith;
 /**
  * A shader that can be used with both WebGL and WebGPU.
  * @category rendering
  * @advanced
  */
-export interface IShaderWithResources extends ShaderWithResourcesDescriptor, ShaderBase {}
+export interface IShaderWithResources<R = ShaderResources> extends ShaderWithResourcesDescriptor<R>, ShaderBase {}
 
 /**
  * A descriptor for a shader that can be used with both WebGL and WebGPU.
  * @category rendering
  * @advanced
  */
-export type ShaderDescriptor = ShaderWithGroups & ShaderWithResources;
+export type ShaderDescriptor<R = ShaderResources> = ShaderWithGroups & ShaderWithResources<R>;
 
 /**
  * A descriptor for a shader with resources and groups.
@@ -151,8 +151,15 @@ export type ShaderFromGroups = (GlShaderFromWith | GpuShaderFromWith) & Omit<Sha
  * @category rendering
  * @advanced
  */
-export type ShaderFromResources = (GlShaderFromWith | GpuShaderFromWith)
-& Omit<ShaderWithResources, 'glProgram' | 'gpuProgram'>;
+export type ShaderFromResources<R = ShaderResources> = (GlShaderFromWith | GpuShaderFromWith)
+& Omit<ShaderWithResources<R>, 'glProgram' | 'gpuProgram'>;
+
+/**
+ * A generic type for resources when no specific type is defined.
+ * @category rendering
+ * @advanced
+ */
+export type ShaderResources = Record<string, any>;
 
 /**
  * The Shader class is an integral part of the PixiJS graphics pipeline.
@@ -191,7 +198,7 @@ export type ShaderFromResources = (GlShaderFromWith | GpuShaderFromWith)
  * @category rendering
  * @advanced
  */
-export class Shader extends EventEmitter<{'destroy': Shader}>
+export class Shader<R = ShaderResources> extends EventEmitter<{'destroy': Shader}>
 {
     /** A unique identifier for the shader */
     public readonly uid: number = uid('shader');
@@ -210,7 +217,7 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
     /** */
     public groups: Record<number, BindGroup>;
     /** A record of the resources used by the shader. */
-    public resources: Record<string, any>;
+    public resources: R;
     /**
      * A record of the uniform groups and resources used by the shader.
      * This is used by WebGL renderer to sync uniform data.
@@ -237,9 +244,9 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
      * you cannot mix and match - either use resources or groups.
      * @param options - The options for the shader
      */
-    constructor(options: ShaderWithResources);
+    constructor(options: ShaderWithResources<R>);
     constructor(options: ShaderWithGroups);
-    constructor(options: ShaderDescriptor)
+    constructor(options: ShaderDescriptor<R>)
     {
         super();
 
@@ -271,7 +278,7 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
 
         if (!resources && !groups)
         {
-            resources = {};
+            resources = {} as R;
         }
 
         if (resources && groups)
@@ -323,7 +330,7 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
 
                 groupData.forEach((data) =>
                 {
-                    groupMap[data.group] = groupMap[data.group] || {};
+                    groupMap[data.group] ??= {};
                     groupMap[data.group][data.binding] = data.name;
 
                     nameHash[data.name] = data;
@@ -356,7 +363,7 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
             for (const i in resources)
             {
                 const name = i;
-                let value = resources[i];
+                let value: any = resources[i];
 
                 if (!(value.source) && !(value as BindResource)._resourceType)
                 {
@@ -405,9 +412,9 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
         }
     }
 
-    private _buildResourceAccessor(groups: ShaderGroups, nameHash: Record<string, GroupsData>)
+    private _buildResourceAccessor(groups: ShaderGroups, nameHash: Record<string, GroupsData>): R
     {
-        const uniformsOut = {};
+        const uniformsOut = {} as R;
 
         for (const i in nameHash)
         {
@@ -471,9 +478,10 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
      * @param options
      * @returns A shiny new PixiJS shader!
      */
-    public static from(options: ShaderFromGroups): Shader;
-    public static from(options: ShaderFromResources): Shader;
-    public static from(options: ShaderFromGroups & ShaderFromResources): Shader
+    public static from<R = ShaderResources>(options: ShaderFromGroups): Shader<R>;
+    public static from<R = ShaderResources>(options: ShaderFromResources<R>): Shader<R>;
+    public static from<R = ShaderResources>(
+        options: ShaderFromGroups & ShaderFromResources<R>): Shader<R>
     {
         const { gpu, gl, ...rest } = options;
 
@@ -490,7 +498,7 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
             glProgram = GlProgram.from(gl);
         }
 
-        return new Shader({
+        return new Shader<R>({
             gpuProgram,
             glProgram,
             ...rest

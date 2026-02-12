@@ -55,6 +55,15 @@ export interface NoiseFilterOptions extends FilterOptions
     seed?: number;
 }
 
+/** @internal */
+export interface NoiseFilterResources
+{
+    noiseUniforms: UniformGroup<{
+        uNoise: { value: number, type: 'f32' },
+        uSeed: { value: number, type: 'f32' },
+    }>
+}
+
 /**
  * A filter that adds configurable random noise to rendered content.
  *
@@ -84,7 +93,7 @@ export interface NoiseFilterOptions extends FilterOptions
  * @standard
  * @noInheritDoc
  */
-export class NoiseFilter extends Filter
+export class NoiseFilter extends Filter<NoiseFilterResources>
 {
     /**
      * The default configuration options for the NoiseFilter.

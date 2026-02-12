@@ -7,6 +7,7 @@ import type { RenderSurface } from '../rendering/renderers/shared/renderTarget/R
 import type {
     IShaderWithResources,
     ShaderFromResources,
+    ShaderResources,
     ShaderWithResources
 } from '../rendering/renderers/shared/shader/Shader';
 import type { BLEND_MODES } from '../rendering/renderers/shared/state/const';
@@ -68,7 +69,7 @@ export interface FilterOptions
  * @advanced
  * @see {@link FilterOptions}
  */
-export type FilterWithShader = FilterOptions & IShaderWithResources;
+export type FilterWithShader<R = ShaderResources> = FilterOptions & IShaderWithResources<R>;
 
 /**
  * The antialiasing mode of the filter. This can be either:
@@ -131,7 +132,7 @@ export type FilterAntialias = 'on' | 'off' | 'inherit';
  *     filter.resources.timeUniforms.uniforms.uTime += 0.04 * ticker.deltaTime;
  * });
  */
-export class Filter extends Shader
+export class Filter<R = ShaderResources> extends Shader<R>
 {
     /** The default filter settings */
     public static defaultOptions: FilterOptions = {
@@ -188,11 +189,11 @@ export class Filter extends Shader
     /**
      * @param options - The optional parameters of this filter.
      */
-    constructor(options: FilterWithShader)
+    constructor(options: FilterWithShader<R>)
     {
         options = { ...Filter.defaultOptions, ...options };
 
-        super(options as ShaderWithResources);
+        super(options as ShaderWithResources<R>);
 
         this.blendMode = options.blendMode;
         this.padding = options.padding;
@@ -258,7 +259,7 @@ export class Filter extends Shader
      * @param options
      * @returns A shiny new PixiJS filter!
      */
-    public static from(options: FilterOptions & ShaderFromResources): Filter
+    public static from<R = ShaderResources>(options: FilterOptions & ShaderFromResources<R>): Filter<R>
     {
         const { gpu, gl, ...rest } = options;
 

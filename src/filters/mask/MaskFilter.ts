@@ -8,6 +8,7 @@ import fragment from './mask.frag';
 import vertex from './mask.vert';
 import source from './mask.wgsl';
 
+import type { TextureSource } from '../../rendering/renderers/shared/texture/sources/TextureSource';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { Sprite } from '../../scene/sprite/Sprite';
 import type { FilterOptions } from '../Filter';
@@ -22,7 +23,19 @@ export interface MaskFilterOptions extends FilterOptions
 }
 
 /** @internal */
-export class MaskFilter extends Filter
+export interface MaskFilterResources
+{
+    filterUniforms: UniformGroup<{
+        uFilterMatrix: { value: Matrix, type: 'mat3x3<f32>' },
+        uMaskClamp: { value: Float32Array, type: 'vec4<f32>' },
+        uAlpha: { value: number, type: 'f32' },
+        uInverse: { value: number, type: 'f32' },
+    }>,
+    uMaskTexture: TextureSource;
+}
+
+/** @internal */
+export class MaskFilter extends Filter<MaskFilterResources>
 {
     public sprite: Sprite;
     private readonly _textureMatrix: TextureMatrix;

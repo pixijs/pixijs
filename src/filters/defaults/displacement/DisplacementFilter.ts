@@ -3,6 +3,8 @@ import { Point } from '../../../maths/point/Point';
 import { GlProgram } from '../../../rendering/renderers/gl/shader/GlProgram';
 import { GpuProgram } from '../../../rendering/renderers/gpu/shader/GpuProgram';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
+import { type TextureSource } from '../../../rendering/renderers/shared/texture/sources/TextureSource';
+import { type TextureStyle } from '../../../rendering/renderers/shared/texture/TextureStyle';
 import { Sprite } from '../../../scene/sprite/Sprite';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { Filter } from '../../Filter';
@@ -62,6 +64,18 @@ export interface DisplacementFilterOptions extends FilterOptions
     scale?: number | PointData;
 }
 
+/** @internal */
+export interface DisplacementFilterResources
+{
+    filterUniforms: UniformGroup<{
+        uFilterMatrix: { value: Matrix, type: 'mat3x3<f32>' },
+        uScale: { value: PointData, type: 'vec2<f32>' },
+        uRotation: { value: Float32Array, type: 'mat2x2<f32>' },
+    }>;
+    uMapTexture: TextureSource;
+    uMapSampler: TextureStyle;
+}
+
 /**
  * A filter that applies a displacement map effect using a sprite's texture.
  *
@@ -97,7 +111,7 @@ export interface DisplacementFilterOptions extends FilterOptions
  * @standard
  * @noInheritDoc
  */
-export class DisplacementFilter extends Filter
+export class DisplacementFilter extends Filter<DisplacementFilterResources>
 {
     private readonly _sprite: Sprite;
 
