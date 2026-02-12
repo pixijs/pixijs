@@ -14,7 +14,8 @@
     "url": "https://opencollective.com/pixijs"
   },
   "workspaces": [
-    "examples"
+    "examples",
+    "playground"
   ],
   "main": "lib/index.js",
   "module": "lib/index.mjs",

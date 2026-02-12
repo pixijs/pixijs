@@ -6,10 +6,10 @@ interface TreeViewProps
 {
     nodes: TreeNode[];
     selectedId: string | null;
-    tab: 'examples' | 'tests';
+    tab: 'playground' | 'examples' | 'tests';
     search: string;
     onSelect: (entry: SceneEntry) => void;
-    onTabChange: (tab: 'examples' | 'tests') => void;
+    onTabChange: (tab: 'playground' | 'examples' | 'tests') => void;
     onSearchChange: (search: string) => void;
 }
 
@@ -22,6 +22,12 @@ export function TreeView({ nodes, selectedId, tab, search, onSelect, onTabChange
                 display: 'flex',
                 borderBottom: '1px solid #1a1a28',
             }}>
+                <TabButton
+                    active={tab === 'playground'}
+                    onClick={() => onTabChange('playground')}
+                >
+                    Playground
+                </TabButton>
                 <TabButton
                     active={tab === 'examples'}
                     onClick={() => onTabChange('examples')}

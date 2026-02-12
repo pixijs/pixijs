@@ -24,12 +24,12 @@ export function App()
     // Load playground scenes in an isolated iframe
     useEffect(() =>
     {
-        if (selectedEntry?.type !== 'playground') return undefined;
+        if (selectedEntry?.type !== 'playground' && selectedEntry?.type !== 'example') return undefined;
 
         const iframe = document.createElement('iframe');
 
         iframe.id = 'playground-frame';
-        iframe.src = `/scene-frame.html?type=playground&id=${encodeURIComponent(selectedEntry.id)}`;
+        iframe.src = `/scene-frame.html?type=${selectedEntry.type}&id=${encodeURIComponent(selectedEntry.id)}`;
         iframe.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;border:none;z-index:0;';
         document.body.appendChild(iframe);
 

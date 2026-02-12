@@ -2,16 +2,23 @@ import { useMemo } from 'preact/hooks';
 
 import type { SceneEntry, TreeFolder, TreeNode } from '../types';
 
+const typeForTab: Record<string, string> = {
+    playground: 'playground',
+    examples: 'example',
+    tests: 'visual-test',
+};
+
 export function useSceneTree(
     entries: SceneEntry[],
-    tab: 'examples' | 'tests',
+    tab: 'playground' | 'examples' | 'tests',
     search: string,
 ): TreeNode[]
 {
     return useMemo(() =>
     {
+        const sceneType = typeForTab[tab];
         const filtered = entries
-            .filter((e) => (tab === 'examples' ? e.type === 'playground' : e.type === 'visual-test'))
+            .filter((e) => e.type === sceneType)
             .filter((e) => !search || e.name.toLowerCase().includes(search.toLowerCase())
                 || e.category.toLowerCase().includes(search.toLowerCase()));
 

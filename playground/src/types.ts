@@ -1,6 +1,6 @@
 export type RenderType = 'webgl1' | 'webgl2' | 'webgpu' | 'canvas';
 
-export type SceneType = 'playground' | 'visual-test';
+export type SceneType = 'playground' | 'visual-test' | 'example';
 
 export interface SceneEntry
 {
@@ -19,7 +19,7 @@ export interface PlaygroundState
     renderer: RenderType;
     renderer2: RenderType;
     view: ViewMode;
-    tab: 'examples' | 'tests';
+    tab: 'playground' | 'examples' | 'tests';
     search: string;
     expanded: boolean;
 }

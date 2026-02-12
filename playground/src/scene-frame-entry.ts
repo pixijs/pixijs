@@ -3,6 +3,10 @@ import type { RenderType } from './types';
 
 const playgroundGlobs = import.meta.glob('./*.playground.ts');
 const visualTestGlobs = import.meta.glob('../../tests/visual/scenes/**/*.scene.ts');
+const exampleGlobs = import.meta.glob([
+    '../../examples/*.ts',
+    '../../examples/*/index.ts',
+]);
 
 function basename(path: string): string
 {
@@ -32,6 +36,18 @@ for (const [path, loader] of Object.entries(visualTestGlobs))
     visualTestById.set(id, loader as () => Promise<unknown>);
 }
 
+const exampleById: Map<string, () => Promise<unknown>> = new Map();
+
+for (const [path, loader] of Object.entries(exampleGlobs))
+{
+    const filename = basename(path);
+    const id = filename === 'index.ts'
+        ? path.split('/').at(-2)!
+        : filename.replace('.ts', '');
+
+    exampleById.set(id, loader as () => Promise<unknown>);
+}
+
 const params = new URLSearchParams(location.search);
 const type = params.get('type');
 const id = params.get('id');
@@ -48,6 +64,15 @@ try
             const mod = await loader() as { default?: () => Promise<void> };
 
             if (typeof mod.default === 'function') await mod.default();
+        }
+    }
+    else if (type === 'example' && id)
+    {
+        const loader = exampleById.get(id);
+
+        if (loader)
+        {
+            await loader();
         }
     }
     else if (type === 'visual-test' && id)

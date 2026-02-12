@@ -1,5 +1,5 @@
 {
-  "name": "pixi-playground",
+  "name": "@pixi/playground",
   "private": true,
   "type": "module",
   "scripts": {
