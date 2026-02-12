@@ -45,6 +45,8 @@ export class BlurFilterPass extends Filter
         quality: 4,
         /** The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15. */
         kernelSize: 5,
+        /** Whether to use legacy blur pass behavior. */
+        legacy: false,
     };
 
     /** Do pass along the x-axis (`true`) or y-axis (`false`). */
@@ -53,6 +55,8 @@ export class BlurFilterPass extends Filter
     public passes!: number;
     /** The strength of the blur filter. */
     public strength!: number;
+    /** Whether to use legacy blur pass behavior. */
+    public legacy: boolean;
 
     private _quality: number;
     private readonly _uniforms: any;
@@ -84,6 +88,7 @@ export class BlurFilterPass extends Filter
         });
 
         this.horizontal = options.horizontal;
+        this.legacy = options.legacy ?? false;
 
         this._quality = 0;
 
@@ -110,7 +115,23 @@ export class BlurFilterPass extends Filter
         clearMode: boolean
     ): void
     {
-        this._uniforms.uStrength = this._calculateInitialStrength();
+        if (this.legacy)
+        {
+            this._uniforms.uStrength = this.strength / this.passes;
+        }
+        else
+        {
+            let sumOfSquares = 1;
+            let coefficient = 0.5;
+
+            for (let i = 1; i < this.passes; i++)
+            {
+                sumOfSquares += coefficient * coefficient;
+                coefficient *= 0.5;
+            }
+
+            this._uniforms.uStrength = this.strength / Math.sqrt(sumOfSquares);
+        }
 
         if (this.passes === 1)
         {
@@ -128,7 +149,9 @@ export class BlurFilterPass extends Filter
             const renderer = filterManager.renderer;
 
             const isWebGPU = renderer.type === RendererType.WEBGPU;
-            const uboBatcher = isWebGPU ? (renderer as WebGPURenderer).renderPipes.uniformBatch : null;
+            const uboBatcher = (!this.legacy && isWebGPU)
+                ? (renderer as WebGPURenderer).renderPipes.uniformBatch
+                : null;
 
             for (let i = 0; i < this.passes - 1; i++)
             {
@@ -139,17 +162,21 @@ export class BlurFilterPass extends Filter
                     this.groups[1].setResource(uboBatcher.getUboResource(this._blurUniforms), 0);
                 }
 
-                filterManager.applyFilter(this, flip, flop, isWebGPU);
+                const passClear = (this.legacy && i === 0) || isWebGPU;
+
+                filterManager.applyFilter(this, flip, flop, passClear);
 
                 const temp = flop;
 
                 flop = flip;
                 flip = temp;
 
-                this._uniforms.uStrength *= 0.5;
+                if (!this.legacy)
+                {
+                    this._uniforms.uStrength *= 0.5;
+                }
             }
 
-            // Final pass - also need to batch uniforms for WebGPU
             if (uboBatcher)
             {
                 this.groups[1].setResource(uboBatcher.getUboResource(this._blurUniforms), 0);
@@ -159,27 +186,6 @@ export class BlurFilterPass extends Filter
             filterManager.applyFilter(this, flip, output, clearMode);
             TexturePool.returnTexture(tempTexture);
         }
-    }
-
-    /**
-     * Calculates the initial strength for the first blur pass so that the combined
-     * effect of all passes matches the filter's target strength.
-     *
-     * Uses variance addition property: for Gaussian blurs, σ_combined² = Σσᵢ²
-     * With halving scheme (s, s/2, s/4, ...), sum of squared coefficients = 4/3
-     */
-    private _calculateInitialStrength(): number
-    {
-        let sumOfSquares = 1;
-        let coefficient = 0.5;
-
-        for (let i = 1; i < this.passes; i++)
-        {
-            sumOfSquares += coefficient * coefficient;
-            coefficient *= 0.5;
-        }
-
-        return this.strength / Math.sqrt(sumOfSquares);
     }
 
     /**
