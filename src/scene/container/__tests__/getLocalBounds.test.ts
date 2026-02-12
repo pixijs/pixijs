@@ -477,4 +477,32 @@ describe('getLocalBounds', () =>
 
         expect(bounds3).toMatchObject({ minX: 0, minY: 0, maxX: 0, maxY: 0 });
     });
+
+    it('should not return Infinity bounds when rotated child contains empty Graphics', async () =>
+    {
+        const parent = new Container({ label: 'parent' });
+
+        const rotatedChild = new Container({ label: 'rotatedChild' });
+
+        rotatedChild.rotation = Math.PI * 1.5;
+
+        const emptyGraphics = new Graphics();
+        const child = new DummyView({ label: 'child' });
+
+        rotatedChild.addChild(emptyGraphics);
+        rotatedChild.addChild(child);
+
+        parent.addChild(rotatedChild);
+
+        const bounds = getLocalBounds(parent, new Bounds());
+
+        expect(bounds.minX).not.toBe(-Infinity);
+        expect(bounds.minY).not.toBe(-Infinity);
+        expect(bounds.maxX).not.toBe(Infinity);
+        expect(bounds.maxY).not.toBe(Infinity);
+        expect(Number.isFinite(bounds.minX)).toBe(true);
+        expect(Number.isFinite(bounds.minY)).toBe(true);
+        expect(Number.isFinite(bounds.maxX)).toBe(true);
+        expect(Number.isFinite(bounds.maxY)).toBe(true);
+    });
 });
