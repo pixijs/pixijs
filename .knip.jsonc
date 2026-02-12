@@ -34,5 +34,8 @@
         "@stylistic/eslint-plugin",
         // Used in typedoc config
         "@gerrit0/mini-shiki"
+        // Used in build script
+        "dts-bundle-generator",
+        "tsc-silent"
     ]
 }

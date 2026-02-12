@@ -114,7 +114,8 @@ async function main()
     results.push({
         input,
         output: [
-            {
+            !process.env.LIB_ONLY
+            && {
                 dir: path.join(process.cwd(), 'lib'),
                 entryFileNames: '[name].js',
                 format: 'cjs',

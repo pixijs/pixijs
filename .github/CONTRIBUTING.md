@@ -65,12 +65,12 @@ Tips for a faster workflow:
 
 - Run `npm start` in one terminal. This watches the source tree and compiles it incrementally.
 - When desired, run `npm run test` in another terminal. This runs tests using the compilation output from `npm start`.
-- Run `npm run test:debug` to use headful DevTools to debug or develop tests
+- Run `npm run test -- debug` to use headful DevTools to debug or develop tests
 
 #### Visual Regression Testing
 
 PixiJS uses a custom visual tester that allows you to create pixi scenes and compare them to a reference image.
-These tests can be found [here](../tests/visual/scenes/). To run these tests, run `npm run test:scene` from the command line, or run `npm run test:scene:debug` to use headful DevTools to debug or develop tests.
+These tests can be found [here](../tests/visual/scenes/). To run these tests, run `npm run test -- visual` from the command line, or run `npm run test -- visual debug` to use headful DevTools to debug or develop tests.
 
 All visual tests must end with `.scene.ts` and follows this format:
 
