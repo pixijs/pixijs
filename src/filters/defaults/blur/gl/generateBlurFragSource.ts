@@ -1,4 +1,4 @@
-import { GAUSSIAN_VALUES } from '../const';
+import { GAUSSIAN_VALUES, GAUSSIAN_VALUES_FIX } from '../const';
 
 const fragTemplate = [
     'in vec2 vBlurTexCoords[%size%];',
@@ -16,10 +16,11 @@ const fragTemplate = [
 /**
  * @internal
  * @param kernelSize - The size of the kernel.
+ * @param fix - Whether to use the new Gaussian values.
  */
-export function generateBlurFragSource(kernelSize: number): string
+export function generateBlurFragSource(kernelSize: number, fix: boolean): string
 {
-    const kernel = GAUSSIAN_VALUES[kernelSize];
+    const kernel = (fix ? GAUSSIAN_VALUES_FIX : GAUSSIAN_VALUES)[kernelSize];
     const halfLength = kernel.length;
 
     let fragSource = fragTemplate;
