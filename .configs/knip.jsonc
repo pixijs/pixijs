@@ -23,6 +23,8 @@
         }
     },
     "ignoreDependencies": [
+        // Inlined in jest transform config; knip can't trace string references
+        "@babel/plugin-transform-modules-commonjs",
         // Not detected in jest setup
         "http-server",
         "worker",

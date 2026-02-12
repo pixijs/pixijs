@@ -1,4 +1,5 @@
 module.exports = {
+    rootDir: '..',
     testPathIgnorePatterns: ['/node_modules/', '/dist/', '/lib/'],
     preset: 'ts-jest/presets/js-with-ts',
     runner: '@pixi/jest-electron/runner',
@@ -13,7 +14,7 @@ module.exports = {
         '\\.vert$': 'jest-raw-loader',
         '\\.frag$': 'jest-raw-loader',
         '\\.wgsl$': 'jest-raw-loader',
-        '\\.js$': 'babel-jest'
+        '\\.js$': ['babel-jest', { plugins: ['@babel/plugin-transform-modules-commonjs'] }]
     },
     transformIgnorePatterns: ['/node_modules/(?!earcut|@types/earcut)'],
     moduleNameMapper: {

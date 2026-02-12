@@ -36,7 +36,7 @@ async function main()
 
     // Step 2: rollup (+ types chain for non-lib or dev mode)
     const rollupEnv = isLib ? { LIB_ONLY: '1' } : {};
-    const rollup = spawn('rollup', ['-c', '--failAfterWarnings'], {
+    const rollup = spawn('rollup', ['-c', '.configs/rollup.config.mjs', '--failAfterWarnings'], {
         signal,
         env: { ...process.env, ...rollupEnv },
     });
@@ -53,8 +53,8 @@ async function main()
         {
             const tscCmd = isDev ? 'tsc-silent' : 'tsc';
             const tscArgs = isDev
-                ? ['-p', 'tsconfig.types.json', '--suppress', '@']
-                : ['-p', 'tsconfig.types.json'];
+                ? ['-p', '.configs/tsconfig.types.json', '--suppress', '@']
+                : ['-p', '.configs/tsconfig.types.json'];
 
             await parallel([
                 spawn(tscCmd, tscArgs, { signal }),
@@ -64,7 +64,7 @@ async function main()
 
             if (!isDev)
             {
-                await spawn('dts-bundle-generator', ['--config', 'dts.config.js'], { signal });
+                await spawn('dts-bundle-generator', ['--config', '.configs/dts.config.js'], { signal });
             }
         })();
 

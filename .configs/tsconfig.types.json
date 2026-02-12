@@ -1,17 +1,17 @@
 {
-    "extends": "./tsconfig.json",
+    "extends": "../tsconfig.json",
     "compilerOptions": {
         "declaration": true,
         "emitDeclarationOnly": true,
-        "outDir": "lib"
+        "outDir": "../lib"
     },
     "include": [
-        "./src",
-        "./types"
+        "../src",
+        "../types"
     ],
     "exclude": [
-        "./src/bundle.*",
+        "../src/bundle.*",
         "**/__tests__",
-        "./tests"
+        "../tests"
     ]
 }

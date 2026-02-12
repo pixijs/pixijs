@@ -47,7 +47,7 @@ async function runStaticChecks(): Promise<CheckResult[]>
         checks.push({
             name: 'prune',
             blocking: false,
-            fn: () => spawn('knip', ['--exclude', 'enumMembers', '--no-gitignore']),
+            fn: () => spawn('knip', ['--config', '.configs/knip.jsonc', '--exclude', 'enumMembers', '--no-gitignore']),
         });
     }
 
@@ -94,6 +94,7 @@ if (hasStaticChecks)
 }
 
 // Phase 2: jest tests sequentially
+const jestConfig = ['--config', '.configs/jest.config.js'];
 const jestFlags = isDebug ? [] : ['--silent'];
 const jestEnv = isDebug ? { DEBUG_MODE: '1' } : {};
 
@@ -101,15 +102,19 @@ try
 {
     if (runUnit)
     {
-        await spawn('jest', [...jestFlags, '--testPathIgnorePatterns=tests/visual', ...passthrough], {
-            env: { ...process.env, ...jestEnv },
-        });
+        await spawn('jest', [
+            ...jestConfig, ...jestFlags,
+            '--testPathIgnorePatterns=tests/visual',
+            ...passthrough,
+        ], { env: { ...process.env, ...jestEnv } });
     }
     if (runVisual)
     {
-        await spawn('jest', [...jestFlags, '--testPathPattern=tests/visual', ...passthrough], {
-            env: { ...process.env, ...jestEnv },
-        });
+        await spawn('jest', [
+            ...jestConfig, ...jestFlags,
+            '--testPathPattern=tests/visual',
+            ...passthrough,
+        ], { env: { ...process.env, ...jestEnv } });
     }
 }
 catch

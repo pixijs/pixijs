@@ -31,11 +31,11 @@
     "clean": "rimraf \"{lib,dist,out}\" .pr_uploads .s3_uploads --glob",
     "build": "node ./scripts/build.mts",
     "build:lib": "node ./scripts/build.mts --lib --dev",
-    "build:docs": "mkdirp out && npx typedoc",
+    "build:docs": "mkdirp out && npx typedoc --options .configs/typedoc.json",
     "dist": "npm run clean && npm run build && npm run build:docs && copyfiles -u 1 \"dist/**/*\" .s3_uploads/",
     "watch:build": "nodemon --watch \"./src/*\" --exec \"node ./scripts/build.mts --dev\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
     "watch:lib": "nodemon --watch \"./src/*\" --exec \"node ./scripts/build.mts --lib --dev\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
-    "watch:docs": "http-server out -p 8080 -c-1 & nodemon --watch \"./src/*\" --exec \"mkdirp out && typedoc\" -e ts,md",
+    "watch:docs": "http-server out -p 8080 -c-1 & nodemon --watch \"./src/*\" --exec \"mkdirp out && typedoc --options .configs/typedoc.json\" -e ts,md",
     "test": "node ./scripts/test.mts",
     "test:visual": "node ./scripts/test.mts visual",
     "test:unit": "node ./scripts/test.mts unit",
@@ -44,7 +44,7 @@
     "test:prune": "node ./scripts/test.mts prune",
     "lint:fix": "eslint ./ --cache --max-warnings 0 --fix",
     "release": "node ./scripts/release.mts",
-    "prune": "knip --exclude enumMembers --no-gitignore"
+    "prune": "knip --config .configs/knip.jsonc --exclude enumMembers --no-gitignore"
   },
   "lint-staged": {
     "!(src/**/index).{ts,js,mjs}": "npm run lint:fix --"

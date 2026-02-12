@@ -4,9 +4,8 @@ import externalGlobals from 'rollup-plugin-external-globals';
 import jscc from 'rollup-plugin-jscc';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import { string } from 'rollup-plugin-string';
-import { fileURLToPath } from 'url';
 import webworker from '@pixi/webworker-plugins/rollup-plugin';
-import repo from './package.json' with { type: 'json' };
+import repo from '../package.json' with { type: 'json' };
 import alias from '@rollup/plugin-alias';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
@@ -14,9 +13,6 @@ import resolve from '@rollup/plugin-node-resolve';
 
 const bundleTarget = 'es2017';
 const moduleTarget = 'es2020';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 /**
  * Convert a development file name to minified.
@@ -67,8 +63,8 @@ async function main()
         // even though we'll be excluding __tests___
         alias({
             entries: [
-                { find: /^~\/(.*)$/, replacement: path.join(__dirname, 'src/$1.ts') },
-                { find: '@test-utils', replacement: path.join(__dirname, 'tests/utils/index.ts') }
+                { find: /^~\/(.*)$/, replacement: path.join(process.cwd(), 'src/$1.ts') },
+                { find: '@test-utils', replacement: path.join(process.cwd(), 'tests/utils/index.ts') }
             ]
         })
     ];
