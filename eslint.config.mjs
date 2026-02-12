@@ -21,6 +21,7 @@ export default tseslint.config(
             'node_modules',
             'src/*/**/index.ts',
             'src/**/__docs__/examples/**/*.js',
+            'playground/dist',
         ],
     },
     {

@@ -14,7 +14,8 @@
     "url": "https://opencollective.com/pixijs"
   },
   "workspaces": [
-    "examples"
+    "examples",
+    "playground"
   ],
   "main": "lib/index.js",
   "module": "lib/index.mjs",
@@ -26,7 +27,8 @@
   ],
   "scripts": {
     "prepare": "husky install",
-    "start": "run-s watch",
+    "start": "run-p watch:lib playground:dev",
+    "playground:dev": "npm run dev --prefix playground",
     "clean": "run-s clean:*",
     "clean:build": "rimraf \"{lib,dist}\" --glob",
     "clean:uploads": "rimraf .pr_uploads .s3_uploads --glob",
@@ -42,14 +44,16 @@
     "dist": "run-s build docs && copyfiles -u 1 \"dist/**/*\" .s3_uploads/ && copyfiles -f dist/pixi.min.mjs dist/pixi.min.mjs.map .s3_uploads/docs/",
     "watch": "nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
     "watch:lib": "cross-env LIB_ONLY=1 nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
-    "watch:build": "run-s build:tsc:silent build:index build:pkg build:pkg build:rollup build:dts",
+    "watch:build": "run-s build:status:start build:tsc:silent build:index build:pkg build:rollup build:dts build:status:done",
+    "build:status:start": "node ./scripts/build-status.mjs start",
+    "build:status:done": "node ./scripts/build-status.mjs done",
     "test": "run-s test:unit test:scene",
     "test:unit": "npx jest --silent --testPathIgnorePatterns=tests/visual",
     "test:debug": "cross-env DEBUG_MODE=1 npx jest --testPathIgnorePatterns=tests/visual",
     "test:server": "npx http-server -p 8080 -c-1",
     "test:scene": "npx jest --silent --testPathPattern=tests/visual",
     "test:scene:debug": "cross-env DEBUG_MODE=1 npx jest --testPathPattern=tests/visual",
-    "test:types": "tsc -p tsconfig.build.json --noEmit && tsc -p examples/tsconfig.json --noEmit",
+    "test:types": "tsc -p tsconfig.build.json --noEmit && tsc -p examples/tsconfig.json --noEmit && tsc -p playground/tsconfig.json --noEmit",
     "test:index": "node ./scripts/index/index.mts --check",
     "docs": "npx typedoc && node ./scripts/typedoc/html-to-md.mts",
     "docs:watch": "nodemon --watch \"./src/*\" --exec \"rimraf .s3_uploads/docs && npm run docs && copyfiles -f dist/pixi.min.mjs dist/pixi.min.mjs.map .s3_uploads/docs/\" -e ts,md",

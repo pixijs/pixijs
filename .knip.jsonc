@@ -1,5 +1,5 @@
 {
-    "ignore": ["examples/**", "src/**/__docs__/**"],
+    "ignore": ["examples/**", "src/**/__docs__/**", "playground/**"],
     "workspaces": {
         ".": {
             "entry": [
