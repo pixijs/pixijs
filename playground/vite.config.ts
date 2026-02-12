@@ -88,7 +88,10 @@ export default defineConfig({
             {
                 server.middlewares.use((req: IncomingMessage, res: ServerResponse, next: () => void) =>
                 {
-                    if (req.url?.startsWith('/.build-status.json'))
+                    const parsedUrl = new URL(req.url ?? '/', 'http://localhost');
+                    const pathname = decodeURIComponent(parsedUrl.pathname);
+
+                    if (pathname === '/.build-status.json')
                     {
                         res.setHeader('Content-Type', 'application/json');
                         res.setHeader('Cache-Control', 'no-cache');
@@ -107,9 +110,20 @@ export default defineConfig({
 
                     for (const [prefix, dir] of Object.entries(staticRoutes))
                     {
-                        if (req.url?.startsWith(prefix))
+                        if (pathname.startsWith(prefix))
                         {
-                            serveStatic(res, resolve(root, dir, req.url.replace(prefix, '')));
+                            const baseDir = resolve(root, dir);
+                            const absPath = resolve(baseDir, pathname.slice(prefix.length));
+
+                            if (!absPath.startsWith(baseDir))
+                            {
+                                res.statusCode = 403;
+                                res.end('Forbidden');
+
+                                return;
+                            }
+
+                            serveStatic(res, absPath);
 
                             return;
                         }

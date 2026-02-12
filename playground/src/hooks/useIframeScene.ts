@@ -25,6 +25,7 @@ export function useIframeScene(
         {
             setCanvas(null);
             setError(null);
+            setLoading(false);
 
             return undefined;
         }
@@ -58,6 +59,7 @@ export function useIframeScene(
             else if (e.data.type === 'scene-error')
             {
                 setError(e.data.message);
+                setCanvas(null);
                 setLoading(false);
             }
         };

@@ -9,18 +9,18 @@ interface DiffViewProps
     labelB?: string;
 }
 
-function getImageData(canvas: HTMLCanvasElement): ImageData
+function getImageDataResized(canvas: HTMLCanvasElement, w: number, h: number): ImageData
 {
     const tmp = document.createElement('canvas');
 
-    tmp.width = canvas.width;
-    tmp.height = canvas.height;
+    tmp.width = w;
+    tmp.height = h;
 
     const ctx = tmp.getContext('2d')!;
 
     ctx.drawImage(canvas, 0, 0);
 
-    return ctx.getImageData(0, 0, canvas.width, canvas.height);
+    return ctx.getImageData(0, 0, w, h);
 }
 
 export function DiffView({ canvasA, canvasB, labelA, labelB }: DiffViewProps)
@@ -35,8 +35,8 @@ export function DiffView({ canvasA, canvasB, labelA, labelB }: DiffViewProps)
         const w = Math.max(canvasA.width, canvasB.width);
         const h = Math.max(canvasA.height, canvasB.height);
 
-        const dataA = getImageData(canvasA);
-        const dataB = getImageData(canvasB);
+        const dataA = getImageDataResized(canvasA, w, h);
+        const dataB = getImageDataResized(canvasB, w, h);
 
         const diffCanvas = diffRef.current;
 

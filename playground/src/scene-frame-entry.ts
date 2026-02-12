@@ -59,15 +59,21 @@ try
             const { runScene } = await import('./scenes/sceneRunner');
             const mod = await loader() as { scene: TestScene };
             const result = await runScene(mod.scene, rendererType);
-            const bitmap = await createImageBitmap(result.canvas);
 
-            window.parent.postMessage(
-                { type: 'scene-result', bitmap },
-                '*',
-                [bitmap],
-            );
+            try
+            {
+                const bitmap = await createImageBitmap(result.canvas);
 
-            result.renderer.destroy();
+                window.parent.postMessage(
+                    { type: 'scene-result', bitmap },
+                    '*',
+                    [bitmap],
+                );
+            }
+            finally
+            {
+                result.renderer.destroy();
+            }
         }
     }
 }

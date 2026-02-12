@@ -1,5 +1,5 @@
 // Browser-compatible shim for @test-utils used by some visual test scenes.
-// In the playground, assets are served via /test-assets/ middleware.
+// In the playground, assets are served via /test-utils-assets/ middleware.
 export const basePath = '/test-utils-assets/';
 export const isCI = false;
 

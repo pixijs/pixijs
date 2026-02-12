@@ -82,7 +82,7 @@ export function getEnabledRenderers(scene: TestScene): Record<RenderType, boolea
             acc[r] = true;
 
             return acc;
-        }, {} as Record<RenderType, boolean>)
+        }, { webgpu: false, webgl1: false, webgl2: false, canvas: false } as Record<RenderType, boolean>)
         : scene.renderers;
 
     const fromExclude = scene.excludeRenderers?.reduce((acc, r) =>
