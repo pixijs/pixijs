@@ -1,12 +1,11 @@
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { RendererType } from '../../../rendering/renderers/types';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
-import { Filter } from '../../Filter';
+import { Filter, type FilterDefaultOptions, type FilterOptions } from '../../Filter';
 import { BlurFilterPass } from './BlurFilterPass';
 
 import type { RenderSurface } from '../../../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { FilterOptions } from '../../Filter';
 import type { FilterSystem } from '../../FilterSystem';
 
 /**
@@ -80,6 +79,18 @@ export interface BlurFilterOptions extends FilterOptions
 }
 
 /**
+ * Default Options for BlurFilter
+ * @category filters
+ * @internal
+ */
+export type BlurFilterDefaultOptions = FilterDefaultOptions &
+{
+    strength: number,
+    quality: number,
+    kernelSize: number,
+};
+
+/**
  * The BlurFilter applies a Gaussian blur to an object.
  * The strength of the blur can be set for the x-axis and y-axis separately.
  * @example
@@ -141,7 +152,8 @@ export class BlurFilter extends Filter
      * @see {@link BlurFilterOptions} For detailed options
      * @see {@link BlurFilter} The filter that uses these options
      */
-    public static defaultOptions: Partial<BlurFilterOptions> = {
+    public static defaultOptions: BlurFilterDefaultOptions = {
+        ...Filter.defaultOptions,
         /** The strength of the blur filter. */
         strength: 8,
         /** The quality of the blur filter. */
@@ -169,7 +181,7 @@ export class BlurFilter extends Filter
     constructor(options?: BlurFilterOptions);
     /** @deprecated since 8.0.0 */
     constructor(strength?: number, quality?: number, resolution?: number | null, kernelSize?: number);
-    constructor(...args: [BlurFilterOptions?] | [number?, number?, number?, number?])
+    constructor(...args: [BlurFilterOptions?] | [number?, number?, (number | null)?, number?])
     {
         let options = args[0] ?? {};
 
@@ -188,9 +200,9 @@ export class BlurFilter extends Filter
             if (args[3] !== undefined)options.kernelSize = args[3];
         }
 
-        options = { ...BlurFilterPass.defaultOptions, ...options };
+        const _options = { ...BlurFilter.defaultOptions, ...options };
 
-        const { strength, strengthX, strengthY, quality, ...rest } = options;
+        const { strength, strengthX, strengthY, quality, ...rest } = _options;
 
         super({
             ...rest,
@@ -198,8 +210,8 @@ export class BlurFilter extends Filter
             resources: {}
         });
 
-        this.blurXFilter = new BlurFilterPass({ horizontal: true, ...options });
-        this.blurYFilter = new BlurFilterPass({ horizontal: false, ...options });
+        this.blurXFilter = new BlurFilterPass({ horizontal: true, ..._options });
+        this.blurYFilter = new BlurFilterPass({ horizontal: false, ..._options });
 
         this.quality = quality;
         this.strengthX = strengthX ?? strength;

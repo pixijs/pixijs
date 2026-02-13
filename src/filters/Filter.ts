@@ -81,6 +81,13 @@ export type FilterWithShader = FilterOptions & IShaderWithResources;
 export type FilterAntialias = 'on' | 'off' | 'inherit';
 
 /**
+ * Default Options for Filter
+ * @category filters
+ * @internal
+ */
+export type FilterDefaultOptions = Required<FilterOptions>;
+
+/**
  * The Filter class is the base for all filter effects used in Pixi.js
  * As it extends a shader, it requires that a glProgram is parsed in to work with WebGL and a gpuProgram for WebGPU.
  * If you don't proved one, then the filter is skipped and just rendered as if it wasn't there for that renderer.
@@ -134,7 +141,7 @@ export type FilterAntialias = 'on' | 'off' | 'inherit';
 export class Filter extends Shader
 {
     /** The default filter settings */
-    public static defaultOptions: FilterOptions = {
+    public static defaultOptions: FilterDefaultOptions = {
         blendMode: 'normal',
         resolution: 1,
         padding: 0,
