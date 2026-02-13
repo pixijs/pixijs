@@ -16,24 +16,45 @@ export const spawn = (command: string, args: string[], options: childProcess.Spa
             env: { ...process.env, ...spawnOptions.env, PATH: envPath },
         });
 
+        let settled = false;
+        let aborted = false;
+
+        const settle = (fn: () => void) =>
+        {
+            if (!settled)
+            {
+                settled = true;
+                fn();
+            }
+        };
+
         if (signal)
         {
+            if (signal.aborted)
+            {
+                child.kill('SIGTERM');
+                settle(() => resolve());
+
+                return;
+            }
+
             signal.addEventListener('abort', () =>
             {
+                aborted = true;
                 child.kill('SIGTERM');
             }, { once: true });
         }
 
         child.on('close', (code) =>
         {
-            if (code === 0)
+            if (code === 0 || aborted)
             {
-                resolve();
+                settle(() => resolve());
             }
             else
             {
-                reject(new Error(`"${command} ${args.join(' ')}" exited with code ${code}`));
+                settle(() => reject(new Error(`"${command} ${args.join(' ')}" exited with code ${code}`)));
             }
         });
-        child.on('error', reject);
+        child.on('error', (err) => settle(() => reject(err)));
     });

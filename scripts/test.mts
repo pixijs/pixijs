@@ -30,16 +30,28 @@ async function runStaticChecks(): Promise<CheckResult[]>
         checks.push({
             name: 'lint',
             blocking: true,
-            fn: () => spawn('eslint', ['./', '--cache', '--max-warnings', '0']),
+            fn: () => spawn('eslint', ['./', '--cache', '--max-warnings', '0', ...passthrough]),
         });
     }
-    if (runTypes) checks.push({ name: 'types', blocking: true, fn: () => spawn('tsc', ['--noEmit']) });
+    if (runTypes)
+    {
+        const tscConfigs = ['.configs/tsconfig.build.json', 'examples/tsconfig.json', 'playground/tsconfig.json'];
+
+        for (const config of tscConfigs)
+        {
+            checks.push({
+                name: `types:${config}`,
+                blocking: true,
+                fn: () => spawn('tsc', ['-p', config, '--noEmit', ...passthrough]),
+            });
+        }
+    }
     if (runIndex)
     {
         checks.push({
             name: 'index',
             blocking: true,
-            fn: () => spawn('node', ['./scripts/index/index.mts', '--check']),
+            fn: () => spawn('node', ['./scripts/index/index.mts', '--check', ...passthrough]),
         });
     }
     if (runPrune)
@@ -47,7 +59,15 @@ async function runStaticChecks(): Promise<CheckResult[]>
         checks.push({
             name: 'prune',
             blocking: false,
-            fn: () => spawn('knip', ['--config', '.configs/knip.jsonc', '--exclude', 'enumMembers', '--no-gitignore']),
+            fn: () =>
+                spawn('knip', [
+                    '--config',
+                    '.configs/knip.jsonc',
+                    '--exclude',
+                    'enumMembers',
+                    '--no-gitignore',
+                    ...passthrough,
+                ]),
         });
     }
 
@@ -102,19 +122,15 @@ try
 {
     if (runUnit)
     {
-        await spawn('jest', [
-            ...jestConfig, ...jestFlags,
-            '--testPathIgnorePatterns=tests/visual',
-            ...passthrough,
-        ], { env: { ...process.env, ...jestEnv } });
+        await spawn('jest', [...jestConfig, ...jestFlags, '--testPathIgnorePatterns=tests/visual', ...passthrough], {
+            env: { ...process.env, ...jestEnv },
+        });
     }
     if (runVisual)
     {
-        await spawn('jest', [
-            ...jestConfig, ...jestFlags,
-            '--testPathPattern=tests/visual',
-            ...passthrough,
-        ], { env: { ...process.env, ...jestEnv } });
+        await spawn('jest', [...jestConfig, ...jestFlags, '--testPathPattern=tests/visual', ...passthrough], {
+            env: { ...process.env, ...jestEnv },
+        });
     }
 }
 catch

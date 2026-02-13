@@ -27,24 +27,23 @@
   ],
   "scripts": {
     "prepare": "husky install",
-    "start": "npm run watch:lib",
-    "clean": "rimraf \"{lib,dist,out}\" .pr_uploads .s3_uploads --glob",
+    "start": "npm run dev --prefix playground & npm run watch:lib",
+    "clean": "rimraf \"{lib,dist}\" .pr_uploads .s3_uploads --glob",
     "build": "node ./scripts/build.mts",
     "build:lib": "node ./scripts/build.mts --lib --dev",
-    "build:docs": "mkdirp out && npx typedoc --options .configs/typedoc.json",
+    "build:docs": "npx typedoc --options .configs/typedoc.json && copyfiles -f dist/pixi.min.mjs dist/pixi.min.mjs.map .s3_uploads/docs/",
+    "build:status": "node ./scripts/build-status.mjs",
     "dist": "npm run clean && npm run build && npm run build:docs && copyfiles -u 1 \"dist/**/*\" .s3_uploads/",
     "watch:build": "nodemon --watch \"./src/*\" --exec \"node ./scripts/build.mts --dev\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
-    "watch:lib": "nodemon --watch \"./src/*\" --exec \"node ./scripts/build.mts --lib --dev\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
-    "watch:docs": "http-server out -p 8080 -c-1 & nodemon --watch \"./src/*\" --exec \"mkdirp out && typedoc --options .configs/typedoc.json\" -e ts,md",
+    "watch:lib": "nodemon --watch \"./src/*\" --exec \"npm run build:status start && node ./scripts/build.mts --lib --dev && npm run build:status done\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
+    "watch:docs": "http-server .s3_uploads/docs -p 8080 -c-1 & nodemon --watch \"./src/*\" --exec \"npm run build:docs\" -e ts,md",
     "test": "node ./scripts/test.mts",
     "test:visual": "node ./scripts/test.mts visual",
     "test:unit": "node ./scripts/test.mts unit",
     "test:types": "node ./scripts/test.mts types",
     "test:lint": "node ./scripts/test.mts lint",
-    "test:prune": "node ./scripts/test.mts prune",
-    "lint:fix": "eslint ./ --cache --max-warnings 0 --fix",
-    "release": "node ./scripts/release.mts",
-    "prune": "knip --config .configs/knip.jsonc --exclude enumMembers --no-gitignore"
+    "lint:fix": "node ./scripts/test.mts lint --fix",
+    "release": "node ./scripts/release.mts"
   },
   "lint-staged": {
     "!(src/**/index).{ts,js,mjs}": "npm run lint:fix --"

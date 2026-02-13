@@ -16,17 +16,26 @@
                 "tests/visual/**/*.scene.ts",
                 // Scripts called from package.json using ts-node
                 "scripts/utils/autoGenerateUnsafeEvalFunctions.ts",
-                // 3rd party configurations,
-                "dts.config.js"
+                // Config for dts-bundle-generator (no knip plugin)
+                ".configs/dts.config.js"
             ],
-            "project": ["src/**/*.ts", "scripts/**/*.{ts,js}", "tests/**/*.ts", "*.{mjs,js,json}", "types/**/*.d.ts"]
+            "project": [
+                "src/**/*.ts",
+                "scripts/**/*.{ts,js}",
+                "tests/**/*.ts",
+                "*.{mjs,js,json}",
+                ".configs/*.{js,mjs,json,jsonc}",
+                "types/**/*.d.ts"
+            ],
+            "jest":  [".configs/jest.config.js"],
+            "typedoc": [".configs/typedoc.json"],
+            "rollup": [".configs/rollup.config.mjs"],
+            "github-actions": [".github/workflows/**/*.{yml,yaml}"]
         }
     },
     "ignoreDependencies": [
         // Inlined in jest transform config; knip can't trace string references
         "@babel/plugin-transform-modules-commonjs",
-        // Not detected in jest setup
-        "http-server",
         "worker",
         // Used in bump script
         "semver",
@@ -34,8 +43,8 @@
         "inquirer",
         // Used in eslint config
         "@stylistic/eslint-plugin",
-        // Used in typedoc config
-        "@gerrit0/mini-shiki"
+        // Transitive dep of typedoc; used directly in typedoc-plugin-stackblitz
+        "@gerrit0/mini-shiki",
         // Used in build script
         "dts-bundle-generator",
         "tsc-silent"

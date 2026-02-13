@@ -3,7 +3,11 @@
     "compilerOptions": {
         "declaration": true,
         "emitDeclarationOnly": true,
-        "outDir": "../lib"
+        "rootDir": "../src",
+        "outDir": "../lib",
+        "paths": {
+            "~/*": ["./src/*"],
+        }
     },
     "include": [
         "../src",
@@ -11,7 +15,7 @@
     ],
     "exclude": [
         "../src/bundle.*",
-        "**/__tests__",
-        "../tests"
+        "../src/**/__tests__",
+        "../src/**/__docs__/examples",
     ]
 }
