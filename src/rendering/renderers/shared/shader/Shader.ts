@@ -279,20 +279,7 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
 
         const nameHash: Record<string, GroupsData> = {};
 
-        if (!resources && !groups)
-        {
-            resources = {};
-        }
-
-        if (resources && groups)
-        {
-            throw new Error('[Shader] Cannot have both resources and groups');
-        }
-        else if (!gpuProgram && groups && !groupMap)
-        {
-            throw new Error('[Shader] No group map or WebGPU shader provided - consider using resources instead.');
-        }
-        else if (!gpuProgram && groups && groupMap)
+        if (groupMap)
         {
             for (const i in groupMap)
             {
@@ -307,6 +294,20 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
                     };
                 }
             }
+        }
+
+        if (!resources && !groups)
+        {
+            resources = {};
+        }
+
+        if (resources && groups)
+        {
+            throw new Error('[Shader] Cannot have both resources and groups');
+        }
+        else if (!gpuProgram && groups && !groupMap)
+        {
+            throw new Error('[Shader] No group map or WebGPU shader provided - consider using resources instead.');
         }
         else if (gpuProgram && groups && !groupMap)
         {
@@ -325,7 +326,7 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
         else if (resources)
         {
             groups = {};
-            groupMap = {};
+            groupMap ||= {};
 
             if (gpuProgram)
             {

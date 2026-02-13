@@ -263,7 +263,7 @@ export class GlGeometrySystem implements System
 
         const signature = this.getSignature(geometry, program);
 
-        let gpuData = geometry._gpuData[this._renderer.uid];
+        let gpuData = geometry._gpuData[this._renderer.uid] as GlGeometryGpuData;
 
         if (!gpuData)
         {
