@@ -42,7 +42,7 @@
     "test:unit": "node ./scripts/test.mts unit",
     "test:types": "node ./scripts/test.mts types",
     "test:lint": "node ./scripts/test.mts lint",
-    "lint:fix": "node ./scripts/test.mts lint --fix",
+    "lint": "node ./scripts/test.mts lint --fix",
     "release": "node ./scripts/release.mts"
   },
   "lint-staged": {
