@@ -73,7 +73,12 @@ export class GpuStateSystem implements System
      */
     public getColorTargets(state: State, count: number): GPUColorTargetState[]
     {
-        const blend = GpuBlendModesToPixi[state.blendMode] || GpuBlendModesToPixi.normal;
+        // WebGPU blending is enabled/disabled by the presence of `GPUColorTargetState.blend`.
+        // A boolean flag alone doesn't exist at the API level.
+        // If `state.blend` is false (e.g. filters doing multiple passes) we must omit the blend descriptor entirely.
+        const blend = (state.blend)
+            ? (GpuBlendModesToPixi[state.blendMode] || GpuBlendModesToPixi.normal)
+            : undefined;
 
         const targets: GPUColorTargetState[] = [];
         const target = {

@@ -38,6 +38,7 @@ export class GpuEncoderSystem implements System
 
     private _gpu: GPU;
     private _boundBindGroup: Record<number, BindGroup> = Object.create(null);
+    private _boundBindGroupKey: Record<number, string> = Object.create(null);
     private _boundVertexBuffer: Record<number, Buffer> = Object.create(null);
     private _boundIndexBuffer: Buffer;
     private _boundPipeline: GPURenderPipeline;
@@ -135,20 +136,20 @@ export class GpuEncoderSystem implements System
     public resetBindGroup(index: number)
     {
         this._boundBindGroup[index] = null;
+        this._boundBindGroupKey[index] = null;
     }
 
     public setBindGroup(index: number, bindGroup: BindGroup, program: GpuProgram)
     {
-        if (this._boundBindGroup[index] === bindGroup) return;
+        if (this._boundBindGroupKey[index] === bindGroup._key) return;
+
         this._boundBindGroup[index] = bindGroup;
+        this._boundBindGroupKey[index] = bindGroup._key;
 
         bindGroup._touch(this._renderer.gc.now, this._renderer.tick);
 
-        // TODO getting the bind group works as it looks at th e assets and generates a key
-        // should this just be hidden behind a dirty flag?
         const gpuBindGroup = this._renderer.bindGroup.getBindGroup(bindGroup, program, index);
 
-        // mark each item as having been used..
         this.renderPassEncoder.setBindGroup(index, gpuBindGroup);
     }
 
@@ -310,6 +311,7 @@ export class GpuEncoderSystem implements System
         for (let i = 0; i < 16; i++)
         {
             this._boundBindGroup[i] = null;
+            this._boundBindGroupKey[i] = null;
             this._boundVertexBuffer[i] = null;
         }
 
@@ -322,6 +324,7 @@ export class GpuEncoderSystem implements System
         (this._renderer as null) = null;
         this._gpu = null;
         this._boundBindGroup = null;
+        this._boundBindGroupKey = null;
         this._boundVertexBuffer = null;
         this._boundIndexBuffer = null;
         this._boundPipeline = null;

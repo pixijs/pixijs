@@ -44,8 +44,6 @@ export class BindGroupSystem implements System
 
     public getBindGroup(bindGroup: BindGroup, program: GpuProgram, groupIndex: number): GPUBindGroup
     {
-        bindGroup._updateKey();
-
         // The cache key must include both the resources AND the program layout,
         // because a GPUBindGroup must exactly match its GPUBindGroupLayout.
         // Two programs with different layouts cannot share a GPUBindGroup,

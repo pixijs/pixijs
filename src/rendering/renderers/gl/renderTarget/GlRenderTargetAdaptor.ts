@@ -202,6 +202,16 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             gpuRenderTarget._attachedLayer = layer;
         }
 
+        if (renderTarget.depthStencilTexture)
+        {
+            this._attachDepthStencilTexture(renderTarget, mipLevel, layer);
+        }
+        // if the stencil buffer has been requested, we need to create a stencil buffer
+        else if (!gpuRenderTarget.depthStencilRenderBuffer && (renderTarget.stencil || renderTarget.depth))
+        {
+            this._initStencil(gpuRenderTarget);
+        }
+
         // Set draw buffers for multiple render targets (MRT)
         if (renderTarget.colorTextures.length > 1)
         {
@@ -226,12 +236,6 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
                 viewport.width,
                 viewport.height,
             );
-        }
-
-        // if the stencil buffer has been requested, we need to create a stencil buffer
-        if (!gpuRenderTarget.depthStencilRenderBuffer && (renderTarget.stencil || renderTarget.depth))
-        {
-            this._initStencil(gpuRenderTarget);
         }
 
         this.clear(renderTarget, clear, clearColor);
@@ -288,6 +292,11 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         }
 
         this._initColor(renderTarget, glRenderTarget);
+
+        if (renderTarget.depthStencilTexture)
+        {
+            this._attachDepthStencilTexture(renderTarget, 0, 0);
+        }
 
         // set up a depth texture..
 
@@ -556,6 +565,59 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
                     msaaRenderBuffer
                 );
             });
+        }
+    }
+
+    private _attachDepthStencilTexture(
+        renderTarget: RenderTarget,
+        mipLevel: number,
+        layer: number
+    )
+    {
+        const renderer = this._renderer;
+        const gl = renderer.gl;
+        const source = renderTarget.depthStencilTexture;
+
+        const glSource = renderer.texture.getGlSource(source);
+        const glTexture = glSource.texture;
+        const format = source.format;
+
+        let attachment: number = gl.DEPTH_ATTACHMENT;
+
+        if (format === 'depth24plus-stencil8' || format === 'depth24plus' || format === 'stencil8')
+        {
+            attachment = gl.DEPTH_STENCIL_ATTACHMENT;
+        }
+
+        if (glSource.target === gl.TEXTURE_2D)
+        {
+            gl.framebufferTexture2D(
+                gl.FRAMEBUFFER,
+                attachment,
+                gl.TEXTURE_2D,
+                glTexture,
+                mipLevel
+            );
+        }
+        else if (glSource.target === gl.TEXTURE_2D_ARRAY)
+        {
+            (gl as any as WebGL2RenderingContext).framebufferTextureLayer(
+                gl.FRAMEBUFFER,
+                attachment,
+                glTexture,
+                mipLevel,
+                layer
+            );
+        }
+        else if (glSource.target === gl.TEXTURE_CUBE_MAP)
+        {
+            gl.framebufferTexture2D(
+                gl.FRAMEBUFFER,
+                attachment,
+                gl.TEXTURE_CUBE_MAP_POSITIVE_X + layer,
+                glTexture,
+                mipLevel
+            );
         }
     }
 
