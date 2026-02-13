@@ -156,7 +156,6 @@ describe('extractAttributesFromGpuProgram', () =>
         });
     });
 
-
     it('should return empty object when entry point is not found', () =>
     {
         const extractedAttributeData = extractAttributesFromGpuProgram({

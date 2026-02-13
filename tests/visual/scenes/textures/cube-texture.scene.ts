@@ -151,7 +151,6 @@ export const scene: TestScene = {
     it: 'should sample a cube texture (samplerCube/texture_cube)',
     pixelMatch: 650,
 
-
     options: {
         depth: true,
     },
