@@ -1,27 +1,60 @@
 import childProcess from 'child_process';
+import path from 'path';
 
-/**
- * Utility to do spawn but as a Promise
- * @param command
- * @param args
- * @param options
- */
-export const spawn = (command: string, args: string[], options: childProcess.SpawnOptions = {}) =>
+export const spawn = (command: string, args: string[], options: childProcess.SpawnOptions & { signal?: AbortSignal } = {}) =>
     new Promise<void>((resolve, reject) =>
     {
+        const { signal, ...spawnOptions } = options;
+        const binPath = path.resolve(process.cwd(), 'node_modules/.bin');
+        const envPath = `${binPath}${path.delimiter}${process.env.PATH}`;
+
         const child = childProcess.spawn(command, args, {
             stdio: 'inherit',
             cwd: process.cwd(),
             shell: process.platform === 'win32',
-            ...options,
+            ...spawnOptions,
+            env: { ...process.env, ...spawnOptions.env, PATH: envPath },
         });
 
-        child.on('close', async (code) =>
+        let settled = false;
+        let aborted = false;
+
+        const settle = (fn: () => void) =>
         {
-            if (code === 0)
+            if (!settled)
             {
-                resolve();
+                settled = true;
+                fn();
+            }
+        };
+
+        if (signal)
+        {
+            if (signal.aborted)
+            {
+                child.kill('SIGTERM');
+                settle(() => resolve());
+
+                return;
+            }
+
+            signal.addEventListener('abort', () =>
+            {
+                aborted = true;
+                child.kill('SIGTERM');
+            }, { once: true });
+        }
+
+        child.on('close', (code) =>
+        {
+            if (code === 0 || aborted)
+            {
+                settle(() => resolve());
+            }
+            else
+            {
+                settle(() => reject(new Error(`"${command} ${args.join(' ')}" exited with code ${code}`)));
             }
         });
-        child.on('error', reject);
+        child.on('error', (err) => settle(() => reject(err)));
     });
