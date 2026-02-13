@@ -31,7 +31,7 @@
     "clean": "rimraf \"{lib,dist}\" .pr_uploads .s3_uploads --glob",
     "build": "node ./scripts/build.mts",
     "build:lib": "node ./scripts/build.mts --lib --dev",
-    "build:docs": "npx typedoc --options .configs/typedoc.json && copyfiles -f dist/pixi.min.mjs dist/pixi.min.mjs.map .s3_uploads/docs/",
+    "build:docs": "npx typedoc --options .configs/typedoc.json && node ./scripts/typedoc/html-to-md.mts && copyfiles -f dist/pixi.min.mjs dist/pixi.min.mjs.map .s3_uploads/docs/",
     "build:status": "node ./scripts/build-status.mjs",
     "dist": "npm run clean && npm run build && npm run build:docs && copyfiles -u 1 \"dist/**/*\" .s3_uploads/",
     "watch:build": "nodemon --watch \"./src/*\" --exec \"node ./scripts/build.mts --dev\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
@@ -46,7 +46,7 @@
     "release": "node ./scripts/release.mts"
   },
   "lint-staged": {
-    "!(src/**/index).{ts,js,mjs}": "npm run lint:fix --"
+    "!(src/**/index).{ts,js,mjs}": "eslint --cache --max-warnings 0 --fix"
   },
   "dependencies": {
     "@pixi/colord": "^2.9.6",

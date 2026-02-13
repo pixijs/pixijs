@@ -38,7 +38,7 @@ async function main()
     const rollupEnv = isLib ? { LIB_ONLY: '1' } : {};
     const rollup = spawn('rollup', ['-c', '.configs/rollup.config.mjs', '--failAfterWarnings'], {
         signal,
-        env: { ...process.env, ...rollupEnv },
+        env: rollupEnv,
     });
 
     const needsTypes = !isLib || isDev;

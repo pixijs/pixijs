@@ -123,13 +123,13 @@ try
     if (runUnit)
     {
         await spawn('jest', [...jestConfig, ...jestFlags, '--testPathIgnorePatterns=tests/visual', ...passthrough], {
-            env: { ...process.env, ...jestEnv },
+            env: jestEnv,
         });
     }
     if (runVisual)
     {
         await spawn('jest', [...jestConfig, ...jestFlags, '--testPathPattern=tests/visual', ...passthrough], {
-            env: { ...process.env, ...jestEnv },
+            env: jestEnv,
         });
     }
 }

@@ -1,6 +1,7 @@
 {
     "$schema": "https://typedoc.org/schema.json",
     "entryPoints": ["../src/index.docs.ts"],
+    "tsconfig": "./tsconfig.build.json",
     "gaID": "G-ZXJM5CB1QM",
     "disableSources": true,
     "navigation": {
@@ -19,11 +20,11 @@
     "outputs": [
         {
             "name": "markdown",
-            "path": ".s3_uploads/docs_md"
+            "path": "../.s3_uploads/docs_md"
         },
         {
             "name": "html",
-            "path": ".s3_uploads/docs"
+            "path": "../.s3_uploads/docs"
         }
     ],
     "plugin": [
