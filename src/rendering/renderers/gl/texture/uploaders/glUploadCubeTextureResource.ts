@@ -29,6 +29,10 @@ export function createGlUploadCubeTextureResource(
             {
                 const key = FACE_ORDER[faceIndex];
                 const face = faces[key];
+
+                // Skip empty faces (e.g. when using Texture.EMPTY as a placeholder).
+                if (!face.resource) continue;
+
                 const uploader = uploaders[face.uploadMethodId] || uploaders.image;
 
                 // Each cube face target must be initialized (texImage2D) at least once before using texSubImage2D.

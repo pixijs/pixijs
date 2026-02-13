@@ -6,7 +6,6 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render a mesh using a storage buffer (SSBO)',
-    only: true,
     renderers: {
         webgl1: false,
         webgl2: false,
