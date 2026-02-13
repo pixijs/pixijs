@@ -305,7 +305,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                 let total = context.measureText(first + second).width;
                 let amount = total - (c1 + c2);
 
-                if (amount)
+                if (amount && this.chars[first])
                 {
                     this.chars[first].kerning[second] = amount;
                 }
@@ -314,7 +314,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                 total = context.measureText(first + second).width;
                 amount = total - (c1 + c2);
 
-                if (amount)
+                if (amount && this.chars[second])
                 {
                     this.chars[second].kerning[first] = amount;
                 }
