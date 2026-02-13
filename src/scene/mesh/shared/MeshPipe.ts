@@ -186,7 +186,13 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
     {
         if (!mesh.isRenderable) return;
 
-        mesh.state.blendMode = getAdjustedBlendModeBlend(mesh.groupBlendMode, mesh.texture._source);
+        // Only adjust blend mode when blending is enabled.
+        // Setting blendMode forces blend=true (via the setter), which would
+        // clobber an explicit blend=false on the mesh's state.
+        if (mesh.state.blend)
+        {
+            mesh.state.blendMode = getAdjustedBlendModeBlend(mesh.groupBlendMode, mesh.texture._source);
+        }
 
         const localUniforms = this.localUniforms;
 

@@ -10,7 +10,8 @@ export const scene: TestScene = {
     renderers: {
         webgl2: true,
         webgpu: true,
-        webgl1: false,
+        webgl1: true,
+        canvas: false,
     },
     create: async (scene: Container) =>
     {
@@ -23,7 +24,7 @@ export const scene: TestScene = {
 
         const gpuShaderSrc = /* wgsl */`
             struct Uniforms {
-                uColor: vec4<f32>,
+                uTint: vec4<f32>,
             }
 
             @group(0) @binding(0) var<uniform> uniforms : Uniforms;
@@ -35,24 +36,24 @@ export const scene: TestScene = {
 
             @fragment
             fn fsMain() -> @location(0) vec4<f32> {
-                return uniforms.uColor;
+                return uniforms.uTint;
             }
         `;
 
         const glShader = {
-            vertex: `#version 300 es
+            vertex: `
                 precision highp float;
                 in vec2 aPosition;
                 void main() {
                     gl_Position = vec4(aPosition, 0.0, 1.0);
                 }
             `,
-            fragment: `#version 300 es
+            fragment: `
                 precision highp float;
-                uniform vec4 uColor;
-                out vec4 fragColor;
+                uniform vec4 uTint;
+
                 void main() {
-                    fragColor = uColor;
+                    finalColor = uTint;
                 }
             `,
 
@@ -69,7 +70,7 @@ export const scene: TestScene = {
                 },
                 resources: {
                     uniforms: {
-                        uColor: { value: [1, 0, 0, 1], type: 'vec4<f32>' },
+                        uTint: { value: [1, 0, 0, 1], type: 'vec4<f32>' },
                     },
                 },
 
@@ -97,7 +98,7 @@ export const scene: TestScene = {
                 },
                 resources: {
                     uniforms: {
-                        uColor: { value: [0, 0, 0, 0], type: 'vec4<f32>' },
+                        uTint: { value: [0, 0, 0, 0], type: 'vec4<f32>' },
                     },
                 },
             }),
