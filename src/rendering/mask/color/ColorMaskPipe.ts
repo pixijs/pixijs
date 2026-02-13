@@ -2,18 +2,13 @@ import { ExtensionType } from '../../../extensions/Extensions';
 
 import type { Container } from '../../../scene/container/Container';
 import type { Effect } from '../../../scene/container/Effect';
-import type { Instruction } from '../../renderers/shared/instructions/Instruction';
+import type { WebGLRenderer } from '../../renderers/gl/WebGLRenderer';
+import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../renderers/types';
 import type { ColorMask } from './ColorMask';
-
-/** @internal */
-export interface ColorMaskInstruction extends Instruction
-{
-    renderPipeId: 'colorMask',
-    colorMask: number,
-}
+import type { ColorMaskInstruction } from './ColorMaskTypes';
 
 /** @internal */
 export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
@@ -23,7 +18,6 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
         type: [
             ExtensionType.WebGLPipes,
             ExtensionType.WebGPUPipes,
-            ExtensionType.CanvasPipes,
         ],
         name: 'colorMask',
     } as const;
@@ -98,7 +92,7 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
     {
         const renderer = this._renderer;
 
-        renderer.colorMask.setMask(instruction.colorMask);
+        (renderer as WebGLRenderer | WebGPURenderer).colorMask.setMask(instruction.colorMask);
     }
 
     public destroy()

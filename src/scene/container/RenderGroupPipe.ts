@@ -1,15 +1,13 @@
 import { ExtensionType } from '../../extensions/Extensions';
 import { Matrix } from '../../maths/matrix/Matrix';
+import { type Renderer } from '../../rendering/renderers/types';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { BatchableSprite } from '../sprite/BatchableSprite';
 import { executeInstructions } from './utils/executeInstructions';
 
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
-import type { Renderer } from '../../rendering/renderers/types';
 import type { RenderGroup } from './RenderGroup';
-
-const tempMatrix = new Matrix();
 
 /**
  * The RenderGroupPipe is a render pipe for rendering RenderGroups.
@@ -99,12 +97,10 @@ export class RenderGroupPipe implements InstructionPipe<RenderGroup>
         {
             renderGroup.textureNeedsUpdate = false;
 
-            const worldTransformMatrix = tempMatrix
-                .identity()
-                .translate(
-                    -renderGroup._textureBounds.x,
-                    -renderGroup._textureBounds.y
-                );
+            const worldTransformMatrix = new Matrix().translate(
+                -renderGroup._textureBounds.x,
+                -renderGroup._textureBounds.y
+            );
 
             this._renderer.renderTarget.push(renderGroup.texture, true, null, renderGroup.texture.frame);
 

@@ -1,7 +1,5 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { Container } from '../../../../src/scene/container/Container';
-import { FillGradient } from '../../../../src/scene/graphics/shared/fill/FillGradient';
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
+import { Assets } from '~/assets';
+import { Container, FillGradient, Graphics } from '~/scene';
 
 import type { TestScene } from '../../types';
 

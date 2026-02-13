@@ -221,6 +221,7 @@ export class GenerateTextureSystem implements System
         type: [
             ExtensionType.WebGLSystem,
             ExtensionType.WebGPUSystem,
+            ExtensionType.CanvasSystem,
         ],
         name: 'textureGenerator',
     } as const;

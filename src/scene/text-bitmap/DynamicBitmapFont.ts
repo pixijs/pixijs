@@ -13,7 +13,7 @@ import { AbstractBitmapFont } from './AbstractBitmapFont';
 
 import type { ICanvasRenderingContext2D } from '../../environment/canvas/ICanvasRenderingContext2D';
 import type { CanvasAndContext } from '../../rendering/renderers/shared/texture/CanvasPool';
-import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
+import type { FontMetrics } from '../text/canvas/utils/types';
 
 /** @internal */
 export interface DynamicBitmapFontOptions
@@ -305,7 +305,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                 let total = context.measureText(first + second).width;
                 let amount = total - (c1 + c2);
 
-                if (amount)
+                if (amount && this.chars[first])
                 {
                     this.chars[first].kerning[second] = amount;
                 }
@@ -314,7 +314,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                 total = context.measureText(first + second).width;
                 amount = total - (c1 + c2);
 
-                if (amount)
+                if (amount && this.chars[second])
                 {
                     this.chars[second].kerning[first] = amount;
                 }

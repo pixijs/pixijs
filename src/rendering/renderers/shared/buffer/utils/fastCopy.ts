@@ -9,8 +9,8 @@
  * @advanced
  */
 export function fastCopy(
-    sourceBuffer: ArrayBufferLike,
-    destinationBuffer: ArrayBufferLike,
+    sourceBuffer: ArrayBuffer | ArrayBufferLike,
+    destinationBuffer: ArrayBuffer | ArrayBufferLike,
     sourceOffset?: number,
     byteLength?: number
 ): void

@@ -70,6 +70,55 @@ describe('Graphics Bounds', () =>
             expect(height).toEqual(208);
         });
 
+        it('should expand bounds for miter joins on sharp angles', () =>
+        {
+            const graphics = new Graphics();
+
+            // V-shape with a sharp angle at the bottom
+            graphics
+                .moveTo(0, 0)
+                .lineTo(50, 100)
+                .lineTo(100, 0)
+                .stroke({ width: 10, color: 0xff0000 });
+
+            const bounds = graphics.context.bounds;
+
+            // The miter at (50, 100) should extend the bounds beyond 100 + halfWidth
+            expect(bounds.maxY).toBeGreaterThan(105);
+        });
+
+        it('should not expand bounds for bevel joins on sharp angles', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics
+                .moveTo(0, 0)
+                .lineTo(50, 100)
+                .lineTo(100, 0)
+                .stroke({ width: 10, color: 0xff0000, join: 'bevel' });
+
+            const bounds = graphics.context.bounds;
+
+            // Bevel join: padding is just halfWidth (5)
+            expect(bounds.maxY).toEqual(105);
+        });
+
+        it('should not expand bounds for round joins on sharp angles', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics
+                .moveTo(0, 0)
+                .lineTo(50, 100)
+                .lineTo(100, 0)
+                .stroke({ width: 10, color: 0xff0000, join: 'round' });
+
+            const bounds = graphics.context.bounds;
+
+            // Round join: padding is just halfWidth (5)
+            expect(bounds.maxY).toEqual(105);
+        });
+
         it('should be zero for empty Graphics', () =>
         {
             const graphics = new Graphics();

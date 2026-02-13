@@ -12,6 +12,7 @@ import type { Container } from '~/scene';
  * does not use them.. they come out flipped!
  */
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should render a fully custom mesh',
     create: async (scene: Container) =>
     {

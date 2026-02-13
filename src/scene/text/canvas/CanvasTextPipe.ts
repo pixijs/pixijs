@@ -28,7 +28,12 @@ export class CanvasTextPipe implements RenderPipe<Text>
     {
         this._renderer = renderer;
         renderer.runners.resolutionChange.add(this);
-        this._managedTexts = new GCManagedHash({ renderer, type: 'renderable', onUnload: this.onTextUnload.bind(this) });
+        this._managedTexts = new GCManagedHash({
+            renderer,
+            type: 'renderable',
+            onUnload: this.onTextUnload.bind(this),
+            name: 'canvasText'
+        });
     }
 
     protected resolutionChange()
@@ -60,7 +65,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
         {
             const resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
 
-            if (batchableText.currentKey !== text.styleKey || text.resolution !== resolution)
+            if (batchableText.currentKey !== text.styleKey || text._resolution !== resolution)
             {
                 // If the text has changed, we need to update the GPU text
                 this._updateGpuText(text);

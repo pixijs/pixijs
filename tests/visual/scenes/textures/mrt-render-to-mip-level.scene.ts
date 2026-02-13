@@ -1,6 +1,6 @@
-import { Mesh } from '../../../../src/scene/mesh/shared/Mesh';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
 import { Geometry, RenderTarget, Shader, Texture, TextureSource } from '~/rendering';
+import { Mesh } from '~/scene/mesh/shared/Mesh';
+import { Sprite } from '~/scene/sprite/Sprite';
 
 import type { TestScene } from '../../types';
 import type { Renderer } from '~/rendering';
@@ -8,11 +8,7 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render to MRT at a specific mip level',
-    renderers: {
-        webgl2: true,
-        webgpu: true,
-        webgl1: false,
-    },
+    excludeRenderers: ['webgl1'],
     create: async (scene: Container, renderer: Renderer) =>
     {
         // IMPORTANT: mipLevelCount must be set before the GPU texture is created.

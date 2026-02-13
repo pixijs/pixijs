@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { type RenderGroup } from '../../../scene/container/RenderGroup';
+import { cleanArray, cleanHash } from '../../../utils/data/clean';
 import { type GPUDataOwner, type Renderer } from '../types';
 import { type Renderable } from './Renderable';
 import { type RenderOptions } from './system/AbstractRenderer';
@@ -99,6 +100,7 @@ export class GCSystem implements System<GCSystemOptions>
         type: [
             ExtensionType.WebGLSystem,
             ExtensionType.WebGPUSystem,
+            ExtensionType.CanvasSystem,
         ],
         name: 'gc',
         priority: 0,
@@ -123,9 +125,11 @@ export class GCSystem implements System<GCSystemOptions>
     /** Array of resources being tracked for garbage collection */
     private readonly _managedResources: GCableEventEmitter[] = [];
     private readonly _managedResourceHashes: GCResourceHashEntry[] = [];
+    private readonly _managedCollections: {context: any, collection: string, type: 'hash' | 'array'}[] = [];
 
     /** ID of the GC scheduler handler */
     private _handler: number;
+    private _collectionsHandler: number;
 
     /** How frequently GC runs in ms */
     private _frequency: number;
@@ -187,11 +191,33 @@ export class GCSystem implements System<GCSystemOptions>
                 this._frequency,
                 false
             );
+            // Schedule periodic hash table cleanup
+            this._collectionsHandler = this._renderer.scheduler.repeat(
+                () =>
+                {
+                    for (const hash of this._managedCollections)
+                    {
+                        const { context, collection, type } = hash;
+
+                        if (type === 'hash')
+                        {
+                            context[collection] = cleanHash(context[collection]);
+                        }
+                        else
+                        {
+                            context[collection] = cleanArray(context[collection]);
+                        }
+                    }
+                },
+                this._frequency
+            );
         }
         else
         {
             this._renderer.scheduler.cancel(this._handler);
+            this._renderer.scheduler.cancel(this._collectionsHandler);
             this._handler = 0;
+            this._collectionsHandler = 0;
         }
     }
 
@@ -225,11 +251,27 @@ export class GCSystem implements System<GCSystemOptions>
     private _updateInstructionGCTick(renderGroup: RenderGroup, gcTick: number): void
     {
         renderGroup.instructionSet.gcTick = gcTick;
+        renderGroup.gcTick = gcTick;
 
         for (const child of renderGroup.renderGroupChildren)
         {
             this._updateInstructionGCTick(child, gcTick);
         }
+    }
+
+    /**
+     * Registers a collection for garbage collection tracking.
+     * @param context - The object containing the collection
+     * @param collection - The property name on context that holds the collection
+     * @param type - The type of collection to track ('hash' or 'array')
+     */
+    public addCollection(context: any, collection: string, type: 'hash' | 'array'): void
+    {
+        this._managedCollections.push({
+            context,
+            collection,
+            type,
+        });
     }
 
     /**
@@ -460,6 +502,14 @@ export class GCSystem implements System<GCSystemOptions>
                     }
                 }
 
+                if (type === 'renderable')
+                {
+                    const res = resource as Renderable;
+                    const renderGroup = res.renderGroup ?? res.parentRenderGroup;
+
+                    if (renderGroup) renderGroup.structureDidChange = true;
+                }
+
                 // Call the cleanup function
                 resource.unload();
                 resource._gcData = null;
@@ -489,7 +539,7 @@ export class GCSystem implements System<GCSystemOptions>
         });
         this._managedResources.length = 0;
         this._managedResourceHashes.length = 0;
+        this._managedCollections.length = 0;
         this._renderer = null as any as Renderer;
     }
 }
-

@@ -150,7 +150,8 @@ function rotationY(out: Float32Array, rad: number): Float32Array
 export const scene: TestScene = {
     it: 'should sample a cube texture (samplerCube/texture_cube)',
     pixelMatch: 650,
-    // only: true,
+
+
     options: {
         depth: true,
     },

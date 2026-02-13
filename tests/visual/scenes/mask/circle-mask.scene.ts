@@ -4,6 +4,7 @@ import type { TestScene } from '../../types';
 import type { Container } from '~/scene';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should render circle mask correctly',
     create: async (scene: Container) =>
     {

@@ -36,12 +36,12 @@ const WGSL_TO_VERTEX_TYPES: Record<string, VertexFormat> = {
     'vec4<bool>': 'uint32x4',
 };
 
-/** Regex to match @location decorated fields */
+/** Regex to match \@location decorated fields */
 const LOCATION_REGEX = /@location\((\d+)\)\s+([a-zA-Z0-9_]+)\s*:\s*([a-zA-Z0-9_<>]+)(?:,|\s|\)|$)/g;
 
 /**
- * Parses @location attributes from a string and populates results.
- * @param str - String to search for @location patterns
+ * Parses \@location attributes from a string and populates results.
+ * @param str - String to search for \@location patterns
  * @param results - Results object to populate
  */
 function parseLocations(str: string, results: Record<string, ExtractedAttributeData>): void
@@ -82,8 +82,8 @@ function stripComments(source: string): string
  * Extracts vertex attributes from a WGSL shader program.
  *
  * Supports two styles:
- * 1. Inline @location decorators in function parameters
- * 2. Struct-based input where @location decorators are in the struct definition
+ * 1. Inline \@location decorators in function parameters
+ * 2. Struct-based input where \@location decorators are in the struct definition
  * @param root0
  * @param root0.source
  * @param root0.entryPoint

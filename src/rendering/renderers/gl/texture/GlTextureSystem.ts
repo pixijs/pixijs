@@ -72,7 +72,13 @@ export class GlTextureSystem implements System, CanvasGenerator
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
-        this._managedTextures = new GCManagedHash({ renderer, type: 'resource', onUnload: this.onSourceUnload.bind(this) });
+
+        this._managedTextures = new GCManagedHash({
+            renderer,
+            type: 'resource',
+            onUnload: this.onSourceUnload.bind(this),
+            name: 'glTexture'
+        });
 
         // our 2D uploaders..
         const baseUploaders = {
@@ -235,6 +241,12 @@ export class GlTextureSystem implements System, CanvasGenerator
             throw new Error(`Unsupported view dimension: ${source.viewDimension} with this webgl version: ${this._renderer.context.webGLVersion}`);
         }
 
+        // Cube textures use a different GL target.
+        if (source.uploadMethodId === 'cube')
+        {
+            glTexture.target = gl.TEXTURE_CUBE_MAP;
+        }
+
         if (source.autoGenerateMipmaps && (this._renderer.context.supports.nonPowOf2mipmaps || source.isPowerOfTwo))
         {
             const biggestDimension = Math.max(source.width, source.height);
@@ -383,8 +395,6 @@ export class GlTextureSystem implements System, CanvasGenerator
         );
 
         // Mips (if requested)
-        if (source.mipLevelCount === 0) return;
-
         let w = Math.max(source.pixelWidth >> 1, 1);
         let h = Math.max(source.pixelHeight >> 1, 1);
 
@@ -432,8 +442,6 @@ export class GlTextureSystem implements System, CanvasGenerator
         );
 
         // Mips (if requested)
-        if (source.mipLevelCount === 0) return;
-
         let w = Math.max(source.pixelWidth >> 1, 1);
         let h = Math.max(source.pixelHeight >> 1, 1);
 
@@ -480,8 +488,6 @@ export class GlTextureSystem implements System, CanvasGenerator
         }
 
         // Mips (if requested)
-        if (source.mipLevelCount === 0) return;
-
         let w = Math.max(source.pixelWidth >> 1, 1);
         let h = Math.max(source.pixelHeight >> 1, 1);
 

@@ -61,7 +61,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
                 }
             });
         }
-        else if (group.type === 'texture_2d')
+        else if (group.type === 'texture_2d' || group.type.startsWith('texture_2d<'))
         {
             layout[group.group].push({
                 binding: group.binding,
@@ -87,7 +87,6 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
         }
         else if (group.type === 'texture_depth_2d_array')
         {
-            //   console.log('!!!>>>!!!>>>', group);
             layout[group.group].push({
                 binding: group.binding,
                 visibility: ShaderStage.FRAGMENT,
@@ -98,7 +97,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
                 }
             });
         }
-        else if (group.type === 'texture_2d_array')
+        else if (group.type === 'texture_2d_array' || group.type.startsWith('texture_2d_array<'))
         {
             layout[group.group].push({
                 binding: group.binding,
@@ -110,7 +109,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
                 }
             });
         }
-        else if (group.type === 'texture_cube')
+        else if (group.type === 'texture_cube' || group.type.startsWith('texture_cube<'))
         {
             layout[group.group].push({
                 binding: group.binding,

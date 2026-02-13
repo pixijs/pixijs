@@ -502,6 +502,20 @@ export abstract class AbstractSplitText<T extends SplitableTextObject> extends C
 
         this._style = new TextStyle(style);
 
+        this.styleChanged();
+    }
+
+    /**
+     * Used to notify the text that the style has changed.
+     * This will re-split the text and re-apply the style.
+     * @example
+     * ```ts
+     * text.style.fontSize = 32;
+     * text.styleChanged();
+     * ```
+     */
+    public styleChanged(): void
+    {
         // tidy up word/line containers, characters can be reused
         this.words.forEach((word) => word.destroy());
         this.words.length = 0;

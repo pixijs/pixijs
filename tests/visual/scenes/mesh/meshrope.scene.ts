@@ -5,6 +5,7 @@ import { Container, MeshRope } from '~/scene';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should render mesh rope',
     create: async (scene: Container) =>
     {

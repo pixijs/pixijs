@@ -1,6 +1,6 @@
 import { basePath } from '@test-utils';
 import { Assets } from '~/assets';
-import { Sprite } from '~/scene/sprite/Sprite';
+import { Sprite } from '~/scene';
 
 import type { TestScene } from '../../types';
 import type { Container } from '~/scene';

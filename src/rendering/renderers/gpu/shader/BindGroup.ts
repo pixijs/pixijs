@@ -95,11 +95,7 @@ export class BindGroup
 
         if (resource === currentResource) return;
 
-        if (currentResource)
-        {
-            resource.off?.('change', this.onResourceChange, this);
-        }
-
+        currentResource?.off?.('change', this.onResourceChange, this);
         resource.on?.('change', this.onResourceChange, this);
 
         this.resources[index] = resource;
@@ -157,16 +153,7 @@ export class BindGroup
         // using this bind group with a destroyed resource will cause the renderer to explode :)
         if (resource.destroyed)
         {
-            // free up the resource
-            const resources = this.resources;
-
-            for (const i in resources)
-            {
-                if (resources[i] === resource)
-                {
-                    resources[i] = null;
-                }
-            }
+            this.destroy();
         }
         else
         {

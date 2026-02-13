@@ -4,7 +4,7 @@ declare global
     {
         interface RendererSystems
         {
-            canvasText: import('./canvas/CanvasTextSystem').CanvasTextSystem;
+            canvasText: import('./shared/AbstractTextSystem').AbstractTextSystem;
         }
 
         interface RendererPipes

@@ -4,7 +4,8 @@ import { warn } from '../../utils/logging/warn';
 import { type Bounds } from '../container/bounds/Bounds';
 import { Container } from '../container/Container';
 
-// TODO make it clear render layer cannot have 'filters'
+// NOTE: Filters on ancestor containers do not apply to children attached to a RenderLayer.
+// See "Known issues" in the RenderLayer JSDoc below.
 
 /**
  * Options for configuring a RenderLayer. A RenderLayer allows control over rendering order
@@ -153,7 +154,11 @@ export interface RenderLayerOptions
  * Known issues:
  *  - Interaction may not work as expected since hit testing does not account for the visual render order created by layers.
  *    For example, if an object is visually moved to the front via a layer, hit testing will still use its original position.
- *  - RenderLayers and their children must all belong to the same renderGroup to work correctly
+ *  - RenderLayers and their children must all belong to the same renderGroup to work correctly.
+ *  - Filters on ancestor containers do not apply to children attached to a RenderLayer.
+ *    This is because render layer children are rendered outside their parent's filter scope
+ *    (filters capture children into a texture via push/pop, but render layer children skip
+ *    their parent's collection and render at the layer's position instead).
  * @category scene
  * @class
  * @extends null
@@ -245,7 +250,20 @@ export class RenderLayer extends Container
     public destroyed: boolean;
     /** @internal */
     public layerParentId: string;
-    /** @internal */
+    /**
+     * If true, the layer's children will be sorted by zIndex before rendering.
+     * If false, you can manually sort the children using sortRenderLayerChildren when needed.
+     * @default false
+     * @example
+     * ```ts
+     * const layer = new RenderLayer({
+     *     sortableChildren: true // Automatically sorts children by zIndex
+     * });
+     * ```
+     * @see {@link RenderLayer#sortRenderLayerChildren} For manual sorting
+     * @see {@link RenderLayer#sortFunction} For customizing the sort logic
+     * @see {@link Container#zIndex} For the default sort property
+     */
     public sortableChildren;
 
     /**

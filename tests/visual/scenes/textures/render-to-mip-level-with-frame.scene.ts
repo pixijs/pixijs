@@ -8,11 +8,7 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render to a mip level using a Texture frame (frame is mip-0 space)',
-    renderers: {
-        webgl2: true,
-        webgpu: true,
-        webgl1: false,
-    },
+    excludeRenderers: ['webgl1'],
     create: async (scene: Container, renderer: Renderer) =>
     {
         // Base backing texture (empty), with mip storage.

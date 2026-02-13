@@ -1,12 +1,12 @@
-import { Mesh } from '../../../../src/scene/mesh/shared/Mesh';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
 import { Geometry, RenderTarget, Shader, Texture } from '~/rendering';
+import { Mesh, Sprite } from '~/scene';
 
 import type { TestScene } from '../../types';
 import type { Renderer } from '~/rendering';
 import type { Container } from '~/scene';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should render to multiple color attachments (MRT)',
     pixelMatch: 500,
     create: async (scene: Container, renderer: Renderer) =>

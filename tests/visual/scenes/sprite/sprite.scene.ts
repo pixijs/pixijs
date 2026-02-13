@@ -7,6 +7,7 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render sprite',
+    excludeRenderers: ['canvas'],
     create: async (scene: Container) =>
     {
         const textures = await Assets.load([
