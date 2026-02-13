@@ -42,7 +42,7 @@ fn filterTextureCoord( aPosition:vec2<f32> ) -> vec2<f32>
 
 fn globalTextureCoord( aPosition:vec2<f32> ) -> vec2<f32>
 {
-  return  (aPosition.xy / gfu.uGlobalFrame.zw) + (gfu.uGlobalFrame.xy / gfu.uGlobalFrame.zw);  
+  return  (aPosition.xy / gfu.uGlobalFrame.zw) + (gfu.uGlobalFrame.xy / gfu.uGlobalFrame.zw);
 }
 
 fn getSize() -> vec2<f32>
@@ -53,7 +53,7 @@ fn getSize() -> vec2<f32>
 
 @vertex
 fn mainVertex(
-  @location(0) aPosition : vec2<f32>, 
+  @location(0) aPosition : vec2<f32>,
 ) -> VSOutput {
 
   let filteredCord = filterTextureCoord(aPosition);
