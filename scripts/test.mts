@@ -2,8 +2,8 @@
 import { spawn } from './utils/spawn.mts';
 
 const argv = process.argv.slice(2);
-const selectors = new Set(argv.filter((a) => !a.startsWith('--')));
-const passthrough = argv.filter((a) => a.startsWith('--'));
+const selectors = new Set(argv.filter((a) => !a.startsWith('-')));
+const passthrough = argv.filter((a) => a.startsWith('-'));
 const isDebug = selectors.has('debug');
 
 selectors.delete('debug');
