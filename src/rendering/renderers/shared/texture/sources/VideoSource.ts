@@ -116,6 +116,7 @@ export class VideoSource extends TextureSource<VideoResource>
 
     private _msToNextUpdate: number;
     private _preloadTimeout: number;
+    private _alphaModeExplicit: boolean;
 
     /** Callback when completed with load. */
     private _resolve: (value?: this | PromiseLike<this>) => void;
@@ -130,6 +131,8 @@ export class VideoSource extends TextureSource<VideoResource>
     {
         super(options);
 
+        const alphaModeExplicit = options.alphaMode !== undefined;
+
         // Merge provided options with default ones
         options = {
             ...VideoSource.defaultOptions,
@@ -141,6 +144,7 @@ export class VideoSource extends TextureSource<VideoResource>
         this._updateFPS = options.updateFPS || 0;
         this._msToNextUpdate = 0;
         this.autoPlay = options.autoPlay !== false;
+        this._alphaModeExplicit = alphaModeExplicit;
         this.alphaMode = options.alphaMode ?? 'premultiply-alpha-on-upload';
 
         // Binding for frame updates
@@ -261,7 +265,10 @@ export class VideoSource extends TextureSource<VideoResource>
             this._mediaReady();
         }
 
-        this.alphaMode = await detectVideoAlphaMode();
+        if (!this._alphaModeExplicit)
+        {
+            this.alphaMode = await detectVideoAlphaMode();
+        }
 
         // Create and return the loading promise
         this._load = new Promise((resolve, reject): void =>
