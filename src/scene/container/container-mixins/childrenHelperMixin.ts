@@ -377,7 +377,7 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
 
             if (currentIndex !== -1)
             {
-                child.parent.children.splice(currentIndex, 1);
+                child.removeFromParent();
             }
         }
 
