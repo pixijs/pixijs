@@ -76,6 +76,64 @@ describe('Container Events', () =>
 
             expect(listener).toHaveBeenCalledTimes(3);
         });
+
+        it('should trigger removed listeners when addChildAt is used', () =>
+        {
+            const removedListener = jest.fn();
+            const child = new Container();
+            const parentA = new Container();
+            const parentB = new Container();
+            const sibling = new Container();
+
+            parentB.addChild(sibling);
+
+            child.on('removed', removedListener);
+
+            parentA.addChild(child);
+
+            parentB.addChildAt(child, 1);
+
+            expect(removedListener).toHaveBeenCalledTimes(1);
+
+            parentB.addChildAt(child, 0);
+
+            expect(removedListener).toHaveBeenCalledTimes(2);
+
+            parentB.setChildIndex(child, 1);
+
+            expect(removedListener).toHaveBeenCalledTimes(3);
+
+            parentA.addChildAt(child, 0);
+
+            expect(removedListener).toHaveBeenCalledTimes(4);
+        });
+
+        it('should emit "removed" on child and "childRemoved" on old parent when addChildAt re-parents', () =>
+        {
+            const child = new Container();
+            const parentA = new Container();
+            const parentB = new Container();
+
+            const removedListener = jest.fn();
+            const childRemovedListener = jest.fn();
+
+            child.on('removed', removedListener);
+            parentA.on('childRemoved', childRemovedListener);
+
+            parentA.addChild(child);
+            expect(removedListener).not.toHaveBeenCalled();
+            expect(childRemovedListener).not.toHaveBeenCalled();
+
+            parentB.addChildAt(child, 0);
+
+            expect(removedListener).toHaveBeenCalledTimes(1);
+            expect(removedListener).toHaveBeenCalledWith(parentA);
+            expect(childRemovedListener).toHaveBeenCalledTimes(1);
+            expect(childRemovedListener).toHaveBeenCalledWith(child, parentA, 0);
+            expect(child.parent).toBe(parentB);
+            expect(parentA.children).not.toContain(child);
+            expect(parentB.children).toContain(child);
+        });
     });
 
     describe('destroy', () =>
