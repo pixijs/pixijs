@@ -135,7 +135,7 @@ describe('Container Events', () =>
             expect(parentB.children).toContain(child);
         });
 
-        it('should not emit "childAdded" or "added" when addChildAt moves child within same container', () =>
+        it('should not emit "childAdded" or "added" when addChildAt is called with same index in same container', () =>
         {
             const container = new Container();
             const childA = new Container();
@@ -157,7 +157,7 @@ describe('Container Events', () =>
             expect(container.children[1]).toBe(childB);
         });
 
-        it('should not emit "childAdded" or "added" when addChildAt is called with same index in same container', () =>
+        it('should not emit "childAdded" or "added" when addChildAt moves child within same container', () =>
         {
             const container = new Container();
             const childA = new Container();
