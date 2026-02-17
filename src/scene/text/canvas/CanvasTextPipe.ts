@@ -28,6 +28,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
     {
         this._renderer = renderer;
         renderer.runners.resolutionChange.add(this);
+        renderer.runners.contextChange.add(this);
         this._managedTexts = new GCManagedHash({
             renderer,
             type: 'renderable',
@@ -43,6 +44,29 @@ export class CanvasTextPipe implements RenderPipe<Text>
             const text = this._managedTexts.items[key];
 
             if (text?._autoResolution) text.onViewUpdate();
+        }
+    }
+
+    protected contextChange()
+    {
+        this._renderer.canvasText.clearActiveTextures();
+
+        for (const key in this._managedTexts.items)
+        {
+            const text = this._managedTexts.items[key];
+
+            if (text)
+            {
+                const gpuText = text._gpuData[this._renderer.uid] as BatchableText;
+
+                if (gpuText)
+                {
+                    gpuText.currentKey = '--';
+                    gpuText.texture = null;
+                }
+
+                text.onViewUpdate();
+            }
         }
     }
 

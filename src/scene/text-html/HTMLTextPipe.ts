@@ -32,6 +32,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     {
         this._renderer = renderer;
         renderer.runners.resolutionChange.add(this);
+        renderer.runners.contextChange.add(this);
         this._managedTexts = new GCManagedHash({
             renderer,
             type: 'renderable',
@@ -48,6 +49,29 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
             if (text?._autoResolution)
             {
+                text.onViewUpdate();
+            }
+        }
+    }
+
+    protected contextChange()
+    {
+        this._renderer.htmlText.clearActiveTextures();
+
+        for (const key in this._managedTexts.items)
+        {
+            const text = this._managedTexts.items[key];
+
+            if (text)
+            {
+                const gpuText = text._gpuData[this._renderer.uid] as BatchableHTMLText;
+
+                if (gpuText)
+                {
+                    gpuText.currentKey = '--';
+                    gpuText.texture = Texture.EMPTY;
+                }
+
                 text.onViewUpdate();
             }
         }
