@@ -6,6 +6,7 @@ import { RendererInitHook } from '../../../../utils/global/globalHooks';
 import { BatcherPipe } from '../../../batcher/shared/BatcherPipe';
 import { AlphaMaskPipe } from '../../../mask/alpha/AlphaMaskPipe';
 import { ColorMaskPipe } from '../../../mask/color/ColorMaskPipe';
+import { ScissorMaskPipe } from '../../../mask/scissor/ScissorMaskPipe';
 import { StencilMaskPipe } from '../../../mask/stencil/StencilMaskPipe';
 import { BackgroundSystem } from '../background/BackgroundSystem';
 import { BlendModePipe } from '../blendModes/BlendModePipe';
@@ -52,6 +53,7 @@ export const SharedRenderPipes = [
     SpritePipe,
     RenderGroupPipe,
     AlphaMaskPipe,
+    ScissorMaskPipe,
     StencilMaskPipe,
     ColorMaskPipe,
     CustomRenderPipe

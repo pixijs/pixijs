@@ -7,6 +7,7 @@ import { CanvasBatchAdaptor } from '../../batcher/canvas/CanvasBatchAdaptor';
 import { BatcherPipe } from '../../batcher/shared/BatcherPipe';
 import { AlphaMaskPipe } from '../../mask/alpha/AlphaMaskPipe';
 import { CanvasColorMaskPipe } from '../../mask/color/CanvasColorMaskPipe';
+import { CanvasScissorMaskPipe } from '../../mask/scissor/CanvasScissorMaskPipe';
 import { CanvasStencilMaskPipe } from '../../mask/stencil/CanvasStencilMaskPipe';
 import { BlendModePipe } from '../shared/blendModes/BlendModePipe';
 import { AbstractRenderer } from '../shared/system/AbstractRenderer';
@@ -37,6 +38,7 @@ const DefaultCanvasPipes = [
     SpritePipe,
     RenderGroupPipe,
     AlphaMaskPipe,
+    CanvasScissorMaskPipe,
     CanvasStencilMaskPipe,
     CanvasColorMaskPipe,
     CustomRenderPipe,
