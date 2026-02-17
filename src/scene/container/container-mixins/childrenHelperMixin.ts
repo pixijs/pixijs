@@ -365,17 +365,24 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
         // TODO - check if child is already in the list?
         // we should be able to optimise this!
 
+        const sameParent = child.parent === this;
+
         if (child.parent)
         {
             const currentIndex = child.parent.children.indexOf(child);
 
-            // If this child is in the container and in the same position, do nothing
-            if (child.parent === this && currentIndex === index)
+            if (sameParent)
             {
-                return child;
+                // Same parent, same position - do nothing
+                if (currentIndex === index)
+                {
+                    return child;
+                }
+                // Same parent, different position
+                child.parent.children.splice(currentIndex, 1);
             }
-
-            if (currentIndex !== -1)
+            else
+            // Different parent, full removal
             {
                 child.removeFromParent();
             }
@@ -402,6 +409,12 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
         }
 
         if (this.sortableChildren) this.sortDirty = true;
+
+        // If same parent, don't emit remove events
+        if (sameParent)
+        {
+            return child;
+        }
 
         this.emit('childAdded', child, this, index);
         child.emit('added', this);

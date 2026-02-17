@@ -97,15 +97,15 @@ describe('Container Events', () =>
 
             parentB.addChildAt(child, 0);
 
-            expect(removedListener).toHaveBeenCalledTimes(2);
+            expect(removedListener).toHaveBeenCalledTimes(1);
 
             parentB.setChildIndex(child, 1);
 
-            expect(removedListener).toHaveBeenCalledTimes(3);
+            expect(removedListener).toHaveBeenCalledTimes(1);
 
             parentA.addChildAt(child, 0);
 
-            expect(removedListener).toHaveBeenCalledTimes(4);
+            expect(removedListener).toHaveBeenCalledTimes(2);
         });
 
         it('should emit "removed" on child and "childRemoved" on old parent when addChildAt re-parents', () =>
@@ -133,6 +133,49 @@ describe('Container Events', () =>
             expect(child.parent).toBe(parentB);
             expect(parentA.children).not.toContain(child);
             expect(parentB.children).toContain(child);
+        });
+
+        it('should not emit "childAdded" or "added" when addChildAt moves child within same container', () =>
+        {
+            const container = new Container();
+            const childA = new Container();
+            const childB = new Container();
+
+            container.addChild(childA, childB);
+
+            const childAddedListener = jest.fn();
+            const addedListener = jest.fn();
+
+            container.on('childAdded', childAddedListener);
+            childA.on('added', addedListener);
+
+            container.addChildAt(childA, 0);
+
+            expect(childAddedListener).not.toHaveBeenCalled();
+            expect(addedListener).not.toHaveBeenCalled();
+            expect(container.children[0]).toBe(childA);
+            expect(container.children[1]).toBe(childB);
+        });
+
+        it('should not emit "childAdded" or "added" when addChildAt is called with same index in same container', () =>
+        {
+            const container = new Container();
+            const childA = new Container();
+            const childB = new Container();
+
+            container.addChild(childA, childB);
+
+            const childAddedListener = jest.fn();
+            const addedListener = jest.fn();
+
+            container.on('childAdded', childAddedListener);
+            childA.on('added', addedListener);
+
+            container.addChildAt(childA, 1);
+
+            expect(childAddedListener).not.toHaveBeenCalled();
+            expect(addedListener).not.toHaveBeenCalled();
+            expect(container.children[1]).toBe(childA);
         });
     });
 
