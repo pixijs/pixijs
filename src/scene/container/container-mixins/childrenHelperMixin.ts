@@ -410,7 +410,7 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
 
         if (this.sortableChildren) this.sortDirty = true;
 
-        // If same parent, don't emit remove events
+        // If same parent, don't emit added events
         if (sameParent)
         {
             return child;
