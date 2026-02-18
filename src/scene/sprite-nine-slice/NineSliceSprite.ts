@@ -649,6 +649,19 @@ export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> imple
     }
 
     /**
+     * The trim rectangle of the underlying texture, or `null` if the texture is not trimmed.
+     * This is forwarded to the {@link NineSliceGeometry} so that UV coordinates are clamped
+     * to the visible pixel region, preventing transparent atlas padding from bleeding into
+     * the rendered sprite corners.
+     * @readonly
+     * @internal
+     */
+    get trim(): { x: number; y: number; width: number; height: number } | null
+    {
+        return this._texture.trim ?? null;
+    }
+
+    /**
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value

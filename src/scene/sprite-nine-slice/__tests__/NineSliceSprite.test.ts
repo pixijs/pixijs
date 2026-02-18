@@ -1,10 +1,11 @@
 import { Bounds } from '../../container/bounds/Bounds';
 import { getGlobalBounds } from '../../container/bounds/getGlobalBounds';
 import { NineSliceSprite } from '../NineSliceSprite';
+import { NineSliceGeometry } from '../NineSliceGeometry';
 import '../../mesh/init';
 import '../init';
 import { getTexture } from '@test-utils';
-import { Point } from '~/maths';
+import { Point, Rectangle } from '~/maths';
 import { Texture } from '~/rendering';
 
 import type { TextureSource } from '~/rendering';
@@ -178,6 +179,129 @@ describe('NineSliceSprite', () =>
             sprite.anchor.x = 0.5;
 
             expect(spy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('Trimmed Texture (issue #11706)', () =>
+    {
+        /**
+         * Helper to create a trimmed texture.
+         * orig = 100×100, trim = {x:10, y:10, w:80, h:80}, frame = 80×80.
+         */
+        const makeTrimmedTexture = () =>
+        {
+            const source = getTexture({ width: 80, height: 80 }).source;
+            const frame  = new Rectangle(0, 0, 80, 80);
+            const orig   = new Rectangle(0, 0, 100, 100);
+            const trim   = new Rectangle(10, 10, 80, 80);
+
+            return new Texture({ source, frame, orig, trim });
+        };
+
+        it('should expose the texture trim via the trim getter', () =>
+        {
+            const texture = makeTrimmedTexture();
+            const sprite  = new NineSliceSprite({ texture, leftWidth: 5, topHeight: 5, rightWidth: 5, bottomHeight: 5 });
+
+            expect(sprite.trim).not.toBeNull();
+            expect(sprite.trim?.x).toBe(10);
+            expect(sprite.trim?.y).toBe(10);
+            expect(sprite.trim?.width).toBe(80);
+            expect(sprite.trim?.height).toBe(80);
+        });
+
+        it('should return null for the trim getter when texture has no trim', () =>
+        {
+            const sprite = new NineSliceSprite({ texture: getTexture({ width: 100, height: 100 }) });
+
+            expect(sprite.trim).toBeNull();
+        });
+
+        it('NineSliceGeometry UV edges should be within [0,1] for trimmed textures', () =>
+        {
+            // orig=100×100, trim={x:10,y:10,w:80,h:80}
+            // Expected UV range:  u0 = 10/100 = 0.1, u1 = 90/100 = 0.9
+            const geometry = new NineSliceGeometry({
+                width: 200,
+                height: 200,
+                originalWidth: 100,
+                originalHeight: 100,
+                leftWidth: 10,
+                topHeight: 10,
+                rightWidth: 10,
+                bottomHeight: 10,
+                trim: { x: 10, y: 10, width: 80, height: 80 },
+            });
+
+            const uvs = geometry.uvs;
+
+            // Left/right edge UVs (X axis)
+            const u0 = uvs[0]; // left edge
+            const u1 = uvs[6]; // right edge
+
+            // Top/bottom edge UVs (Y axis)
+            const v0 = uvs[1]; // top edge
+            const v1 = uvs[25]; // bottom edge
+
+            expect(u0).toBeCloseTo(0.1, 5); // trim.x / orig.w
+            expect(u1).toBeCloseTo(0.9, 5); // (trim.x + trim.w) / orig.w
+            expect(v0).toBeCloseTo(0.1, 5); // trim.y / orig.h
+            expect(v1).toBeCloseTo(0.9, 5); // (trim.y + trim.h) / orig.h
+
+            // Inner UV borders should also be correctly offset
+            const uLeft  = uvs[2];  // left border: u0 + leftWidth/origW = 0.1 + 0.1 = 0.2
+            const uRight = uvs[4];  // right border: u1 - rightWidth/origW = 0.9 - 0.1 = 0.8
+            const vTop   = uvs[9];  // top border: v0 + topHeight/origH = 0.2
+            const vBot   = uvs[17]; // bottom border: v1 - bottomHeight/origH = 0.8
+
+            expect(uLeft).toBeCloseTo(0.2, 5);
+            expect(uRight).toBeCloseTo(0.8, 5);
+            expect(vTop).toBeCloseTo(0.2, 5);
+            expect(vBot).toBeCloseTo(0.8, 5);
+        });
+
+        it('NineSliceGeometry UV edges should remain [0,1] when texture has no trim', () =>
+        {
+            const geometry = new NineSliceGeometry({
+                width: 200,
+                height: 200,
+                originalWidth: 100,
+                originalHeight: 100,
+                leftWidth: 10,
+                topHeight: 10,
+                rightWidth: 10,
+                bottomHeight: 10,
+            });
+
+            const uvs = geometry.uvs;
+
+            expect(uvs[0]).toBeCloseTo(0, 5);  // left edge
+            expect(uvs[6]).toBeCloseTo(1, 5);  // right edge
+            expect(uvs[1]).toBeCloseTo(0, 5);  // top edge
+            expect(uvs[25]).toBeCloseTo(1, 5); // bottom edge
+        });
+
+        it('NineSliceSprite with trimmed texture should have correct UV geometry', () =>
+        {
+            const texture = makeTrimmedTexture();
+            const sprite  = new NineSliceSprite({
+                texture,
+                leftWidth: 10,
+                topHeight: 10,
+                rightWidth: 10,
+                bottomHeight: 10,
+                width: 200,
+                height: 200,
+            });
+
+            // The sprite exposes the texture trim which should be forwarded to geometry
+            expect(sprite.trim).toBeDefined();
+            expect(sprite.trim?.x).toBe(10);
+            expect(sprite.trim?.width).toBe(80);
+
+            // original dimensions should be the full orig size (100×100)
+            expect(sprite.originalWidth).toBe(100);
+            expect(sprite.originalHeight).toBe(100);
         });
     });
 });
