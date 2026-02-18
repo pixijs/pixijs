@@ -1,7 +1,7 @@
 import { Bounds } from '../../container/bounds/Bounds';
 import { getGlobalBounds } from '../../container/bounds/getGlobalBounds';
-import { NineSliceSprite } from '../NineSliceSprite';
 import { NineSliceGeometry } from '../NineSliceGeometry';
+import { NineSliceSprite } from '../NineSliceSprite';
 import '../../mesh/init';
 import '../init';
 import { getTexture } from '@test-utils';
@@ -184,16 +184,13 @@ describe('NineSliceSprite', () =>
 
     describe('Trimmed Texture (issue #11706)', () =>
     {
-        /**
-         * Helper to create a trimmed texture.
-         * orig = 100×100, trim = {x:10, y:10, w:80, h:80}, frame = 80×80.
-         */
+        /** Helper to create a trimmed texture. orig = 100×100, trim = {x:10, y:10, w:80, h:80}, frame = 80×80. */
         const makeTrimmedTexture = () =>
         {
             const source = getTexture({ width: 80, height: 80 }).source;
-            const frame  = new Rectangle(0, 0, 80, 80);
-            const orig   = new Rectangle(0, 0, 100, 100);
-            const trim   = new Rectangle(10, 10, 80, 80);
+            const frame = new Rectangle(0, 0, 80, 80);
+            const orig = new Rectangle(0, 0, 100, 100);
+            const trim = new Rectangle(10, 10, 80, 80);
 
             return new Texture({ source, frame, orig, trim });
         };
@@ -201,7 +198,7 @@ describe('NineSliceSprite', () =>
         it('should expose the texture trim via the trim getter', () =>
         {
             const texture = makeTrimmedTexture();
-            const sprite  = new NineSliceSprite({ texture, leftWidth: 5, topHeight: 5, rightWidth: 5, bottomHeight: 5 });
+            const sprite = new NineSliceSprite({ texture, leftWidth: 5, topHeight: 5, rightWidth: 5, bottomHeight: 5 });
 
             expect(sprite.trim).not.toBeNull();
             expect(sprite.trim?.x).toBe(10);
@@ -249,10 +246,10 @@ describe('NineSliceSprite', () =>
             expect(v1).toBeCloseTo(0.9, 5); // (trim.y + trim.h) / orig.h
 
             // Inner UV borders should also be correctly offset
-            const uLeft  = uvs[2];  // left border: u0 + leftWidth/origW = 0.1 + 0.1 = 0.2
-            const uRight = uvs[4];  // right border: u1 - rightWidth/origW = 0.9 - 0.1 = 0.8
-            const vTop   = uvs[9];  // top border: v0 + topHeight/origH = 0.2
-            const vBot   = uvs[17]; // bottom border: v1 - bottomHeight/origH = 0.8
+            const uLeft = uvs[2]; // left border: u0 + leftWidth/origW = 0.1 + 0.1 = 0.2
+            const uRight = uvs[4]; // right border: u1 - rightWidth/origW = 0.9 - 0.1 = 0.8
+            const vTop = uvs[9]; // top border: v0 + topHeight/origH = 0.2
+            const vBot = uvs[17]; // bottom border: v1 - bottomHeight/origH = 0.8
 
             expect(uLeft).toBeCloseTo(0.2, 5);
             expect(uRight).toBeCloseTo(0.8, 5);
@@ -275,16 +272,16 @@ describe('NineSliceSprite', () =>
 
             const uvs = geometry.uvs;
 
-            expect(uvs[0]).toBeCloseTo(0, 5);  // left edge
-            expect(uvs[6]).toBeCloseTo(1, 5);  // right edge
-            expect(uvs[1]).toBeCloseTo(0, 5);  // top edge
+            expect(uvs[0]).toBeCloseTo(0, 5); // left edge
+            expect(uvs[6]).toBeCloseTo(1, 5); // right edge
+            expect(uvs[1]).toBeCloseTo(0, 5); // top edge
             expect(uvs[25]).toBeCloseTo(1, 5); // bottom edge
         });
 
         it('NineSliceSprite with trimmed texture should have correct UV geometry', () =>
         {
             const texture = makeTrimmedTexture();
-            const sprite  = new NineSliceSprite({
+            const sprite = new NineSliceSprite({
                 texture,
                 leftWidth: 10,
                 topHeight: 10,

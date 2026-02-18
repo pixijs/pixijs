@@ -201,11 +201,11 @@ export class NineSliceGeometry extends PlaneGeometry
         const _uvw = 1.0 / origW;
         const _uvh = 1.0 / origH;
 
-        uvs[2] = uvs[10] = uvs[18] = uvs[26] = u0 + _uvw * this._leftWidth;
-        uvs[9] = uvs[11] = uvs[13] = uvs[15] = v0 + _uvh * this._topHeight;
+        uvs[2] = uvs[10] = uvs[18] = uvs[26] = u0 + (_uvw * this._leftWidth);
+        uvs[9] = uvs[11] = uvs[13] = uvs[15] = v0 + (_uvh * this._topHeight);
 
-        uvs[4] = uvs[12] = uvs[20] = uvs[28] = u1 - _uvw * this._rightWidth;
-        uvs[17] = uvs[19] = uvs[21] = uvs[23] = v1 - _uvh * this._bottomHeight;
+        uvs[4] = uvs[12] = uvs[20] = uvs[28] = u1 - (_uvw * this._rightWidth);
+        uvs[17] = uvs[19] = uvs[21] = uvs[23] = v1 - (_uvh * this._bottomHeight);
 
         this.getBuffer('aUV').update();
     }
