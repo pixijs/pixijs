@@ -104,6 +104,36 @@ describe('TilingSprite', () =>
             expect(sprite.texture).toBeNull();
         });
 
+        it('should not crash in validateRenderable when batchableMesh is undefined', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+
+            const container = new Container();
+
+            const sprite = new TilingSprite({
+                texture: getTexture({ width: 256, height: 256 })
+            });
+
+            container.addChild(sprite);
+
+            // Render once to initialise GPU data
+            renderer.render({ container });
+
+            const renderData = sprite._gpuData[renderer.uid];
+
+            expect(renderData).toBeDefined();
+            expect(renderData.batchableMesh).toBeDefined();
+
+            // Simulate GPU data being reinitialised without batchableMesh
+            // (e.g. after GC unloads the renderable or before addRenderable runs)
+            renderData.batchableMesh = undefined;
+
+            // This should not throw — it should return true to trigger a rebuild
+            const result = renderer.renderPipes.tilingSprite.validateRenderable(sprite);
+
+            expect(result).toBe(true);
+        });
+
         it('should global bounds to be correct', async () =>
         {
             const sprite = new TilingSprite({
