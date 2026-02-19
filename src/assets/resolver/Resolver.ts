@@ -324,14 +324,14 @@ export class Resolver
      * @param alias - the alias to remove
      * @param asset - only remove the alias if it is assigned to the asset
      */
-    public removeAlias(alias: string, asset?: UnresolvedAsset): void
+    public removeAlias(alias: string, asset?: ResolvedAsset): void
     {
         if (!this._assetMap[alias])
         {
             return;
         }
 
-        if (asset && asset !== this._assetMap[alias])
+        if (asset && asset !== this._resolverHash[alias])
         {
             return;
         }
