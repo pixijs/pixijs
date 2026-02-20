@@ -1,13 +1,20 @@
 import { GlProgram } from '../../../rendering/renderers/gl/shader/GlProgram';
 import { GpuProgram } from '../../../rendering/renderers/gpu/shader/GpuProgram';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
+import { type ArrayFixed } from '../../../utils/types';
 import { Filter } from '../../Filter';
 import vertex from '../defaultFilter.vert';
-import { type ColorMatrix } from './ColorMatrixFilter';
 import fragment from './colorMatrixFilter.frag';
 import source from './colorMatrixFilter.wgsl';
 
 import type { FilterOptions } from '../../Filter';
+
+/**
+ * 5x4 matrix for transforming RGBA color and alpha
+ * @category filters
+ * @standard
+ */
+export type ColorMatrix = ArrayFixed<number, 20>;
 
 /**
  * Options for MatrixFilter
@@ -26,8 +33,8 @@ export interface MatrixFilterOptions extends FilterOptions
  * ```js
  * import { MatrixFilter } from 'pixi.js';
  *
- * // Create a new color matrix filter with a matrix that swap the red chanel to the blue and green chanel
- * // and the blue chanel to the red. Keep alpha.
+ * // Create a new color matrix filter with a matrix that swap the red channel to the blue and green channel
+ * // and the blue channel to the red. Keep alpha.
  * const matrixFilter = new MatrixFilter({
  *      matrix: [
  *          0, 0, 1, 0, 0,
@@ -212,10 +219,10 @@ export class MatrixFilter extends Filter
      * - Alpha channel
      *
      * The columns are:
-     * - How much to multuiply the red channel into this channel by
-     * - How much to multuiply the green channel into this channel by
-     * - How much to multuiply the blue channel into this channel by
-     * - How much to multuiply the alpha channel into this channel by
+     * - How much to multiply the red channel into this channel by
+     * - How much to multiply the green channel into this channel by
+     * - How much to multiply the blue channel into this channel by
+     * - How much to multiply the alpha channel into this channel by
      * - How far to offset the row's channel
      * @type {ColorMatrix}
      * @default ```js

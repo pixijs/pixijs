@@ -10,7 +10,7 @@ export const scene: TestScene = {
     {
         const createRectangle = ({ x, y }: {x: number, y: number}): [Graphics, ColorMatrixFilter] =>
         {
-            const rect = new Graphics().rect(x * 32, y * 32, 32, 64).fill('orange');
+            const rect = new Graphics().rect(x * 32, y * 32, 32, 32).fill('orange');
             const filter = new ColorMatrixFilter();
 
             rect.filters = [filter];

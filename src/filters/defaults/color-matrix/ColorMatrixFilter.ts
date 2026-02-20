@@ -1,16 +1,8 @@
 import { Color } from '../../../color/Color';
-import { MatrixFilter } from './MatrixFilter';
+import { type ColorMatrix, MatrixFilter } from './MatrixFilter';
 
 import type { ColorSource } from '../../../color/Color';
-import type { ArrayFixed } from '../../../utils/types';
 import type { FilterOptions } from '../../Filter';
-
-/**
- * 5x4 matrix for transforming RGBA color and alpha
- * @category filters
- * @standard
- */
-export type ColorMatrix = ArrayFixed<number, 20>;
 
 /**
  * The ColorMatrixFilter class lets you apply color transformations to display objects using a 5x4 matrix.
@@ -937,76 +929,5 @@ export class ColorMatrixFilter extends MatrixFilter
         ];
 
         this._loadMatrix(matrix, false);
-    }
-
-    /**
-     * The current color transformation matrix of the filter.
-     *
-     * This 5x4 matrix transforms RGBA color and alpha values of each pixel. The matrix is stored
-     * as a 20-element array in row-major order.
-     * @type {ColorMatrix}
-     * @default ```js
-     * [
-     *     1, 0, 0, 0, 0,  // Red channel
-     *     0, 1, 0, 0, 0,  // Green channel
-     *     0, 0, 1, 0, 0,  // Blue channel
-     *     0, 0, 0, 1, 0   // Alpha channel
-     * ]
-     * ```
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     * // Get the current color matrix
-     * const currentMatrix = colorMatrix.matrix;
-     * // Modify the matrix
-     * colorMatrix.matrix = [
-     *     1, 0, 0, 0, 0,
-     *     0, 1, 0, 0, 0,
-     *     0, 0, 1, 0, 0,
-     *     0, 0, 0, 1, 0
-     * ];
-     * ```
-     */
-    get matrix(): ColorMatrix
-    {
-        return this.resources.colorMatrixUniforms.uniforms.uColorMatrix;
-    }
-
-    set matrix(value: ColorMatrix)
-    {
-        this.resources.colorMatrixUniforms.uniforms.uColorMatrix = value;
-    }
-
-    /**
-     * The opacity value used to blend between the original and transformed colors.
-     *
-     * This value controls how much of the color transformation is applied:
-     * - `0` gives original color only (no effect)
-     * - `0.5` gives a 50% blend of original and transformed colors
-     * - `1` gives the fully transformed color (default)
-     * @default 1
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Apply sepia at 50% strength
-     * colorMatrix.sepia();
-     * colorMatrix.alpha = 0.5;
-     *
-     * // Fade between effects
-     * colorMatrix
-     *     .saturate(1.5)       // Increase saturation
-     *     .contrast(0.2);      // Boost contrast
-     * colorMatrix.alpha = 0.7; // Apply at 70% strength
-     * ```
-     */
-    get alpha(): number
-    {
-        return this.resources.colorMatrixUniforms.uniforms.uAlpha;
-    }
-
-    set alpha(value: number)
-    {
-        this.resources.colorMatrixUniforms.uniforms.uAlpha = value;
     }
 }
