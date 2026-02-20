@@ -81,4 +81,14 @@ describe('ColorMatrixFilter', () =>
         filter.destroy();
         expect(multiplySpy).toHaveBeenCalledTimes(19);
     });
+
+    it('should be able to apply technicolor matrix with multiply and get same values as without multiply', () =>
+    {
+        const filter1 = new ColorMatrixFilter();
+        const filter2 = new ColorMatrixFilter();
+
+        expect(filter1.technicolor(true).matrix).toEqual(filter2.technicolor(false).matrix);
+        filter1.destroy();
+        filter2.destroy();
+    });
 });
