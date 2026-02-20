@@ -154,9 +154,23 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         }
 
         batchableHTMLText.texturePromise = texturePromise;
-        batchableHTMLText.currentKey = htmlText.styleKey;
+        const expectedKey = htmlText.styleKey;
 
-        batchableHTMLText.texture = await texturePromise;
+        batchableHTMLText.currentKey = expectedKey;
+
+        const resolvedTexture = await texturePromise;
+
+        // If a WebGL context loss/restore occurred while we were awaiting the texture,
+        // contextChange() will have reset currentKey to '--' and texture to Texture.EMPTY.
+        // In that case, discard the now-stale texture to avoid overwriting the reset state.
+        if (batchableHTMLText.currentKey !== expectedKey)
+        {
+            batchableHTMLText.generatingTexture = false;
+
+            return;
+        }
+
+        batchableHTMLText.texture = resolvedTexture;
 
         // need a rerender...
         const renderGroup = htmlText.renderGroup || htmlText.parentRenderGroup;

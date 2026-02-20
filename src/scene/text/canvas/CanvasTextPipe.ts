@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { GCManagedHash } from '../../../utils/data/GCManagedHash';
+import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { updateTextBounds } from '../utils/updateTextBounds';
 import { BatchableText } from './BatchableText';
 
@@ -62,7 +63,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
                 if (gpuText)
                 {
                     gpuText.currentKey = '--';
-                    gpuText.texture = null;
+                    gpuText.texture = Texture.EMPTY;
                 }
 
                 text.onViewUpdate();
