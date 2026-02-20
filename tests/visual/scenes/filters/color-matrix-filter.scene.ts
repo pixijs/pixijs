@@ -5,7 +5,7 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     excludeRenderers: ['canvas', 'webgpu'],
-    it: 'Color Matrix filter should not affect if identity',
+    it: 'Color Matrix filter multiply flag should not affect matrix if it is the only matrix applied',
     create: async (scene: Container) =>
     {
         const createRectangle = ({ x, y }: {x: number, y: number}): [Graphics, ColorMatrixFilter] =>
