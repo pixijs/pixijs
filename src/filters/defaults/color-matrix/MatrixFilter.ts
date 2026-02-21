@@ -11,6 +11,19 @@ import type { FilterOptions } from '../../Filter';
 
 /**
  * 5x4 matrix for transforming RGBA color and alpha
+ *
+ * The rows are in order:
+ * - Red channel
+ * - Green channel
+ * - Blue channel
+ * - Alpha channel
+ *
+ * The columns are:
+ * - How much to multiply the red channel into this channel by
+ * - How much to multiply the green channel into this channel by
+ * - How much to multiply the blue channel into this channel by
+ * - How much to multiply the alpha channel into this channel by
+ * - How far to offset the row's channel
  * @category filters
  * @standard
  */
@@ -23,6 +36,16 @@ export type ColorMatrix = ArrayFixed<number, 20>;
  */
 export interface MatrixFilterOptions extends FilterOptions
 {
+    /**
+     * The opacity value used to blend between the original and transformed colors.
+     * @see {@link MatrixFilter.alpha}
+     */
+    alpha?: number;
+
+    /**
+     * The color transformation matrix.
+     * @see {@link MatrixFilter.matrix}
+     */
     matrix?: ColorMatrix;
 }
 
@@ -71,6 +94,7 @@ export class MatrixFilter extends Filter
      * ```
      */
     public static defaultOptions: MatrixFilterOptions = {
+        alpha: 1,
         matrix: [
             1, 0, 0, 0, 0,
             0, 1, 0, 0, 0,
@@ -80,16 +104,15 @@ export class MatrixFilter extends Filter
     };
     constructor(options?: MatrixFilterOptions)
     {
-        const defaultMatrix = [...MatrixFilter.defaultOptions.matrix];
-        const { matrix, ...rest } = { matrix: defaultMatrix, ...options };
+        const { matrix, alpha, ...rest } = { ...MatrixFilter.defaultOptions, ...options };
         const colorMatrixUniforms = new UniformGroup({
             uColorMatrix: {
-                value: matrix,
+                value: matrix ?? [...MatrixFilter.defaultOptions.matrix],
                 type: 'f32',
                 size: 20,
             },
             uAlpha: {
-                value: 1,
+                value: alpha,
                 type: 'f32'
             }
         });
@@ -119,8 +142,6 @@ export class MatrixFilter extends Filter
                 colorMatrixUniforms
             },
         });
-
-        this.alpha = 1;
     }
 
     /**
@@ -211,19 +232,6 @@ export class MatrixFilter extends Filter
      *
      * This 5x4 matrix transforms RGBA color and alpha values of each pixel. The matrix is stored
      * as a 20-element array in row-major order.
-     *
-     * The rows are in order:
-     * - Red channel
-     * - Green channel
-     * - Blue channel
-     * - Alpha channel
-     *
-     * The columns are:
-     * - How much to multiply the red channel into this channel by
-     * - How much to multiply the green channel into this channel by
-     * - How much to multiply the blue channel into this channel by
-     * - How much to multiply the alpha channel into this channel by
-     * - How far to offset the row's channel
      * @type {ColorMatrix}
      * @default ```js
      * [
