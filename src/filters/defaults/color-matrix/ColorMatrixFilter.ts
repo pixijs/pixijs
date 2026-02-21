@@ -915,19 +915,19 @@ export class ColorMatrixFilter extends MatrixFilter
      *     .sepia()
      *     .brightness(1.2, true);
      *
-     * // Reset back to original colors
+     * // Reset back to original colors and alpha
      * colorMatrix.reset();
      * ```
      */
     public reset(): void
     {
-        const matrix: ColorMatrix = [
+        this.alpha = 1;
+
+        this._loadMatrix([
             1, 0, 0, 0, 0,
             0, 1, 0, 0, 0,
             0, 0, 1, 0, 0,
             0, 0, 0, 1, 0,
-        ];
-
-        this._loadMatrix(matrix, false);
+        ], false);
     }
 }
