@@ -5,6 +5,20 @@ import type { ColorSource } from '../../../color/Color';
 import type { FilterOptions } from '../../Filter';
 
 /**
+ * Options for ColorMatrixFilter
+ * @category filters
+ * @standard
+ */
+export interface ColorMatrixFilterOptions extends FilterOptions
+{
+    /**
+     * The opacity value used to blend between the original and transformed colors.
+     * @see {@link MatrixFilter.alpha}
+     */
+    alpha?: number;
+}
+
+/**
  * The ColorMatrixFilter class lets you apply color transformations to display objects using a 5x4 matrix.
  * The matrix transforms the RGBA color and alpha values of every pixel to produce a new set of values.
  *
@@ -44,7 +58,7 @@ import type { FilterOptions } from '../../Filter';
  */
 export class ColorMatrixFilter extends MatrixFilter
 {
-    constructor(options?: FilterOptions)
+    constructor(options?: ColorMatrixFilterOptions)
     {
         super({
             matrix: [
@@ -196,7 +210,7 @@ export class ColorMatrixFilter extends MatrixFilter
     /**
      * @param scale
      * @param multiply
-     * @alias{@link greyscale}
+     * @see {@link greyscale}
      */
     public grayscale(scale: number, multiply = false): this
     {
@@ -814,8 +828,6 @@ export class ColorMatrixFilter extends MatrixFilter
 
     /**
      * Predator effect
-     *
-     * Erase the current matrix by setting a new independent one
      * @param amount - how much the predator feels his future victim
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with matrix
