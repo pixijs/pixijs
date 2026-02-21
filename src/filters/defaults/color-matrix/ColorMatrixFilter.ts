@@ -4,6 +4,8 @@ import { type ColorMatrix, MatrixFilter } from './MatrixFilter';
 import type { ColorSource } from '../../../color/Color';
 import type { FilterOptions } from '../../Filter';
 
+export { ColorMatrix } from './MatrixFilter';
+
 /**
  * Options for ColorMatrixFilter
  * @category filters
