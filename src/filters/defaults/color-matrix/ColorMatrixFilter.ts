@@ -64,14 +64,14 @@ export class ColorMatrixFilter extends MatrixFilter
      */
     private _loadMatrix(matrix: ColorMatrix, multiply = false): void
     {
-        const newMatrix = new Float32Array(matrix) as unknown as ColorMatrix;
-
         if (multiply)
         {
-            this._multiply(newMatrix, this.matrix, matrix);
+            this.matrix = this._multiply(this.matrix, matrix);
         }
-
-        this.resources.colorMatrixUniforms.uniforms.uColorMatrix = newMatrix;
+        else
+        {
+            this.matrix = matrix;
+        }
     }
 
     /**

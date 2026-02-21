@@ -149,12 +149,17 @@ export class MatrixFilter extends Filter
      *
      * All parameters must be different references.
      * @private
-     * @param result - 5x4 matrix the receiving matrix
      * @param a - 5x4 matrix the first operand
      * @param b - 5x4 matrix the second operand
-     * @returns {number[]} 5x4 matrix
+     * @param result - 5x4 matrix the receiving matrix
+     * @returns {ColorMatrix} 5x4 matrix
      */
-    protected _multiply(result: ColorMatrix, a: ColorMatrix, b: ColorMatrix): ColorMatrix
+    protected _multiply(a: ColorMatrix, b: ColorMatrix, result: ColorMatrix = [
+        0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+    ]): ColorMatrix
     {
         // Red Channel
         result[0] = (a[0] * b[0]) + (a[1] * b[5]) + (a[2] * b[10]) + (a[3] * b[15]);
@@ -198,12 +203,7 @@ export class MatrixFilter extends Filter
      */
     public prepend(matrix: ColorMatrix): this
     {
-        this.matrix = this._multiply([
-            0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0
-        ], matrix, this.matrix);
+        this.matrix = this._multiply(matrix, this.matrix);
 
         return this;
     }
@@ -219,12 +219,7 @@ export class MatrixFilter extends Filter
      */
     public append(matrix: ColorMatrix): this
     {
-        this.matrix = this._multiply([
-            0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0
-        ], this.matrix, matrix);
+        this.matrix = this._multiply(this.matrix, matrix);
 
         return this;
     }
