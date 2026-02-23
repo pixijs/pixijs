@@ -244,7 +244,7 @@ class CanvasTextGeneratorClass
                     this._setFillAndStrokeStyles(context, style, measured, padding, halfStroke);
                 }
 
-                context.shadowColor = 'black';
+                context.shadowColor = 'rgba(0,0,0,0)';
             }
 
             // draw lines line by line
@@ -326,8 +326,18 @@ class CanvasTextGeneratorClass
 
         // Calculate alignment width - use wordWrapWidth when wrapping with non-left align
         const alignWidth = style.wordWrap ? style.wordWrapWidth : maxLineWidth;
-        const strokeWidth = style._stroke?.width ?? 0;
-        const halfStroke = strokeWidth / 2;
+        let maxStrokeWidth = style._stroke?.width ?? 0;
+
+        for (const lineRuns of runsByLine)
+        {
+            for (const run of lineRuns)
+            {
+                const w = run.style._stroke?.width ?? 0;
+
+                if (w > maxStrokeWidth) maxStrokeWidth = w;
+            }
+        }
+        const halfStroke = maxStrokeWidth / 2;
 
         // Pre-calculate run widths and font strings to avoid redundant computation per pass
         const runDataByLine: Array<Array<{ width: number; font: string }>> = [];
@@ -358,7 +368,7 @@ class CanvasTextGeneratorClass
 
             if (!isShadowPass)
             {
-                context.shadowColor = 'black';
+                context.shadowColor = 'rgba(0,0,0,0)';
             }
 
             let currentY = halfStroke;
