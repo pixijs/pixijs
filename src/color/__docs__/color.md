@@ -112,6 +112,10 @@ console.log(color.blue);  // 0
 console.log(color.alpha); // 1
 
 color.setAlpha(0.5); // 50% transparent
+
+// Calling setValue() again restores alpha from that source
+color.setValue(0xffffff);
+console.log(color.alpha); // 1
 ```
 
 ## Color conversions
