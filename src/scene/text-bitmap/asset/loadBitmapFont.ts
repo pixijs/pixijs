@@ -33,10 +33,22 @@ export const bitmapFontCachePlugin = {
         keys.forEach((key) =>
         {
             out[key] = asset;
-            out[`${key}-bitmap`] = asset;
+            if (!key.endsWith('-bitmap'))
+            {
+                out[`${key}-bitmap`] = asset;
+            }
         });
 
-        out[`${asset.fontFamily}-bitmap`] = asset;
+        if (asset.fontFamily)
+        {
+            const familyKey = `${asset.fontFamily}-bitmap`;
+
+            // Only add fontFamily key if it's not already covered by the input keys
+            if (!out[familyKey])
+            {
+                out[familyKey] = asset;
+            }
+        }
 
         return out;
     }
