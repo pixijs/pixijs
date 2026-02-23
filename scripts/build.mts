@@ -51,13 +51,14 @@ async function main()
     {
         const types = (async () =>
         {
-            const tscCmd = isDev ? 'tsc-silent' : 'tsc';
-            const tscArgs = isDev
-                ? ['-p', '.configs/tsconfig.types.json', '--suppress', '@']
-                : ['-p', '.configs/tsconfig.types.json'];
+            const tscArgs = ['-p', '.configs/tsconfig.types.json'];
+            const tsc = spawn('tsc', tscArgs, { signal }).catch((err) =>
+            {
+                if (!isDev) throw err;
+            });
 
             await parallel([
-                spawn(tscCmd, tscArgs, { signal }),
+                tsc,
                 spawn('copyfiles', ['-u', '1', 'src/**/*.d.ts', 'lib/'], { signal }),
             ]);
             await spawn('node', ['./scripts/types/fixTypes.mts'], { signal });
