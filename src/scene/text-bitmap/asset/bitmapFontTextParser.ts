@@ -176,7 +176,7 @@ export const bitmapFontTextParser = {
             const second = parseInt(kerning[i].second, 10);
             const amount = parseInt(kerning[i].amount, 10);
 
-            font.chars[map[second]].kerning[map[first]] = amount;
+            if (font.chars[map[second]]) font.chars[map[second]].kerning[map[first]] = amount;
         }
 
         return font;

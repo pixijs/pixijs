@@ -3,7 +3,6 @@ import { Buffer } from '../shared/buffer/Buffer';
 import { BufferResource } from '../shared/buffer/BufferResource';
 import { BufferUsage } from '../shared/buffer/const';
 import { UniformGroup } from '../shared/shader/UniformGroup';
-import { RenderTexture } from '../shared/texture/RenderTexture';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
 import { TextureStyle } from '../shared/texture/TextureStyle';
 import { resetUids } from '~/utils';
@@ -143,19 +142,12 @@ describe('BindGroup', () =>
         expect(bindGroup3._key).toBe('2');
     });
 
-    it('should release destroyed resources', () =>
+    it('should destroy bind group when resource is destroyed', () =>
     {
         const buffer = new Buffer({
             data: new Float32Array(100),
             usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
         });
-
-        const texture = RenderTexture.create({
-            width: 10,
-            height: 10,
-        });
-
-        const style = new TextureStyle();
 
         const bufferResource = new BufferResource({
             buffer,
@@ -165,20 +157,10 @@ describe('BindGroup', () =>
 
         const bindGroup = new BindGroup({
             0: bufferResource,
-            1: texture.source,
-            2: style,
         });
 
         bufferResource.destroy();
 
-        expect(bindGroup.resources[0]).toBeNull();
-
-        texture.source.destroy();
-
-        expect(bindGroup.resources[1]).toBeNull();
-
-        style.destroy();
-
-        expect(bindGroup.resources[2]).toBeNull();
+        expect(bindGroup.resources).toBeNull();
     });
 });

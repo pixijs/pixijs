@@ -974,6 +974,7 @@ export class Color
     public setAlpha(alpha: number): this
     {
         this._components[3] = this._clamp(alpha);
+        this._value = null;
 
         return this;
     }

@@ -70,6 +70,26 @@ export interface ClearOptions
     clearColor?: ColorSource;
     /** The clear mode to use. */
     clear?: CLEAR_OR_BOOL
+
+    /**
+     * Mip level to render/clear to when the target is a texture-backed render surface.
+     * @default 0
+     *
+     * Note: When rendering to a {@link Texture} target, Pixi renders into the underlying {@link TextureSource}
+     * (via an internal {@link RenderTarget}). The texture's `frame` is interpreted in mip 0 space and is scaled/clamped
+     * to the requested mip level.
+     * @advanced
+     */
+    mipLevel?: number;
+
+    /**
+     * Array layer index to render/clear to when the target is an array-backed texture source (e.g. `arrayLayerCount > 1`).
+     *
+     * This maps to WebGPU's `GPUTextureViewDescriptor.baseArrayLayer` when creating render-attachment views.
+     * @default 0
+     * @advanced
+     */
+    layer?: number;
 }
 
 /**
@@ -382,11 +402,11 @@ export class AbstractRenderer<
         options.clearColor ||= this.background.colorRgba;
         options.clear ??= CLEAR.ALL;
 
-        const { clear, clearColor, target } = options;
+        const { clear, clearColor, target, mipLevel, layer } = options;
 
         Color.shared.setValue(clearColor ?? this.background.colorRgba);
 
-        renderer.renderTarget.clear(target, clear, Color.shared.toArray() as RgbaArray);
+        renderer.renderTarget.clear(target, clear, Color.shared.toArray() as RgbaArray, mipLevel ?? 0, layer ?? 0);
     }
 
     /** The resolution / device pixel ratio of the renderer. */

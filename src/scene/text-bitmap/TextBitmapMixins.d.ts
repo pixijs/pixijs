@@ -2,9 +2,19 @@ declare global
 {
     namespace PixiMixins
     {
-        interface RendererPipes
+        interface WebGLPipes
         {
-            bitmapText: import('./BitmapTextPipe').BitmapTextPipe;
+            bitmapText: import('./GpuBitmapTextPipe').BitmapTextPipe;
+        }
+
+        interface WebGPUPipes
+        {
+            bitmapText: import('./GpuBitmapTextPipe').BitmapTextPipe;
+        }
+
+        interface CanvasPipes
+        {
+            bitmapText: import('./CanvasBitmapTextPipe').CanvasBitmapTextPipe;
         }
     }
 }

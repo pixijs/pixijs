@@ -6,6 +6,7 @@ import type { Container } from '~/scene';
 import type { Spritesheet } from '~/spritesheet';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should render meshes from sprite sheets',
     create: async (scene: Container) =>
     {

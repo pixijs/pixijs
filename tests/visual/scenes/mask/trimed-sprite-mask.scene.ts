@@ -8,6 +8,7 @@ import type { TestScene } from '../../types';
 import type { Container } from '~/scene';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should correct render trimed alpha mask correctly',
     create: async (scene: Container) =>
     {

@@ -1,8 +1,8 @@
 import { Color } from '../../../color/Color';
+import { type TextDropShadow, TextStyle } from '../../text/TextStyle';
+import { type HTMLTextStyle, type HTMLTextStyleOptions } from '../HTMLTextStyle';
 
 import type { ConvertedStrokeStyle } from '../../graphics/shared/FillTypes';
-import type { TextStyle } from '../../text/TextStyle';
-import type { HTMLTextStyle, HTMLTextStyleOptions } from '../HTMLTextStyle';
 
 /**
  * Internally converts all of the style properties into CSS equivalents.
@@ -15,8 +15,9 @@ export function textStyleToCSS(style: HTMLTextStyle): string
     const stroke = style._stroke;
     const fill = style._fill;
 
+    const color = Color.shared.setValue(fill.color).setAlpha(fill.alpha ?? 1).toHexa();
     const cssStyleString = [
-        `color: ${Color.shared.setValue(fill.color).toHex()}`,
+        `color: ${color}`,
         `font-size: ${(style.fontSize as number)}px`,
         `font-family: ${style.fontFamily}`,
         `font-weight: ${style.fontWeight}`,
@@ -28,7 +29,7 @@ export function textStyleToCSS(style: HTMLTextStyle): string
         `white-space: ${(style.whiteSpace === 'pre' && style.wordWrap) ? 'pre-wrap' : style.whiteSpace}`,
         ...style.lineHeight ? [`line-height: ${style.lineHeight}px`] : [],
         ...style.wordWrap ? [
-            `word-wrap: ${style.breakWords ? 'break-all' : 'break-word'}`,
+            `word-break: ${style.breakWords ? 'break-all' : 'normal'}`,
             `max-width: ${style.wordWrapWidth}px`
         ] : [],
         ...stroke ? [strokeToCSS(stroke)] : [],
@@ -45,15 +46,16 @@ export function textStyleToCSS(style: HTMLTextStyle): string
 
 function dropShadowToCSS(dropShadowStyle: TextStyle['dropShadow']): string
 {
-    const color = Color.shared.setValue(dropShadowStyle.color).setAlpha(dropShadowStyle.alpha).toHexa();
-    const x = Math.round(Math.cos(dropShadowStyle.angle) * dropShadowStyle.distance);
-    const y = Math.round(Math.sin(dropShadowStyle.angle) * dropShadowStyle.distance);
+    const dropshadowStyle = { ...dropShadowStyle };
+    const color = Color.shared.setValue(dropshadowStyle.color).setAlpha(dropshadowStyle.alpha ?? 1).toHexa();
+    const x = Math.round(Math.cos(dropshadowStyle.angle) * dropshadowStyle.distance);
+    const y = Math.round(Math.sin(dropshadowStyle.angle) * dropshadowStyle.distance);
 
     const position = `${x}px ${y}px`;
 
-    if (dropShadowStyle.blur > 0)
+    if (dropshadowStyle.blur > 0)
     {
-        return `text-shadow: ${position} ${dropShadowStyle.blur}px ${color}`;
+        return `text-shadow: ${position} ${dropshadowStyle.blur}px ${color}`;
     }
 
     return `text-shadow: ${position} ${color}`;
@@ -61,11 +63,13 @@ function dropShadowToCSS(dropShadowStyle: TextStyle['dropShadow']): string
 
 function strokeToCSS(stroke: ConvertedStrokeStyle): string
 {
+    const color = Color.shared.setValue(stroke.color).setAlpha(stroke.alpha ?? 1).toHexa();
+
     return [
         `-webkit-text-stroke-width: ${stroke.width}px`,
-        `-webkit-text-stroke-color: ${Color.shared.setValue(stroke.color).toHex()}`,
+        `-webkit-text-stroke-color: ${color}`,
         `text-stroke-width: ${stroke.width}px`,
-        `text-stroke-color: ${Color.shared.setValue(stroke.color).toHex()}`,
+        `text-stroke-color: ${color}`,
         'paint-order: stroke',
     ].join(';');
 }
@@ -87,10 +91,23 @@ const templates = {
 
 /** Converts the tag styles into CSS if modifications are required */
 const transform = {
-    fill: (value: string) => `color: ${Color.shared.setValue(value).toHex()}`,
-    breakWords: (value: string) => `word-wrap: ${value ? 'break-all' : 'break-word'}`,
+    fill: (value: string) => `color: ${Color.shared.setValue(value).toHexa()}`,
+    breakWords: (value: string) => `word-break: ${value ? 'break-all' : 'normal'}`,
     stroke: strokeToCSS,
-    dropShadow: dropShadowToCSS
+    dropShadow: (value: boolean | Partial<TextDropShadow>) =>
+    {
+        if (value === true)
+        {
+            return dropShadowToCSS(TextStyle.defaultDropShadow);
+        }
+
+        if (value && typeof value === 'object')
+        {
+            return dropShadowToCSS({ ...TextStyle.defaultDropShadow, ...value });
+        }
+
+        return '';
+    }
 };
 
 function tagStyleToCSS(tagStyles: Record<string, HTMLTextStyleOptions>, out: string[])

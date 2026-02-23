@@ -1,0 +1,10 @@
+{
+    "name": "@pixi/examples",
+    "private": true,
+    "dependencies": {
+        "@types/three": "^0.182",
+        "gsap": "^3",
+        "pixi-filters": "^6",
+        "three": "^0.182"
+    }
+}

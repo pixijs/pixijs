@@ -1,9 +1,8 @@
-import { type TextStyleTextBaseline } from '../../../../src/scene/text/TextStyle';
 import { Assets } from '~/assets';
 import { Graphics, Text } from '~/scene';
 
 import type { TestScene } from '../../types';
-import type { Container } from '~/scene';
+import type { Container, TextStyleTextBaseline } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render all text baselines correctly',

@@ -5,6 +5,7 @@ import type { TestScene } from '../../types';
 import type { Container } from '~/scene';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should not render masked sprite, when mask is out of viewport bounds',
     create: async (scene: Container) =>
     {

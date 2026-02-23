@@ -29,7 +29,7 @@ export function extractStructAndGroups(wgsl: string): StructsAndGroups
     const groupPattern = /@group\((\d+)\)/;
     const bindingPattern = /@binding\((\d+)\)/;
     const namePattern = /var(<[^>]+>)? (\w+)/;
-    const typePattern = /:\s*(\w+)/;
+    const typePattern = /:\s*([\w<>]+)/;
     const structPattern = /struct\s+(\w+)\s*{([^}]+)}/g;
     const structMemberPattern = /(\w+)\s*:\s*([\w\<\>]+)/g;
     const structName = /struct\s+(\w+)/;
@@ -74,7 +74,11 @@ export function extractStructAndGroups(wgsl: string): StructsAndGroups
             return { name, members };
             // Only include the structs mentioned in the @group/@binding annotations
         })
-        .filter(({ name }) => groups.some((group) => group.type === name)) ?? [];
+        .filter(({ name }) => groups.some((group) =>
+
+            // Handle both direct type matches and generic types like array<StructName>
+            group.type === name || group.type.includes(`<${name}>`)
+        )) ?? [];
 
     return {
         groups,

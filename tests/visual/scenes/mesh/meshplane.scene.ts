@@ -6,6 +6,7 @@ import type { TestScene } from '../../types';
 import type { Container } from '~/scene';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should render mesh plane',
     create: async (scene: Container, renderer) =>
     {

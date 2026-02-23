@@ -6,6 +6,7 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should respect disabled filters',
+    excludeRenderers: ['canvas'],
     create: async (scene: Container) =>
     {
         const texture = await Assets.load(`bunny.png`);

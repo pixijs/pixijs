@@ -1,6 +1,8 @@
 import { extensions } from '../../extensions/Extensions';
 import { CanvasTextPipe } from './canvas/CanvasTextPipe';
-import { CanvasTextSystem } from './canvas/CanvasTextSystem';
+import { CanvasRendererTextSystem } from './canvas/CanvasTextSystem';
+import { CanvasTextSystem } from './shared/GpuTextSystem';
 
+extensions.add(CanvasRendererTextSystem);
 extensions.add(CanvasTextSystem);
 extensions.add(CanvasTextPipe);

@@ -1,3 +1,4 @@
+import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import { getAdjustedBlendModeBlend } from '../../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
@@ -26,6 +27,14 @@ export interface ParticleContainerAdaptor
  */
 export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
 {
+    /** @ignore */
+    public static extension: { type: ExtensionType[]; name: 'particle' } = {
+        type: [
+            ExtensionType.CanvasPipes,
+        ],
+        name: 'particle',
+    } as const;
+
     /** The default shader that is used if a sprite doesn't have a more specific one. */
     public defaultShader: Shader;
 
@@ -123,9 +132,15 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
 
         container.worldTransform.copyTo(transformationMatrix);
 
-        transformationMatrix.prepend(renderer.globalUniforms.globalUniformData.projectionMatrix);
+        // Apply the global offset from filters (e.g., when using filterArea)
+        const globalUniformData = renderer.globalUniforms.globalUniformData;
 
-        uniforms.uResolution = renderer.globalUniforms.globalUniformData.resolution;
+        transformationMatrix.tx -= globalUniformData.offset.x;
+        transformationMatrix.ty -= globalUniformData.offset.y;
+
+        transformationMatrix.prepend(globalUniformData.projectionMatrix);
+
+        uniforms.uResolution = globalUniformData.resolution;
         uniforms.uRound = renderer._roundPixels | container._roundPixels;
 
         color32BitToUniform(

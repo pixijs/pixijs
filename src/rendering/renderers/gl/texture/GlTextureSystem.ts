@@ -5,12 +5,14 @@ import { Texture } from '../../shared/texture/Texture';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
 import { glUploadCompressedTextureResource } from './uploaders/glUploadCompressedTextureResource';
+import { createGlUploadCubeTextureResource } from './uploaders/glUploadCubeTextureResource';
 import { glUploadImageResource } from './uploaders/glUploadImageResource';
 import { glUploadVideoResource } from './uploaders/glUploadVideoResource';
 import { applyStyleParams } from './utils/applyStyleParams';
 import { mapFormatToGlFormat } from './utils/mapFormatToGlFormat';
 import { mapFormatToGlInternalFormat } from './utils/mapFormatToGlInternalFormat';
 import { mapFormatToGlType } from './utils/mapFormatToGlType';
+import { mapViewDimensionToGlTarget } from './utils/mapViewDimensionToGlTarget';
 import { unpremultiplyAlpha } from './utils/unpremultiplyAlpha';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
@@ -54,17 +56,13 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     private _boundSamplers: Record<number, WebGLSampler> = Object.create(null);
 
-    private readonly _uploads: Record<string, GLTextureUploader> = {
-        image: glUploadImageResource,
-        buffer: glUploadBufferImageResource,
-        video: glUploadVideoResource,
-        compressed: glUploadCompressedTextureResource,
-    };
+    private readonly _uploads: Record<string, GLTextureUploader>;
 
     private _gl: GlRenderingContext;
     private _mapFormatToInternalFormat: Record<string, number>;
     private _mapFormatToType: Record<string, number>;
     private _mapFormatToFormat: Record<string, number>;
+    private _mapViewDimensionToGlTarget: Record<TextureSource['viewDimension'], number | null>;
 
     private _premultiplyAlpha = false;
 
@@ -74,12 +72,26 @@ export class GlTextureSystem implements System, CanvasGenerator
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
+
         this._managedTextures = new GCManagedHash({
             renderer,
             type: 'resource',
             onUnload: this.onSourceUnload.bind(this),
             name: 'glTexture'
         });
+
+        // our 2D uploaders..
+        const baseUploaders = {
+            image: glUploadImageResource,
+            buffer: glUploadBufferImageResource,
+            video: glUploadVideoResource,
+            compressed: glUploadCompressedTextureResource,
+        };
+
+        this._uploads = {
+            ...baseUploaders,
+            cube: createGlUploadCubeTextureResource(baseUploaders),
+        };
     }
 
     protected contextChange(gl: GlRenderingContext): void
@@ -88,10 +100,12 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         if (!this._mapFormatToInternalFormat)
         {
+            // rebuild all our maps if they don't exist yet
             this._mapFormatToInternalFormat = mapFormatToGlInternalFormat(gl, this._renderer.context.extensions);
 
             this._mapFormatToType = mapFormatToGlType(gl);
             this._mapFormatToFormat = mapFormatToGlFormat(gl);
+            this._mapViewDimensionToGlTarget = mapViewDimensionToGlTarget(gl);
         }
 
         this._managedTextures.removeAll(true);
@@ -219,6 +233,19 @@ export class GlTextureSystem implements System, CanvasGenerator
         glTexture.type = this._mapFormatToType[source.format];
         glTexture.internalFormat = this._mapFormatToInternalFormat[source.format];
         glTexture.format = this._mapFormatToFormat[source.format];
+        glTexture.target = this._mapViewDimensionToGlTarget[source.viewDimension];
+
+        if (glTexture.target === null)
+        {
+            // eslint-disable-next-line max-len
+            throw new Error(`Unsupported view dimension: ${source.viewDimension} with this webgl version: ${this._renderer.context.webGLVersion}`);
+        }
+
+        // Cube textures use a different GL target.
+        if (source.uploadMethodId === 'cube')
+        {
+            glTexture.target = gl.TEXTURE_CUBE_MAP;
+        }
 
         if (source.autoGenerateMipmaps && (this._renderer.context.supports.nonPowOf2mipmaps || source.isPowerOfTwo))
         {
@@ -256,7 +283,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         const glTexture = this.getGlSource(source);
 
-        gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
+        gl.bindTexture(glTexture.target, glTexture.texture);
 
         this._boundTextures[this._activeTextureLocation] = source;
 
@@ -266,7 +293,7 @@ export class GlTextureSystem implements System, CanvasGenerator
             source.mipLevelCount > 1,
             this._renderer.context.extensions.anisotropicFiltering,
             'texParameteri',
-            gl.TEXTURE_2D,
+            glTexture.target,
             // will force a clamp to edge if the texture is not a power of two
             !this._renderer.context.supports.nonPowOf2wrapping && !source.isPowerOfTwo,
             firstCreation,
@@ -296,7 +323,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         const glTexture = this.getGlSource(source);
 
-        gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
+        gl.bindTexture(glTexture.target, glTexture.texture);
 
         this._boundTextures[this._activeTextureLocation] = source;
 
@@ -312,20 +339,28 @@ export class GlTextureSystem implements System, CanvasGenerator
         {
             this._uploads[source.uploadMethodId].upload(source, glTexture, gl, this._renderer.context.webGLVersion);
         }
+        else if (glTexture.target === gl.TEXTURE_2D)
+        {
+            // Allocate an "empty" texture (typical for RenderTexture) for the appropriate target.
+            // This allocates level 0 and, if needed, the full mip chain so any mip can be attached/rendered into (WebGL2).
+            this._initEmptyTexture2D(glTexture, source);
+        }
+        else if (glTexture.target === (gl as any).TEXTURE_2D_ARRAY)
+        {
+            this._initEmptyTexture2DArray(glTexture, source);
+        }
+        else if (glTexture.target === gl.TEXTURE_CUBE_MAP)
+        {
+            this._initEmptyTextureCube(glTexture, source);
+        }
         else
         {
-            gl.texImage2D(
-                gl.TEXTURE_2D,
-                0,
-                glTexture.internalFormat,
-                source.pixelWidth,
-                source.pixelHeight,
-                0,
-                glTexture.format,
-                glTexture.type,
-                null,
-            );
+            throw new Error('[GlTextureSystem] Unsupported texture target for empty allocation.');
         }
+
+        // Keep the texture's mip range in sync with the declared mipLevelCount.
+        // This is required in WebGL2 for FBO attachments at mipLevel > 0 when using partial mip chains.
+        this._applyMipRange(glTexture, source);
 
         if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
         {
@@ -340,6 +375,159 @@ export class GlTextureSystem implements System, CanvasGenerator
         const glTexture = this.getGlSource(source);
 
         this._gl.generateMipmap(glTexture.target);
+    }
+
+    private _initEmptyTexture2D(glTexture: GlTexture, source: TextureSource): void
+    {
+        const gl = this._gl;
+
+        // Level 0
+        gl.texImage2D(
+            gl.TEXTURE_2D,
+            0,
+            glTexture.internalFormat,
+            source.pixelWidth,
+            source.pixelHeight,
+            0,
+            glTexture.format,
+            glTexture.type,
+            null,
+        );
+
+        // Mips (if requested)
+        let w = Math.max(source.pixelWidth >> 1, 1);
+        let h = Math.max(source.pixelHeight >> 1, 1);
+
+        for (let level = 1; level < source.mipLevelCount; level++)
+        {
+            gl.texImage2D(
+                gl.TEXTURE_2D,
+                level,
+                glTexture.internalFormat,
+                w,
+                h,
+                0,
+                glTexture.format,
+                glTexture.type,
+                null,
+            );
+
+            w = Math.max(w >> 1, 1);
+            h = Math.max(h >> 1, 1);
+        }
+    }
+
+    private _initEmptyTexture2DArray(glTexture: GlTexture, source: TextureSource): void
+    {
+        if (this._renderer.context.webGLVersion !== 2)
+        {
+            throw new Error('[GlTextureSystem] TEXTURE_2D_ARRAY requires WebGL2.');
+        }
+
+        const gl2 = this._gl as WebGL2RenderingContext;
+        const depth = Math.max(source.arrayLayerCount | 0, 1);
+
+        // Level 0
+        gl2.texImage3D(
+            gl2.TEXTURE_2D_ARRAY,
+            0,
+            glTexture.internalFormat,
+            source.pixelWidth,
+            source.pixelHeight,
+            depth,
+            0,
+            glTexture.format,
+            glTexture.type,
+            null,
+        );
+
+        // Mips (if requested)
+        let w = Math.max(source.pixelWidth >> 1, 1);
+        let h = Math.max(source.pixelHeight >> 1, 1);
+
+        for (let level = 1; level < source.mipLevelCount; level++)
+        {
+            gl2.texImage3D(
+                gl2.TEXTURE_2D_ARRAY,
+                level,
+                glTexture.internalFormat,
+                w,
+                h,
+                depth,
+                0,
+                glTexture.format,
+                glTexture.type,
+                null,
+            );
+
+            w = Math.max(w >> 1, 1);
+            h = Math.max(h >> 1, 1);
+        }
+    }
+
+    private _initEmptyTextureCube(glTexture: GlTexture, source: TextureSource): void
+    {
+        const gl = this._gl;
+
+        const totalCubeFaces = 6;
+
+        // Level 0 (all faces)
+        for (let face = 0; face < totalCubeFaces; face++)
+        {
+            gl.texImage2D(
+                gl.TEXTURE_CUBE_MAP_POSITIVE_X + face,
+                0,
+                glTexture.internalFormat,
+                source.pixelWidth,
+                source.pixelHeight,
+                0,
+                glTexture.format,
+                glTexture.type,
+                null,
+            );
+        }
+
+        // Mips (if requested)
+        let w = Math.max(source.pixelWidth >> 1, 1);
+        let h = Math.max(source.pixelHeight >> 1, 1);
+
+        for (let level = 1; level < source.mipLevelCount; level++)
+        {
+            for (let face = 0; face < totalCubeFaces; face++)
+            {
+                gl.texImage2D(
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_X + face,
+                    level,
+                    glTexture.internalFormat,
+                    w,
+                    h,
+                    0,
+                    glTexture.format,
+                    glTexture.type,
+                    null,
+                );
+            }
+
+            w = Math.max(w >> 1, 1);
+            h = Math.max(h >> 1, 1);
+        }
+    }
+
+    /**
+     * Applies a mip range to the currently-bound texture so WebGL2 considers the texture "mipmap complete"
+     * for the declared `mipLevelCount` (especially important for partial mip chains rendered via FBO).
+     * @param glTexture - The GL texture wrapper.
+     * @param source - The texture source describing mipLevelCount.
+     */
+    private _applyMipRange(glTexture: GlTexture, source: TextureSource): void
+    {
+        if (this._renderer.context.webGLVersion !== 2) return;
+
+        const gl = this._gl as WebGL2RenderingContext;
+        const maxLevel = Math.max((source.mipLevelCount | 0) - 1, 0);
+
+        gl.texParameteri(glTexture.target, gl.TEXTURE_BASE_LEVEL, 0);
+        gl.texParameteri(glTexture.target, gl.TEXTURE_MAX_LEVEL, maxLevel);
     }
 
     private _initSampler(style: TextureStyle): WebGLSampler

@@ -10,6 +10,7 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'do not clip to viewport filter texture',
+    excludeRenderers: ['canvas'],
     create: async (scene: Container) =>
     {
         const texture = await Assets.load('chessboard.webp');

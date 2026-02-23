@@ -113,17 +113,20 @@ export class ColorMatrixFilter extends Filter
      */
     private _loadMatrix(matrix: ColorMatrix, multiply = false): void
     {
-        let newMatrix = matrix;
-
         if (multiply)
         {
+            const newMatrix = [...matrix] as ColorMatrix;
+
             this._multiply(newMatrix, this.matrix, matrix);
-            newMatrix = this._colorMatrix(newMatrix) as any;
+            this.resources.colorMatrixUniforms.uniforms.uColorMatrix = newMatrix;
+        }
+        else
+        {
+            this.resources.colorMatrixUniforms.uniforms.uColorMatrix = matrix;
         }
 
         // set the new matrix
 
-        this.resources.colorMatrixUniforms.uniforms.uColorMatrix = newMatrix;
         this.resources.colorMatrixUniforms.update();
     }
 
@@ -166,24 +169,6 @@ export class ColorMatrixFilter extends Filter
         out[19] = (a[15] * b[4]) + (a[16] * b[9]) + (a[17] * b[14]) + (a[18] * b[19]) + a[19];
 
         return out;
-    }
-
-    /**
-     * Create a Float32 Array and normalize the offset component to 0-1
-     * @param {number[]} matrix - 5x4 matrix
-     * @returns {number[]} 5x4 matrix with all values between 0-1
-     */
-    private _colorMatrix(matrix: ColorMatrix): ColorMatrix
-    {
-        // Create a Float32 Array and normalize the offset component to 0-1
-        const m = new Float32Array(matrix);
-
-        m[4] /= 255;
-        m[9] /= 255;
-        m[14] /= 255;
-        m[19] /= 255;
-
-        return m as any;
     }
 
     /**
@@ -626,9 +611,9 @@ export class ColorMatrixFilter extends Filter
     public technicolor(multiply: boolean): void
     {
         const matrix: ColorMatrix = [
-            1.9125277891456083, -0.8545344976951645, -0.09155508482755585, 0, 11.793603434377337,
-            -0.3087833385928097, 1.7658908555458428, -0.10601743074722245, 0, -70.35205161461398,
-            -0.231103377548616, -0.7501899197440212, 1.847597816108189, 0, 30.950940869491138,
+            1.9125277891456083, -0.8545344976951645, -0.09155508482755585, 0, 0.046249425232852304,
+            -0.3087833385928097, 1.7658908555458428, -0.10601743074722245, 0, -0.2758903984886823,
+            -0.231103377548616, -0.7501899197440212, 1.847597816108189, 0, 0.12137623870388682,
             0, 0, 0, 1, 0,
         ];
 
@@ -727,9 +712,9 @@ export class ColorMatrixFilter extends Filter
     public kodachrome(multiply: boolean): void
     {
         const matrix: ColorMatrix = [
-            1.1285582396593525, -0.3967382283601348, -0.03992559172921793, 0, 63.72958762196502,
-            -0.16404339962244616, 1.0835251566291304, -0.05498805115633132, 0, 24.732407896706203,
-            -0.16786010706155763, -0.5603416277695248, 1.6014850761964943, 0, 35.62982807460946,
+            1.1285582396593525, -0.3967382283601348, -0.03992559172921793, 0, 0.24991995145868634,
+            -0.16404339962244616, 1.0835251566291304, -0.05498805115633132, 0, 0.09698983488904393,
+            -0.16786010706155763, -0.5603416277695248, 1.6014850761964943, 0, 0.13972481597886063,
             0, 0, 0, 1, 0,
         ];
 
@@ -760,9 +745,9 @@ export class ColorMatrixFilter extends Filter
     public browni(multiply: boolean): void
     {
         const matrix: ColorMatrix = [
-            0.5997023498159715, 0.34553243048391263, -0.2708298674538042, 0, 47.43192855600873,
-            -0.037703249837783157, 0.8609577587992641, 0.15059552388459913, 0, -36.96841498319127,
-            0.24113635128153335, -0.07441037908422492, 0.44972182064877153, 0, -7.562075277591283,
+            0.5997023498159715, 0.34553243048391263, -0.2708298674538042, 0, 0.1860075629647401,
+            -0.037703249837783157, 0.8609577587992641, 0.15059552388459913, 0, -0.14497417640467167,
+            0.24113635128153335, -0.07441037908422492, 0.44972182064877153, 0, -0.029655197167024642,
             0, 0, 0, 1, 0,
         ];
 
@@ -793,9 +778,9 @@ export class ColorMatrixFilter extends Filter
     public vintage(multiply: boolean): void
     {
         const matrix: ColorMatrix = [
-            0.6279345635605994, 0.3202183420819367, -0.03965408211312453, 0, 9.651285835294123,
-            0.02578397704808868, 0.6441188644374771, 0.03259127616149294, 0, 7.462829176470591,
-            0.0466055556782719, -0.0851232987247891, 0.5241648018700465, 0, 5.159190588235296,
+            0.6279345635605994, 0.3202183420819367, -0.03965408211312453, 0, 0.037848179746251466,
+            0.02578397704808868, 0.6441188644374771, 0.03259127616149294, 0, 0.029265996770472907,
+            0.0466055556782719, -0.0851232987247891, 0.5241648018700465, 0, 0.020232119953863904,
             0, 0, 0, 1, 0,
         ];
 

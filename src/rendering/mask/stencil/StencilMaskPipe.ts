@@ -4,24 +4,14 @@ import { STENCIL_MODES } from '../../renderers/shared/state/const';
 
 import type { Container } from '../../../scene/container/Container';
 import type { Effect } from '../../../scene/container/Effect';
-import type { Instruction } from '../../renderers/shared/instructions/Instruction';
+import type { WebGLRenderer } from '../../renderers/gl/WebGLRenderer';
+import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../renderers/shared/Renderable';
 import type { Renderer } from '../../renderers/types';
 import type { StencilMask } from './StencilMask';
-
-/** @internal */
-type MaskMode = 'pushMaskBegin' | 'pushMaskEnd' | 'popMaskBegin' | 'popMaskEnd';
-
-/** @internal */
-export interface StencilMaskInstruction extends Instruction
-{
-    renderPipeId: 'stencilMask',
-    action: MaskMode,
-    inverse: boolean,
-    mask: StencilMask,
-}
+import type { StencilMaskInstruction } from './StencilMaskTypes';
 
 /** @internal */
 export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
@@ -30,7 +20,6 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         type: [
             ExtensionType.WebGLPipes,
             ExtensionType.WebGPUPipes,
-            ExtensionType.CanvasPipes,
         ],
         name: 'stencilMask',
     } as const;
@@ -146,6 +135,8 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
     public execute(instruction: StencilMaskInstruction)
     {
         const renderer = this._renderer;
+
+        const gpuRenderer = renderer as WebGLRenderer | WebGPURenderer;
         const renderTargetUid = renderer.renderTarget.renderTarget.uid;
 
         let maskStackIndex = this._maskStackHash[renderTargetUid] ??= 0;
@@ -154,39 +145,39 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         {
             // we create the depth and stencil buffers JIT
             // as no point allocating the memory if we don't use it
-            renderer.renderTarget.ensureDepthStencil();
+            gpuRenderer.renderTarget.ensureDepthStencil();
 
-            renderer.stencil.setStencilMode(STENCIL_MODES.RENDERING_MASK_ADD, maskStackIndex);
+            gpuRenderer.stencil.setStencilMode(STENCIL_MODES.RENDERING_MASK_ADD, maskStackIndex);
 
             maskStackIndex++;
 
-            renderer.colorMask.setMask(0);
+            gpuRenderer.colorMask.setMask(0);
         }
         else if (instruction.action === 'pushMaskEnd')
         {
             if (instruction.inverse)
             {
-                renderer.stencil.setStencilMode(STENCIL_MODES.INVERSE_MASK_ACTIVE, maskStackIndex);
+                gpuRenderer.stencil.setStencilMode(STENCIL_MODES.INVERSE_MASK_ACTIVE, maskStackIndex);
             }
             else
             {
-                renderer.stencil.setStencilMode(STENCIL_MODES.MASK_ACTIVE, maskStackIndex);
+                gpuRenderer.stencil.setStencilMode(STENCIL_MODES.MASK_ACTIVE, maskStackIndex);
             }
 
-            renderer.colorMask.setMask(0xF);
+            gpuRenderer.colorMask.setMask(0xF);
         }
         else if (instruction.action === 'popMaskBegin')
         {
-            renderer.colorMask.setMask(0);
+            gpuRenderer.colorMask.setMask(0);
 
             if (maskStackIndex !== 0)
             {
-                renderer.stencil.setStencilMode(STENCIL_MODES.RENDERING_MASK_REMOVE, maskStackIndex);
+                gpuRenderer.stencil.setStencilMode(STENCIL_MODES.RENDERING_MASK_REMOVE, maskStackIndex);
             }
             else
             {
-                renderer.renderTarget.clear(null, CLEAR.STENCIL);
-                renderer.stencil.setStencilMode(STENCIL_MODES.DISABLED, maskStackIndex);
+                gpuRenderer.renderTarget.clear(null, CLEAR.STENCIL);
+                gpuRenderer.stencil.setStencilMode(STENCIL_MODES.DISABLED, maskStackIndex);
             }
 
             maskStackIndex--;
@@ -195,14 +186,14 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         {
             if (instruction.inverse)
             {
-                renderer.stencil.setStencilMode(STENCIL_MODES.INVERSE_MASK_ACTIVE, maskStackIndex);
+                gpuRenderer.stencil.setStencilMode(STENCIL_MODES.INVERSE_MASK_ACTIVE, maskStackIndex);
             }
             else
             {
-                renderer.stencil.setStencilMode(STENCIL_MODES.MASK_ACTIVE, maskStackIndex);
+                gpuRenderer.stencil.setStencilMode(STENCIL_MODES.MASK_ACTIVE, maskStackIndex);
             }
 
-            renderer.colorMask.setMask(0xF);
+            gpuRenderer.colorMask.setMask(0xF);
         }
 
         this._maskStackHash[renderTargetUid] = maskStackIndex;

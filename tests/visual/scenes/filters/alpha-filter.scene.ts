@@ -4,6 +4,7 @@ import { Container, Graphics } from '~/scene';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'Alpha filter should be applied correctly',
     create: async (scene: Container) =>
     {

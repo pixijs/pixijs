@@ -12,6 +12,7 @@ import { type GpuGraphicsContext } from './GraphicsContextSystem';
 import { GraphicsPath } from './path/GraphicsPath';
 import { SVGParser } from './svg/SVGParser';
 import { toFillStyle, toStrokeStyle } from './utils/convertFillInputToFillStyle';
+import { getMaxMiterRatio } from './utils/getMaxMiterRatio';
 
 import type { PointData } from '../../../maths/point/PointData';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
@@ -289,7 +290,7 @@ export class GraphicsContext extends EventEmitter<{
 
                 transform: this._transform.clone(),
                 alpha: this._fillStyle.alpha,
-                style: tint ? Color.shared.setValue(tint).toNumber() : 0xFFFFFF,
+                style: (tint || tint === 0) ? Color.shared.setValue(tint).toNumber() : 0xFFFFFF,
             }
         });
 
@@ -1078,15 +1079,9 @@ export class GraphicsContext extends EventEmitter<{
 
     protected onUpdate(): void
     {
-        // Every time the content is updated - we must invalidate bounds, regardless rendering `dirty` state.
-        // Bounds can be read multiple times per frame.
         this._boundsDirty = true;
-
-        // Visual updates happen only once per frame.
-        // There is no need to dispatch an `update` in if it was already dispatched this frame.
-        if (this.dirty) return;
-        this.emit('update', this, 0x10);
         this.dirty = true;
+        this.emit('update', this, 0x10);
     }
 
     /** The bounds of the graphic shape. */
@@ -1124,7 +1119,12 @@ export class GraphicsContext extends EventEmitter<{
 
                 const alignment = data.style.alignment;
 
-                const outerPadding = (data.style.width * (1 - alignment));
+                let outerPadding = (data.style.width * (1 - alignment));
+
+                if (data.style.join === 'miter')
+                {
+                    outerPadding *= getMaxMiterRatio(data.path, data.style.miterLimit);
+                }
 
                 const _bounds = data.path.bounds;
 

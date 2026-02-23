@@ -57,9 +57,9 @@ jobs:
     # Publish to NPM
     - name: Publish Latest Release
       if: github.event.release.prerelease == false
-      run: npm run publish-ci
+      run: npm publish
 
     # Publish to NPM with prerelease dist-tag
     - name: Publish Latest Prerelease
       if: github.event.release.prerelease
-      run: npm run publish-ci -- --tag prerelease-v8
+      run: npm publish --tag prerelease-v8

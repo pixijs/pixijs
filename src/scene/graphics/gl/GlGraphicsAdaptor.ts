@@ -13,7 +13,8 @@ import { type Renderer } from '../../../rendering/renderers/types';
 import type { Batch } from '../../../rendering/batcher/shared/Batcher';
 import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRenderer';
 import type { Graphics } from '../shared/Graphics';
-import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
+import type { GraphicsContextSystem } from '../shared/GraphicsContextSystem';
+import type { GraphicsAdaptor, GraphicsPipeLike } from '../shared/GraphicsPipe';
 
 /**
  * A GraphicsAdaptor that uses WebGL to render graphics.
@@ -61,12 +62,12 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         });
     }
 
-    public execute(graphicsPipe: GraphicsPipe, renderable: Graphics): void
+    public execute(graphicsPipe: GraphicsPipeLike, renderable: Graphics): void
     {
         const context = renderable.context;
         const shader = context.customShader || this.shader;
         const renderer = graphicsPipe.renderer as WebGLRenderer;
-        const contextSystem = renderer.graphicsContext;
+        const contextSystem = renderer.graphicsContext as GraphicsContextSystem;
 
         const {
             batcher, instructions,

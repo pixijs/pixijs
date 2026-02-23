@@ -85,13 +85,36 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         renderTarget: RenderTarget,
         clear: CLEAR_OR_BOOL = true,
         clearColor?: RgbaArray,
-        viewport?: Rectangle
+        viewport?: Rectangle,
+        mipLevel = 0,
+        layer = 0
     )
     {
         const renderTargetSystem = this._renderTargetSystem;
 
         const source = renderTarget.colorTexture;
         const gpuRenderTarget = renderTargetSystem.getGpuRenderTarget(renderTarget);
+
+        // validation..
+        if (layer !== 0 && this._renderer.context.webGLVersion < 2)
+        {
+            throw new Error('[RenderTargetSystem] Rendering to array layers requires WebGL2.');
+        }
+
+        if (mipLevel > 0)
+        {
+            if (gpuRenderTarget.msaa)
+            {
+                throw new Error('[RenderTargetSystem] Rendering to mip levels is not supported with MSAA render targets.');
+            }
+
+            if (this._renderer.context.webGLVersion < 2)
+            {
+                throw new Error('[RenderTargetSystem] Rendering to mip levels requires WebGL2.');
+            }
+        }
+
+        // do the work..
 
         let viewPortY = viewport.y;
 
@@ -110,6 +133,74 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         const gl = this._renderer.gl;
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, gpuRenderTarget.framebuffer);
+
+        // Re-attach color textures at the requested mip level.
+        // (Framebuffer attachments are per-FBO, so we must re-attach when mipLevel changes.)
+        // IMPORTANT: This must also run when returning from mip>0 back to mip=0, because attachments are stateful.
+        if (
+            !renderTarget.isRoot
+            && (gpuRenderTarget._attachedMipLevel !== mipLevel
+                || gpuRenderTarget._attachedLayer !== layer)
+        )
+        {
+            renderTarget.colorTextures.forEach((colorTexture, i) =>
+            {
+                const glSource = this._renderer.texture.getGlSource(colorTexture);
+
+                if (glSource.target === gl.TEXTURE_2D)
+                {
+                    if (layer !== 0)
+                    {
+                        throw new Error('[RenderTargetSystem] layer must be 0 when rendering to 2D textures in WebGL.');
+                    }
+
+                    gl.framebufferTexture2D(
+                        gl.FRAMEBUFFER,
+                        gl.COLOR_ATTACHMENT0 + i,
+                        gl.TEXTURE_2D,
+                        glSource.texture,
+                        mipLevel
+                    );
+                }
+                else if (glSource.target === (gl as any).TEXTURE_2D_ARRAY)
+                {
+                    if (this._renderer.context.webGLVersion < 2)
+                    {
+                        throw new Error('[RenderTargetSystem] Rendering to 2D array textures requires WebGL2.');
+                    }
+
+                    (gl as any as WebGL2RenderingContext).framebufferTextureLayer(
+                        gl.FRAMEBUFFER,
+                        gl.COLOR_ATTACHMENT0 + i,
+                        glSource.texture,
+                        mipLevel,
+                        layer
+                    );
+                }
+                else if (glSource.target === gl.TEXTURE_CUBE_MAP)
+                {
+                    if (layer < 0 || layer > 5)
+                    {
+                        throw new Error('[RenderTargetSystem] Cube map layer must be between 0 and 5.');
+                    }
+
+                    gl.framebufferTexture2D(
+                        gl.FRAMEBUFFER,
+                        gl.COLOR_ATTACHMENT0 + i,
+                        gl.TEXTURE_CUBE_MAP_POSITIVE_X + layer,
+                        glSource.texture,
+                        mipLevel
+                    );
+                }
+                else
+                {
+                    throw new Error('[RenderTargetSystem] Unsupported texture target for render-to-layer in WebGL.');
+                }
+            });
+
+            gpuRenderTarget._attachedMipLevel = mipLevel;
+            gpuRenderTarget._attachedLayer = layer;
+        }
 
         // Set draw buffers for multiple render targets (MRT)
         if (renderTarget.colorTextures.length > 1)
@@ -181,6 +272,9 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         const glRenderTarget = new GlRenderTarget();
 
+        glRenderTarget._attachedMipLevel = 0;
+        glRenderTarget._attachedLayer = 0;
+
         // we are rendering to the main canvas..
         const colorTexture = renderTarget.colorTexture;
 
@@ -232,9 +326,21 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         gpuRenderTarget.msaaRenderBuffer = null;
     }
 
-    public clear(_renderTarget: RenderTarget, clear: CLEAR_OR_BOOL, clearColor?: RgbaArray)
+    public clear(
+        _renderTarget: RenderTarget,
+        clear: CLEAR_OR_BOOL,
+        clearColor?: RgbaArray,
+        _viewport?: Rectangle,
+        _mipLevel = 0,
+        layer = 0
+    )
     {
         if (!clear) return;
+
+        if (layer !== 0)
+        {
+            throw new Error('[RenderTargetSystem] Clearing array layers is not supported in WebGL renderer.');
+        }
 
         const renderTargetSystem = this._renderTargetSystem;
 
@@ -326,11 +432,46 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
             const glTexture = glSource.texture;
 
-            gl.framebufferTexture2D(gl.FRAMEBUFFER,
-                gl.COLOR_ATTACHMENT0 + i,
-                3553, // texture.target,
-                glTexture,
-                0);// mipLevel);
+            // Initial attachment is mip 0, layer 0.
+            if (glSource.target === gl.TEXTURE_2D)
+            {
+                gl.framebufferTexture2D(
+                    gl.FRAMEBUFFER,
+                    gl.COLOR_ATTACHMENT0 + i,
+                    gl.TEXTURE_2D,
+                    glTexture,
+                    0
+                );
+            }
+            else if (glSource.target === (gl as any).TEXTURE_2D_ARRAY)
+            {
+                if (renderer.context.webGLVersion < 2)
+                {
+                    throw new Error('[RenderTargetSystem] TEXTURE_2D_ARRAY requires WebGL2.');
+                }
+
+                (gl as any as WebGL2RenderingContext).framebufferTextureLayer(
+                    gl.FRAMEBUFFER,
+                    gl.COLOR_ATTACHMENT0 + i,
+                    glTexture,
+                    0,
+                    0
+                );
+            }
+            else if (glSource.target === gl.TEXTURE_CUBE_MAP)
+            {
+                gl.framebufferTexture2D(
+                    gl.FRAMEBUFFER,
+                    gl.COLOR_ATTACHMENT0 + i,
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+                    glTexture,
+                    0
+                );
+            }
+            else
+            {
+                throw new Error('[RenderTargetSystem] Unsupported texture target for framebuffer attachment.');
+            }
         });
 
         if (glRenderTarget.msaa)
@@ -362,6 +503,10 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         glRenderTarget.width = source.pixelWidth;
         glRenderTarget.height = source.pixelHeight;
+        // After a resize, attachments are implicitly at mip 0 again (and non-zero mip allocations may have changed).
+        // Force a re-attach on next mip render.
+        glRenderTarget._attachedMipLevel = 0;
+        glRenderTarget._attachedLayer = 0;
 
         renderTarget.colorTextures.forEach((colorTexture, i) =>
         {

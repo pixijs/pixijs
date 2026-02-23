@@ -1,5 +1,4 @@
-import { Container, Graphics } from '~/scene';
-import { FillGradient } from '~/scene/graphics/shared/fill/FillGradient';
+import { Container, FillGradient, Graphics } from '~/scene';
 
 import type { TestScene } from '../../types';
 

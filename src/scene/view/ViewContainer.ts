@@ -210,8 +210,12 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
         renderPipes.blendMode.pushBlendMode(this, this.groupBlendMode, instructionSet);
 
         const rp = renderPipes as unknown as Record<string, RenderPipe>;
+        const pipe = rp[this.renderPipeId];
 
-        rp[this.renderPipeId].addRenderable(this, instructionSet);
+        if (pipe?.addRenderable)
+        {
+            pipe.addRenderable(this, instructionSet);
+        }
 
         this.didViewUpdate = false;
 
