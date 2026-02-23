@@ -111,7 +111,6 @@
     "semver": "^7.6.3",
     "tree-kill": "^1.2.2",
     "ts-jest": "^26.0.0",
-    "tsc-silent": "^1.2.2",
     "typedoc": "^0.28.16",
     "typedoc-plugin-ga": "^1.1.1",
     "typedoc-plugin-markdown": "^4.9.0",
