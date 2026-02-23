@@ -182,7 +182,7 @@ describe('NineSliceSprite', () =>
         });
     });
 
-    describe('Trimmed Texture (issue #11706)', () =>
+    describe('Trimmed Texture', () =>
     {
         /** Helper to create a trimmed texture. orig = 100×100, trim = {x:10, y:10, w:80, h:80}, frame = 80×80. */
         const makeTrimmedTexture = () =>
@@ -278,7 +278,32 @@ describe('NineSliceSprite', () =>
             expect(uvs[25]).toBeCloseTo(1, 5); // bottom edge
         });
 
-        it('NineSliceSprite with trimmed texture should have correct UV geometry', () =>
+        it('NineSliceGeometry UV edges should re-sync when originalWidth changes without trim', () =>
+        {
+            const geometry = new NineSliceGeometry({
+                width: 200,
+                height: 200,
+                originalWidth: 100,
+                originalHeight: 100,
+                leftWidth: 10,
+                topHeight: 10,
+                rightWidth: 10,
+                bottomHeight: 10,
+            });
+
+            // Update originalWidth without passing trim
+            geometry.update({ originalWidth: 200, originalHeight: 200 });
+
+            const uvs = geometry.uvs;
+
+            // UV edges should still span [0,1] not shrink to [0, 0.5]
+            expect(uvs[0]).toBeCloseTo(0, 5);
+            expect(uvs[6]).toBeCloseTo(1, 5);
+            expect(uvs[1]).toBeCloseTo(0, 5);
+            expect(uvs[25]).toBeCloseTo(1, 5);
+        });
+
+        it('NineSliceSprite with trimmed texture should expose correct trim metadata', () =>
         {
             const texture = makeTrimmedTexture();
             const sprite = new NineSliceSprite({

@@ -656,7 +656,7 @@ export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> imple
      * @readonly
      * @internal
      */
-    get trim(): { x: number; y: number; width: number; height: number } | null
+    get trim()
     {
         return this._texture.trim ?? null;
     }

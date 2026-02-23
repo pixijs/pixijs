@@ -131,6 +131,11 @@ export class NineSliceGeometry extends PlaneGeometry
             this._trimWidth = options.trim?.width ?? this._originalWidth;
             this._trimHeight = options.trim?.height ?? this._originalHeight;
         }
+        else
+        {
+            this._trimWidth = this._originalWidth;
+            this._trimHeight = this._originalHeight;
+        }
 
         this.updateUvs();
         this.updatePositions();
