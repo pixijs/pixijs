@@ -478,13 +478,15 @@ class BitmapFontManagerClass
             textureStyle: options.textureStyle,
         });
 
+        (font as { fontFamily: string }).fontFamily = name;
+
         const flatChars = resolveCharacters(options.chars);
 
         font.ensureCharacters(flatChars.join(''));
 
-        Cache.set(`${name}-bitmap`, font);
+        Cache.set(name, font);
 
-        font.once('destroy', () => Cache.remove(`${name}-bitmap`));
+        font.once('destroy', () => Cache.remove(name));
 
         return font;
     }
@@ -495,8 +497,7 @@ class BitmapFontManagerClass
      */
     public uninstall(name: string)
     {
-        const cacheKey = `${name}-bitmap`;
-        const font = Cache.get<BitmapFont>(cacheKey);
+        const font = Cache.get<BitmapFont>(`${name}-bitmap`) ?? Cache.get<BitmapFont>(name);
 
         if (font)
         {
