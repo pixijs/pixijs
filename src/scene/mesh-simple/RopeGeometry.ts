@@ -152,7 +152,7 @@ export class RopeGeometry extends MeshGeometry
 
         let amount = 0;
         let prev = points[0];
-        const textureWidth = this._textureWidth * this.textureScale;
+        const textureWidth = this._textureWidth * this.textureScale || 1;
         const total = points.length; // - 1;
 
         for (let i = 0; i < total; i++)

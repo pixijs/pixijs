@@ -196,7 +196,7 @@ export class MeshRope extends Mesh
     {
         const geometry: RopeGeometry = this.geometry as any;
 
-        if (this.autoUpdate || geometry._width !== this.texture.height)
+        if (this.autoUpdate || geometry._width !== this.texture.height || geometry._textureWidth !== this.texture.width)
         {
             geometry._width = this.texture.height;
             geometry._textureWidth = this.texture.width;
