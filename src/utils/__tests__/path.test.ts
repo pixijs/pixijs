@@ -389,4 +389,27 @@ describe('Paths', () =>
             name: 'my-font'
         });
     });
+
+    it('should handle custom protocol schemes like tauri://', () =>
+    {
+        // rootname should extract host for custom protocols with ://
+        expect(path.rootname('tauri://localhost/assets/atlas.json')).toBe('tauri://localhost/');
+        expect(path.rootname('tauri://localhost')).toBe('tauri://localhost/');
+        expect(path.rootname('tauri://localhost/')).toBe('tauri://localhost/');
+        expect(path.rootname('custom-app://myhost/path/to/file')).toBe('custom-app://myhost/');
+
+        // toAbsolute should preserve host for custom protocols
+        expect(path.toAbsolute('/assets/atlas.json', undefined, 'tauri://localhost/'))
+            .toEqual('tauri://localhost/assets/atlas.json');
+        expect(path.toAbsolute('/assets/atlas.json', 'tauri://localhost/'))
+            .toEqual('tauri://localhost/assets/atlas.json');
+
+        // dirname should work with custom protocols
+        expect(path.dirname('tauri://localhost/assets/atlas.json')).toBe('tauri://localhost/assets');
+        expect(path.dirname('tauri://localhost/assets')).toBe('tauri://localhost/');
+        expect(path.dirname('tauri://localhost/')).toBe('tauri://localhost/');
+
+        // file:/// should still work as before (no host)
+        expect(path.rootname('file:///foo/bar')).toBe('file:///');
+    });
 });

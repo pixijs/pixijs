@@ -566,7 +566,7 @@ export const path: Path = {
 
         // if end is -1 and its a url then we need to add the path back
         // eslint-disable-next-line no-nested-ternary
-        if (end === -1) return hasRoot ? '/' : this.isUrl(origpath) ? proto + path : proto;
+        if (end === -1) return hasRoot ? '/' : (this.isUrl(origpath) || ((/^[^/:]+:\/\//).test(origpath) && !origpath.startsWith('file://'))) ? proto + path : proto;
         if (hasRoot && end === 1) return '//';
 
         return proto + path.slice(0, end);
@@ -598,9 +598,13 @@ export const path: Path = {
             root = this.getProtocol(path);
         }
 
-        if (this.isUrl(path))
+        // For any protocol with a double-slash authority (e.g. http://, https://, tauri://),
+        // extract the host portion as part of the root. This ensures custom protocols like
+        // tauri://localhost/ are handled correctly, not just http(s).
+        // Exclude file:/// which has no host component.
+        if (this.isUrl(path) || ((/^[^/:]+:\/\//).test(path) && !path.startsWith('file://')))
         {
-            // need to find the first path separator
+            // need to find the first path separator after the protocol
             const index = path.indexOf('/', root.length);
 
             if (index !== -1)
