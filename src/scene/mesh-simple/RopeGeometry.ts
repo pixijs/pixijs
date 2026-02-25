@@ -33,6 +33,12 @@ export interface RopeGeometryOptions
      * i.e. set textureScale=0.5 to scale it down twice.
      */
     textureScale?: number;
+    /**
+     * The horizontal width of the texture, used for correct aspect ratio
+     * when `textureScale > 0`. If not provided, defaults to `width`
+     * (which produces a 1:1 aspect ratio).
+     */
+    textureWidth?: number;
 }
 
 /**
@@ -57,6 +63,8 @@ export class RopeGeometry extends MeshGeometry
         points: [],
         /** Rope texture scale, if zero then the rope texture is stretched. */
         textureScale: 0,
+        /** The horizontal width of the texture for correct aspect ratio. */
+        textureWidth: 0,
     };
 
     /** An array of points that determine the rope. */
@@ -73,11 +81,18 @@ export class RopeGeometry extends MeshGeometry
     public _width: number;
 
     /**
+     * The horizontal width of the texture, used for correct aspect ratio
+     * when `textureScale > 0`. If zero, falls back to `_width`.
+     * @internal
+     */
+    public _textureWidth: number;
+
+    /**
      * @param options - Options to be applied to rope geometry
      */
     constructor(options: RopeGeometryOptions)
     {
-        const { width, points, textureScale } = { ...RopeGeometry.defaultOptions, ...options };
+        const { width, points, textureScale, textureWidth } = { ...RopeGeometry.defaultOptions, ...options };
 
         super({
             positions: new Float32Array(points.length * 4),
@@ -87,6 +102,7 @@ export class RopeGeometry extends MeshGeometry
 
         this.points = points;
         this._width = width;
+        this._textureWidth = textureWidth || width;
         this.textureScale = textureScale;
 
         this._build();
@@ -136,7 +152,7 @@ export class RopeGeometry extends MeshGeometry
 
         let amount = 0;
         let prev = points[0];
-        const textureWidth = this._width * this.textureScale;
+        const textureWidth = this._textureWidth * this.textureScale;
         const total = points.length; // - 1;
 
         for (let i = 0; i < total; i++)

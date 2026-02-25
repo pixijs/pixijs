@@ -169,7 +169,12 @@ export class MeshRope extends Mesh
     constructor(options: MeshRopeOptions)
     {
         const { texture, points, textureScale, ...rest } = { ...MeshRope.defaultOptions, ...options };
-        const ropeGeometry = new RopeGeometry(definedProps({ width: texture.height, points, textureScale }));
+        const ropeGeometry = new RopeGeometry(definedProps({
+            width: texture.height,
+            points,
+            textureScale,
+            textureWidth: texture.width,
+        }));
 
         if (textureScale > 0)
         {
@@ -194,6 +199,7 @@ export class MeshRope extends Mesh
         if (this.autoUpdate || geometry._width !== this.texture.height)
         {
             geometry._width = this.texture.height;
+            geometry._textureWidth = this.texture.width;
             geometry.update();
         }
     }
