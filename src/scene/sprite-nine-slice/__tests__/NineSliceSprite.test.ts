@@ -1,10 +1,11 @@
 import { Bounds } from '../../container/bounds/Bounds';
 import { getGlobalBounds } from '../../container/bounds/getGlobalBounds';
 import { NineSliceSprite } from '../NineSliceSprite';
+import { NineSliceGeometry } from '../NineSliceGeometry';
 import '../../mesh/init';
 import '../init';
 import { getTexture } from '@test-utils';
-import { Point } from '~/maths';
+import { Point, Rectangle } from '~/maths';
 import { Texture } from '~/rendering';
 
 import type { TextureSource } from '~/rendering';
@@ -178,6 +179,93 @@ describe('NineSliceSprite', () =>
             sprite.anchor.x = 0.5;
 
             expect(spy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('Trimmed Texture Support', () =>
+    {
+        it('should compute UVs correctly when textureUvs are provided', () =>
+        {
+            const geometry = new NineSliceGeometry({
+                width: 100,
+                height: 100,
+                originalWidth: 64,
+                originalHeight: 64,
+                leftWidth: 10,
+                topHeight: 10,
+                rightWidth: 10,
+                bottomHeight: 10,
+            });
+
+            // Simulate a trimmed/atlas texture with frame at (0.25, 0.25) to (0.75, 0.75)
+            // in source-normalized space (i.e., frame occupies the center quarter of the source)
+            geometry._textureUvs = {
+                x0: 0.25, y0: 0.25,
+                x1: 0.75, y1: 0.25,
+                x2: 0.75, y2: 0.75,
+                x3: 0.25, y3: 0.75,
+            };
+            geometry.update({
+                originalWidth: 64,
+                originalHeight: 64,
+                leftWidth: 10,
+                topHeight: 10,
+                rightWidth: 10,
+                bottomHeight: 10,
+            });
+
+            const uvs = geometry.uvs;
+
+            const frameW = 0.75 - 0.25; // 0.5
+            const frameH = 0.75 - 0.25; // 0.5
+
+            // UV boundaries should be within the frame UV range
+            // Left edge
+            expect(uvs[0]).toBeCloseTo(0.25);
+            // Left cut: 0.25 + (0.5 / 64) * 10
+            expect(uvs[2]).toBeCloseTo(0.25 + (frameW / 64) * 10);
+            // Right cut: 0.75 - (0.5 / 64) * 10
+            expect(uvs[4]).toBeCloseTo(0.75 - (frameW / 64) * 10);
+            // Right edge
+            expect(uvs[6]).toBeCloseTo(0.75);
+
+            // Top edge
+            expect(uvs[1]).toBeCloseTo(0.25);
+            // Top cut: 0.25 + (0.5 / 64) * 10
+            expect(uvs[9]).toBeCloseTo(0.25 + (frameH / 64) * 10);
+            // Bottom cut: 0.75 - (0.5 / 64) * 10
+            expect(uvs[17]).toBeCloseTo(0.75 - (frameH / 64) * 10);
+            // Bottom edge
+            expect(uvs[25]).toBeCloseTo(0.75);
+        });
+
+        it('should use 0-1 UV range when textureUvs are not provided', () =>
+        {
+            const geometry = new NineSliceGeometry({
+                width: 100,
+                height: 100,
+                originalWidth: 64,
+                originalHeight: 64,
+                leftWidth: 10,
+                topHeight: 10,
+                rightWidth: 10,
+                bottomHeight: 10,
+            });
+
+            const uvs = geometry.uvs;
+
+            // Left edge = 0, right edge = 1
+            expect(uvs[0]).toBeCloseTo(0);
+            expect(uvs[6]).toBeCloseTo(1);
+
+            // Top edge = 0, bottom edge = 1
+            expect(uvs[1]).toBeCloseTo(0);
+            expect(uvs[25]).toBeCloseTo(1);
+
+            // Left cut = 10/64
+            expect(uvs[2]).toBeCloseTo(10 / 64);
+            // Right cut = 1 - 10/64
+            expect(uvs[4]).toBeCloseTo(1 - (10 / 64));
         });
     });
 });

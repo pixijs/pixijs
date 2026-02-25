@@ -21,6 +21,24 @@ export class NineSliceSpriteGpuData extends BatchableMesh implements GPUData
         this.geometry = new NineSliceGeometry();
     }
 
+    /**
+     * Override uvs getter to return geometry UVs directly when texture UVs
+     * are baked into the geometry (for trimmed/atlas textures).
+     * This bypasses the TextureMatrix transformation that would otherwise
+     * double-transform the already-correct UVs.
+     */
+    get uvs()
+    {
+        const geometry = this.geometry as NineSliceGeometry;
+
+        if (geometry._textureUvs)
+        {
+            return geometry.getBuffer('aUV').data as Float32Array;
+        }
+
+        return super.uvs;
+    }
+
     public destroy()
     {
         this.geometry.destroy();
@@ -81,11 +99,24 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
     private _updateBatchableSprite(sprite: NineSliceSprite, batchableSprite: BatchableMesh)
     {
-        (batchableSprite.geometry as NineSliceGeometry)
-            .update(sprite);
+        const texture = sprite._texture;
+        const geometry = batchableSprite.geometry as NineSliceGeometry;
+
+        // Check if the texture frame covers the entire source (no atlas/trim).
+        // When it doesn't, pass texture UVs so the geometry computes UVs directly
+        // in texture-source space, correctly handling trimmed/atlas textures.
+        const source = texture.source;
+        const isSimple = texture.frame.x === 0
+            && texture.frame.y === 0
+            && texture.frame.width === source.width
+            && texture.frame.height === source.height
+            && texture.rotate === 0;
+
+        geometry._textureUvs = isSimple ? null : texture.uvs;
+        geometry.update(sprite);
 
         // = sprite.bounds;
-        batchableSprite.setTexture(sprite._texture);
+        batchableSprite.setTexture(texture);
     }
 
     private _getGpuSprite(sprite: NineSliceSprite): NineSliceSpriteGpuData

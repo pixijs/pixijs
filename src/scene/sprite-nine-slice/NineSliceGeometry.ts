@@ -28,6 +28,9 @@ export interface NineSliceGeometryOptions
 
     /** The anchor point of the NineSliceSprite. */
     anchor?: PointData
+
+    /** The texture UVs to use for mapping. When provided, UVs are computed directly in texture-source space. */
+    textureUvs?: { x0: number; y0: number; x1: number; y1: number; x2: number; y2: number; x3: number; y3: number }
 }
 
 /**
@@ -71,6 +74,8 @@ export class NineSliceGeometry extends PlaneGeometry
     private _originalHeight: number;
     private _anchorX: any;
     private _anchorY: number;
+    /** @internal */
+    public _textureUvs: { x0: number; y0: number; x1: number; y1: number; x2: number; y2: number; x3: number; y3: number } | null = null;
 
     constructor(options: NineSliceGeometryOptions = {})
     {
@@ -103,6 +108,8 @@ export class NineSliceGeometry extends PlaneGeometry
 
         this._anchorX = options.anchor?.x;
         this._anchorY = options.anchor?.y;
+
+        this._textureUvs = options.textureUvs ?? this._textureUvs;
 
         this.updateUvs();
         this.updatePositions();
@@ -151,21 +158,60 @@ export class NineSliceGeometry extends PlaneGeometry
     public updateUvs()
     {
         const uvs = this.uvs;
+        const textureUvs = this._textureUvs;
 
-        uvs[0] = uvs[8] = uvs[16] = uvs[24] = 0;
-        uvs[1] = uvs[3] = uvs[5] = uvs[7] = 0;
+        if (textureUvs)
+        {
+            // When texture UVs are provided, compute UVs directly in texture-source space.
+            // This correctly handles trimmed/atlas textures where the frame
+            // does not cover the entire source texture.
+            const uLeft = textureUvs.x0;
+            const uRight = textureUvs.x1;
+            const vTop = textureUvs.y0;
+            const vBottom = textureUvs.y3;
 
-        uvs[6] = uvs[14] = uvs[22] = uvs[30] = 1;
-        uvs[25] = uvs[27] = uvs[29] = uvs[31] = 1;
+            const frameW = uRight - uLeft;
+            const frameH = vBottom - vTop;
 
-        const _uvw = 1.0 / this._originalWidth;
-        const _uvh = 1.0 / this._originalHeight;
+            // leftWidth etc. are in pixels relative to the frame content,
+            // matching the Canvas renderer behaviour.
+            const _uvw = frameW / this._originalWidth;
+            const _uvh = frameH / this._originalHeight;
 
-        uvs[2] = uvs[10] = uvs[18] = uvs[26] = _uvw * this._leftWidth;
-        uvs[9] = uvs[11] = uvs[13] = uvs[15] = _uvh * this._topHeight;
+            const uCutLeft = uLeft + (_uvw * this._leftWidth);
+            const uCutRight = uRight - (_uvw * this._rightWidth);
+            const vCutTop = vTop + (_uvh * this._topHeight);
+            const vCutBottom = vBottom - (_uvh * this._bottomHeight);
 
-        uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - (_uvw * this._rightWidth);
-        uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - (_uvh * this._bottomHeight);
+            // x (horizontal) UVs for each column
+            uvs[0] = uvs[8] = uvs[16] = uvs[24] = uLeft;
+            uvs[2] = uvs[10] = uvs[18] = uvs[26] = uCutLeft;
+            uvs[4] = uvs[12] = uvs[20] = uvs[28] = uCutRight;
+            uvs[6] = uvs[14] = uvs[22] = uvs[30] = uRight;
+
+            // y (vertical) UVs for each row
+            uvs[1] = uvs[3] = uvs[5] = uvs[7] = vTop;
+            uvs[9] = uvs[11] = uvs[13] = uvs[15] = vCutTop;
+            uvs[17] = uvs[19] = uvs[21] = uvs[23] = vCutBottom;
+            uvs[25] = uvs[27] = uvs[29] = uvs[31] = vBottom;
+        }
+        else
+        {
+            uvs[0] = uvs[8] = uvs[16] = uvs[24] = 0;
+            uvs[1] = uvs[3] = uvs[5] = uvs[7] = 0;
+
+            uvs[6] = uvs[14] = uvs[22] = uvs[30] = 1;
+            uvs[25] = uvs[27] = uvs[29] = uvs[31] = 1;
+
+            const _uvw = 1.0 / this._originalWidth;
+            const _uvh = 1.0 / this._originalHeight;
+
+            uvs[2] = uvs[10] = uvs[18] = uvs[26] = _uvw * this._leftWidth;
+            uvs[9] = uvs[11] = uvs[13] = uvs[15] = _uvh * this._topHeight;
+
+            uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - (_uvw * this._rightWidth);
+            uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - (_uvh * this._bottomHeight);
+        }
 
         this.getBuffer('aUV').update();
     }
