@@ -7,17 +7,32 @@ import type { InstructionSet } from '../rendering/renderers/shared/instructions/
 import type { RenderPipe } from '../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../rendering/renderers/types';
 
+/**
+ * CSS style overrides for the DOM wrapper element created by {@link DOMPipe}.
+ * @remarks
+ * Keys map to {@link CSSStyleDeclaration} properties.
+ */
 export type DOMPipeStyleOptions = Partial<Record<keyof CSSStyleDeclaration, string | number>>;
 
+/**
+ * Options for configuring the DOM wrapper element used by {@link DOMPipe}.
+ */
 export interface DOMPipeWrapperOptions
 {
+    /** Class name(s) to add to the wrapper element. */
     className?: string | string[];
+    /** Attributes to set on the wrapper element. */
     attributes?: Record<string, string>;
+    /** Inline style overrides for the wrapper element. */
     style?: DOMPipeStyleOptions;
 }
 
+/**
+ * Options for the DOM render pipe.
+ */
 export interface DOMPipeOptions
 {
+    /** Wrapper element configuration applied during renderer init. */
     wrapper?: DOMPipeWrapperOptions;
 }
 
