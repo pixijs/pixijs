@@ -151,6 +151,44 @@ describe('DOMContainer', () =>
 
     describe('render', () =>
     {
+        it('should apply configured DOM wrapper options', async () =>
+        {
+            const app = await getApp({
+                dom: {
+                    wrapper: {
+                        className: ['pixi-dom-wrapper', 'ui-layer'],
+                        attributes: {
+                            'data-layer': 'ui',
+                        },
+                        style: {
+                            isolation: 'isolate',
+                            zIndex: '2000',
+                        }
+                    }
+                }
+            });
+
+            const wrapper = app.renderer.renderPipes.dom['_domElement'];
+
+            expect(wrapper.classList.contains('pixi-dom-wrapper')).toBe(true);
+            expect(wrapper.classList.contains('ui-layer')).toBe(true);
+            expect(wrapper.getAttribute('data-layer')).toBe('ui');
+            expect(wrapper.style.isolation).toBe('isolate');
+            expect(wrapper.style.zIndex).toBe('2000');
+        });
+
+        it('should keep default wrapper styles when no wrapper options are provided', async () =>
+        {
+            const app = await getApp();
+            const wrapper = app.renderer.renderPipes.dom['_domElement'];
+
+            expect(wrapper.style.position).toBe('absolute');
+            expect(wrapper.style.top).toBe('0px');
+            expect(wrapper.style.left).toBe('0px');
+            expect(wrapper.style.pointerEvents).toBe('none');
+            expect(wrapper.style.zIndex).toBe('1000');
+        });
+
         it('should render the element with the correct transform', async () =>
         {
             const app = await getApp();

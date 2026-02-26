@@ -7,6 +7,20 @@ import type { InstructionSet } from '../rendering/renderers/shared/instructions/
 import type { RenderPipe } from '../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../rendering/renderers/types';
 
+export type DOMPipeStyleOptions = Partial<Record<keyof CSSStyleDeclaration, string | number>>;
+
+export interface DOMPipeWrapperOptions
+{
+    className?: string | string[];
+    attributes?: Record<string, string>;
+    style?: DOMPipeStyleOptions;
+}
+
+export interface DOMPipeOptions
+{
+    wrapper?: DOMPipeWrapperOptions;
+}
+
 /**
  * The DOMPipe class is responsible for managing and rendering DOM elements within a PixiJS scene.
  * It maps dom elements to the canvas and ensures they are correctly positioned and visible.
@@ -63,6 +77,12 @@ export class DOMPipe implements RenderPipe<DOMContainer>
     /** Initializes the DOMPipe, setting up the main DOM element and adding it to the document body. */
     public init(): void
     {
+        const domPipeOptions = (this._renderer as Renderer & {
+            _initOptions?: { dom?: DOMPipeOptions }
+        })._initOptions?.dom;
+
+        this._applyWrapperOptions(domPipeOptions?.wrapper);
+
         // Initialize the CanvasTransformSync to keep the DOM element in sync with the canvas
         this._canvasObserver = new CanvasObserver({
             domElement: this._domElement,
@@ -145,6 +165,46 @@ export class DOMPipe implements RenderPipe<DOMContainer>
                 element.style.transformOrigin = `${ax}px ${ay}px`;
                 element.style.transform = `matrix(${wt.a}, ${wt.b}, ${wt.c}, ${wt.d}, ${wt.tx - ax}, ${wt.ty - ay})`;
                 element.style.opacity = domContainer.groupAlpha.toString();
+            }
+        }
+    }
+
+    private _applyWrapperOptions(wrapperOptions?: DOMPipeWrapperOptions): void
+    {
+        if (!wrapperOptions) return;
+
+        const { className, attributes, style } = wrapperOptions;
+
+        if (className)
+        {
+            if (Array.isArray(className))
+            {
+                this._domElement.classList.add(...className);
+            }
+            else
+            {
+                this._domElement.classList.add(className);
+            }
+        }
+
+        if (attributes)
+        {
+            for (const key in attributes)
+            {
+                this._domElement.setAttribute(key, attributes[key]);
+            }
+        }
+
+        if (style)
+        {
+            for (const key in style)
+            {
+                const value = style[key];
+
+                if (value !== undefined && value !== null)
+                {
+                    (this._domElement.style as any)[key] = value.toString();
+                }
             }
         }
     }
