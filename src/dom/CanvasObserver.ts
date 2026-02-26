@@ -61,9 +61,13 @@ export class CanvasObserver
     public readonly updateTranslation = () =>
     {
         if (!this._canvas) return;
-        const parent = this._canvas.parentElement;
+        const parentNode = this._canvas.parentNode;
 
-        if (!parent) return;
+        if (!parentNode) return;
+
+        const parent = parentNode instanceof ShadowRoot ? parentNode.host : parentNode;
+
+        if (!(parent instanceof Element)) return;
 
         const canvasRect = this._canvas.getBoundingClientRect();
         const parentRect = parent.getBoundingClientRect();
