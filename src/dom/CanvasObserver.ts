@@ -61,15 +61,20 @@ export class CanvasObserver
     public readonly updateTranslation = () =>
     {
         if (!this._canvas) return;
+        const parent = this._canvas.parentElement;
 
-        const rect = this._canvas.getBoundingClientRect(); // still needed for left/top
+        if (!parent) return;
+
+        const canvasRect = this._canvas.getBoundingClientRect();
+        const parentRect = parent.getBoundingClientRect();
         const contentWidth = this._canvas.width;
         const contentHeight = this._canvas.height;
 
-        const sx = (rect.width / contentWidth) * this._renderer.resolution;
-        const sy = (rect.height / contentHeight) * this._renderer.resolution;
-        const tx = rect.left;
-        const ty = rect.top;
+        const sx = (canvasRect.width / contentWidth) * this._renderer.resolution;
+        const sy = (canvasRect.height / contentHeight) * this._renderer.resolution;
+        // Calculate position relative to parent, not viewport
+        const tx = canvasRect.left - parentRect.left;
+        const ty = canvasRect.top - parentRect.top;
 
         const newTransform = `translate(${tx}px, ${ty}px) scale(${sx}, ${sy})`;
 
