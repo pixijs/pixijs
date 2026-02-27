@@ -361,6 +361,80 @@ describe('Resolver', () =>
         expect(resolver.resolveUrl('test-3')).toBe('my-image.png');
     });
 
+    it('should be able to remove an alias', () =>
+    {
+        const resolver = new Resolver();
+
+        resolver.add({
+            alias: ['test', 'test-2', 'test-3'],
+            src: [
+                {
+                    resolution: 1,
+                    format: 'png',
+                    src: 'my-image.png',
+                }],
+        });
+
+        expect(resolver.resolveUrl('test')).toBe('my-image.png');
+        expect(resolver.resolveUrl('test-2')).toBe('my-image.png');
+        expect(resolver.resolveUrl('test-3')).toBe('my-image.png');
+
+        resolver.removeAlias('test-2');
+
+        expect(resolver.hasKey('test-2')).toBeFalse();
+        expect(resolver.resolveUrl('test-2')).not.toBe('my-image.png');
+    });
+
+    it('should be not remove an alias if the asset is not matching', () =>
+    {
+        const resolver = new Resolver();
+
+        resolver.add({
+            alias: ['test', 'test-2'],
+            src: [
+                {
+                    resolution: 1,
+                    format: 'png',
+                    src: 'my-image.png',
+                }],
+        });
+
+        expect(resolver.resolveUrl('test')).toBe('my-image.png');
+        expect(resolver.resolveUrl('test-2')).toBe('my-image.png');
+
+        const oldAsset = resolver.resolve('test-2');
+
+        resolver.removeAlias('test', oldAsset);
+
+        expect(resolver.hasKey('test-2')).toBeTrue();
+        expect(resolver.resolveUrl('test-2')).toBe('my-image.png');
+    });
+
+    it('should remove an alias if the asset is provided and matching', () =>
+    {
+        const resolver = new Resolver();
+
+        resolver.add({
+            alias: ['test', 'test-2'],
+            src: [
+                {
+                    resolution: 1,
+                    format: 'png',
+                    src: 'my-image.png',
+                }],
+        });
+
+        expect(resolver.resolveUrl('test')).toBe('my-image.png');
+        expect(resolver.resolveUrl('test-2')).toBe('my-image.png');
+
+        const oldAsset = resolver.resolve('test-2');
+
+        resolver.removeAlias('test-2', oldAsset);
+
+        expect(resolver.hasKey('test-2')).toBeFalse();
+        expect(resolver.resolveUrl('test-2')).not.toBe('my-image.png');
+    });
+
     it('should set base path correctly on urls', () =>
     {
         const resolver = new Resolver();
