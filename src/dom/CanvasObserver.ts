@@ -76,9 +76,14 @@ export class CanvasObserver
 
         const sx = (canvasRect.width / contentWidth) * this._renderer.resolution;
         const sy = (canvasRect.height / contentHeight) * this._renderer.resolution;
-        // Calculate position relative to parent, not viewport
-        const tx = canvasRect.left - parentRect.left;
-        const ty = canvasRect.top - parentRect.top;
+
+        // Check if canvas uses absolute/fixed positioning
+        const canvasStyle = getComputedStyle(this._canvas);
+        const isPositioned = canvasStyle.position === 'absolute' || canvasStyle.position === 'fixed';
+
+        // For positioned elements, use viewport coords; otherwise calculate relative to parent
+        const tx = isPositioned ? canvasRect.left : canvasRect.left - parentRect.left;
+        const ty = isPositioned ? canvasRect.top : canvasRect.top - parentRect.top;
 
         const newTransform = `translate(${tx}px, ${ty}px) scale(${sx}, ${sy})`;
 
