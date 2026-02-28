@@ -20,6 +20,8 @@ export interface RopeGeometryOptions
 {
     /** The width (i.e., thickness) of the rope. */
     width?: number;
+    /** The texture width used to calculate UV tiling distance when textureScale is enabled. */
+    textureWidth?: number;
     /** An array of points that determine the rope. */
     points?: PointData[];
     /**
@@ -71,13 +73,14 @@ export class RopeGeometry extends MeshGeometry
      * @internal
      */
     public _width: number;
+    protected _textureWidth: number;
 
     /**
      * @param options - Options to be applied to rope geometry
      */
     constructor(options: RopeGeometryOptions)
     {
-        const { width, points, textureScale } = { ...RopeGeometry.defaultOptions, ...options };
+        const { width, points, textureScale, textureWidth } = { ...RopeGeometry.defaultOptions, ...options };
 
         super({
             positions: new Float32Array(points.length * 4),
@@ -87,6 +90,7 @@ export class RopeGeometry extends MeshGeometry
 
         this.points = points;
         this._width = width;
+        this._textureWidth = textureWidth ?? width;
         this.textureScale = textureScale;
 
         this._build();
@@ -136,7 +140,7 @@ export class RopeGeometry extends MeshGeometry
 
         let amount = 0;
         let prev = points[0];
-        const textureWidth = this._width * this.textureScale;
+        const textureWidth = this._textureWidth * this.textureScale;
         const total = points.length; // - 1;
 
         for (let i = 0; i < total; i++)
