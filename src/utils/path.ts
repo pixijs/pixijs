@@ -590,6 +590,15 @@ export const path: Path = {
         assertPath(path);
         path = this.toPosix(path);
 
+        const protocolWithAuthority = (/^[^/:]+:\/\/[^/]+/).exec(path);
+
+        if (protocolWithAuthority)
+        {
+            const rootWithAuthority = protocolWithAuthority[0];
+
+            return rootWithAuthority.endsWith('/') ? rootWithAuthority : `${rootWithAuthority}/`;
+        }
+
         let root = '';
 
         if (path.startsWith('/')) root = '/';

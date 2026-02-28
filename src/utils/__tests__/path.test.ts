@@ -320,6 +320,8 @@ describe('Paths', () =>
         expect(path.toAbsolute('/windows.png', undefined, 'C:\\foo\\')).toEqual(`C:/foo/windows.png`);
         expect(path.toAbsolute('/mac.png', undefined, '/foo/')).toEqual(`/foo/mac.png`);
         expect(path.toAbsolute('/mac.png', undefined, '/foo')).toEqual(`/foo/mac.png`);
+        expect(path.toAbsolute('/assets/atlas.json', 'tauri://localhost/pages/view.html'))
+            .toEqual('tauri://localhost/assets/atlas.json');
 
         // url is already absolute
         expect(path.toAbsolute('http://example.com/browser.png')).toEqual(`http://example.com/browser.png`);
