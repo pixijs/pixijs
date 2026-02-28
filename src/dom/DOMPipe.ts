@@ -11,28 +11,34 @@ import type { Renderer } from '../rendering/renderers/types';
  * CSS style overrides for the DOM wrapper element created by {@link DOMPipe}.
  * @remarks
  * Keys map to {@link CSSStyleDeclaration} properties.
+ * @category - Optional
+ * @internal
  */
 export type DOMPipeStyleOptions = Partial<Record<keyof CSSStyleDeclaration, string | number>>;
 
 /**
  * Options for configuring the DOM wrapper element used by {@link DOMPipe}.
+ * @category - Optional
+ * @internal
  */
 export interface DOMPipeWrapperOptions
 {
-    /** Class name(s) to add to the wrapper element. */
+    /** @standard */
     className?: string | string[];
-    /** Attributes to set on the wrapper element. */
+    /** @standard */
     attributes?: Record<string, string>;
-    /** Inline style overrides for the wrapper element. */
+    /** @standard */
     style?: DOMPipeStyleOptions;
 }
 
 /**
  * Options for the DOM render pipe.
+ * @category - Optional
+ * @internal
  */
 export interface DOMPipeOptions
 {
-    /** Wrapper element configuration applied during renderer init. */
+    /** @standard */
     wrapper?: DOMPipeWrapperOptions;
 }
 
