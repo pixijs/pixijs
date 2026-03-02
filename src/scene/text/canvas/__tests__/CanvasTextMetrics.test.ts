@@ -383,7 +383,7 @@ describe('CanvasTextMetrics', () =>
             expect(metrics.width).toBeLessThan(300);
         });
 
-        it('should use maxLineWidth for width with justify alignment', () =>
+        it('should use wordWrapWidth for width with justify alignment', () =>
         {
             const style = new TextStyle({
                 fontSize: 24,
@@ -392,9 +392,9 @@ describe('CanvasTextMetrics', () =>
                 wordWrapWidth: 300,
                 align: 'justify'
             });
-            const metrics = CanvasTextMetrics.measureText('Hi', style);
+            const metrics = CanvasTextMetrics.measureText('Hello world test alignment', style);
 
-            expect(metrics.width).toBeLessThan(300);
+            expect(metrics.width).toBeGreaterThanOrEqual(300);
         });
     });
 

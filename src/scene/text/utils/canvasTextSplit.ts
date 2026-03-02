@@ -274,6 +274,23 @@ export function canvasTextSplit(
             lineContainer.addChild(currentWordContainer);
         }
 
+        // Justify: distribute extra space among word gaps
+        if (alignment === 'justify' && textStyle.wordWrap && lineIndex < groupedSegments.length - 1)
+        {
+            const lineWords = lineContainer.children;
+            const wordGaps = lineWords.length - 1;
+
+            if (wordGaps > 0)
+            {
+                const extraPerGap = (alignWidth - lineWidth) / wordGaps;
+
+                for (let i = 1; i < lineWords.length; i++)
+                {
+                    lineWords[i].x += i * extraPerGap;
+                }
+            }
+        }
+
         yOffset += measuredText.lineHeight;
     });
 

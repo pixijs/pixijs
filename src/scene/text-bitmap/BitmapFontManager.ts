@@ -313,6 +313,16 @@ class BitmapFontManagerClass
         let fontFamilyKey = `${style.fontFamily as string}-bitmap`;
         let overrideFill = true;
 
+        // check if the font is already installed
+        if (Cache.has(fontFamilyKey))
+        {
+            const dynamicFont = Cache.get<DynamicBitmapFont>(fontFamilyKey);
+
+            (dynamicFont as DynamicBitmapFont).ensureCharacters?.(text);
+
+            return dynamicFont;
+        }
+
         // assuming there is no texture we can use a tint!
         if (style._fill.fill && !style._stroke)
         {
@@ -327,14 +337,19 @@ class BitmapFontManagerClass
             overrideFill = false;
         }
 
+        fontFamilyKey += `-${style.fontStyle}`;
+        fontFamilyKey += `-${style.fontVariant}`;
+        fontFamilyKey += `-${style.fontWeight}`;
+
         // first get us the the right font...
         if (!Cache.has(fontFamilyKey))
         {
             const styleCopy = Object.create(style);
+
             // Override the lineHeight, let the BitmapFont calculate the lineHeight
             // from the fontMetrics instead using a custom lineHeight from BitmapText parameter
-
-            (styleCopy as any)._lineHeight = 0;
+            // eslint-disable-next-line dot-notation
+            styleCopy['_lineHeight'] = 0;
 
             const fnt = new DynamicBitmapFont({
                 style: styleCopy,

@@ -103,6 +103,14 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                 // as dynamic font is size 100, the stroke should be adjusted to 50 to make it look right)
                 style._stroke.width *= this.baseRenderedFontSize / requestedFontSize;
             }
+            if (style.dropShadow)
+            {
+                // we want the drop shadow to fit the size of the requested text, so we need to scale it
+                // accordingly (eg font size 20, with drop shadow 10 - drop shadow is 50% of size,
+                // as dynamic font is size 100, the drop shadow should be adjusted to 50 to make it look right)
+                style.dropShadow.blur *= this.baseRenderedFontSize / requestedFontSize;
+                style.dropShadow.distance *= this.baseRenderedFontSize / requestedFontSize;
+            }
         }
         else
         {
@@ -157,7 +165,8 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         let currentMaxCharHeight = this._currentMaxCharHeight;
 
         const fontScale = this.baseRenderedFontSize / this.baseMeasurementFontSize;
-        const padding = this._padding * fontScale;
+        const extraPadding = (style.dropShadow?.distance ?? 0) + (style._stroke?.width ?? 0);
+        const padding = this._padding + extraPadding;
 
         let skipTexture = false;
 
@@ -178,7 +187,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
             // This is ugly - but italics are given more space so they don't overlap
             const textureGlyphWidth = Math.ceil((style.fontStyle === 'italic' ? 2 : 1) * width);
 
-            const height = (metrics.height) * fontScale;
+            const height = ((metrics.height) * fontScale);
 
             const paddedWidth = textureGlyphWidth + (padding * 2);
             const paddedHeight = height + (padding * 2);
@@ -215,15 +224,17 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                 }
             }
 
-            const xAdvance = (width / fontScale)
-                - (style.dropShadow?.distance ?? 0)
-                - (style._stroke?.width ?? 0);
+            // Use the true advance width from context.measureText rather than
+            // CanvasTextMetrics which returns Math.max(advanceWidth, boundsWidth).
+            // For characters like 'f' whose visual bounds overhang, the bounding box
+            // is wider than the advance, causing incorrect spacing.
+            const xAdvance = (context.measureText(char).width / fontScale);
 
             // This is in coord space of the measurements.. not the texture
             this.chars[char] = {
                 id: char.codePointAt(0),
-                xOffset: -this._padding,
-                yOffset: -this._padding,
+                xOffset: -(padding / fontScale),
+                yOffset: -(padding / fontScale),
                 xAdvance,
                 kerning: {},
             };
@@ -265,7 +276,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         this._currentMaxCharHeight = currentMaxCharHeight;
 
         // now apply kerning..
-        this._skipKerning && this._applyKerning(charList, context);
+        if (!this._skipKerning) this._applyKerning(charList, context, fontScale);
     }
 
     /**
@@ -281,7 +292,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         return this.pages;
     }
 
-    private _applyKerning(newChars: string[], context: ICanvasRenderingContext2D): void
+    private _applyKerning(newChars: string[], context: ICanvasRenderingContext2D, fontScale: number): void
     {
         const measureCache = this._measureCache;
 
@@ -307,7 +318,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 
                 if (amount && this.chars[first])
                 {
-                    this.chars[first].kerning[second] = amount;
+                    this.chars[first].kerning[second] = amount / fontScale;
                 }
 
                 // then go through new char being second
@@ -316,7 +327,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 
                 if (amount && this.chars[second])
                 {
-                    this.chars[second].kerning[first] = amount;
+                    this.chars[second].kerning[first] = amount / fontScale;
                 }
             }
         }

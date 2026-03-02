@@ -33,7 +33,7 @@ export const scene: TestScene = {
             scene.addChild(graphics);
 
             const text = new Text({
-                text: 'Hello world test alignment',
+                text: 'Hello world test alignment test alignment',
                 style: {
                     fontFamily: 'Outfit',
                     fontSize: 24,
