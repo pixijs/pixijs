@@ -31,7 +31,7 @@ the library, steps to reproduce, etc. "X isn't working!!!1!" will probably just 
 To setup for making changes you will need to take a few steps, we've outlined them below:
 
 1. Ensure you have node.js installed. You can download node.js from [nodejs.org][node]. Because
-pixi uses modern JS features, you will need a modern version of node. v4+ is recommended.
+pixi uses modern JS features, you will need a modern version of node. v24+ is recommended.
 
 2. Fork the **[pixi.js][pixi]** repository, if you are unsure how to do this GitHub has a guides
 for the [command line][fork-cli] and for the [GitHub Client][fork-gui].
@@ -64,45 +64,32 @@ bug if it ever happens again. This prevents regressions from sneaking in.
 Tips for a faster workflow:
 
 - Run `npm start` in one terminal. This watches the source tree and compiles it incrementally.
-- When desired, run `npm run test` in another terminal. This runs tests using the compilation output from `npm start`.
-- Run `npm run test:debug` to use headful DevTools to debug or develop tests
+- Run `npm run test unit` to run unit tests, or `npm run test visual` to run visual regression tests.
+- Run `npm run test unit debug` to use headful DevTools to debug or develop tests
 
 #### Visual Regression Testing
 
 PixiJS uses a custom visual tester that allows you to create pixi scenes and compare them to a reference image.
-These tests can be found [here](../tests/visual/scenes/). To run these tests, run `npm run test:scene` from the command line, or run `npm run test:scene:debug` to use headful DevTools to debug or develop tests.
+These tests can be found in the [visual scenes directory](../tests/visual/scenes/). To run these tests, run `npm run test visual` from the command line, or run `npm run test visual debug` to use headful DevTools to debug or develop tests.
 
 All visual tests must end with `.scene.ts` and follows this format:
 
 ```ts
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
+import { Graphics } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
+import type { Container } from '~/scene';
+import type { Renderer } from '~/rendering';
 import type { TestScene } from '../../types';
 
-// Must always export scene
 export const scene: TestScene = {
-    // Name of the test
-    it: 'should render text',
-    // Optional: PixiJS Renderer options
-    options: {},
-    // Optional: Whether to run only this test
-    only: false,
-    // Optional: Whether to skip this test
-    skip: false,
-    // Optional: Renderers to run this test on
-    renderers: {
-        // Whether to run this test on the Canvas Renderer
-        canvas: true,
-        // Whether to run this test on the WebGL Renderer
-        webgl: true,
-        // Whether to run this test on the WebGPU Renderer
-        webgpu: true,
-    },
-    // The amount of pixels that can be different before the test fails
-    pixelMatch: 40,
-    // The function that creates the scene to test
-    create: async (scene: Container) =>
+    it: 'should render a red rectangle',
+    pixelMatch: 40,                          // optional: pixel tolerance for comparison
+    options: { backgroundColor: 'white' },    // optional: renderer options passed to PixiJS
+    renderers: ['webgl2', 'webgpu'],          // optional: only run on specific renderers
+    excludeRenderers: ['canvas'],             // optional: exclude specific renderers
+    only: false,                              // optional: isolate this test
+    skip: false,                              // optional: skip this test
+    create: async (scene: Container, renderer: Renderer) =>
     {
         const rect = new Graphics().rect(0, 0, 100, 100).fill('red');
 
@@ -122,9 +109,8 @@ from your fork to the main **pixi.js** repository on the branch you used in the 
 - No trailing whitespace, blank lines should have no whitespace.
 - Always favor strict equals `===` unless you *need* to use type coercion.
 - Follow conventions already in the code, and listen to eslint.
-- **Ensure changes are eslint validated.** After making a change be sure to run the build process
-to ensure that you didn't break anything. You can do this with `npm test` which will run
-eslint, rebuild, then run the test suite.
+- **Ensure changes are eslint validated.** After making a change be sure to run `npm test` to
+ensure that you didn't break anything. This will run eslint, type checking, and the test suite.
 
 [faq]: http://www.pixijs.com/faq
 [fiddle]: http://jsfiddle.net

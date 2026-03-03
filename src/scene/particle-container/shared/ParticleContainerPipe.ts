@@ -132,9 +132,15 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
 
         container.worldTransform.copyTo(transformationMatrix);
 
-        transformationMatrix.prepend(renderer.globalUniforms.globalUniformData.projectionMatrix);
+        // Apply the global offset from filters (e.g., when using filterArea)
+        const globalUniformData = renderer.globalUniforms.globalUniformData;
 
-        uniforms.uResolution = renderer.globalUniforms.globalUniformData.resolution;
+        transformationMatrix.tx -= globalUniformData.offset.x;
+        transformationMatrix.ty -= globalUniformData.offset.y;
+
+        transformationMatrix.prepend(globalUniformData.projectionMatrix);
+
+        uniforms.uResolution = globalUniformData.resolution;
         uniforms.uRound = renderer._roundPixels | container._roundPixels;
 
         color32BitToUniform(

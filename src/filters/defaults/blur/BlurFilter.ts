@@ -77,6 +77,14 @@ export interface BlurFilterOptions extends FilterOptions
      * @default 5
      */
     kernelSize?: number;
+
+    /**
+     * When true, uses the legacy (pre-v8.x) blur pass behavior where strength
+     * is distributed uniformly across passes (`strength / passes`) instead of
+     * the optimized halving scheme. This also disables per-pass WebGPU UBO batching.
+     * @default false
+     */
+    legacy?: boolean;
 }
 
 /**
@@ -148,6 +156,8 @@ export class BlurFilter extends Filter
         quality: 4,
         /** The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15. */
         kernelSize: 5,
+        /** Whether to use legacy blur pass behavior. */
+        legacy: false,
     };
 
     /**

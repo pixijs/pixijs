@@ -40,9 +40,11 @@ function setAssetBasePath(): void
 {
     const branchPath = process.env.GITHUB_SHA ?? 'next-v8';
 
+    const serverPort = process.env.SERVER_PORT || '8080';
+
     const basePath = process.env.GITHUB_ACTIONS
         ? `https://raw.githubusercontent.com/pixijs/pixijs/${branchPath}/tests/visual/assets/`
-        : 'http://127.0.0.1:8080/tests/visual/assets/';
+        : `http://127.0.0.1:${serverPort}/tests/visual/assets/`;
 
     Assets.init({
         basePath,
@@ -55,16 +57,16 @@ describe('Visual Tests', () =>
     {
         const id = scene.data.id || path.basename(scene.path).toLowerCase().replaceAll('.', '-');
 
-        const defaultRenderers: RenderTypeFlags = {
-            webgpu: true,
-            webgl1: true,
-            webgl2: true,
-            canvas: true,
-        };
+        const isArray = Array.isArray(scene.data.renderers);
+        const defaults = Object.fromEntries(
+            // eslint-disable-next-line jest/expect-expect
+            (['webgpu', 'webgl1', 'webgl2', 'canvas'] as RenderType[]).map((r) => [r, !isArray])
+        ) as RenderTypeFlags;
 
         const renderers = {
-            ...defaultRenderers,
-            ...(Array.isArray(scene.data.renderers) ? scene.data.renderers.reduce((acc, r) =>
+            ...defaults,
+            // eslint-disable-next-line jest/expect-expect
+            ...(isArray ? (scene.data.renderers as RenderType[]).reduce((acc, r) =>
             {
                 acc[r] = true;
 

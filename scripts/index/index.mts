@@ -24,6 +24,8 @@ directories.forEach((directory) =>
             '**/index.ts',
             // Tests
             '**/__tests__/**',
+            // Docs / examples (internal only, not part of public API)
+            '**/__docs__/**',
             // ignore documents
             '**/_documents/*.md',
         ],
@@ -70,7 +72,7 @@ directories.forEach((directory) =>
     {
         if (changed)
         {
-            console.error(`ERROR: File ${localFile} is out of date, run 'npm run build:index' to update it.\n`);
+            console.error(`ERROR: File ${localFile} is out of date, run 'npm run build' to update it.\n`);
             process.exit(1);
         }
     }

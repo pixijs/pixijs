@@ -1,6 +1,5 @@
-import { Mesh } from '../../../../src/scene/mesh/shared/Mesh';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
 import { Geometry, RenderTarget, Shader, Texture } from '~/rendering';
+import { Mesh, Sprite } from '~/scene';
 
 import type { TestScene } from '../../types';
 import type { Renderer } from '~/rendering';

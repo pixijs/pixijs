@@ -997,6 +997,13 @@ export class EventSystem implements System<EventSystemOptions>
                 touch.isNormalized = true;
                 touch.type = event.type;
 
+                // Copy modifier keys from the TouchEvent to the touch object
+                // These properties exist on TouchEvent, not on individual Touch objects
+                touch.altKey ??= event.altKey;
+                touch.ctrlKey ??= event.ctrlKey;
+                touch.metaKey ??= event.metaKey;
+                touch.shiftKey ??= event.shiftKey;
+
                 normalizedEvents.push(touch);
             }
         }

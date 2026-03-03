@@ -91,7 +91,7 @@ export const bitmapFontXMLParser = {
             const second = parseInt(kerning[i].getAttribute('second'), 10);
             const amount = parseInt(kerning[i].getAttribute('amount'), 10);
 
-            data.chars[map[second]].kerning[map[first]] = amount;// * 10000;
+            if (data.chars[map[second]]) data.chars[map[second]].kerning[map[first]] = amount;// * 10000;
         }
 
         return data;
