@@ -568,6 +568,10 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         const { pixels, width, height } = this.getPixels(texture);
 
+        const unpremultiplied = new Uint8Array(pixels.buffer.slice(0));
+
+        unpremultiplyAlpha(unpremultiplied);
+
         const canvas = DOMAdapter.get().createCanvas();
 
         canvas.width = width;
@@ -579,7 +583,7 @@ export class GlTextureSystem implements System, CanvasGenerator
         {
             const imageData = ctx.createImageData(width, height);
 
-            imageData.data.set(pixels);
+            imageData.data.set(unpremultiplied);
             ctx.putImageData(imageData, 0, 0);
         }
 
@@ -613,8 +617,6 @@ export class GlTextureSystem implements System, CanvasGenerator
             gl.UNSIGNED_BYTE,
             pixels
         );
-        // Unpremultiply before returning so canvas extraction is correct
-        unpremultiplyAlpha(pixels);
 
         return { pixels: new Uint8ClampedArray(pixels.buffer), width, height };
     }
