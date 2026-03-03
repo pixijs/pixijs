@@ -613,14 +613,8 @@ export class GlTextureSystem implements System, CanvasGenerator
             gl.UNSIGNED_BYTE,
             pixels
         );
-
-        // if (texture.source.premultiplyAlpha > 0)
-        // TODO - premultiplied alpha does not exist right now, need to add that back in!
-        // eslint-disable-next-line no-constant-condition
-        if (false)
-        {
-            unpremultiplyAlpha(pixels);
-        }
+        // Unpremultiply before returning so canvas extraction is correct
+        unpremultiplyAlpha(pixels);
 
         return { pixels: new Uint8ClampedArray(pixels.buffer), width, height };
     }
