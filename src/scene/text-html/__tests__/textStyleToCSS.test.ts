@@ -22,7 +22,7 @@ describe('textStyleToCSS', () =>
 
         const expected = `div
             {
-                color: #000000;
+                color: #000000ff;
                 font-size: 26px;
                 font-family: Arial;
                 font-weight: normal;
@@ -52,7 +52,7 @@ describe('textStyleToCSS', () =>
 
         const expected = `div
             {
-                color: #000000;
+                color: #000000ff;
                 font-size: 26px;
                 font-family: Cargo;
                 font-weight: normal;

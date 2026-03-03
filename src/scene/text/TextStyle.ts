@@ -8,6 +8,7 @@ import { FillGradient } from '../graphics/shared/fill/FillGradient';
 import { FillPattern } from '../graphics/shared/fill/FillPattern';
 import { GraphicsContext } from '../graphics/shared/GraphicsContext';
 import { toFillStyle, toStrokeStyle } from '../graphics/shared/utils/convertFillInputToFillStyle';
+import { fontStringFromTextStyle } from './canvas/utils/fontStringFromTextStyle';
 
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
 import type {
@@ -635,6 +636,34 @@ export interface TextStyleOptions
      * @default undefined
      */
     filters?: Filter[] | readonly Filter[];
+    /**
+     * Custom styles to apply to specific tags within the text.
+     * Allows for rich text formatting using simple tag markup like `<red>text</red>`.
+     *
+     * Tags are only parsed when this property has entries. If `tagStyles` is empty or undefined,
+     * `<` characters in text are treated as literal.
+     *
+     * Nested tags are supported via a style stack - inner tags inherit from outer tags
+     * but can override specific properties.
+     * @example
+     * ```ts
+     * const text = new Text({
+     *     text: '<red>Red</red>, <blue>Blue</blue>, <big>Big</big>',
+     *     style: {
+     *         fontFamily: 'Arial',
+     *         fontSize: 24,
+     *         fill: 'white',
+     *         tagStyles: {
+     *             red: { fill: 'red' },
+     *             blue: { fill: 'blue' },
+     *             big: { fontSize: 48 }
+     *         }
+     *     }
+     * });
+     * ```
+     * @default undefined
+     */
+    tagStyles?: Record<string, TextStyleOptions>;
 }
 
 /**
@@ -798,12 +827,39 @@ export class TextStyle extends EventEmitter<{
     private _padding: number;
 
     private _trim: boolean;
+    private _cachedFontString: string | null = null;
+    /** @internal */
+    public _tagStyles: Record<string, TextStyleOptions> | undefined;
+
+    /**
+     * When set, gradient fills use these bounds instead of the text's own measured dimensions.
+     * Used by SplitText to make character gradients span the full text width.
+     * @internal
+     */
+    public _gradientBounds?: { width: number; height: number };
+
+    /**
+     * When set, gradient fills are offset by this amount within the gradient bounds.
+     * Used by SplitText to position each character's gradient correctly.
+     * @internal
+     */
+    public _gradientOffset?: { x: number; y: number };
 
     constructor(style: Partial<TextStyleOptions> = {})
     {
         super();
 
         convertV7Tov8Style(style);
+
+        // When style is a TextStyle instance, use its toObject() values instead of the spread
+        // which copies proxy objects bound to the wrong instance.
+        const isTextStyle = style instanceof TextStyle;
+        const existingStyle = style as TextStyle;
+
+        if (isTextStyle)
+        {
+            style = existingStyle._toObject();
+        }
 
         const fullStyle = { ...TextStyle.defaultTextStyle, ...style };
 
@@ -813,6 +869,9 @@ export class TextStyle extends EventEmitter<{
 
             this[thisKey] = fullStyle[key as keyof TextStyleOptions] as any;
         }
+
+        // Initialize tagStyles separately (not in defaultTextStyle to avoid shared reference)
+        this._tagStyles = style.tagStyles ?? undefined;
 
         this.update();
         this._tick = 0;
@@ -1152,9 +1211,43 @@ export class TextStyle extends EventEmitter<{
         this.update();
     }
 
+    /**
+     * Custom styles to apply to specific tags within the text.
+     * Allows for rich text formatting using simple tag markup like `<red>text</red>`.
+     *
+     * Tags are only parsed when this property has entries. If `tagStyles` is undefined,
+     * `<` characters in text are treated as literal.
+     * @example
+     * ```ts
+     * const text = new Text({
+     *     text: '<red>Red</red>, <blue>Blue</blue>',
+     *     style: {
+     *         fill: 'white',
+     *         tagStyles: {
+     *             red: { fill: 'red' },
+     *             blue: { fill: 'blue' }
+     *         }
+     *     }
+     * });
+     * ```
+     */
+    public get tagStyles(): Record<string, TextStyleOptions> | undefined
+    {
+        return this._tagStyles;
+    }
+
+    public set tagStyles(value: Record<string, TextStyleOptions> | undefined)
+    {
+        if (this._tagStyles === value) return;
+
+        this._tagStyles = value ?? undefined;
+        this.update();
+    }
+
     public update()
     {
         this._tick++;
+        this._cachedFontString = null;
         this.emit('update', this);
     }
 
@@ -1170,6 +1263,24 @@ export class TextStyle extends EventEmitter<{
     }
 
     /**
+     * Assigns partial style options to this TextStyle instance.
+     * Uses public setters to ensure proper value transformation.
+     * @param values - Partial style options to assign
+     * @returns This TextStyle instance for chaining
+     */
+    public assign(values: Partial<TextStyleOptions>): this
+    {
+        for (const key in values)
+        {
+            const thisKey = key as keyof typeof this;
+
+            this[thisKey] = values[key as keyof typeof values] as any;
+        }
+
+        return this;
+    }
+
+    /**
      * Returns a unique key for this instance.
      * This key is used for caching.
      * @returns {string} Unique key for the instance
@@ -1180,16 +1291,42 @@ export class TextStyle extends EventEmitter<{
     }
 
     /**
-     * Creates a new TextStyle object with the same values as this one.
-     * @returns New cloned TextStyle object
+     * Returns the CSS font string for this style, cached for performance.
+     * @internal
+     * @returns CSS font string
      */
-    public clone(): TextStyle
+    public get _fontString(): string
     {
-        return new TextStyle({
+        if (this._cachedFontString === null)
+        {
+            this._cachedFontString = fontStringFromTextStyle(this);
+        }
+
+        return this._cachedFontString;
+    }
+
+    /**
+     * Returns an object with the same values as this TextStyle instance.
+     * @returns Object with the same values as this TextStyle instance
+     * @example
+     * ```ts
+     * const style = new TextStyle({
+     *     fontSize: 24,
+     *     fill: 0xff0000,
+     *     stroke: { color: 0x0000ff, width: 2 }
+     * });
+     * const object = style.toObject();
+     * console.log(object);
+     * // { fontSize: 24, fill: 0xff0000, stroke: { color: 0x0000ff, width: 2 } }
+     * ```
+     */
+    protected _toObject(): Required<TextStyleOptions>
+    {
+        return {
             align: this.align,
             breakWords: this.breakWords,
             dropShadow: this._dropShadow ? { ...this._dropShadow } : null,
-            fill: this._fill,
+            fill: this._fill ? { ...this._fill } : undefined,
             fontFamily: this.fontFamily,
             fontSize: this.fontSize,
             fontStyle: this.fontStyle,
@@ -1199,13 +1336,24 @@ export class TextStyle extends EventEmitter<{
             letterSpacing: this.letterSpacing,
             lineHeight: this.lineHeight,
             padding: this.padding,
-            stroke: this._stroke,
+            stroke: this._stroke ? { ...this._stroke } : undefined,
             textBaseline: this.textBaseline,
+            trim: this.trim,
             whiteSpace: this.whiteSpace,
             wordWrap: this.wordWrap,
             wordWrapWidth: this.wordWrapWidth,
-            filters: this._filters ? [...this._filters] : undefined
-        });
+            filters: this._filters ? [...this._filters] : undefined,
+            tagStyles: this._tagStyles ? { ...this._tagStyles } : undefined,
+        };
+    }
+
+    /**
+     * Creates a new TextStyle object with the same values as this one.
+     * @returns New cloned TextStyle object
+     */
+    public clone(): TextStyle
+    {
+        return new TextStyle(this._toObject());
     }
 
     /**

@@ -1,15 +1,9 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { type RenderGroup } from '../../../../scene/container/RenderGroup';
-import { cleanArray, cleanHash } from '../../../../utils/data/clean';
-import { type RenderOptions } from '../system/AbstractRenderer';
+import { deprecation } from '../../../../utils/logging/deprecation';
 
-import type { Container } from '../../../../scene/container/Container';
 import type { Renderer } from '../../types';
-import type { RenderPipe } from '../instructions/RenderPipe';
 import type { Renderable } from '../Renderable';
 import type { System } from '../system/System';
-
-let renderableGCTick = 0;
 
 /**
  * Options for the {@link RenderableGCSystem}.
@@ -19,6 +13,7 @@ let renderableGCTick = 0;
  * The maximum idle frames before a texture is destroyed by garbage collection.
  * @property {number} [renderableGCCheckCountMax=60000] - time between two garbage collections.
  * @advanced
+ * @deprecated since 8.15.0
  */
 export interface RenderableGCSystemOptions
 {
@@ -73,6 +68,7 @@ export interface RenderableGCSystemOptions
  * ```
  * @category rendering
  * @advanced
+ * @deprecated since 8.15.0
  */
 export class RenderableGCSystem implements System<RenderableGCSystemOptions>
 {
@@ -84,6 +80,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         type: [
             ExtensionType.WebGLSystem,
             ExtensionType.WebGPUSystem,
+            ExtensionType.CanvasSystem,
         ],
         name: 'renderableGC',
         priority: 0
@@ -92,6 +89,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
     /**
      * Default configuration options for the garbage collection system.
      * These can be overridden when initializing the renderer.
+     * @deprecated since 8.15.0
      */
     public static defaultOptions: RenderableGCSystemOptions = {
         /** Enable/disable the garbage collector */
@@ -107,25 +105,6 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
 
     /** Reference to the renderer this system belongs to */
     private _renderer: Renderer;
-
-    /** Array of renderables being tracked for garbage collection */
-    private readonly _managedRenderables: Renderable[] = [];
-    /** ID of the main GC scheduler handler */
-    private _handler: number;
-    /** How frequently GC runs in ms */
-    private _frequency: number;
-    /** Current timestamp used for age calculations */
-    private _now: number;
-
-    /** Array of hash objects being tracked for cleanup */
-    private readonly _managedHashes: {context: any, hash: string}[] = [];
-    /** ID of the hash cleanup scheduler handler */
-    private _hashHandler: number;
-
-    /** Array of arrays being tracked for cleanup */
-    private readonly _managedArrays: {context: any, hash: string}[] = [];
-    /** ID of the array cleanup scheduler handler */
-    private _arrayHandler: number;
 
     /**
      * Creates a new RenderableGCSystem instance.
@@ -145,9 +124,6 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         options = { ...RenderableGCSystem.defaultOptions, ...options };
 
         this.maxUnusedTime = options.renderableGCMaxUnusedTime;
-        this._frequency = options.renderableGCFrequency;
-
-        this.enabled = options.renderableGCActive;
     }
 
     /**
@@ -156,7 +132,11 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
      */
     get enabled(): boolean
     {
-        return !!this._handler;
+        // #if _DEBUG
+        deprecation('8.15.0', 'RenderableGCSystem.enabled is deprecated, please use the GCSystem.enabled instead.');
+        // #endif
+
+        return this._renderer.gc.enabled;
     }
 
     /**
@@ -166,48 +146,10 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
      */
     set enabled(value: boolean)
     {
-        if (this.enabled === value) return;
-
-        if (value)
-        {
-            // Schedule periodic garbage collection
-            this._handler = this._renderer.scheduler.repeat(
-                () => this.run(),
-                this._frequency,
-                false
-            );
-
-            // Schedule periodic hash table cleanup
-            this._hashHandler = this._renderer.scheduler.repeat(
-                () =>
-                {
-                    for (const hash of this._managedHashes)
-                    {
-                        hash.context[hash.hash] = cleanHash(hash.context[hash.hash]);
-                    }
-                },
-                this._frequency
-            );
-
-            // Schedule periodic array cleanup
-            this._arrayHandler = this._renderer.scheduler.repeat(
-                () =>
-                {
-                    for (const array of this._managedArrays)
-                    {
-                        cleanArray(array.context[array.hash]);
-                    }
-                },
-                this._frequency
-            );
-        }
-        else
-        {
-            // Cancel all scheduled cleanups
-            this._renderer.scheduler.cancel(this._handler);
-            this._renderer.scheduler.cancel(this._hashHandler);
-            this._renderer.scheduler.cancel(this._arrayHandler);
-        }
+        // #if _DEBUG
+        deprecation('8.15.0', 'RenderableGCSystem.enabled is deprecated, please use the GCSystem.enabled instead.');
+        // #endif
+        this._renderer.gc.enabled = value;
     }
 
     /**
@@ -217,7 +159,11 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
      */
     public addManagedHash<T>(context: T, hash: string): void
     {
-        this._managedHashes.push({ context, hash: hash as string });
+        // #if _DEBUG
+        // eslint-disable-next-line max-len
+        deprecation('8.15.0', 'RenderableGCSystem.addManagedHash is deprecated, please use the GCSystem.addCollection instead.');
+        // #endif
+        this._renderer.gc.addCollection(context, hash, 'hash');
     }
 
     /**
@@ -227,47 +173,24 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
      */
     public addManagedArray<T>(context: T, hash: string): void
     {
-        this._managedArrays.push({ context, hash: hash as string });
-    }
-
-    /**
-     * Updates the GC timestamp and tracking before rendering.
-     * @param options - The render options
-     * @param options.container - The container to render
-     */
-    public prerender({
-        container
-    }: RenderOptions): void
-    {
-        this._now = performance.now();
-
-        // The gcTick is a monotonically increasing counter that tracks render cycles
-        // Each time we render, we increment the global renderableGCTick counter
-        // and assign the new tick value to the render group being rendered.
-        // This lets us know which render groups were rendered in the current frame
-        // versus ones that haven't been rendered recently.
-        // The instruction set also gets updated with this tick value to track
-        // when its renderables were last used.
-        container.renderGroup.gcTick = renderableGCTick++;
-
-        this._updateInstructionGCTick(container.renderGroup, container.renderGroup.gcTick);
+        // #if _DEBUG
+        // eslint-disable-next-line max-len
+        deprecation('8.15.0', 'RenderableGCSystem.addManagedArray is deprecated, please use the GCSystem.addCollection instead.');
+        // #endif
+        this._renderer.gc.addCollection(context, hash, 'array');
     }
 
     /**
      * Starts tracking a renderable for garbage collection.
-     * @param renderable - The renderable to track
+     * @param _renderable - The renderable to track
+     * @deprecated since 8.15.0
      */
-    public addRenderable(renderable: Renderable): void
+    public addRenderable(_renderable: Renderable): void
     {
-        if (!this.enabled) return;
-
-        if (renderable._lastUsed === -1)
-        {
-            this._managedRenderables.push(renderable);
-            renderable.once('destroyed', this._removeRenderable, this);
-        }
-
-        renderable._lastUsed = this._now;
+        // #if _DEBUG
+        deprecation('8.15.0', 'RenderableGCSystem.addRenderable is deprecated, please use the GCSystem instead.');
+        // #endif
+        this._renderer.gc.addResource(_renderable, 'renderable');
     }
 
     /**
@@ -276,92 +199,15 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
      */
     public run(): void
     {
-        const now = this._now;
-        const managedRenderables = this._managedRenderables;
-        const renderPipes = this._renderer.renderPipes;
-        let offset = 0;
-
-        for (let i = 0; i < managedRenderables.length; i++)
-        {
-            const renderable = managedRenderables[i];
-
-            if (renderable === null)
-            {
-                offset++;
-                continue;
-            }
-
-            const renderGroup = renderable.renderGroup ?? renderable.parentRenderGroup;
-            const currentTick = renderGroup?.instructionSet?.gcTick ?? -1;
-
-            // Update last used time if the renderable's group was rendered this tick
-            if ((renderGroup?.gcTick ?? 0) === currentTick)
-            {
-                renderable._lastUsed = now;
-            }
-
-            // Clean up if unused for too long
-            if (now - renderable._lastUsed > this.maxUnusedTime)
-            {
-                if (!renderable.destroyed)
-                {
-                    const rp = renderPipes as unknown as Record<string, RenderPipe>;
-
-                    if (renderGroup)renderGroup.structureDidChange = true;
-
-                    rp[renderable.renderPipeId].destroyRenderable(renderable);
-                }
-
-                renderable._lastUsed = -1;
-                offset++;
-                renderable.off('destroyed', this._removeRenderable, this);
-            }
-            else
-            {
-                managedRenderables[i - (offset)] = renderable;
-            }
-        }
-
-        managedRenderables.length -= offset;
+        // #if _DEBUG
+        deprecation('8.15.0', 'RenderableGCSystem.run is deprecated, please use the GCSystem instead.');
+        // #endif
+        this._renderer.gc.run();
     }
 
     /** Cleans up the garbage collection system. Disables GC and removes all tracked resources. */
     public destroy(): void
     {
-        this.enabled = false;
         this._renderer = null as any as Renderer;
-        this._managedRenderables.length = 0;
-        this._managedHashes.length = 0;
-        this._managedArrays.length = 0;
-    }
-
-    /**
-     * Removes a renderable from being tracked when it's destroyed.
-     * @param renderable - The renderable to stop tracking
-     */
-    private _removeRenderable(renderable: Container): void
-    {
-        const index = this._managedRenderables.indexOf(renderable as Renderable);
-
-        if (index >= 0)
-        {
-            renderable.off('destroyed', this._removeRenderable, this);
-            this._managedRenderables[index] = null;
-        }
-    }
-
-    /**
-     * Updates the GC tick counter for a render group and its children.
-     * @param renderGroup - The render group to update
-     * @param gcTick - The new tick value
-     */
-    private _updateInstructionGCTick(renderGroup: RenderGroup, gcTick: number): void
-    {
-        renderGroup.instructionSet.gcTick = gcTick;
-
-        for (const child of renderGroup.renderGroupChildren)
-        {
-            this._updateInstructionGCTick(child, gcTick);
-        }
     }
 }

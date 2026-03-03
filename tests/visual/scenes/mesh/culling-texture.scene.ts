@@ -1,12 +1,12 @@
-import { ColorMatrixFilter } from '../../../../src/filters/defaults/color-matrix/ColorMatrixFilter';
-import { State } from '../../../../src/rendering/renderers/shared/state/State';
-import { Mesh } from '../../../../src/scene/mesh/shared/Mesh';
-import { MeshGeometry } from '../../../../src/scene/mesh/shared/MeshGeometry';
+import { ColorMatrixFilter } from '~/filters';
+import { State } from '~/rendering';
+import { Mesh, MeshGeometry } from '~/scene';
 
-import type { Container } from '../../../../src/scene';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should cull correctly when rendering to a texture',
     create: async (scene: Container) =>
     {

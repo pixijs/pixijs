@@ -5,6 +5,7 @@ import type { TestScene } from '../../types';
 import type { Container } from '~/scene';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should render text with the correct bounds',
     options: {
         width: 128,

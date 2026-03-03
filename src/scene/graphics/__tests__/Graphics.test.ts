@@ -1,11 +1,10 @@
-import { Rectangle } from '../../../maths/shapes/Rectangle';
 import { Graphics } from '../shared/Graphics';
 import { GraphicsContext } from '../shared/GraphicsContext';
 import { GraphicsPath } from '../shared/path/GraphicsPath';
 import { toFillStyle } from '../shared/utils/convertFillInputToFillStyle';
 import { generateTextureMatrix as generateTextureFillMatrix } from '../shared/utils/generateTextureFillMatrix';
 import { getWebGLRenderer } from '@test-utils';
-import { Matrix } from '~/maths';
+import { Matrix, Rectangle } from '~/maths';
 import { Texture } from '~/rendering';
 
 describe('Graphics', () =>

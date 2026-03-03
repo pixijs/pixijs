@@ -7,6 +7,7 @@ import type { Renderer } from '~/rendering';
 import type { Container } from '~/scene';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should render compressed texture after context restore',
     create: async (scene: Container, renderer: Renderer) =>
     {

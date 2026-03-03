@@ -4,7 +4,9 @@ import { Filter } from '../../Filter';
 import { generateBlurGlProgram } from './gl/generateBlurGlProgram';
 import { generateBlurProgram } from './gpu/generateBlurProgram';
 
+import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURenderer';
 import type { RenderSurface } from '../../../rendering/renderers/shared/renderTarget/RenderTargetSystem';
+import type { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { FilterSystem } from '../../FilterSystem';
 import type { BlurFilterOptions } from './BlurFilter';
@@ -43,6 +45,8 @@ export class BlurFilterPass extends Filter
         quality: 4,
         /** The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15. */
         kernelSize: 5,
+        /** Whether to use legacy blur pass behavior. */
+        legacy: false,
     };
 
     /** Do pass along the x-axis (`true`) or y-axis (`false`). */
@@ -51,9 +55,12 @@ export class BlurFilterPass extends Filter
     public passes!: number;
     /** The strength of the blur filter. */
     public strength!: number;
+    /** Whether to use legacy blur pass behavior. */
+    public legacy: boolean;
 
     private _quality: number;
     private readonly _uniforms: any;
+    private readonly _blurUniforms: UniformGroup;
 
     /**
      * @param options
@@ -81,6 +88,7 @@ export class BlurFilterPass extends Filter
         });
 
         this.horizontal = options.horizontal;
+        this.legacy = options.legacy ?? false;
 
         this._quality = 0;
 
@@ -88,7 +96,9 @@ export class BlurFilterPass extends Filter
 
         this.blur = options.strength;
 
-        this._uniforms = this.resources.blurUniforms.uniforms;
+        // Store reference to the UniformGroup before any resource swapping
+        this._blurUniforms = this.resources.blurUniforms as UniformGroup;
+        this._uniforms = this._blurUniforms.uniforms;
     }
 
     /**
@@ -99,6 +109,23 @@ export class BlurFilterPass extends Filter
      * @param clearMode - How to clear
      */
     public apply(
+        filterManager: FilterSystem,
+        input: Texture,
+        output: RenderSurface,
+        clearMode: boolean
+    ): void
+    {
+        if (this.legacy)
+        {
+            this._applyLegacy(filterManager, input, output, clearMode);
+        }
+        else
+        {
+            this._applyOptimized(filterManager, input, output, clearMode);
+        }
+    }
+
+    private _applyLegacy(
         filterManager: FilterSystem,
         input: Texture,
         output: RenderSurface,
@@ -136,6 +163,82 @@ export class BlurFilterPass extends Filter
             filterManager.applyFilter(this, flip, output, clearMode);
             TexturePool.returnTexture(tempTexture);
         }
+    }
+
+    private _applyOptimized(
+        filterManager: FilterSystem,
+        input: Texture,
+        output: RenderSurface,
+        clearMode: boolean
+    ): void
+    {
+        this._uniforms.uStrength = this._calculateInitialStrength();
+
+        if (this.passes === 1)
+        {
+            filterManager.applyFilter(this, input, output, clearMode);
+        }
+        else
+        {
+            const tempTexture = TexturePool.getSameSizeTexture(input);
+
+            let flip = input;
+            let flop = tempTexture;
+
+            this._state.blend = false;
+
+            const renderer = filterManager.renderer;
+
+            const isWebGPU = renderer.type === RendererType.WEBGPU;
+            const uboBatcher = isWebGPU ? (renderer as WebGPURenderer).renderPipes.uniformBatch : null;
+
+            for (let i = 0; i < this.passes - 1; i++)
+            {
+                if (uboBatcher)
+                {
+                    this.groups[1].setResource(uboBatcher.getUboResource(this._blurUniforms), 0);
+                }
+
+                filterManager.applyFilter(this, flip, flop, isWebGPU);
+
+                const temp = flop;
+
+                flop = flip;
+                flip = temp;
+
+                this._uniforms.uStrength *= 0.5;
+            }
+
+            if (uboBatcher)
+            {
+                this.groups[1].setResource(uboBatcher.getUboResource(this._blurUniforms), 0);
+            }
+
+            this._state.blend = true;
+            filterManager.applyFilter(this, flip, output, clearMode);
+            TexturePool.returnTexture(tempTexture);
+        }
+    }
+
+    /**
+     * Calculates the initial strength for the first blur pass so that the combined
+     * effect of all passes matches the filter's target strength.
+     *
+     * Uses variance addition property: for Gaussian blurs, σ_combined² = Σσᵢ²
+     * With halving scheme (s, s/2, s/4, ...), sum of squared coefficients = 4/3
+     */
+    private _calculateInitialStrength(): number
+    {
+        let sumOfSquares = 1;
+        let coefficient = 0.5;
+
+        for (let i = 1; i < this.passes; i++)
+        {
+            sumOfSquares += coefficient * coefficient;
+            coefficient *= 0.5;
+        }
+
+        return this.strength / Math.sqrt(sumOfSquares);
     }
 
     /**

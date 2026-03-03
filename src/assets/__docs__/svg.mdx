@@ -1,0 +1,173 @@
+---
+title: SVGs
+description: Learn how to render SVGs in PixiJS, including using them as textures or graphics, and understand their advantages and limitations.
+category: assets
+---
+
+# SVGs
+
+PixiJS supports SVG rendering, letting you integrate scalable vector graphics into your projects. This guide covers different ways to use SVGs, including real-time rendering, performance trade-offs, and known limitations.
+
+---
+
+### Why use SVGs?
+
+SVGs have several advantages over raster images like PNGs:
+
+- **Smaller file sizes** - SVGs can be much smaller than PNGs, especially for large but simple shapes. A high-resolution PNG may be several megabytes while an equivalent SVG could be a few kilobytes.
+- **Scalability** - SVGs scale without losing quality, making them ideal for responsive applications and UI elements.
+- **Editable after rendering** - Unlike textures, SVGs rendered via Graphics can be modified dynamically (e.g., changing stroke colors, modifying shapes).
+- **Efficient for simple graphics** - If the graphic consists of basic shapes and paths, SVGs can be rendered efficiently as vector graphics.
+
+However, SVGs can also be computationally expensive to parse, particularly for intricate illustrations with many paths or effects.
+
+---
+
+### Ways to render SVGs in PixiJS
+
+PixiJS offers two primary ways to render SVGs:
+
+1. **As a texture** - Converts the SVG into a texture for rendering as a sprite.
+2. **As a Graphics object** - Parses the SVG and renders it as vector geometry.
+
+Each method has its own trade-offs, covered below.
+
+---
+
+## 1. Rendering SVGs as textures
+
+SVGs can be loaded as textures and used within Sprites. This method is efficient but does not retain the scalability of vector graphics.
+
+### Example
+
+```ts
+const svgTexture = await Assets.load('tiger.svg');
+const mySprite = new Sprite(svgTexture);
+```
+
+@stackblitz(sprite_svg)
+
+### Scaling textures
+
+You can specify a resolution when loading an SVG as a texture to control its size. This increases memory usage but produces higher fidelity.
+
+```ts
+const svgTexture = await Assets.load({
+  src: 'path/to.svg',
+  data: {
+    resolution: 4,
+  }
+});
+const mySprite = new Sprite(svgTexture);
+```
+
+@stackblitz(sprite_svg_custom-data)
+
+### Pros and cons
+
+**Pros:**
+- Fast to render (drawn as a single quad, not geometry)
+- Good for static images and complex SVGs with fixed dimensions
+- Supports resolution scaling for higher fidelity
+
+**Cons:**
+- Scaling causes pixelation (it's a rasterized image)
+- Cannot modify shapes dynamically after rasterization
+- Texture size limit of 4096x4096 pixels; for larger SVGs, use the Graphics method
+
+### When to use
+
+- Background images
+- Decorative elements
+- Performance-critical applications where scaling isn't needed
+- Complex SVGs with fixed dimensions
+
+---
+
+## 2. Rendering SVGs as Graphics
+
+PixiJS can render SVGs as scalable vector graphics using the `Graphics` class.
+
+### Example
+
+```ts
+const graphics = new Graphics().svg('<svg width="100" height="100"><rect width="100" height="100" fill="red"/></svg>');
+```
+
+@stackblitz(graphics_svg_string-parsing)
+
+If you want to use the same SVG multiple times, use `GraphicsContext` to share the parsed SVG data across multiple graphics objects. This parses it once and reuses the result.
+
+```ts
+const context = new GraphicsContext().svg(
+  '<svg width="100" height="100"><rect width="100" height="100" fill="red"/></svg>',
+);
+
+const graphics1 = new Graphics(context);
+const graphics2 = new Graphics(context);
+```
+
+### Loading SVGs as Graphics
+
+Instead of passing an SVG string directly, load an SVG file using `Assets.load`. This returns a `GraphicsContext` object for creating multiple `Graphics` instances efficiently.
+
+```ts
+const svgContext = await Assets.load('path/to.svg', {
+  parseAsGraphicsContext: true, // If false, returns a texture instead
+});
+const myGraphics = new Graphics(svgContext);
+```
+
+Since it's loaded via `Assets.load`, the result is cached and reused, similar to a texture.
+
+@stackblitz(graphics_svg_file)
+
+### Pros and cons
+
+**Pros:**
+- Retains vector scalability (no pixelation when zooming)
+- Modifiable after rendering (change colors, strokes, etc.)
+- Efficient for simple shapes; fast if SVG structure doesn't change
+
+**Cons:**
+- Expensive to parse initially (complex SVGs with many paths can be slow)
+- Higher per-frame cost than a texture for complex geometry
+
+### When to use
+
+- Icons and UI elements that need resizing
+- A game world that needs to remain crisp as a player zooms in
+- Interactive graphics where modifying the SVG dynamically is necessary
+
+---
+
+## SVG rendering considerations
+
+### Supported features
+
+PixiJS supports most SVG features that can be rendered in a Canvas 2D context:
+
+| Feature                                 | Supported |
+| --------------------------------------- | --------- |
+| Basic Shapes (rect, circle, path, etc.) | Yes       |
+| Gradients                               | Yes       |
+| Stroke and fill styles                  | Yes       |
+| Text elements                           | No        |
+| Filters (Blur, Drop Shadow, etc.)       | No        |
+| Clipping paths                          | Yes       |
+| Patterns                                | No        |
+| Complex paths and curves                | Yes       |
+
+### Performance considerations
+
+- **Complex SVGs:** Large or intricate SVGs can slow down rendering startup due to high parsing costs. Use `GraphicsContext` to cache and reuse parsed data.
+- **Vector vs. texture:** If performance is a concern, use SVGs as textures instead of rendering them as geometry. Textures take more memory but render faster.
+- **Real-time rendering:** Avoid rendering complex SVGs dynamically. Preload and reuse them wherever possible.
+
+---
+
+## Gotchas
+
+- Large SVGs can be slow to parse. Optimize SVGs before using them in PixiJS.
+- Texture-based SVGs do not scale cleanly. Use higher resolution if necessary.
+- Not all SVG features are supported. Complex filters and text elements may not work as expected.

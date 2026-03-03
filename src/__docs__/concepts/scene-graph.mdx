@@ -1,0 +1,92 @@
+---
+sidebar_position: 0
+title: Scene Graph
+description: Understanding the PixiJS scene graph, its structure, and how to manage parent-child relationships, render order, and culling for optimal performance.
+category: core-concepts
+---
+
+
+# Scene Graph
+
+The scene graph is the tree of objects that PixiJS draws every frame. It works like the DOM: parent elements contain children, and properties like position, rotation, and opacity flow down from parent to child. Understanding the scene graph is essential because every sprite, graphic, and text object you create lives inside it.
+
+## The Scene Graph Is a Tree
+
+The scene graph's root node is a container maintained by the application, and referenced with `app.stage`. When you add a sprite or other renderable object as a child to the stage, it's added to the scene graph and will be rendered and interactable. PixiJS `Containers` can also have children, and so as you build more complex scenes, you will end up with a tree of parent-child relationships, rooted at the app's stage.
+
+(A helpful tool for exploring your project is the [Pixi.js devtools plugin](https://chrome.google.com/webstore/detail/pixijs-devtools/aamddddknhcagpehecnhphigffljadon) for Chrome, which allows you to view and manipulate the scene graph in real time as it's running!)
+
+## Parents and Children
+
+When a parent moves, its children move as well. When a parent is rotated, its children are rotated too. Hide a parent, and the children will also be hidden. If you have a game object that's made up of multiple sprites, you can collect them under a container to treat them as a single object in the world, moving and rotating as one.
+
+Each frame, PixiJS runs through the scene graph from the root down through all the children to the leaves to calculate each object's final position, rotation, visibility, transparency, etc. If a parent's alpha is set to 0.5 (making it 50% transparent), all its children will start at 50% transparent as well. If a child is then set to 0.5 alpha, it won't be 50% transparent, it will be 0.5 x 0.5 = 0.25 alpha, or 75% transparent. Similarly, an object's position is relative to its parent, so if a parent is set to an x position of 50 pixels, and the child is set to an x position of 100 pixels, it will be drawn at a screen offset of 150 pixels, or 50 + 100.
+
+Here's an example. We'll create three sprites, each a child of the last, and animate their position, rotation, scale and alpha. Even though each sprite's properties are set to the same values, the parent-child chain amplifies each change:
+
+@stackblitz(scene-graph-parent)
+
+<br />
+The cumulative translation, rotation, scale and skew of any given node in the scene graph is stored in the object's
+`worldTransform` property. Similarly, the cumulative alpha value is stored in the `worldAlpha` property.
+
+## Render Order
+
+So we have a tree of things to draw. Who gets drawn first?
+
+PixiJS renders the tree from the root down. At each level, the current object is rendered, then each child is rendered in order of insertion. So the second child is rendered on top of the first child, and the third over the second.
+
+Check out this example, with two parent objects A & D, and two children B & C under A:
+
+@stackblitz(scene-graph-order)
+<br/>
+
+If you'd like to re-order a child object, you can use `setChildIndex()`. To add a child at a given point in a parent's list, use `addChildAt()`. Finally, you can enable automatic sorting of an object's children using the `sortableChildren` option combined with setting the `zIndex` property on each child.
+
+## RenderGroups
+
+As you delve deeper into PixiJS, you'll encounter a powerful feature known as Render Groups. Think of Render Groups as specialized containers within your scene graph that act like mini scene graphs themselves. Here's what you need to know to effectively use Render Groups in your projects. For more info check out the [RenderGroups overview](./render-groups.md)
+
+## Culling
+
+If you're building a project where a large proportion of your scene objects are off-screen (say, a side-scrolling game), you will want to _cull_ those objects. Culling is the process of evaluating if an object (or its children!) is on the screen, and if not, turning off rendering for it. If you don't cull off-screen objects, the renderer will still draw them, even though none of their pixels end up on the screen.
+
+PixiJS provides built-in viewport culling. To enable it:
+
+```typescript
+// Enable culling on a sprite or container
+sprite.cullable = true;
+
+// Skip recursive child culling when children don't leave the parent bounds
+container.cullableChildren = false;
+
+// Provide a custom cull area (avoids measuring the object each frame)
+sprite.cullArea = new Rectangle(0, 0, 200, 200);
+```
+
+For more on when culling helps vs. hurts, see [Performance Tips](./performance-tips.md).
+
+## Local vs Global Coordinates
+
+If you add a sprite to the stage, by default it will show up in the top left corner of the screen. That's the origin of the global coordinate space used by PixiJS. If all your objects were children of the stage, that's the only coordinates you'd need to worry about. But once you introduce containers and children, things get more complicated. A child object at [50, 100] is 50 pixels right and 100 pixels down _from its parent_.
+
+We call these two coordinate systems "global" and "local" coordinates. When you use `position.set(x, y)` on an object, you're always working in local coordinates, relative to the object's parent.
+
+The problem is, there are many times when you want to know the global position of an object. For example, if you want to cull offscreen objects to save render time, you need to know if a given child is outside the view rectangle.
+
+To convert from local to global coordinates, you use the `toGlobal()` function. Here's a sample usage:
+
+```typescript
+import { Point } from 'pixi.js';
+
+// Get the global position of an object, relative to the top-left of the screen
+const globalPos = obj.toGlobal(new Point(0, 0));
+```
+
+This snippet will set `globalPos` to be the global coordinates for the child object, relative to [0, 0] in the global coordinate system.
+
+## Global vs Screen Coordinates
+
+When your project is working with the host operating system or browser, there is a third coordinate system that comes into play - "screen" coordinates (aka "viewport" coordinates). Screen coordinates represent position relative to the top-left of the canvas element that PixiJS is rendering into. Things like the DOM and native mouse click events work in screen space.
+
+In many cases, screen space and world space are identical: if your canvas is 800x600 and is not CSS-scaled, then 100 pixels in world space equals 100 pixels on screen. But if you stretch the canvas to fill the browser window (common for games), or render at a lower resolution for performance, the two coordinate systems diverge. PixiJS's event system handles this conversion automatically for pointer events, but if you need to convert manually, use `renderer.events.pointer` to get screen coordinates and `toLocal()`/`toGlobal()` for world coordinates.

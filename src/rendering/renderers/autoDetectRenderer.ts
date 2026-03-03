@@ -2,6 +2,7 @@ import { isWebGLSupported } from '../../utils/browser/isWebGLSupported';
 import { isWebGPUSupported } from '../../utils/browser/isWebGPUSupported';
 import { AbstractRenderer } from './shared/system/AbstractRenderer';
 
+import type { CanvasOptions } from './canvas/CanvasRenderer';
 import type { WebGLOptions } from './gl/WebGLRenderer';
 import type { WebGPUOptions } from './gpu/WebGPURenderer';
 import type { Renderer, RendererOptions } from './types';
@@ -14,11 +15,13 @@ import type { Renderer, RendererOptions } from './types';
 export interface AutoDetectOptions extends RendererOptions
 {
     /** The preferred renderer type. WebGPU is recommended as its generally faster than WebGL. */
-    preference?: 'webgl' | 'webgpu'// | 'canvas';
+    preference?: 'webgl' | 'webgpu' | 'canvas';
     /** Optional WebGPUOptions to pass only to WebGPU renderer. */
     webgpu?: Partial<WebGPUOptions>;
     /** Optional WebGLOptions to pass only to the WebGL renderer */
     webgl?: Partial<WebGLOptions>;
+    /** Optional CanvasOptions to pass only to the Canvas renderer */
+    canvasOptions?: Partial<CanvasOptions>;
 }
 
 const renderPriority = ['webgl', 'webgpu', 'canvas'];
@@ -118,14 +121,19 @@ export async function autoDetectRenderer(options: Partial<AutoDetectOptions>): P
         }
         else if (rendererType === 'canvas')
         {
-            finalOptions = { ...options };
+            const { CanvasRenderer } = await import('./canvas/CanvasRenderer');
 
-            throw new Error('CanvasRenderer is not yet implemented');
+            RendererClass = CanvasRenderer;
+
+            finalOptions = { ...options, ...options.canvasOptions };
+
+            break;
         }
     }
 
     delete finalOptions.webgpu;
     delete finalOptions.webgl;
+    delete finalOptions.canvasOptions;
 
     if (!RendererClass)
     {

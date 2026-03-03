@@ -360,15 +360,34 @@ export const groupD8 = {
      * @param {GD8Symmetry} rotation - The rotation factor to use.
      * @param {number} tx - sprite anchoring
      * @param {number} ty - sprite anchoring
+     * @param {number} dw - sprite width
+     * @param {number} dh - sprite height
      */
-    matrixAppendRotationInv: (matrix: Matrix, rotation: GD8Symmetry, tx = 0, ty = 0): void =>
+    matrixAppendRotationInv: (matrix: Matrix, rotation: GD8Symmetry, tx = 0, ty = 0, dw = 0, dh = 0): void =>
     {
         // Packer used "rotation", we use "inv(rotation)"
         const mat: Matrix = rotationMatrices[groupD8.inv(rotation)];
 
-        mat.tx = tx;
-        mat.ty = ty;
-        matrix.append(mat);
+        const a = mat.a;
+        const b = mat.b;
+        const c = mat.c;
+        const d = mat.d;
+
+        const finalTx = tx - Math.min(0, a * dw, c * dh, (a * dw) + (c * dh));
+        const finalTy = ty - Math.min(0, b * dw, d * dh, (b * dw) + (d * dh));
+
+        const a1 = matrix.a;
+        const b1 = matrix.b;
+        const c1 = matrix.c;
+        const d1 = matrix.d;
+
+        matrix.a = (a * a1) + (b * c1);
+        matrix.b = (a * b1) + (b * d1);
+        matrix.c = (c * a1) + (d * c1);
+        matrix.d = (c * b1) + (d * d1);
+
+        matrix.tx = (finalTx * a1) + (finalTy * c1) + matrix.tx;
+        matrix.ty = (finalTx * b1) + (finalTy * d1) + matrix.ty;
     },
 
     /**

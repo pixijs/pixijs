@@ -146,7 +146,7 @@ export function getBitmapTextLayout(
             char = chars[i];
         }
 
-        const charData = font.chars[char] || font.chars[' '];
+        const charData = font.chars[char];
 
         const isSpace = (/(?:\s)/).test(char);
         const isWordBreak = isSpace || char === '\r' || char === '\n' || isEnd;
@@ -185,9 +185,9 @@ export function getBitmapTextLayout(
             {
                 nextLine();
             }
-            else if (!isEnd)
+            else if (!isEnd && charData)
             {
-                const spaceWidth = charData.xAdvance + (charData.kerning[previousChar] || 0) + adjustedLetterSpacing;
+                const spaceWidth = charData.xAdvance + (charData.kerning?.[previousChar] || 0) + adjustedLetterSpacing;
 
                 currentLine.width += spaceWidth;
 
@@ -198,9 +198,9 @@ export function getBitmapTextLayout(
                 // spaceCount++;
             }
         }
-        else
+        else if (charData)
         {
-            const kerning = charData.kerning[previousChar] || 0;
+            const kerning = charData.kerning?.[previousChar] || 0;
 
             const nextCharWidth = charData.xAdvance + kerning + adjustedLetterSpacing;
 

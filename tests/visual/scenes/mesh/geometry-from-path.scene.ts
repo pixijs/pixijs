@@ -5,6 +5,7 @@ import type { TestScene } from '../../types';
 import type { Container } from '~/scene';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should render mesh with geometry build from custom path correctly',
     create: async (scene: Container) =>
     {
