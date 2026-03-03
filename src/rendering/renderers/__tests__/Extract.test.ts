@@ -157,8 +157,10 @@ describe('GenerateTexture', () =>
         const extractedPixels = renderer.extract.pixels(sprite).pixels;
 
         expect(extractedPixels).toEqual(new Uint8ClampedArray([
-            255, 0, 0, 255, 0, 255, 0, 153,
-            0, 0, 255, 102, 255, 255, 0, 51
+            255, 0, 0, 255, // Red
+            0, 255, 0, 153, // Full Green at 153 alpha
+            0, 0, 255, 102, // Full Blue at 102 alpha
+            255, 255, 0, 51 // Full Yellow at 51 alpha
         ]));
     });
 
@@ -188,9 +190,9 @@ describe('GenerateTexture', () =>
 
         expect(imageData?.data).toEqual(new Uint8ClampedArray([
             255, 0, 0, 255,
-            0, 255, 0, 153,
-            0, 0, 255, 102,
-            255, 255, 0, 51
+            0, 255, 0, 153, // Fixed alpha-corrected green
+            0, 0, 255, 102, // Fixed alpha-corrected blue
+            255, 255, 0, 51 // Fixed alpha-corrected yellow
         ]));
     });
 
@@ -198,9 +200,12 @@ describe('GenerateTexture', () =>
     {
         const renderer = (await getWebGLRenderer({ width: 2, height: 2 })) as WebGLRenderer;
 
+        // Source data (Premultiplied)
         const texturePixels = new Uint8ClampedArray([
-            255, 0, 0, 255, 0, 255, 0, 153,
-            0, 0, 255, 102, 255, 255, 0, 51
+            255, 0, 0, 255,
+            0, 255, 0, 153,
+            0, 0, 255, 102,
+            255, 255, 0, 51
         ]);
 
         const texture = Texture.from({
@@ -211,12 +216,23 @@ describe('GenerateTexture', () =>
         });
 
         const sprite = new Sprite(texture);
-
         const { pixels, width, height } = renderer.extract.pixels(sprite);
 
-        expect(pixels).toEqual(texturePixels);
+        // The extracted pixels should now be "unpremultiplied"
+        // even if the source was premultiplied.
+        expect(pixels).toEqual(new Uint8ClampedArray([
+            255, 0, 0, 255,
+            0, 255, 0, 153,
+            0, 0, 255, 102,
+            255, 255, 0, 51
+        ]));
+
         expect(width).toEqual(2);
         expect(height).toEqual(2);
+
+        texture.destroy(true);
+        sprite.destroy();
+        renderer.destroy();
     });
 
     it('should extract canvas from render texture correctly', async () =>
@@ -239,7 +255,12 @@ describe('GenerateTexture', () =>
         const context = canvas.getContext('2d');
         const imageData = context?.getImageData(0, 0, 2, 2);
 
-        expect(imageData?.data).toEqual(new Uint8ClampedArray(texturePixels.buffer));
+        expect(imageData?.data).toEqual(new Uint8ClampedArray([
+            255, 0, 0, 255,
+            0, 255, 0, 153,
+            0, 0, 255, 102,
+            255, 255, 0, 51
+        ]));
 
         texture.destroy(true);
         sprite.destroy();

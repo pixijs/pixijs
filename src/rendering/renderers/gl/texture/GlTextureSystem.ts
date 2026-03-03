@@ -568,10 +568,6 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         const { pixels, width, height } = this.getPixels(texture);
 
-        const buffer = new Uint8Array(pixels);
-
-        unpremultiplyAlpha(buffer);
-
         const canvas = DOMAdapter.get().createCanvas();
 
         canvas.width = width;
@@ -583,7 +579,8 @@ export class GlTextureSystem implements System, CanvasGenerator
         {
             const imageData = ctx.createImageData(width, height);
 
-            imageData.data.set(buffer);
+            // pixels is already unpremultiplied by getPixels()
+            imageData.data.set(pixels);
             ctx.putImageData(imageData, 0, 0);
         }
 
@@ -620,11 +617,8 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         // if (texture.source.premultiplyAlpha > 0)
         // TODO - premultiplied alpha does not exist right now, need to add that back in!
-        // eslint-disable-next-line no-constant-condition
-        if (false)
-        {
-            unpremultiplyAlpha(pixels);
-        }
+
+        unpremultiplyAlpha(pixels);
 
         return { pixels: new Uint8ClampedArray(pixels.buffer), width, height };
     }
