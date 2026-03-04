@@ -10,21 +10,40 @@ import type { Bounds } from '../../../container/bounds/Bounds';
 import type { RoundedPoint } from './roundShape';
 
 /**
- * Represents a single drawing instruction in a `GraphicsPath`.
- * Each instruction consists of an action type and associated data.
+ * Represents a instruction which adds a subpath into `GraphicsPath`.
  * @category scene
  * @advanced
  */
-export interface PathInstruction
+export interface PathInstructionAddPath
+{
+    action: 'addPath',
+    data: [GraphicsPath, Matrix | undefined]
+}
+
+/**
+ * Represents a single drawing instruction in a `GraphicsPath`.
+ * Each instruction consists of an action type and associated untyped data.
+ * @category scene
+ * @advanced
+ */
+export interface PathInstructionCommon
 {
     action: 'moveTo' | 'lineTo' | 'quadraticCurveTo' |
     'bezierCurveTo' | 'arc' | 'closePath' |
-    'addPath' | 'arcTo' | 'ellipse' |
+    'arcTo' | 'ellipse' |
     'rect' | 'roundRect' | 'arcToSvg' |
     'poly' | 'circle' |
     'regularPoly' | 'roundPoly' | 'roundShape' | 'filletRect' | 'chamferRect'
     data: any[];
 }
+
+/**
+ * Represents a single drawing instruction in a `GraphicsPath`.
+ * Each instruction consists of an action type and associated data.
+ * @category scene
+ * @advanced
+ */
+export type PathInstruction = PathInstructionCommon | PathInstructionAddPath;
 
 /**
  * The `GraphicsPath` class is designed to represent a graphical path consisting of multiple drawing instructions.
@@ -623,7 +642,17 @@ export class GraphicsPath
             {
                 const instruction = this.instructions[i];
 
-                newGraphicsPath2D.instructions.push({ action: instruction.action, data: instruction.data.slice() });
+                if (instruction.action === 'addPath')
+                {
+                    newGraphicsPath2D.instructions.push(
+                        {
+                            action: instruction.action, data: [instruction.data[0].clone(deep), instruction.data[1]?.clone()]
+                        });
+                }
+                else
+                {
+                    newGraphicsPath2D.instructions.push({ action: instruction.action, data: instruction.data.slice() });
+                }
             }
         }
 
