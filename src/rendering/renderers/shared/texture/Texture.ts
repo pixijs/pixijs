@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { groupD8 } from '../../../../maths/matrix/groupD8';
-import { type PointData } from '../../../../maths/point/PointData.ts';
+import { type PointData } from '../../../../maths/point/PointData';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';

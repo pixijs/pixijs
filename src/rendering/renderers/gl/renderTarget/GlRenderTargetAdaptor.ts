@@ -1,5 +1,5 @@
-import { type Size } from '../../../../maths/misc/Size.ts';
-import { type PointData } from '../../../../maths/point/PointData.ts';
+import { type Size } from '../../../../maths/misc/Size';
+import { type PointData } from '../../../../maths/point/PointData';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { warn } from '../../../../utils/logging/warn';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';

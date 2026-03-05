@@ -1,5 +1,5 @@
-import { type Size } from '../../../../maths/misc/Size.ts';
-import { type PointData } from '../../../../maths/point/PointData.ts';
+import { type Size } from '../../../../maths/misc/Size';
+import { type PointData } from '../../../../maths/point/PointData';
 import { CLEAR } from '../../gl/const';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
 import { TextureSource } from '../../shared/texture/sources/TextureSource';

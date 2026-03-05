@@ -1,6 +1,6 @@
 import { Matrix } from '../../../../maths/matrix/Matrix';
-import { type Size } from '../../../../maths/misc/Size.ts';
-import { type PointData } from '../../../../maths/point/PointData.ts';
+import { type Size } from '../../../../maths/misc/Size';
+import { type PointData } from '../../../../maths/point/PointData';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { CLEAR } from '../../gl/const';
 import { calculateProjection } from '../../gpu/renderTarget/calculateProjection';
