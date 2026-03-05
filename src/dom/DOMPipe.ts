@@ -98,9 +98,14 @@ export class DOMPipe implements RenderPipe<DOMContainer>
     /** Initializes the DOMPipe, setting up the main DOM element and adding it to the document body. */
     public init(): void
     {
-        const domPipeOptions = (this._renderer as Renderer & {
-            _initOptions?: { dom?: DOMPipeOptions }
-        })._initOptions?.dom;
+        // `renderer.options` (public) is the canonical home for all init options once
+        // the renderer has finished initialising. `_initOptions` is an internal field
+        // that exists in some versions but does not always carry top-level keys like
+        // `dom` through to pipes. Checking both makes the lookup resilient.
+        const rendererAsAny = this._renderer as any;
+        const domPipeOptions: DOMPipeOptions | undefined
+            = rendererAsAny.options?.dom        // primary: public renderer options
+            ?? rendererAsAny._initOptions?.dom; // fallback: internal pre-init options
 
         this._applyWrapperOptions(domPipeOptions?.wrapper);
 
