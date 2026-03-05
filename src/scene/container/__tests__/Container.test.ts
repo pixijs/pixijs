@@ -97,6 +97,34 @@ describe('Container', () =>
         expect(addedSpy).toHaveBeenCalledTimes(1);
     });
 
+    it('should emit a visibleChanged event when visibility is changed', () =>
+    {
+        const container = new Container();
+        const visibleChangedSpy = jest.fn();
+
+        container.on('visibleChanged', visibleChangedSpy);
+
+        container.visible = false;
+        expect(visibleChangedSpy).toHaveBeenCalledWith(false);
+
+        container.visible = true;
+        expect(visibleChangedSpy).toHaveBeenCalledWith(true);
+    });
+
+    it('should not emit a visibleChanged event when visibility is set to the same value', () =>
+    {
+        const container = new Container();
+        const visibleChangedSpy = jest.fn();
+
+        container.on('visibleChanged', visibleChangedSpy);
+
+        container.visible = true;
+        expect(visibleChangedSpy).toHaveBeenCalledTimes(0);
+
+        container.visible = true;
+        expect(visibleChangedSpy).toHaveBeenCalledTimes(0);
+    });
+
     it('should a global position correctly', async () =>
     {
         const container = new Container({
