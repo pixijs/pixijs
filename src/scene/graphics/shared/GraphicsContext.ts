@@ -1137,6 +1137,11 @@ export class GraphicsContext extends EventEmitter<{
             }
         }
 
+        if (!bounds.isValid)
+        {
+            bounds.set(0, 0, 0, 0);
+        }
+
         return bounds;
     }
 

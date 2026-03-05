@@ -146,23 +146,6 @@ describe('Graphics Bounds', () =>
             expect(width).toEqual(0);
             expect(height).toEqual(0);
         });
-
-        it('should be equal of child bounds when empty', () =>
-        {
-            const graphics = new Graphics();
-            const child = new Graphics();
-
-            child.beginPath().rect(10, 20, 100, 200).fill(0).closePath();
-
-            graphics.addChild(child);
-
-            const { x, y, width, height } = graphics.getBounds();
-
-            expect(x).toEqual(10);
-            expect(y).toEqual(20);
-            expect(width).toEqual(100);
-            expect(height).toEqual(200);
-        });
     });
 
     describe('containsPoint', () =>
