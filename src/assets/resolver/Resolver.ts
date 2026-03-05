@@ -318,6 +318,29 @@ export class Resolver
     }
 
     /**
+     * Removes the specified alias for an asset
+     *
+     * This does not remove or destroy the asset!
+     * @param alias - the alias to remove
+     * @param asset - only remove the alias if it is assigned to the asset
+     */
+    public removeAlias(alias: string, asset?: ResolvedAsset): void
+    {
+        if (!this._assetMap[alias])
+        {
+            return;
+        }
+
+        if (asset && asset !== this._resolverHash[alias])
+        {
+            return;
+        }
+
+        delete this._resolverHash[alias];
+        delete this._assetMap[alias];
+    }
+
+    /**
      * Add a manifest to the asset resolver. This is a nice way to add all the asset information in one go.
      * generally a manifest would be built using a tool.
      * @param manifest - the manifest to add to the resolver

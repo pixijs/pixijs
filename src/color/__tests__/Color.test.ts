@@ -280,6 +280,17 @@ describe('Color', () =>
         expect(color.value).toBe(0x999999);
     });
 
+    it('should reset alpha when setting same numeric value after setAlpha', () =>
+    {
+        const color = new Color();
+
+        color.setValue(0xffffff).setAlpha(0.8);
+        color.setValue(0xffffff);
+
+        expect(color.toHexa()).toBe('#ffffffff');
+        expect(color.alpha).toBe(1);
+    });
+
     it('should premultiply color correctly', () =>
     {
         const color = new Color([0.5, 0.5, 0.5, 1]).premultiply(0.5);

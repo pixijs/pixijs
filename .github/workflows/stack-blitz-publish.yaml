@@ -20,7 +20,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Build
-        run: npm run stackblitz-ci
+        run: npm run build
 
       - name: Publish
         run: npx pkg-pr-new@latest publish './' --template '.stackblitz/*'

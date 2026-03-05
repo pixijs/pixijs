@@ -1,7 +1,7 @@
 {
     "$schema": "https://typedoc.org/schema.json",
-    "entryPoints": ["./src/index.docs.ts"],
-    "tsconfig": "tsconfig.build.json",
+    "entryPoints": ["../src/index.docs.ts"],
+    "tsconfig": "./tsconfig.build.json",
     "gaID": "G-ZXJM5CB1QM",
     "disableSources": true,
     "navigation": {
@@ -14,17 +14,17 @@
     "excludeInternal": true,
     "excludeProtected": true,
     "excludeExternals": true,
-    "customCss": "./scripts/plugins/typedoc-custom.css",
-    "favicon": "./scripts/resources/favicon.svg",
+    "customCss": "../scripts/plugins/typedoc-custom.css",
+    "favicon": "../scripts/resources/favicon.svg",
     "router": "pixi",
     "outputs": [
         {
             "name": "markdown",
-            "path": ".s3_uploads/docs_md"
+            "path": "../.s3_uploads/docs_md"
         },
         {
             "name": "html",
-            "path": ".s3_uploads/docs"
+            "path": "../.s3_uploads/docs"
         }
     ],
     "plugin": [
@@ -32,12 +32,12 @@
         "typedoc-plugin-mdn-links",
         "typedoc-plugin-no-inherit",
         "typedoc-plugin-markdown",
-        "./scripts/plugins/typedoc-plugin-remove-standard-tag.mjs",
-        "./scripts/plugins/typedoc-plugin-router.mjs",
-        "./scripts/plugins/typedoc-plugin-llms-txt.mjs",
-        "./scripts/plugins/typedoc-plugin-stackblitz.mjs"
+        "../scripts/plugins/typedoc-plugin-remove-standard-tag.mjs",
+        "../scripts/plugins/typedoc-plugin-router.mjs",
+        "../scripts/plugins/typedoc-plugin-llms-txt.mjs",
+        "../scripts/plugins/typedoc-plugin-stackblitz.mjs"
     ],
-    "customJs": "./scripts/plugins/typedoc-custom.mjs",
+    "customJs": "../scripts/plugins/typedoc-custom.mjs",
     "lightHighlightTheme": "github-light-default",
     "darkHighlightTheme": "github-dark-default",
     "kindSortOrder": [
