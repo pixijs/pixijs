@@ -14,6 +14,7 @@ const tempBounds = new Bounds();
  * @param width - the frame width of the texture
  * @param height - the frame height of the texture
  * @param resolution - The resolution of the texture
+ * @param autoGenerateMipmaps - Whether to generate mipmaps for the texture
  * @returns - The texture
  * @internal
  */
@@ -21,7 +22,8 @@ export function getPo2TextureFromSource(
     image: ImageLike | HTMLCanvasElement | ICanvas,
     width: number,
     height: number,
-    resolution: number
+    resolution: number,
+    autoGenerateMipmaps = false
 ): Texture
 {
     const bounds = tempBounds;
@@ -36,7 +38,8 @@ export function getPo2TextureFromSource(
         bounds.width,
         bounds.height,
         resolution,
-        false
+        false,
+        autoGenerateMipmaps
     );
 
     texture.source.uploadMethodId = 'image';

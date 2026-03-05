@@ -40,4 +40,58 @@ describe('getPo2TextureFromSource', () =>
             height: 128,
         }));
     });
+
+    describe('autoGenerateMipmaps parameter', () =>
+    {
+        it('should create texture with mipmaps when autoGenerateMipmaps is true', () =>
+        {
+            const canvas = document.createElement('canvas');
+
+            canvas.width = 100;
+            canvas.height = 100;
+
+            const texture = getPo2TextureFromSource(canvas, 100, 100, 1, true);
+
+            expect(texture.source.autoGenerateMipmaps).toBe(true);
+        });
+
+        it('should create texture without mipmaps when autoGenerateMipmaps is false', () =>
+        {
+            const canvas = document.createElement('canvas');
+
+            canvas.width = 100;
+            canvas.height = 100;
+
+            const texture = getPo2TextureFromSource(canvas, 100, 100, 1, false);
+
+            expect(texture.source.autoGenerateMipmaps).toBe(false);
+        });
+
+        it('should default to false when autoGenerateMipmaps is not provided', () =>
+        {
+            const canvas = document.createElement('canvas');
+
+            canvas.width = 100;
+            canvas.height = 100;
+
+            const texture = getPo2TextureFromSource(canvas, 100, 100, 1);
+
+            expect(texture.source.autoGenerateMipmaps).toBe(false);
+        });
+
+        it('should not mix textures with different mipmap settings in the pool', () =>
+        {
+            const canvas = document.createElement('canvas');
+
+            canvas.width = 128;
+            canvas.height = 128;
+
+            const textureWithoutMipmaps = getPo2TextureFromSource(canvas, 128, 128, 1, false);
+            const textureWithMipmaps = getPo2TextureFromSource(canvas, 128, 128, 1, true);
+
+            expect(textureWithoutMipmaps.source.autoGenerateMipmaps).toBe(false);
+            expect(textureWithMipmaps.source.autoGenerateMipmaps).toBe(true);
+            expect(textureWithoutMipmaps).not.toBe(textureWithMipmaps);
+        });
+    });
 });
