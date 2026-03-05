@@ -110,6 +110,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         // It's necessary to ensure that the texture won't be captured by another field and overwritten with their
         // content, while our texture is still in progress.
         const oldTexturePromise = batchableHTMLText.texturePromise;
+        const oldTextureKey = batchableHTMLText.currentKey;
 
         batchableHTMLText.texturePromise = null;
 
@@ -117,35 +118,36 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
         htmlText._resolution = htmlText._autoResolution ? this._renderer.resolution : htmlText.resolution;
 
-        let texturePromise = this._renderer.htmlText.getTexturePromise(htmlText);
-
-        if (oldTexturePromise)
-        {
-            // Release old texture after new one is generated.
-            texturePromise = texturePromise.finally(() =>
-            {
-                this._renderer.htmlText.decreaseReferenceCount(batchableHTMLText.currentKey);
-                this._renderer.htmlText.returnTexturePromise(oldTexturePromise);
-            });
-        }
+        const texturePromise = this._renderer.htmlText.getTexturePromise(htmlText);
 
         batchableHTMLText.texturePromise = texturePromise;
         batchableHTMLText.currentKey = htmlText.styleKey;
 
-        batchableHTMLText.texture = await texturePromise;
-
-        // need a rerender...
-        const renderGroup = htmlText.renderGroup || htmlText.parentRenderGroup;
-
-        if (renderGroup)
+        try
         {
-            // need a rebuild of the render group
-            renderGroup.structureDidChange = true;
+            batchableHTMLText.texture = await texturePromise;
+
+            if (oldTexturePromise)
+            {
+                this._renderer.htmlText.decreaseReferenceCount(oldTextureKey);
+                this._renderer.htmlText.returnTexturePromise(oldTexturePromise);
+            }
+
+            // need a rerender...
+            const renderGroup = htmlText.renderGroup || htmlText.parentRenderGroup;
+
+            if (renderGroup)
+            {
+                // need a rebuild of the render group
+                renderGroup.structureDidChange = true;
+            }
+
+            updateTextBounds(batchableHTMLText, htmlText);
         }
-
-        batchableHTMLText.generatingTexture = false;
-
-        updateTextBounds(batchableHTMLText, htmlText);
+        finally
+        {
+            batchableHTMLText.generatingTexture = false;
+        }
     }
 
     private _getGpuText(htmlText: HTMLText)
@@ -190,4 +192,3 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         this._renderer = null;
     }
 }
-

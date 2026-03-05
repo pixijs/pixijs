@@ -1,5 +1,6 @@
 import { HTMLText } from '../HTMLText';
 import { getWebGLRenderer } from '@test-utils';
+import { Texture } from '~/rendering/renderers/shared/texture/Texture';
 
 describe('HTMLText', () =>
 {
@@ -41,6 +42,36 @@ describe('HTMLText', () =>
         text.destroy();
 
         expect(() => { renderer.resolution = 3; }).not.toThrow();
+
+        renderer.destroy();
+    });
+
+    it('should release the previous texture using the previous style key after resolution updates', async () =>
+    {
+        const text = new HTMLText({ text: 'foo' });
+
+        const renderer = await getWebGLRenderer();
+        const htmlTextPipe = renderer.renderPipes.htmlText as any;
+
+        const getTexturePromiseSpy = jest.spyOn(renderer.htmlText, 'getTexturePromise')
+            .mockResolvedValueOnce(Texture.EMPTY)
+            .mockResolvedValueOnce(Texture.WHITE);
+        const decreaseReferenceCountSpy = jest.spyOn(renderer.htmlText, 'decreaseReferenceCount')
+            .mockImplementation(() => undefined);
+        const returnTexturePromiseSpy = jest.spyOn(renderer.htmlText, 'returnTexturePromise')
+            .mockImplementation(() => undefined);
+
+        await htmlTextPipe['_updateGpuText'](text);
+
+        const oldStyleKey = text.styleKey;
+
+        text.resolution = 2;
+
+        await htmlTextPipe['_updateGpuText'](text);
+
+        expect(getTexturePromiseSpy).toHaveBeenCalledTimes(2);
+        expect(decreaseReferenceCountSpy).toHaveBeenCalledWith(oldStyleKey);
+        expect(returnTexturePromiseSpy).toHaveBeenCalledTimes(1);
 
         renderer.destroy();
     });
