@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { groupD8 } from '../../../../maths/matrix/groupD8';
+import { type PointData } from '../../../../maths/point/PointData.ts';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
@@ -61,7 +62,7 @@ export interface TextureOptions<TextureSourceType extends TextureSource = Textur
     /** Trimmed rectangle of original texture */
     trim?: Rectangle;
     /** Default anchor point used for sprite placement / rotation */
-    defaultAnchor?: { x: number; y: number };
+    defaultAnchor?: PointData;
     /** Default borders used for 9-slice scaling {@link NineSlicePlane}*/
     defaultBorders?: TextureBorders;
     /** indicates how the texture was rotated by texture packer. See {@link groupD8} */
@@ -182,7 +183,7 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
      * Changing the `defaultAnchor` at a later point of time will not update Sprite's anchor point.
      * @default {0,0}
      */
-    public readonly defaultAnchor?: { x: number; y: number };
+    public readonly defaultAnchor?: PointData;
     /**
      * Default width of the non-scalable border that is used if 9-slice plane is created with this texture.
      * @since 7.2.0

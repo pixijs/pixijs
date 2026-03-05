@@ -64,13 +64,9 @@ export interface BufferDescriptor
  * In PixiJS, the Buffer class is used to manage the data that is sent to the GPU rendering pipeline.
  * It abstracts away the underlying GPU buffer and provides an interface for uploading typed arrays or other data to the GPU,
  * They are used in the following places:
- * <br><br>
- * .1. {@link Geometry} as attribute data or index data for geometry
- * <br>
- * .2. {@link UniformGroup} as an underlying buffer for uniform data
- * <br>
- * .3. {@link BufferResource} as an underlying part of a buffer used directly by the GPU program
- * <br>
+ * 1. {@link Geometry} as attribute data or index data for geometry
+ * 2. {@link UniformGroup} as an underlying buffer for uniform data
+ * 3. {@link BufferResource} as an underlying part of a buffer used directly by the GPU program
  *
  * It is important to note that you must provide a usage type when creating a buffer. This is because
  * the underlying GPU buffer needs to know how it will be used. For example, if you are creating a buffer
@@ -83,11 +79,12 @@ export interface BufferDescriptor
  * In WebGPU, a GPU buffer cannot resized. This limitation is abstracted away, but know that resizing a buffer means
  * creating a brand new one and destroying the old, so it is best to limit this if possible.
  * @example
- *
+ * ```typescript
  * const buffer = new Buffer({
  *     data: new Float32Array([1, 2, 3, 4]),
  *     usage: BufferUsage.VERTEX,
  * });
+ * ```
  * @category rendering
  * @advanced
  */

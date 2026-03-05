@@ -7,12 +7,13 @@ import type { BindResource } from './BindResource';
  * They are essentially a wrapper for the WebGPU BindGroup class. But with the added bonus
  * that WebGL can also work with them.
  * @see https://gpuweb.github.io/gpuweb/#dictdef-gpubindgroupdescriptor
- * @example
- * // Create a bind group with a single texture and sampler
+ * @example Create a bind group with a single texture and sampler
+ * ```typescript
  * const bindGroup = new BindGroup({
  *    uTexture: texture.source,
  *    uTexture: texture.style,
  * });
+ * ```
  *
  * Bind groups resources must implement the {@link BindResource} interface.
  * The following resources are supported:

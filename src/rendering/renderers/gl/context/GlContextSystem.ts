@@ -304,7 +304,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
      * @protected
      * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
      * @param preferWebGLVersion
-     * @param {object} options - context attributes
+     * @param options - context attributes
      */
     protected createContext(preferWebGLVersion: 1 | 2, options: WebGLContextAttributes): void
     {

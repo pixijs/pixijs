@@ -38,16 +38,16 @@ const renderPriority = ['webgl', 'webgpu', 'canvas'];
  * To maximize the benefits of dynamic imports, it's recommended to use a modern bundler
  * that supports code splitting. This will place the renderer code in a separate chunk,
  * which is loaded only when needed.
- * @example
- *
- * // create a renderer
+ * @example Create a renderer
+ * ```typescript
  * const renderer = await autoDetectRenderer({
  *   width: 800,
  *   height: 600,
  *   antialias: true,
  * });
- *
- * // custom for each renderer
+ * ```
+ * @example Custom for each renderer
+ * ```typescript
  * const renderer = await autoDetectRenderer({
  *   width: 800,
  *   height: 600,
@@ -60,6 +60,7 @@ const renderPriority = ['webgl', 'webgpu', 'canvas'];
  *     backgroundColor: 'green'
  *   }
  *  });
+ * ```
  * @param options - A partial configuration object based on the `AutoDetectOptions` type.
  * @returns A Promise that resolves to an instance of the selected renderer.
  * @category rendering

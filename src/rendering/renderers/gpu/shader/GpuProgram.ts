@@ -65,9 +65,8 @@ const programCache: Record<string, GpuProgram> = Object.create(null);
  *
  * To leverage the full capabilities of this class, familiarity with WGSL shaders is recommended.
  * @see https://gpuweb.github.io/gpuweb/#index
- * @example
- *
- * // Create a new program
+ * @example Create a new program
+ * ```typescript
  * const program = new GpuProgram({
  *   vertex: {
  *    source: '...',
@@ -78,15 +77,15 @@ const programCache: Record<string, GpuProgram> = Object.create(null);
  *    entryPoint: 'main',
  *   },
  * });
+ * ```
  *
- *
- * Note: Both fragment and vertex shader sources can coexist within a single WGSL source file
- * this can make things a bit simpler.
+ * > [!NOTE] Both fragment and vertex shader sources can coexist within a single WGSL source file this can
+ * make things a bit simpler.
  *
  * For optimal usage and best performance, it help to reuse programs whenever possible.
  * The {@link GpuProgram.from} helper function is designed for this purpose, utilizing an
- * internal cache to efficiently manage and retrieve program instances.
- * By leveraging this function, you can significantly reduce overhead and enhance the performance of your rendering pipeline.
+ * internal cache to efficiently manage and retrieve program instances. By leveraging this function, you can
+ * significantly reduce overhead and enhance the performance of your rendering pipeline.
  *
  * An important distinction between WebGL and WebGPU regarding program data retrieval:
  * While WebGL allows extraction of program information directly from its compiled state,
@@ -105,27 +104,31 @@ export class GpuProgram
     /**
      * Mapping of uniform names to group indexes for organizing shader program uniforms.
      * Automatically generated from shader sources if not provided.
-     * @example
-     * // Assuming a shader with two uniforms, `u_time` and `u_resolution`, grouped respectively:
+     * @example Assuming a shader with two uniforms, u_time and u_resolution, grouped respectively
+     * ```typescript
      * [
      *   { "u_time": 0 },
      *   { "u_resolution": 1 }
      * ]
+     * ```
      */
     public readonly layout: ProgramLayout;
 
     /**
      * Configuration for the WebGPU bind group layouts, detailing resource organization for the shader.
      * Generated from shader sources if not explicitly provided.
-     * @example
-     * // Assuming a shader program that requires two bind groups:
+     * @example Assuming a shader program that requires two bind groups
+     * ```typescript
      * [
      *   // First bind group layout entries
      *   [{ binding: 0, visibility: GPUShaderStage.VERTEX, type: "uniform-buffer" }],
      *   // Second bind group layout entries
-     *   [{ binding: 1, visibility: GPUShaderStage.FRAGMENT, type: "sampler" },
-     *    { binding: 2, visibility: GPUShaderStage.FRAGMENT, type: "sampled-texture" }]
+     *   [
+     *     { binding: 1, visibility: GPUShaderStage.FRAGMENT, type: "sampler" },
+     *     { binding: 2, visibility: GPUShaderStage.FRAGMENT, type: "sampled-texture" }
+     *   ]
      * ]
+     * ```
      */
     public readonly gpuLayout: ProgramPipelineLayoutDescription;
 

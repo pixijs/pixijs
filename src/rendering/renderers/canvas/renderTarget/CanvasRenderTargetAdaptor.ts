@@ -1,5 +1,7 @@
 import { Color } from '../../../../color/Color';
 import { DOMAdapter } from '../../../../environment/adapter';
+import { type Size } from '../../../../maths/misc/Size.ts';
+import { type PointData } from '../../../../maths/point/PointData.ts';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
@@ -156,23 +158,17 @@ export class CanvasRenderTargetAdaptor implements RenderTargetAdaptor<CanvasRend
      * Copies a render target into a texture source.
      * @param {RenderTarget} sourceRenderSurfaceTexture - Source render target.
      * @param {Texture} destinationTexture - Destination texture.
-     * @param {object} originSrc - Source origin.
-     * @param {number} originSrc.x - Source x origin.
-     * @param {number} originSrc.y - Source y origin.
-     * @param {object} size - Copy size.
-     * @param {number} size.width - Copy width.
-     * @param {number} size.height - Copy height.
-     * @param {object} [originDest] - Destination origin.
-     * @param {number} originDest.x - Destination x origin.
-     * @param {number} originDest.y - Destination y origin.
+     * @param {PointData} originSrc - Source origin.
+     * @param {Size} size - Copy size.
+     * @param {PointData} [originDest] - Destination origin.
      * @advanced
      */
     public copyToTexture(
         sourceRenderSurfaceTexture: RenderTarget,
         destinationTexture: Texture,
-        originSrc: { x: number; y: number },
-        size: { width: number; height: number },
-        originDest?: { x: number; y: number },
+        originSrc: PointData,
+        size: Size,
+        originDest?: PointData,
     ): Texture
     {
         const sourceGpuTarget = this._renderTargetSystem.getGpuRenderTarget(sourceRenderSurfaceTexture);
