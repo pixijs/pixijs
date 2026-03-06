@@ -582,6 +582,8 @@ export class AbstractRenderer<
 
         // destroy all pipes
         (this.renderPipes as null) = null;
+
+        this.removeAllListeners();
     }
 
     /**
