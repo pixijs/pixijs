@@ -139,12 +139,36 @@ export async function renderTest(
 
     if (match > pixelMatch)
     {
-        // Write the diff to a file for visual inspection
         ensureDirSync('.pr_uploads/visual');
 
-        await writeFile(`.pr_uploads/visual/${id}-${rendererType}-diff.png`, PNG.sync.write(diff));
-        // save output image
-        await saveSnapShot(`.pr_uploads/visual/${id}-${rendererType}.png`, canvas);
+        const gap = 4;
+        const titleHeight = 20;
+        const combinedCanvas = document.createElement('canvas');
+
+        combinedCanvas.width = (imgWidth * 3) + (gap * 2);
+        combinedCanvas.height = imgHeight + titleHeight;
+
+        const ctx = combinedCanvas.getContext('2d');
+
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, combinedCanvas.width, combinedCanvas.height);
+
+        ctx.fillStyle = 'white';
+        ctx.font = '14px sans-serif';
+        ctx.textBaseline = 'top';
+        ctx.fillText('Expected', 0, 2);
+        ctx.fillText('Actual', imgWidth + gap, 2);
+        ctx.fillText('Diff', (imgWidth * 2) + (gap * 2), 2);
+
+        const prevImageData = new ImageData(new Uint8ClampedArray(prevSnapShot), imgWidth, imgHeight);
+        const newImageData = new ImageData(newSnapShot, imgWidth, imgHeight);
+        const diffImageData = new ImageData(new Uint8ClampedArray(diff.data), imgWidth, imgHeight);
+
+        ctx.putImageData(prevImageData, 0, titleHeight);
+        ctx.putImageData(newImageData, imgWidth + gap, titleHeight);
+        ctx.putImageData(diffImageData, (imgWidth * 2) + (gap * 2), titleHeight);
+
+        await saveSnapShot(`.pr_uploads/visual/${id}-${rendererType}.png`, combinedCanvas);
     }
 
     // this means we created a custom renderer.. so lts clean up after ourselves!
