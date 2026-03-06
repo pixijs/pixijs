@@ -97,6 +97,34 @@ describe('Container', () =>
         expect(addedSpy).toHaveBeenCalledTimes(1);
     });
 
+    it('should emit a visibleChanged event when visibility is changed', () =>
+    {
+        const container = new Container();
+        const visibleChangedSpy = jest.fn();
+
+        container.on('visibleChanged', visibleChangedSpy);
+
+        container.visible = false;
+        expect(visibleChangedSpy).toHaveBeenCalledWith(false);
+
+        container.visible = true;
+        expect(visibleChangedSpy).toHaveBeenCalledWith(true);
+    });
+
+    it('should not emit a visibleChanged event when visibility is set to the same value', () =>
+    {
+        const container = new Container();
+        const visibleChangedSpy = jest.fn();
+
+        container.on('visibleChanged', visibleChangedSpy);
+
+        container.visible = true;
+        expect(visibleChangedSpy).toHaveBeenCalledTimes(0);
+
+        container.visible = true;
+        expect(visibleChangedSpy).toHaveBeenCalledTimes(0);
+    });
+
     it('should a global position correctly', async () =>
     {
         const container = new Container({
@@ -399,6 +427,52 @@ describe('Container', () =>
             const child = new Container();
 
             assertRemovedFromParent(parent, container, child, () => { container.addChildAt(child, 0); });
+        });
+
+        it('should be no-op when child is already in container at same index', () =>
+        {
+            const container = new Container();
+            const childA = new Container();
+            const childB = new Container();
+
+            container.addChild(childB, childA);
+
+            expect(container.children).toHaveLength(2);
+            expect(container.getChildIndex(childA)).toBe(1);
+
+            const result = container.addChildAt(childA, 1);
+
+            expect(result).toBe(childA);
+            expect(container.children).toHaveLength(2);
+            expect(container.children[0]).toBe(childB);
+            expect(container.children[1]).toBe(childA);
+            expect(childA.parent).toBe(container);
+        });
+
+        it('should move child to new index when child is already in container', () =>
+        {
+            const container = new Container();
+            const childA = new Container();
+            const childB = new Container();
+            const childC = new Container();
+
+            container.addChild(childA, childB, childC);
+
+            expect(container.getChildIndex(childB)).toBe(1);
+
+            container.addChildAt(childB, 0);
+
+            expect(container.children).toHaveLength(3);
+            expect(container.children[0]).toBe(childB);
+            expect(container.children[1]).toBe(childA);
+            expect(container.children[2]).toBe(childC);
+            expect(childB.parent).toBe(container);
+
+            container.addChildAt(childB, 2);
+
+            expect(container.children[0]).toBe(childA);
+            expect(container.children[1]).toBe(childC);
+            expect(container.children[2]).toBe(childB);
         });
     });
 

@@ -166,11 +166,12 @@ export class HTMLTextSystem implements System
 
     private async _buildTexturePromise(options: HTMLTextOptions)
     {
-        const { text, style, resolution, textureStyle } = options as {
+        const { text, style, resolution, textureStyle, autoGenerateMipmaps } = options as {
             text: string,
             style: HTMLTextStyle,
             resolution: number,
             textureStyle?: TextureStyle,
+            autoGenerateMipmaps?: boolean,
         };
 
         const htmlTextData = BigPool.get(HTMLTextRenderData);
@@ -202,10 +203,12 @@ export class HTMLTextSystem implements System
             canvasAndContext = getTemporaryCanvasFromImage(image, resolution);
         }
 
-        const texture = getPo2TextureFromSource(canvasAndContext ? canvasAndContext.canvas : resource,
+        const texture = getPo2TextureFromSource(
+            canvasAndContext ? canvasAndContext.canvas : resource,
             image.width - uvSafeOffset,
             image.height - uvSafeOffset,
-            resolution
+            resolution,
+            autoGenerateMipmaps
         );
 
         if (textureStyle) texture.source.style = textureStyle;
