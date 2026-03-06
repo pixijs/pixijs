@@ -245,7 +245,7 @@ export class Ticker
      */
     private _maxElapsedMS = 100;
     /**
-     * Internal value managed by minFPS property setter and getter.
+     * Internal value managed by maxFPS property setter and getter.
      * This is the minimum allowed milliseconds between updates.
      */
     private _minElapsedMS = 0;
@@ -769,13 +769,16 @@ export class Ticker
 
     set minFPS(fps: number)
     {
-        // Minimum must be below the maxFPS
-        const minFPS = Math.min(this.maxFPS, fps);
-
         // Must be at least 0, but below 1 / Ticker.targetFPMS
-        const minFPMS = Math.min(Math.max(0, minFPS) / 1000, Ticker.targetFPMS);
+        const minFPMS = Math.min(Math.max(0, fps) / 1000, Ticker.targetFPMS);
 
         this._maxElapsedMS = 1 / minFPMS;
+
+        // If maxFPS is set (non-zero) and now lower than minFPS, push it up
+        if (this._minElapsedMS && fps > this.maxFPS)
+        {
+            this.maxFPS = fps;
+        }
     }
 
     /**
@@ -822,10 +825,12 @@ export class Ticker
         }
         else
         {
-            // Max must be at least the minFPS
-            const maxFPS = Math.max(this.minFPS, fps);
+            if (fps < this.minFPS)
+            {
+                this.minFPS = fps;
+            }
 
-            this._minElapsedMS = 1 / (maxFPS / 1000);
+            this._minElapsedMS = 1 / (fps / 1000);
         }
     }
 
