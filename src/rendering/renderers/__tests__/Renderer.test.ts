@@ -17,4 +17,16 @@ describe('Renderer', () =>
 
         renderer.destroy();
     });
+
+    it('should remove all event listeners when destroyed', async () =>
+    {
+        const renderer = new WebGLRenderer();
+
+        renderer.on('resize', jest.fn());
+        renderer.on('resize', jest.fn());
+        expect(renderer.listenerCount('resize')).toBe(2);
+
+        renderer.destroy();
+        expect(renderer.listenerCount('resize')).toBe(0);
+    });
 });
