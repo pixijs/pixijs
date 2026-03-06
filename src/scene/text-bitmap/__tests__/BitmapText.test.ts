@@ -42,7 +42,7 @@ describe('BitmapText', () =>
 
         renderer.render(text);
 
-        expect(Cache.get('arial-bitmap').pages).toHaveLength(1);
+        expect(Cache.get('arial-bitmap-normal-normal-normal').pages).toHaveLength(1);
     });
 
     it('should default to white fill', async () =>
