@@ -13,7 +13,12 @@ export const mSDFBit = {
                 // SDF
                 median = min(median, msdfColor.a);
 
-                var screenPxDistance = distance * (median - 0.5);
+                // Clamp distance to at least 1.0 to prevent overly soft edges
+                // at small scales (zoomed out), matching the msdf-atlas-gen
+                // reference: max(screenPxRange, 1.0)
+                var clampedDistance = max(distance, 1.0);
+
+                var screenPxDistance = clampedDistance * (median - 0.5);
                 var alpha = clamp(screenPxDistance + 0.5, 0.0, 1.0);
                 if (median < 0.01) {
                     alpha = 0.0;
@@ -21,12 +26,11 @@ export const mSDFBit = {
                     alpha = 1.0;
                 }
 
-                // Gamma correction for coverage-like alpha
-                var luma: f32 = dot(shapeColor.rgb, vec3<f32>(0.299, 0.587, 0.114));
-                var gamma: f32 = mix(1.0, 1.0 / 2.2, luma);
-                var coverage: f32 = pow(shapeColor.a * alpha, gamma);
-
-                return coverage;
+                // Note: do NOT multiply by shapeColor.a here. The shader
+                // template already applies vColor (which carries the user's
+                // alpha) via: finalColor = outColor * vColor.
+                // Including shapeColor.a here would square the alpha.
+                return alpha;
 
             }
         `,
@@ -49,7 +53,12 @@ export const mSDFBitGl = {
                 // SDF
                 median = min(median, msdfColor.a);
 
-                float screenPxDistance = distance * (median - 0.5);
+                // Clamp distance to at least 1.0 to prevent overly soft edges
+                // at small scales (zoomed out), matching the msdf-atlas-gen
+                // reference: max(screenPxRange, 1.0)
+                float clampedDistance = max(distance, 1.0);
+
+                float screenPxDistance = clampedDistance * (median - 0.5);
                 float alpha = clamp(screenPxDistance + 0.5, 0.0, 1.0);
 
                 if (median < 0.01) {
@@ -58,12 +67,11 @@ export const mSDFBitGl = {
                     alpha = 1.0;
                 }
 
-                // Gamma correction for coverage-like alpha
-                float luma = dot(shapeColor.rgb, vec3(0.299, 0.587, 0.114));
-                float gamma = mix(1.0, 1.0 / 2.2, luma);
-                float coverage = pow(shapeColor.a * alpha, gamma);
-
-                return coverage;
+                // Note: do NOT multiply by shapeColor.a here. The shader
+                // template already applies vColor (which carries the user's
+                // alpha) via: finalColor = outColor * vColor.
+                // Including shapeColor.a here would square the alpha.
+                return alpha;
             }
         `,
     }
