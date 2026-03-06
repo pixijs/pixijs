@@ -371,7 +371,7 @@ export class CanvasTextMetrics
         }
 
         const strokeWidth = style._stroke?.width ?? 0;
-        const lineHeight = style.lineHeight || fontProperties.fontSize;
+        const lineHeight = style.lineHeight ?? fontProperties.fontSize;
 
         // Calculate base width - use wordWrapWidth for non-left alignment when wrapping
         const baseWidth = CanvasTextMetrics._getAlignWidth(maxLineWidth, style, wordWrap);

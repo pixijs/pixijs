@@ -73,7 +73,9 @@ export function getBitmapTextLayout(
 
     const adjustedLetterSpacing = style.letterSpacing * scale;
     const adjustedWordWrapWidth = style.wordWrapWidth * scale;
-    const adjustedLineHeight = style.lineHeight ? style.lineHeight * scale : font.lineHeight;
+    const adjustedLineHeight = (style.lineHeight !== null && style.lineHeight !== undefined)
+        ? style.lineHeight * scale
+        : font.lineHeight;
 
     const breakWords = style.wordWrap && style.breakWords;
 
@@ -223,6 +225,10 @@ export function getBitmapTextLayout(
     }
 
     nextLine();
+
+    // Ensure minimum height based on font metrics for proper hit testing.
+    // lineHeight controls line spacing, but bounds should always include actual text height.
+    layoutData.height = Math.max(layoutData.height, font.lineHeight);
 
     if (style.align === 'center')
     {

@@ -122,7 +122,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         }
 
         (this.fontMetrics as FontMetrics) = CanvasTextMetrics.measureFont(font);
-        (this.lineHeight as number) = style.lineHeight || this.fontMetrics.fontSize || style.fontSize;
+        (this.lineHeight as number) = style.lineHeight ?? this.fontMetrics.fontSize ?? style.fontSize;
     }
 
     public ensureCharacters(chars: string): void

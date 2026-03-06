@@ -31,7 +31,7 @@ export function bitmapTextSplit(
     const chars: BitmapText[] = [];
     const words: Container[] = [];
     const lines: Container[] = [];
-    const lineHeight = style.lineHeight ? style.lineHeight : font.lineHeight * scale;
+    const lineHeight = style.lineHeight ?? font.lineHeight * scale;
 
     let yOffset = 0;
 

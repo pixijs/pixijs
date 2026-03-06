@@ -400,7 +400,7 @@ class CanvasTextGeneratorClass
                             // Create per-run metrics for gradient calculation
                             // Use run's font metrics for height to match non-tagged text behavior
                             const runFontProps = CanvasTextMetrics.measureFont(runFont);
-                            const runHeight = run.style.lineHeight || runFontProps.fontSize;
+                            const runHeight = run.style.lineHeight ?? runFontProps.fontSize;
 
                             const runMetrics = {
                                 width: runWidth,
@@ -469,7 +469,7 @@ class CanvasTextGeneratorClass
                             // Create per-run metrics for gradient calculation
                             // Use run's font metrics for height to match non-tagged text behavior
                             const runFontProps = CanvasTextMetrics.measureFont(runFont);
-                            const runHeight = run.style.lineHeight || runFontProps.fontSize;
+                            const runHeight = run.style.lineHeight ?? runFontProps.fontSize;
 
                             const runMetrics = {
                                 width: runWidth,

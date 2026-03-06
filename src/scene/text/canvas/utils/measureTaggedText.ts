@@ -225,7 +225,7 @@ export function measureTaggedText(
         lines.push(lineText);
 
         // Calculate line height - use style.lineHeight if set, otherwise use measured metrics
-        const computedLineHeight = style.lineHeight || (lineAscent + lineDescent);
+        const computedLineHeight = style.lineHeight ?? (lineAscent + lineDescent);
 
         lineHeightsArr.push(computedLineHeight + style.leading);
         maxLineWidth = Math.max(maxLineWidth, lineWidth);
@@ -252,7 +252,7 @@ export function measureTaggedText(
     const height = baseHeight + (style.dropShadow ? style.dropShadow.distance : 0);
 
     // Use the base style's line height for the lineHeight property (for backwards compat)
-    const baseLineHeight = style.lineHeight || baseFontProps.fontSize;
+    const baseLineHeight = style.lineHeight ?? baseFontProps.fontSize;
 
     return {
         width,

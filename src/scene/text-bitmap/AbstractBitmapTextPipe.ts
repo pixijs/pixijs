@@ -141,7 +141,7 @@ export abstract class AbstractBitmapTextPipe implements RenderPipe<BitmapText>
         let fontSize = bitmapFont.fontMetrics.fontSize;
         let lineHeight = bitmapFont.lineHeight;
 
-        if (style.lineHeight)
+        if (style.lineHeight !== null && style.lineHeight !== undefined)
         {
             fontSize = style.fontSize / scale;
             lineHeight = style.lineHeight / scale;

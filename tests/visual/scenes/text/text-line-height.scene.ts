@@ -25,7 +25,7 @@ export const scene: TestScene = {
 
         for (const lh of lineHeights)
         {
-            const label = lh === undefined ? 'default' : `lh:${lh}`;
+            const label = (lh === null || lh === undefined) ? 'default' : `lh:${lh}`;
             const text = new Text({
                 text: `${label}\nLine2`,
                 style: { ...baseStyle, lineHeight: lh },
