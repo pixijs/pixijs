@@ -13,6 +13,18 @@ import { getCanvasFillStyle } from './utils/getCanvasFillStyle';
  */
 const tempRect = new Rectangle();
 
+function countSpaces(text: string): number
+{
+    let count = 0;
+
+    for (let i = 0; i < text.length; i++)
+    {
+        if (text.charCodeAt(i) === 32) count++;
+    }
+
+    return count;
+}
+
 /**
  * Utility for generating and managing canvas-based text rendering.
  *
@@ -247,7 +259,7 @@ class CanvasTextGeneratorClass
 
                 if (style.align === 'justify' && style.wordWrap && j < lines.length - 1)
                 {
-                    const spaces = lines[j].split(' ').length - 1;
+                    const spaces = countSpaces(lines[j]);
 
                     if (spaces > 0)
                     {
@@ -373,7 +385,7 @@ class CanvasTextGeneratorClass
 
                     for (const run of lineRuns)
                     {
-                        totalSpaces += run.text.split(' ').length - 1;
+                        totalSpaces += countSpaces(run.text);
                     }
 
                     if (totalSpaces > 0)
@@ -423,7 +435,7 @@ class CanvasTextGeneratorClass
                             else
                             {
                                 // No shadow for this run, skip drawing
-                                const spacesSkipped = run.text.split(' ').length - 1;
+                                const spacesSkipped = countSpaces(run.text);
 
                                 runX += runWidth + (spacesSkipped * wordSpacing);
                                 continue;
@@ -462,7 +474,7 @@ class CanvasTextGeneratorClass
                         );
                     }
 
-                    const spacesInRun = run.text.split(' ').length - 1;
+                    const spacesInRun = countSpaces(run.text);
 
                     runX += runWidth + (spacesInRun * wordSpacing);
                 }
@@ -497,7 +509,7 @@ class CanvasTextGeneratorClass
                             else
                             {
                                 // No shadow for this run, skip drawing
-                                const spacesSkipped = run.text.split(' ').length - 1;
+                                const spacesSkipped = countSpaces(run.text);
 
                                 runX += runWidth + (spacesSkipped * wordSpacing);
                                 continue;
@@ -536,7 +548,7 @@ class CanvasTextGeneratorClass
                         );
                     }
 
-                    const spacesInFillRun = run.text.split(' ').length - 1;
+                    const spacesInFillRun = countSpaces(run.text);
 
                     runX += runWidth + (spacesInFillRun * wordSpacing);
                 }
@@ -653,7 +665,7 @@ class CanvasTextGeneratorClass
      * @param x - Horizontal position to draw the text
      * @param y - Vertical position to draw the text
      * @param isStroke - Whether to render the stroke (true) or fill (false)
-     * @param wordSpacing
+     * @param wordSpacing - Extra spacing to add between words (for justify alignment)
      * @private
      */
     private _drawLetterSpacing(
