@@ -5,20 +5,14 @@ import { type SplitOptions } from '../../text-split/SplitText';
 import { type TextSplitOutput } from '../../text-split/types';
 import { CanvasTextGenerator } from '../canvas/CanvasTextGenerator';
 import { CanvasTextMetrics } from '../canvas/CanvasTextMetrics';
+import { type TextStyleRun } from '../canvas/utils/parseTaggedText';
 import { Text } from '../Text';
 import { type TextStyle } from '../TextStyle';
-
-interface Segment
-{
-    char: string;
-    metric: CanvasTextMetrics;
-}
 
 interface GroupedSegment
 {
     line: string;
-    chars: Segment[];
-    width: number;
+    chars: string[];
 }
 
 function getAlignmentOffset(alignment: string, lineWidth: number, largestLine: number): number
@@ -40,32 +34,29 @@ function isNewlineCharacter(char: string): boolean
     return char === '\r' || char === '\n' || char === '\r\n';
 }
 
+const whitespaceRegex = /^\s*$/;
+
 /**
  * Groups text segments into lines based on measured text metrics
  * @param segments - Array of text segments to group
  * @param measuredText - The pre-measured text metrics
  * @param measuredText.lines
- * @param textStyle - The text style to use for measurements
  * @returns Array of grouped segments containing line information
  */
 function groupTextSegments(
     segments: string[],
     measuredText: { lines: string[] },
-    textStyle: TextStyle,
 ): GroupedSegment[]
 {
     const groupedSegments: GroupedSegment[] = [];
     let currentLine = measuredText.lines[0];
     let matchedLine = '';
-    let chars: Segment[] = [];
+    let chars: string[] = [];
     let lineCount = 0;
-
-    // Disable word wrap for individual character measurements
-    textStyle.wordWrap = false;
 
     segments.forEach((segment) =>
     {
-        const isWhitespace = (/^\s*$/).test(segment);
+        const isWhitespace = whitespaceRegex.test(segment);
         const isNewline = isNewlineCharacter(segment);
         const isSpaceAtStart = matchedLine.length === 0 && isWhitespace;
 
@@ -76,16 +67,13 @@ function groupTextSegments(
 
         if (!isNewline) matchedLine += segment;
 
-        const metric = CanvasTextMetrics.measureText(segment, textStyle);
-
-        chars.push({ char: segment, metric });
+        chars.push(segment);
 
         if (matchedLine.length >= currentLine.length)
         {
             groupedSegments.push({
                 line: matchedLine,
                 chars,
-                width: chars.reduce((acc, seg) => acc + seg.metric.width, 0),
             });
             chars = [];
             matchedLine = '';
@@ -117,10 +105,16 @@ export function canvasTextSplit(
 
     // measure the entire text to get the layout
     const measuredText = CanvasTextMetrics.measureText(text, textStyle);
+
+    if (measuredText.runsByLine && measuredText.runsByLine.length > 0)
+    {
+        return canvasTaggedTextSplitFromRuns(measuredText, textStyle, existingChars, text);
+    }
+
     // split the text into segments
     const segments = CanvasTextMetrics.graphemeSegmenter(text);
     // now group the segments into lines based on measured lines
-    const groupedSegments: GroupedSegment[] = groupTextSegments(segments, measuredText, textStyle.clone());
+    const groupedSegments: GroupedSegment[] = groupTextSegments(segments, measuredText);
 
     const alignment = textStyle.align;
     const maxLineWidth = measuredText.lineWidths.reduce((max, line) => Math.max(max, line), 0);
@@ -178,8 +172,10 @@ export function canvasTextSplit(
     const lineContainers: Container[] = [];
     const wordContainers: Container[] = [];
     let yOffset = 0;
-    const strokeWidth = textStyle._stroke?.width || 0;
-    const dropShadowDistance = textStyle.dropShadow?.distance || 0;
+    let existingCharIndex = 0;
+
+    // Cache gradient bounds object; identical for every character
+    const gradientBounds = hasLocalGradient ? { width: fullTextWidth, height: fullTextHeight } : null;
 
     groupedSegments.forEach((group, lineIndex) =>
     {
@@ -195,75 +191,84 @@ export function canvasTextSplit(
 
         currentWordContainer.x = xOffset + trimOffsetX;
 
-        group.chars.forEach((segment, charIndex) =>
+        // Use remaining-width technique for kerning-aware character positioning
+        const context = CanvasTextMetrics._context;
+
+        context.font = baseCharStyle._fontString;
+        if (CanvasTextMetrics.experimentalLetterSpacingSupported)
         {
-            if (segment.metric.width === 0)
+            context.letterSpacing = '0px';
+            context.textLetterSpacing = '0px';
+        }
+
+        let remainingLineText = group.line;
+        let previousRemainingWidth = context.measureText(remainingLineText).width;
+
+        group.chars.forEach((segment) =>
+        {
+            if (isNewlineCharacter(segment))
             {
-                return; // skip zero-width segments
+                return;
             }
 
-            if (isNewlineCharacter(segment.char))
-            {
-                xOffset += segment.metric.width - strokeWidth;
+            remainingLineText = remainingLineText.slice(segment.length);
+            const currentRemainingWidth = remainingLineText.length > 0
+                ? context.measureText(remainingLineText).width : 0;
+            const charAdvance = previousRemainingWidth - currentRemainingWidth;
 
-                return; // Skip newline characters
-            }
+            previousRemainingWidth = currentRemainingWidth;
 
-            if (segment.char === ' ')
+            if (charAdvance === 0) return;
+
+            if (segment === ' ')
             {
-                // Add current word container if it has content
                 if (currentWordContainer.children.length > 0)
                 {
                     wordContainers.push(currentWordContainer);
                     lineContainer.addChild(currentWordContainer);
                 }
 
-                // Start new word container
-                xOffset += segment.metric.width + textStyle.letterSpacing - strokeWidth;
+                xOffset += charAdvance + textStyle.letterSpacing;
                 currentWordContainer = new Container({ label: 'word' });
                 currentWordContainer.x = xOffset + trimOffsetX;
             }
             else
             {
-                // Create style for this character
                 let charStyle = baseCharStyle;
 
                 if (hasGradient)
                 {
                     charStyle = baseCharStyle.clone();
-                    // All gradients need offset to position correctly within split text
                     charStyle._gradientOffset = { x: -xOffset, y: -yOffset };
-                    // Local gradients also need full text bounds for proper scaling
-                    if (hasLocalGradient)
+                    if (gradientBounds)
                     {
-                        charStyle._gradientBounds = { width: fullTextWidth, height: fullTextHeight };
+                        charStyle._gradientBounds = gradientBounds;
                     }
                 }
 
-                // if there are existing characters, reuse them
                 let char: Text;
 
-                if (existingChars.length > 0)
+                if (existingCharIndex < existingChars.length)
                 {
-                    char = existingChars.shift();
+                    char = existingChars[existingCharIndex++];
 
-                    char.text = segment.char;
+                    char.text = segment;
                     char.style = charStyle;
                     char.setFromMatrix(Matrix.IDENTITY);
-                    char.x = xOffset - currentWordContainer.x + trimOffsetX - (dropShadowDistance * charIndex);
+                    char.x = xOffset - currentWordContainer.x + trimOffsetX;
                 }
                 else
                 {
                     char = new Text({
-                        text: segment.char,
+                        text: segment,
                         style: charStyle,
-                        x: xOffset - currentWordContainer.x + trimOffsetX - (dropShadowDistance * charIndex),
+                        x: xOffset - currentWordContainer.x + trimOffsetX,
                     });
                 }
 
                 chars.push(char);
                 currentWordContainer.addChild(char);
-                xOffset += segment.metric.width + textStyle.letterSpacing - strokeWidth;
+                xOffset += charAdvance + textStyle.letterSpacing;
             }
         });
 
@@ -292,6 +297,194 @@ export function canvasTextSplit(
         }
 
         yOffset += measuredText.lineHeight;
+    });
+
+    return { chars, lines: lineContainers, words: wordContainers };
+}
+
+function canvasTaggedTextSplitFromRuns(
+    measuredText: CanvasTextMetrics,
+    textStyle: TextStyle,
+    existingChars: Text[],
+    text: string,
+): TextSplitOutput<Text>
+{
+    const { runsByLine } = measuredText;
+    const alignment = textStyle.align;
+    const maxLineWidth = measuredText.lineWidths.reduce((max, line) => Math.max(max, line), 0);
+    const isSingleLine = measuredText.lines.length === 1;
+    const useWordWrapWidth = !isSingleLine && textStyle.wordWrap;
+    const alignWidth = useWordWrapWidth ? textStyle.wordWrapWidth : maxLineWidth;
+
+    let trimOffsetX = 0;
+    let trimOffsetY = 0;
+
+    if (textStyle.trim)
+    {
+        const { frame, canvasAndContext } = CanvasTextGenerator.getCanvasAndContext({
+            text,
+            style: textStyle,
+            resolution: 1,
+        });
+
+        CanvasTextGenerator.returnCanvasAndContext(canvasAndContext);
+        trimOffsetX = -frame.x;
+        trimOffsetY = -frame.y;
+    }
+
+    const chars: Text[] = [];
+    const lineContainers: Container[] = [];
+    const wordContainers: Container[] = [];
+    let yOffset = 0;
+    let existingCharIndex = 0;
+
+    runsByLine.forEach((lineRuns: TextStyleRun[], lineIndex: number) =>
+    {
+        const lineContainer = new Container({ label: `line-${lineIndex}` });
+
+        lineContainer.y = yOffset + trimOffsetY;
+        lineContainers.push(lineContainer);
+
+        const lineWidth = measuredText.lineWidths[lineIndex];
+        let xOffset = getAlignmentOffset(alignment, lineWidth, alignWidth);
+
+        let currentWordContainer = new Container({ label: 'word' });
+
+        currentWordContainer.x = xOffset + trimOffsetX;
+
+        for (const run of lineRuns)
+        {
+            const runStyle = run.style;
+
+            const fillGradient = runStyle._fill?.fill;
+            const strokeGradient = runStyle._stroke?.fill;
+            const hasFillGradient = fillGradient instanceof FillGradient;
+            const hasStrokeGradient = strokeGradient instanceof FillGradient;
+            const hasGradient = hasFillGradient || hasStrokeGradient;
+            const hasLocalGradient = (hasFillGradient && fillGradient.textureSpace === 'local')
+                || (hasStrokeGradient && strokeGradient.textureSpace === 'local');
+
+            const graphemes = CanvasTextMetrics.graphemeSegmenter(run.text);
+
+            const baseRunStyle = runStyle.clone();
+
+            baseRunStyle.align = 'left';
+            baseRunStyle.wordWrap = false;
+            if (baseRunStyle.trim) baseRunStyle.trim = false;
+            baseRunStyle.tagStyles = undefined;
+
+            // Use remaining-width technique for kerning-aware character positioning
+            const context = CanvasTextMetrics._context;
+
+            context.font = baseRunStyle._fontString;
+            if (CanvasTextMetrics.experimentalLetterSpacingSupported)
+            {
+                context.letterSpacing = '0px';
+                context.textLetterSpacing = '0px';
+            }
+
+            let remainingText = run.text;
+            let previousRemainingWidth = context.measureText(remainingText).width;
+            const runStartX = xOffset;
+            const runTextWidth = previousRemainingWidth;
+            const runFontProps = CanvasTextMetrics.measureFont(baseRunStyle._fontString);
+            const runHeight = runStyle.lineHeight || runFontProps.fontSize;
+            const runGradientBounds = hasLocalGradient
+                ? { width: runTextWidth, height: runHeight } : null;
+
+            for (const grapheme of graphemes)
+            {
+                remainingText = remainingText.slice(grapheme.length);
+                const currentRemainingWidth = remainingText.length > 0
+                    ? context.measureText(remainingText).width : 0;
+                const charAdvance = previousRemainingWidth - currentRemainingWidth;
+
+                previousRemainingWidth = currentRemainingWidth;
+
+                if (isNewlineCharacter(grapheme)) continue;
+                if (charAdvance === 0) continue;
+
+                if (grapheme === ' ')
+                {
+                    if (currentWordContainer.children.length > 0)
+                    {
+                        wordContainers.push(currentWordContainer);
+                        lineContainer.addChild(currentWordContainer);
+                    }
+                    xOffset += charAdvance + runStyle.letterSpacing;
+                    currentWordContainer = new Container({ label: 'word' });
+                    currentWordContainer.x = xOffset + trimOffsetX;
+                }
+                else
+                {
+                    let charStyle = baseRunStyle;
+
+                    if (hasGradient)
+                    {
+                        charStyle = baseRunStyle.clone();
+                        if (hasLocalGradient)
+                        {
+                            charStyle._gradientOffset = { x: -(xOffset - runStartX), y: 0 };
+                            charStyle._gradientBounds = runGradientBounds;
+                        }
+                        else
+                        {
+                            charStyle._gradientOffset = { x: -(xOffset - runStartX), y: 0 };
+                        }
+                    }
+
+                    let char: Text;
+
+                    if (existingCharIndex < existingChars.length)
+                    {
+                        char = existingChars[existingCharIndex++];
+                        char.text = grapheme;
+                        char.style = charStyle;
+                        char.setFromMatrix(Matrix.IDENTITY);
+                        char.x = xOffset - currentWordContainer.x + trimOffsetX;
+                    }
+                    else
+                    {
+                        char = new Text({
+                            text: grapheme,
+                            style: charStyle,
+                            x: xOffset - currentWordContainer.x + trimOffsetX,
+                        });
+                    }
+
+                    chars.push(char);
+                    currentWordContainer.addChild(char);
+                    xOffset += charAdvance + runStyle.letterSpacing;
+                }
+            }
+        }
+
+        if (currentWordContainer.children.length > 0)
+        {
+            wordContainers.push(currentWordContainer);
+            lineContainer.addChild(currentWordContainer);
+        }
+
+        // Justify: distribute extra space among word gaps
+        if (alignment === 'justify' && textStyle.wordWrap && lineIndex < runsByLine.length - 1)
+        {
+            const lineWords = lineContainer.children;
+            const wordGaps = lineWords.length - 1;
+
+            if (wordGaps > 0)
+            {
+                const extraPerGap = (alignWidth - lineWidth) / wordGaps;
+
+                for (let i = 1; i < lineWords.length; i++)
+                {
+                    lineWords[i].x += i * extraPerGap;
+                }
+            }
+        }
+
+        const lineHeight = measuredText.lineHeights?.[lineIndex] ?? measuredText.lineHeight;
+
+        yOffset += lineHeight;
     });
 
     return { chars, lines: lineContainers, words: wordContainers };
