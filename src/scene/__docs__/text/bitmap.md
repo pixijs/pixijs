@@ -91,6 +91,10 @@ text.resolution = 2;
 // ⚠️ [BitmapText] dynamically updating the resolution is not supported.
 ```
 
+### Missing glyphs
+
+If text contains characters that aren't in the bitmap font's atlas, those characters are skipped during layout and rendering. Text may appear incomplete but will not crash. To fix this, either add the missing characters to your bitmap font (e.g. via [AssetPack](https://pixijs.io/assetpack/)) or use `Text` / `HTMLText` for content with unpredictable character sets.
+
 ### Large character sets not practical
 
 Each character needs space in the atlas texture. For CJK, Arabic, or emoji-heavy content, the atlas can exceed GPU texture size limits or consume too much memory. For these cases, use `Text` (renders any character the browser supports) or `HTMLText` (supports emoji and RTL natively).

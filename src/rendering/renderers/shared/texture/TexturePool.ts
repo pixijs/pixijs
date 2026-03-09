@@ -139,10 +139,14 @@ export class TexturePoolClass
     }
 
     /**
-     * Gets extra texture of the same size as input renderTexture
-     * @param texture - The texture to check what size it is.
-     * @param antialias - Whether to use antialias.
-     * @returns A texture that is a power of two
+     * Gets a pooled texture matching the dimensions and resolution of the given texture.
+     *
+     * This is a convenience wrapper around {@link TexturePoolClass#getOptimalTexture|getOptimalTexture}
+     * that copies width, height, and resolution from an existing texture. Useful when a filter needs
+     * a temporary texture the same size as its input (e.g., for multi-pass blur).
+     * @param texture - The texture whose dimensions to match.
+     * @param antialias - Whether to use antialias on the pooled texture. Defaults to `false`.
+     * @returns A pooled texture with power-of-two backing dimensions at the source resolution.
      */
     public getSameSizeTexture(texture: Texture, antialias = false)
     {
@@ -152,10 +156,15 @@ export class TexturePoolClass
     }
 
     /**
-     * Place a render texture back into the pool. Optionally reset the style of the texture to the default texture style.
-     * useful if you modified the style of the texture after getting it from the pool.
-     * @param renderTexture - The renderTexture to free
-     * @param resetStyle - Whether to reset the style of the texture to the default texture style
+     * Returns a texture to the pool so it can be reused by future
+     * {@link TexturePoolClass#getOptimalTexture|getOptimalTexture}
+     * or {@link TexturePoolClass#getSameSizeTexture|getSameSizeTexture} calls.
+     *
+     * If you modified the texture's style after obtaining it (e.g., changed filtering or wrapping),
+     * pass `resetStyle = true` to restore the pool's default {@link TexturePoolClass#textureStyle|textureStyle}.
+     * This prevents style changes from leaking into subsequent consumers of the same pooled texture.
+     * @param renderTexture - The texture to return to the pool.
+     * @param resetStyle - When `true`, replaces the texture source's style with the pool default. Defaults to `false`.
      */
     public returnTexture(renderTexture: Texture, resetStyle = false): void
     {

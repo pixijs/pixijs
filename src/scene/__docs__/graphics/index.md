@@ -147,6 +147,7 @@ This means you can build, reuse, and transform `Graphics` objects freely without
 - **SVG and holes**: Not all SVG hole paths triangulate correctly.
 - **Changing geometry**: Use `.clear()` sparingly. Prefer swapping contexts.
 - **Transparency and blend modes**: These apply per primitive. Use `RenderTexture` to flatten effects.
+- **Empty Graphics bounds**: A `Graphics` object with no drawing instructions returns bounds of `(0, 0, 0, 0)`. This prevents `Infinity` values from contaminating parent container bounds calculations.
 
 ---
 

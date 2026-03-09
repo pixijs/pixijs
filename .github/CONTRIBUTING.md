@@ -65,7 +65,16 @@ Tips for a faster workflow:
 
 - Run `npm start` in one terminal. This watches the source tree and compiles it incrementally.
 - Run `npm run test unit` to run unit tests, or `npm run test visual` to run visual regression tests.
-- Run `npm run test unit debug` to use headful DevTools to debug or develop tests
+- Run `npm run test unit debug` to use headful DevTools to debug or develop tests.
+
+You can also run individual check categories:
+
+- `npm run test lint` — ESLint only
+- `npm run test types` — Type checking only
+- `npm run test unit` — Unit tests only
+- `npm run test visual` — Visual regression tests only
+
+For more details on the build and test pipeline, see [scripts/README.md](../scripts/README.md).
 
 #### Visual Regression Testing
 

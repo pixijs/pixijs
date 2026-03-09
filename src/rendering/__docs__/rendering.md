@@ -131,6 +131,16 @@ function render() {
 requestAnimationFrame(render);
 ```
 
+## Destroying renderers
+
+Call `destroy()` to clean up all GPU resources, systems, event listeners, and internal state:
+
+```ts
+renderer.destroy();
+```
+
+This removes all `EventEmitter` listeners attached to the renderer and nullifies internal systems and pipes. A destroyed renderer cannot be used for further rendering.
+
 ---
 
 ## API reference
