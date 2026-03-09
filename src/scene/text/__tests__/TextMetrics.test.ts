@@ -709,7 +709,7 @@ describe('CanvasTextMetrics', () =>
                 fontVariant: 'normal',
                 fontWeight: '900',
                 wordWrap: true,
-                wordWrapWidth: 300,
+                wordWrapWidth: 301,
                 letterSpacing: 4,
                 padding: 10,
                 fill: 0xffffff,
@@ -717,7 +717,7 @@ describe('CanvasTextMetrics', () =>
                 whiteSpace: 'pre-line',
             });
 
-            const str = '-------0000,1111,9999------';
+            const str = '=======0000,1111,9999======';
             const reg = /^\d+$/;
 
             CanvasTextMetrics.canBreakWords = () =>
@@ -729,8 +729,8 @@ describe('CanvasTextMetrics', () =>
 
             const metrics = CanvasTextMetrics.measureText(str, style);
 
-            expect(metrics.lines[0]).toEqual('-------0000,1111,');
-            expect(metrics.lines[1]).toEqual('9999------');
+            expect(metrics.lines[0]).toEqual('=======0000,1111,');
+            expect(metrics.lines[1]).toEqual('9999======');
         });
     });
 

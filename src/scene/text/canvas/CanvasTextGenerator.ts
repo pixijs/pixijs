@@ -13,6 +13,18 @@ import { getCanvasFillStyle } from './utils/getCanvasFillStyle';
  */
 const tempRect = new Rectangle();
 
+function countSpaces(text: string): number
+{
+    let count = 0;
+
+    for (let i = 0; i < text.length; i++)
+    {
+        if (text.charCodeAt(i) === 32) count++;
+    }
+
+    return count;
+}
+
 /**
  * Utility for generating and managing canvas-based text rendering.
  *
@@ -243,6 +255,18 @@ class CanvasTextGeneratorClass
 
                 linePositionX += this._getAlignmentOffset(lineWidths[j], alignWidth, style.align);
 
+                let wordSpacing = 0;
+
+                if (style.align === 'justify' && style.wordWrap && j < lines.length - 1)
+                {
+                    const spaces = countSpaces(lines[j]);
+
+                    if (spaces > 0)
+                    {
+                        wordSpacing = (alignWidth - lineWidths[j]) / spaces;
+                    }
+                }
+
                 if (style._stroke?.width)
                 {
                     this._drawLetterSpacing(
@@ -251,7 +275,8 @@ class CanvasTextGeneratorClass
                         canvasAndContext,
                         linePositionX + padding,
                         linePositionY + padding - dsOffsetText,
-                        true
+                        true,
+                        wordSpacing
                     );
                 }
 
@@ -262,7 +287,9 @@ class CanvasTextGeneratorClass
                         style,
                         canvasAndContext,
                         linePositionX + padding,
-                        linePositionY + padding - dsOffsetText
+                        linePositionY + padding - dsOffsetText,
+                        false,
+                        wordSpacing
                     );
                 }
             }
@@ -350,6 +377,23 @@ class CanvasTextGeneratorClass
 
                 linePositionX += this._getAlignmentOffset(lineWidth, alignWidth, style.align);
 
+                let wordSpacing = 0;
+
+                if (style.align === 'justify' && style.wordWrap && lineIndex < runsByLine.length - 1)
+                {
+                    let totalSpaces = 0;
+
+                    for (const run of lineRuns)
+                    {
+                        totalSpaces += countSpaces(run.text);
+                    }
+
+                    if (totalSpaces > 0)
+                    {
+                        wordSpacing = (alignWidth - lineWidth) / totalSpaces;
+                    }
+                }
+
                 // Calculate Y position - use line ascent for proper baseline
                 const linePositionY = currentY + lineAscent;
 
@@ -391,7 +435,9 @@ class CanvasTextGeneratorClass
                             else
                             {
                                 // No shadow for this run, skip drawing
-                                runX += runWidth;
+                                const spacesSkipped = countSpaces(run.text);
+
+                                runX += runWidth + (spacesSkipped * wordSpacing);
                                 continue;
                             }
                         }
@@ -423,11 +469,14 @@ class CanvasTextGeneratorClass
                             canvasAndContext,
                             runX,
                             linePositionY + padding - dsOffsetText,
-                            true
+                            true,
+                            wordSpacing
                         );
                     }
 
-                    runX += runWidth;
+                    const spacesInRun = countSpaces(run.text);
+
+                    runX += runWidth + (spacesInRun * wordSpacing);
                 }
 
                 // Reset X position for fill pass
@@ -460,7 +509,9 @@ class CanvasTextGeneratorClass
                             else
                             {
                                 // No shadow for this run, skip drawing
-                                runX += runWidth;
+                                const spacesSkipped = countSpaces(run.text);
+
+                                runX += runWidth + (spacesSkipped * wordSpacing);
                                 continue;
                             }
                         }
@@ -492,11 +543,14 @@ class CanvasTextGeneratorClass
                             canvasAndContext,
                             runX,
                             linePositionY + padding - dsOffsetText,
-                            false
+                            false,
+                            wordSpacing
                         );
                     }
 
-                    runX += runWidth;
+                    const spacesInFillRun = countSpaces(run.text);
+
+                    runX += runWidth + (spacesInFillRun * wordSpacing);
                 }
 
                 currentY += currentLineHeight;
@@ -611,6 +665,7 @@ class CanvasTextGeneratorClass
      * @param x - Horizontal position to draw the text
      * @param y - Vertical position to draw the text
      * @param isStroke - Whether to render the stroke (true) or fill (false)
+     * @param wordSpacing - Extra spacing to add between words (for justify alignment)
      * @private
      */
     private _drawLetterSpacing(
@@ -618,7 +673,8 @@ class CanvasTextGeneratorClass
         style: TextStyle,
         canvasAndContext: CanvasAndContext,
         x: number, y: number,
-        isStroke = false
+        isStroke = false,
+        wordSpacing = 0
     ): void
     {
         const { context } = canvasAndContext;
@@ -643,7 +699,7 @@ class CanvasTextGeneratorClass
             }
         }
 
-        if (letterSpacing === 0 || useExperimentalLetterSpacing)
+        if ((letterSpacing === 0 || useExperimentalLetterSpacing) && wordSpacing === 0)
         {
             if (isStroke)
             {
@@ -652,6 +708,29 @@ class CanvasTextGeneratorClass
             else
             {
                 context.fillText(text, x, y);
+            }
+
+            return;
+        }
+
+        if (wordSpacing !== 0 && (letterSpacing === 0 || useExperimentalLetterSpacing))
+        {
+            const words = text.split(' ');
+            let currentPosition = x;
+            const spaceWidth = context.measureText(' ').width;
+
+            for (let i = 0; i < words.length; i++)
+            {
+                if (isStroke)
+                {
+                    context.strokeText(words[i], currentPosition, y);
+                }
+                else
+                {
+                    context.fillText(words[i], currentPosition, y);
+                }
+
+                currentPosition += context.measureText(words[i]).width + spaceWidth + wordSpacing;
             }
 
             return;
@@ -683,6 +762,7 @@ class CanvasTextGeneratorClass
             }
             currentWidth = context.measureText(textStr).width;
             currentPosition += previousWidth - currentWidth + letterSpacing;
+            if (currentChar === ' ') currentPosition += wordSpacing;
             previousWidth = currentWidth;
         }
     }

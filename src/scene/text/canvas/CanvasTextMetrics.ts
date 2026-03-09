@@ -447,7 +447,7 @@ export class CanvasTextMetrics
      */
     private static _getAlignWidth(maxLineWidth: number, style: TextStyle, wordWrapEnabled: boolean): number
     {
-        const useWrapWidth = wordWrapEnabled && style.align !== 'left' && style.align !== 'justify';
+        const useWrapWidth = wordWrapEnabled && style.align !== 'left';
 
         return useWrapWidth ? Math.max(maxLineWidth, style.wordWrapWidth) : maxLineWidth;
     }

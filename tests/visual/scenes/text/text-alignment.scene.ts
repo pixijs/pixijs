@@ -35,7 +35,7 @@ export const scene: TestScene = {
 
             // Create text with alignment
             const text = new Text({
-                text: 'Hello world test alignment',
+                text: 'Hello world test alignment test alignment',
                 style: {
                     fontFamily: 'Outfit',
                     fontSize: 24,

@@ -235,7 +235,7 @@ export function measureTaggedText(
     const strokeWidth = style._stroke?.width || 0;
 
     // Calculate base width - use wordWrapWidth for non-left alignment when wrapping
-    const useWrapWidth = wordWrap && style.align !== 'left' && style.align !== 'justify';
+    const useWrapWidth = wordWrap && style.align !== 'left';
     const alignWidth = useWrapWidth ? Math.max(maxLineWidth, style.wordWrapWidth) : maxLineWidth;
     const width = alignWidth + strokeWidth + (style.dropShadow ? style.dropShadow.distance : 0);
 

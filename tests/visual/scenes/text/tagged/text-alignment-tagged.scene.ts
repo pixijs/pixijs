@@ -35,7 +35,7 @@ export const scene: TestScene = {
 
             // Create text with alignment using tagged styles
             const text = new Text({
-                text: '<bold>Hello</bold> <normal>world</normal> <italic>test</italic> alignment',
+                text: '<bold>Hello</bold> <normal>world</normal> <italic>test</italic> alignment test alignment',
                 style: {
                     fontFamily: 'Outfit',
                     fontSize: 24,
