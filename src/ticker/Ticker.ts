@@ -743,7 +743,10 @@ export class Ticker
      * but does not effect the measured value of {@link Ticker#FPS|FPS}.
      *
      * When setting this property it is clamped to a value between
-     * `0` and `Ticker.targetFPMS * 1000`.
+     * `0` and `Ticker.targetFPMS * 1000` (typically 60).
+     *
+     * If `maxFPS` is currently set (non-zero) and `minFPS` is set above it,
+     * `maxFPS` is automatically raised to match. This keeps the two limits consistent.
      * @example
      * ```ts
      * // Set minimum acceptable frame rate
@@ -754,11 +757,8 @@ export class Ticker
      * ticker.minFPS = 30;
      * ticker.maxFPS = 60;
      *
-     * // Monitor delta capping
-     * ticker.add(() => {
-     *     // Delta time will be capped based on minFPS
-     *     console.log(`Delta time: ${ticker.deltaTime}`);
-     * });
+     * // minFPS above maxFPS pushes maxFPS up
+     * ticker.minFPS = 50; // maxFPS is raised to 50
      * ```
      * @default 10
      */
@@ -788,22 +788,22 @@ export class Ticker
      * This will effect the measured value of {@link Ticker#FPS|FPS}.
      *
      * If it is set to `0`, then there is no limit; PixiJS will render as many frames as it can.
-     * Otherwise it will be at least `minFPS`
+     * Otherwise it will be at least `minFPS`.
+     *
+     * If `maxFPS` is set below the current `minFPS`, `minFPS` is automatically lowered to match.
+     * This keeps the two limits consistent.
      * @example
      * ```ts
-     * // Set minimum acceptable frame rate
+     * // Cap the frame rate
      * const ticker = new Ticker();
      * ticker.maxFPS = 60; // Never go above 60 FPS
      *
-     * // Use with maxFPS for frame rate clamping
+     * // Use with minFPS for frame rate clamping
      * ticker.minFPS = 30;
      * ticker.maxFPS = 60;
      *
-     * // Monitor delta capping
-     * ticker.add(() => {
-     *     // Delta time will be capped based on maxFPS
-     *     console.log(`Delta time: ${ticker.deltaTime}`);
-     * });
+     * // maxFPS below minFPS pushes minFPS down
+     * ticker.maxFPS = 20; // minFPS is now also 20
      * ```
      * @default 0
      */

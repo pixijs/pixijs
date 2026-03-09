@@ -136,12 +136,16 @@ export interface ChildrenHelperMixin<C = ContainerChild>
     /**
      * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown.
      * If the child is already in this container, it will be moved to the specified index.
+     *
+     * When moving a child within the **same** container, `childAdded` and `added` events are
+     * **not** emitted because the parent-child relationship hasn't changed. Events only fire when
+     * a child is added from a different parent (or from no parent).
      * @example
      * ```ts
      * // Add at specific index
      * container.addChildAt(sprite, 0); // Add to front
      *
-     * // Move existing child
+     * // Move existing child (no events emitted)
      * const index = container.children.length - 1;
      * container.addChildAt(existingChild, index); // Move to back
      *

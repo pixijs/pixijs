@@ -77,6 +77,23 @@ const myText = new Text({
 myText.resolution = 1; // Reset to default
 ```
 
+## Mipmaps
+
+Set `autoGenerateMipmaps` to improve rendering quality when text is scaled down. Without mipmaps, downscaled text can appear noisy or shimmer during animation.
+
+```ts
+const text = new Text({
+    text: 'Smooth when small',
+    style: { fontSize: 48 },
+    autoGenerateMipmaps: true,
+});
+```
+
+When enabled, the text texture is allocated from a separate mipmap-enabled pool, so it won't interfere with non-mipmapped textures used by filters or other systems.
+
+> [!NOTE]
+> `HTMLText` also supports `autoGenerateMipmaps` with the same behavior.
+
 ## Font loading
 
 PixiJS loads custom fonts via the `Assets` API. Supported formats:

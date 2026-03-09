@@ -98,6 +98,9 @@ PixiJS supports pointer, mouse, and touch event types. Pointer events are recomm
 | `tap` | Touch tap on the object. |
 | `globaltouchmove` | Fires on every touch move, regardless of hit target. |
 
+> [!NOTE]
+> Touch events include modifier key states (`altKey`, `ctrlKey`, `metaKey`, `shiftKey`). These are copied from the native `TouchEvent` to each touch object during normalization, so you can check modifier keys the same way you would with mouse or pointer events.
+
 ### Global move events
 
 > [!IMPORTANT]

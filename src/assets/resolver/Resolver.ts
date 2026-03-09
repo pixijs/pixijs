@@ -318,11 +318,30 @@ export class Resolver
     }
 
     /**
-     * Removes the specified alias for an asset
+     * Removes the specified alias for an asset.
      *
-     * This does not remove or destroy the asset!
+     * This only removes the alias mapping. It does **not** remove, unload, or destroy the
+     * underlying asset. If the asset is already cached, it stays in memory until you call
+     * `Assets.unload`.
+     *
+     * If `asset` is provided, the alias is only removed when the resolver's current mapping for
+     * that alias matches the given `ResolvedAsset`. This lets you avoid accidentally removing an
+     * alias that has been reassigned.
+     *
+     * Silently returns if the alias does not exist or the asset does not match.
      * @param alias - the alias to remove
-     * @param asset - only remove the alias if it is assigned to the asset
+     * @param asset - only remove the alias if it is currently assigned to this asset
+     * @example
+     * ```ts
+     * resolver.add({ alias: 'hero', src: 'hero.png' });
+     *
+     * // Simple removal
+     * resolver.removeAlias('hero');
+     *
+     * // Conditional removal — only if alias currently maps to a specific asset
+     * const resolved = resolver.resolve('hero');
+     * resolver.removeAlias('hero', resolved);
+     * ```
      */
     public removeAlias(alias: string, asset?: ResolvedAsset): void
     {
