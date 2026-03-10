@@ -141,6 +141,76 @@ describe('BitmapFont', () =>
             expect(font.chars.a.texture.frame.y).toBe(20);
         });
 
+        it('should support numeric char code strings as keys in data.chars', () =>
+        {
+            const texture = new Texture({ frame: new Rectangle(0, 0, 100, 100) });
+            const font = new BitmapFont({
+                textures: [texture],
+                data: {
+                    baseLineOffset: 0,
+                    chars: {
+                        // '65' is the char code for 'A' - as shown in the documentation
+                        '65': {
+                            id: 65,
+                            page: 0,
+                            x: 0,
+                            y: 0,
+                            width: 32,
+                            height: 32,
+                            letter: 'A',
+                            xOffset: 0,
+                            yOffset: 0,
+                            kerning: {},
+                            xAdvance: 32,
+                        },
+                    },
+                    pages: [{ id: 0, file: '' }],
+                    lineHeight: 36,
+                    fontSize: 32,
+                    fontFamily: 'TestFont',
+                }
+            });
+
+            // The char should be accessible via the actual character 'A', not the char code '65'
+            expect(font.chars['A']).toBeDefined();
+            expect(font.chars['A'].id).toBe(65);
+            expect(font.chars['65']).toBeUndefined();
+        });
+
+        it('should support numeric char code strings as keys without the letter field', () =>
+        {
+            const texture = new Texture({ frame: new Rectangle(0, 0, 100, 100) });
+            const font = new BitmapFont({
+                textures: [texture],
+                data: {
+                    baseLineOffset: 0,
+                    chars: {
+                        // '65' is the char code for 'A', no letter field provided
+                        '65': {
+                            id: 65,
+                            page: 0,
+                            x: 0,
+                            y: 0,
+                            width: 32,
+                            height: 32,
+                            xOffset: 0,
+                            yOffset: 0,
+                            kerning: {},
+                            xAdvance: 32,
+                        } as any,
+                    },
+                    pages: [{ id: 0, file: '' }],
+                    lineHeight: 36,
+                    fontSize: 32,
+                    fontFamily: 'TestFont',
+                }
+            });
+
+            // Should fall back to converting the numeric key to a character
+            expect(font.chars['A']).toBeDefined();
+            expect(font.chars['A'].id).toBe(65);
+        });
+
         it('should orient the texture in the BitmapFont', () =>
         {
             const frame = new Rectangle(10, 20, 100, 100);

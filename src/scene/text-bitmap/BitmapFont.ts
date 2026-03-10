@@ -20,7 +20,7 @@ import type { BitmapFontInstallOptions } from './BitmapFontManager';
  *     data: {
  *         pages: [{ id: 0, file: 'font.png' }],
  *         chars: {
- *             '65': { // 'A'
+ *             'A': {
  *                 id: 65,
  *                 page: 0,
  *                 x: 0,
@@ -82,7 +82,7 @@ export interface BitmapFontOptions
  *     data: {
  *         pages: [{ id: 0, file: 'font.png' }],
  *         chars: {
- *             '65': { // 'A'
+ *             'A': {
  *                 id: 65,
  *                 page: 0,
  *                 x: 0,
@@ -154,6 +154,16 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
         Object.keys(data.chars).forEach((key: string) =>
         {
             const charData = data.chars[key];
+
+            // Determine the actual character to use as the key.
+            // Support both the actual character (e.g. 'A') and numeric char code strings (e.g. '65').
+            // The `letter` field takes priority. For multi-character numeric strings without a `letter`,
+            // treat the key as a Unicode code point and convert to the actual character.
+            // Single-digit numeric strings (e.g. '5') are left as-is, since they represent the digit
+            // character itself rather than a char code (char codes 0-9 are non-printable control characters
+            // that would never be used as font glyphs).
+            const charKey = charData.letter
+                || (/^\d+$/.test(key) && key.length > 1 ? String.fromCodePoint(parseInt(key, 10)) : key);
             const {
                 frame: textureFrame,
                 source: textureSource,
@@ -175,8 +185,8 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
                 rotate: textureRotate,
             });
 
-            this.chars[key] = {
-                id: key.codePointAt(0),
+            this.chars[charKey] = {
+                id: charKey.codePointAt(0),
                 xOffset: charData.xOffset,
                 yOffset: charData.yOffset,
                 xAdvance: charData.xAdvance,
