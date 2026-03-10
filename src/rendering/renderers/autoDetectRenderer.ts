@@ -7,6 +7,9 @@ import type { WebGLOptions } from './gl/WebGLRenderer';
 import type { WebGPUOptions } from './gpu/WebGPURenderer';
 import type { Renderer, RendererOptions } from './types';
 
+/** A renderer type string for specifying renderer preference. */
+export type RendererPreference = 'webgl' | 'webgpu' | 'canvas';
+
 /**
  * Options for {@link autoDetectRenderer}.
  * @category rendering
@@ -14,8 +17,16 @@ import type { Renderer, RendererOptions } from './types';
  */
 export interface AutoDetectOptions extends RendererOptions
 {
-    /** The preferred renderer type. WebGPU is recommended as its generally faster than WebGL. */
-    preference?: 'webgl' | 'webgpu' | 'canvas';
+    /**
+     * The preferred renderer type(s).
+     *
+     * - When a **string** is provided (e.g. `'webgpu'`), that renderer is tried first and
+     *   the remaining renderers are used as fallbacks in the default priority order.
+     * - When an **array** is provided (e.g. `['webgpu', 'webgl']`), only the listed
+     *   renderers are tried, in the given order. Any renderer type **not** in the array
+     *   is excluded entirely — this can be used as a blocklist.
+     */
+    preference?: RendererPreference | RendererPreference[];
     /** Optional WebGPUOptions to pass only to WebGPU renderer. */
     webgpu?: Partial<WebGPUOptions>;
     /** Optional WebGLOptions to pass only to the WebGL renderer */
@@ -60,6 +71,11 @@ const renderPriority = ['webgl', 'webgpu', 'canvas'];
  *     backgroundColor: 'green'
  *   }
  *  });
+ *
+ * // only allow webgl and canvas (exclude webgpu entirely)
+ * const renderer = await autoDetectRenderer({
+ *   preference: ['webgl', 'canvas'],
+ * });
  * @param options - A partial configuration object based on the `AutoDetectOptions` type.
  * @returns A Promise that resolves to an instance of the selected renderer.
  * @category rendering
@@ -71,15 +87,24 @@ export async function autoDetectRenderer(options: Partial<AutoDetectOptions>): P
 
     if (options.preference)
     {
-        preferredOrder.push(options.preference);
-
-        renderPriority.forEach((item) =>
+        if (Array.isArray(options.preference))
         {
-            if (item !== options.preference)
+            // When an array is provided, use only those renderers in that order.
+            preferredOrder = options.preference.slice();
+        }
+        else
+        {
+            // When a single string is provided, try it first then fall back to the rest.
+            preferredOrder.push(options.preference);
+
+            renderPriority.forEach((item) =>
             {
-                preferredOrder.push(item);
-            }
-        });
+                if (item !== options.preference)
+                {
+                    preferredOrder.push(item);
+                }
+            });
+        }
     }
     else
     {
