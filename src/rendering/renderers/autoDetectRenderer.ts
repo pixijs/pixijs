@@ -7,7 +7,10 @@ import type { WebGLOptions } from './gl/WebGLRenderer';
 import type { WebGPUOptions } from './gpu/WebGPURenderer';
 import type { Renderer, RendererOptions } from './types';
 
-/** A renderer type string for specifying renderer preference. */
+/**
+ * A renderer type string for specifying renderer preference.
+ * @standard 
+ */
 export type RendererPreference = 'webgl' | 'webgpu' | 'canvas';
 
 /**
