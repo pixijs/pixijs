@@ -9,7 +9,8 @@ import type { Renderer, RendererOptions } from './types';
 
 /**
  * A renderer type string for specifying renderer preference.
- * @standard 
+ * @category rendering
+ * @standard
  */
 export type RendererPreference = 'webgl' | 'webgpu' | 'canvas';
 
