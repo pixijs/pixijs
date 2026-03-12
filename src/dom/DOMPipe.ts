@@ -12,14 +12,12 @@ import type { Renderer } from '../rendering/renderers/types';
  * @remarks
  * Keys map to {@link CSSStyleDeclaration} properties.
  * @category - Optional
- * @internal
  */
 export type DOMPipeStyleOptions = Partial<Record<keyof CSSStyleDeclaration, string | number>>;
 
 /**
  * Options for configuring the DOM wrapper element used by {@link DOMPipe}.
  * @category - Optional
- * @internal
  */
 export interface DOMPipeWrapperOptions
 {
@@ -34,7 +32,6 @@ export interface DOMPipeWrapperOptions
 /**
  * Options for the DOM render pipe.
  * @category - Optional
- * @internal
  */
 export interface DOMPipeOptions
 {
@@ -96,18 +93,9 @@ export class DOMPipe implements RenderPipe<DOMContainer>
     }
 
     /** Initializes the DOMPipe, setting up the main DOM element and adding it to the document body. */
-    public init(): void
+    public init(options?: { dom?: DOMPipeOptions }): void
     {
-        // `renderer.options` (public) is the canonical home for all init options once
-        // the renderer has finished initialising. `_initOptions` is an internal field
-        // that exists in some versions but does not always carry top-level keys like
-        // `dom` through to pipes. Checking both makes the lookup resilient.
-        const rendererAsAny = this._renderer as any;
-        const domPipeOptions: DOMPipeOptions | undefined
-            = rendererAsAny.options?.dom        // primary: public renderer options
-            ?? rendererAsAny._initOptions?.dom; // fallback: internal pre-init options
-
-        this._applyWrapperOptions(domPipeOptions?.wrapper);
+        this._applyWrapperOptions(options?.dom?.wrapper);
 
         // Initialize the CanvasTransformSync to keep the DOM element in sync with the canvas
         this._canvasObserver = new CanvasObserver({
