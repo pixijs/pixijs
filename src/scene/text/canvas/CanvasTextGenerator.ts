@@ -189,8 +189,9 @@ class CanvasTextGeneratorClass
         // text, but instead drawing text in the correct location, we'll draw it off screen (-paddingY), and then adjust the
         // drop shadow so only that appears on screen (+paddingY). Now we'll have the correct draw order of the shadow
         // beneath the text, whilst also having the proper text shadow styling.
-        // Calculate alignment width - use wordWrapWidth when wrapping with non-left align
-        const alignWidth = style.wordWrap ? style.wordWrapWidth : maxLineWidth;
+        // Calculate alignment width - use the larger of wordWrapWidth and maxLineWidth
+        // when wrapping, so lines wider than wordWrapWidth still center correctly
+        const alignWidth = style.wordWrap ? Math.max(style.wordWrapWidth, maxLineWidth) : maxLineWidth;
         const strokeWidth = style._stroke?.width ?? 0;
         const halfStroke = strokeWidth / 2;
 
@@ -324,8 +325,9 @@ class CanvasTextGeneratorClass
         // require 2 passes if a shadow; the first to draw the drop shadow, the second to draw the text
         const passesCount = hasDropShadow ? 2 : 1;
 
-        // Calculate alignment width - use wordWrapWidth when wrapping with non-left align
-        const alignWidth = style.wordWrap ? style.wordWrapWidth : maxLineWidth;
+        // Calculate alignment width - use the larger of wordWrapWidth and maxLineWidth
+        // when wrapping, so lines wider than wordWrapWidth still center correctly
+        const alignWidth = style.wordWrap ? Math.max(style.wordWrapWidth, maxLineWidth) : maxLineWidth;
         let maxStrokeWidth = style._stroke?.width ?? 0;
 
         for (const lineRuns of runsByLine)
