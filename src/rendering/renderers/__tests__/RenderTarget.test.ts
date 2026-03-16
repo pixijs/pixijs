@@ -3,6 +3,7 @@ import { isRenderingToScreen } from '../shared/renderTarget/isRenderingToScreen'
 import { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import { RenderTexture } from '../shared/texture/RenderTexture';
 import { CanvasSource } from '../shared/texture/sources/CanvasSource';
+import { TextureSource } from '../shared/texture/sources/TextureSource';
 import { Texture } from '../shared/texture/Texture';
 import { getWebGLRenderer } from '@test-utils';
 import { DOMAdapter } from '~/environment';
@@ -142,5 +143,125 @@ describe('isRenderingToScreen', () =>
         renderTarget.destroy();
 
         expect(renderTexture.source.destroyed).toBe(false);
+    });
+});
+
+describe('Depth-only RenderTarget', () =>
+{
+    it('should create a depth-only target with colorTextures: 0', () =>
+    {
+        const renderTarget = new RenderTarget({
+            width: 512,
+            height: 512,
+            colorTextures: 0,
+            depth: true,
+        });
+
+        expect(renderTarget.colorTextures.length).toBe(0);
+        expect(renderTarget.colorTexture).toBeUndefined();
+        expect(renderTarget.depthStencilTexture).toBeInstanceOf(TextureSource);
+        expect(renderTarget.width).toBe(512);
+        expect(renderTarget.height).toBe(512);
+        expect(renderTarget.pixelWidth).toBe(512);
+        expect(renderTarget.pixelHeight).toBe(512);
+        expect(renderTarget.resolution).toBe(1);
+    });
+
+    it('should throw when colorTextures: 0 and no depth texture provided', () =>
+    {
+        expect(() => new RenderTarget({
+            width: 256,
+            height: 256,
+            colorTextures: 0,
+        })).toThrow('[RenderTarget]');
+    });
+
+    it('should accept a custom depth texture source', () =>
+    {
+        const depthSource = new TextureSource({
+            width: 1024,
+            height: 1024,
+            format: 'depth24plus',
+        });
+
+        const renderTarget = new RenderTarget({
+            colorTextures: 0,
+            depthStencilTexture: depthSource,
+        });
+
+        expect(renderTarget.depthStencilTexture).toBe(depthSource);
+        expect(renderTarget.width).toBe(1024);
+        expect(renderTarget.height).toBe(1024);
+    });
+
+    it('should resize via depth texture for depth-only targets', () =>
+    {
+        const renderTarget = new RenderTarget({
+            width: 128,
+            height: 128,
+            colorTextures: 0,
+            depth: true,
+        });
+
+        renderTarget.resize(256, 256);
+
+        expect(renderTarget.width).toBe(256);
+        expect(renderTarget.height).toBe(256);
+        expect(renderTarget.depthStencilTexture.width).toBe(256);
+        expect(renderTarget.depthStencilTexture.height).toBe(256);
+    });
+
+    it('should report isRenderingToScreen as false', () =>
+    {
+        const renderTarget = new RenderTarget({
+            width: 64,
+            height: 64,
+            colorTextures: 0,
+            depth: true,
+        });
+
+        expect(isRenderingToScreen(renderTarget)).toBe(false);
+    });
+
+    it('should destroy cleanly', () =>
+    {
+        const renderTarget = new RenderTarget({
+            width: 64,
+            height: 64,
+            colorTextures: 0,
+            depth: true,
+        });
+
+        expect(() => renderTarget.destroy()).not.toThrow();
+        expect(renderTarget.depthStencilTexture).toBeUndefined();
+    });
+
+    it('should still create a normal target with colorTextures: 1 (default)', () =>
+    {
+        const renderTarget = new RenderTarget({
+            width: 100,
+            height: 100,
+        });
+
+        expect(renderTarget.colorTextures.length).toBe(1);
+        expect(renderTarget.colorTexture).toBeInstanceOf(TextureSource);
+        expect(renderTarget.width).toBe(100);
+        expect(renderTarget.height).toBe(100);
+    });
+
+    it('should bind a depth-only target in WebGL', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        const renderTarget = new RenderTarget({
+            width: 256,
+            height: 256,
+            colorTextures: 0,
+            depth: true,
+        });
+
+        expect(() => renderer.renderTarget.bind(renderTarget, true)).not.toThrow();
+
+        renderTarget.destroy();
     });
 });

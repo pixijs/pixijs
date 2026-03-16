@@ -122,12 +122,9 @@ export class RenderTarget
             this.resize(colorSource.width, colorSource.height, colorSource._resolution);
         }
 
-        // the first color texture drives the size of all others..
-        this.colorTexture.source.on('resize', this.onSourceResize, this);
-
         // TODO should listen for texture destroyed?
 
-        if (descriptor.depthStencilTexture || this.stencil)
+        if (descriptor.depthStencilTexture || this.stencil || this.depth)
         {
             // TODO add a test
             if (descriptor.depthStencilTexture instanceof Texture
@@ -137,9 +134,17 @@ export class RenderTarget
             }
             else
             {
-                this.ensureDepthStencilTexture();
+                this._createDepthStencilTexture(descriptor.width, descriptor.height, descriptor.resolution);
             }
         }
+
+        if (this.colorTextures.length === 0 && !this.depthStencilTexture)
+        {
+            throw new Error('[RenderTarget] no color textures or depth textures were provided. '
+                + 'Provide a depthStencilTexture or set depth/stencil to true when using colorTextures: 0.');
+        }
+
+        this.sizeSource.on('resize', this.onSourceResize, this);
     }
 
     get size(): [number, number]
@@ -154,31 +159,40 @@ export class RenderTarget
 
     get width(): number
     {
-        return this.colorTexture.source.width;
+        return this.sizeSource.width;
     }
 
     get height(): number
     {
-        return this.colorTexture.source.height;
+        return this.sizeSource.height;
     }
     get pixelWidth(): number
     {
-        return this.colorTexture.source.pixelWidth;
+        return this.sizeSource.pixelWidth;
     }
 
     get pixelHeight(): number
     {
-        return this.colorTexture.source.pixelHeight;
+        return this.sizeSource.pixelHeight;
     }
 
     get resolution(): number
     {
-        return this.colorTexture.source._resolution;
+        return this.sizeSource._resolution;
     }
 
     get colorTexture(): TextureSource
     {
         return this.colorTextures[0];
+    }
+
+    /**
+     * The texture that drives size, resolution, and resize events.
+     * For standard targets this is `colorTextures[0]`; for depth-only targets it is `depthStencilTexture`.
+     */
+    get sizeSource(): TextureSource
+    {
+        return this.colorTextures[0] ?? this.depthStencilTexture;
     }
 
     protected onSourceResize(source: TextureSource)
@@ -193,19 +207,7 @@ export class RenderTarget
      */
     public ensureDepthStencilTexture()
     {
-        if (!this.depthStencilTexture)
-        {
-            this.depthStencilTexture = new TextureSource({
-                width: this.width,
-                height: this.height,
-                resolution: this.resolution,
-                format: 'depth24plus-stencil8',
-                autoGenerateMipmaps: false,
-                antialias: false,
-                mipLevelCount: 1,
-                // sampleCount: handled by the render target system..
-            });
-        }
+        this._createDepthStencilTexture(this.sizeSource.width, this.sizeSource.height, this.sizeSource._resolution);
     }
 
     public resize(width: number, height: number, resolution = this.resolution, skipColorTexture = false)
@@ -221,13 +223,17 @@ export class RenderTarget
 
         if (this.depthStencilTexture)
         {
+            // For depth-only targets the depth texture IS the size source, so skip
+            // when this resize was triggered by the size source's own resize event.
+            if (skipColorTexture && this.colorTextures.length === 0) return;
+
             this.depthStencilTexture.source.resize(width, height, resolution);
         }
     }
 
     public destroy()
     {
-        this.colorTexture.source.off('resize', this.onSourceResize, this);
+        this.sizeSource.off('resize', this.onSourceResize, this);
 
         if (this._managedColorTextures)
         {
@@ -242,5 +248,21 @@ export class RenderTarget
             this.depthStencilTexture.destroy();
             delete this.depthStencilTexture;
         }
+    }
+
+    private _createDepthStencilTexture(width: number, height: number, resolution: number)
+    {
+        if (this.depthStencilTexture) return;
+
+        this.depthStencilTexture = new TextureSource({
+            width,
+            height,
+            resolution,
+            format: 'depth24plus-stencil8',
+            autoGenerateMipmaps: false,
+            antialias: false,
+            mipLevelCount: 1,
+            // sampleCount: handled by the render target system..
+        });
     }
 }
