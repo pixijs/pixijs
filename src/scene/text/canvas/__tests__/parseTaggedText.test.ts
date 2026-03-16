@@ -198,6 +198,42 @@ describe('parseTaggedText', () =>
             expect(runs[2].text).toBe('Two');
         });
 
+        it('should handle several < characters in tagged text', () =>
+        {
+            const style = new TextStyle({
+                fontSize: 24,
+                tagStyles: {
+                    red: { fill: 'red' },
+                    green: { fill: 'green' },
+                    blue: { fill: 'blue' }
+                }
+            });
+            const runs = parseTaggedText('<red>One </red><green> < < < </green><blue>Two</blue>', style);
+
+            expect(runs.length).toBe(3);
+            expect(runs[0].text).toBe('One ');
+            expect(runs[1].text).toBe(' < < < ');
+            expect(runs[2].text).toBe('Two');
+        });
+
+        it('should handle < and > characters in tagged text', () =>
+        {
+            const style = new TextStyle({
+                fontSize: 24,
+                tagStyles: {
+                    red: { fill: 'red' },
+                    green: { fill: 'green' },
+                    blue: { fill: 'blue' }
+                }
+            });
+            const runs = parseTaggedText('<red>One </red><green> < Two > </green><blue>One</blue>', style);
+
+            expect(runs.length).toBe(3);
+            expect(runs[0].text).toBe('One ');
+            expect(runs[1].text).toBe(' < Two > ');
+            expect(runs[2].text).toBe('One');
+        });
+
         it('should handle > characters in tagged text', () =>
         {
             const style = new TextStyle({
@@ -214,6 +250,27 @@ describe('parseTaggedText', () =>
             expect(runs[0].text).toBe('Two ');
             expect(runs[1].text).toBe(' > ');
             expect(runs[2].text).toBe('One');
+        });
+
+        it('should handle nested < characters in tagged text', () =>
+        {
+            const style = new TextStyle({
+                fontSize: 24,
+                tagStyles: {
+                    red: { fill: 'red' },
+                    green: { fill: 'green' },
+                    blue: { fill: 'blue' }
+                }
+            });
+            const runs = parseTaggedText('<red>One < Two <green> < </green></red><blue>Three</blue>', style);
+
+            expect(runs.length).toBe(3);
+            expect(runs[0].text).toBe('One < Two ');
+            expect(runs[0].style.fill).toBe('red');
+            expect(runs[1].text).toBe(' < ');
+            expect(runs[1].style.fill).toBe('green');
+            expect(runs[2].text).toBe('Three');
+            expect(runs[2].style.fill).toBe('blue');
         });
     });
 
