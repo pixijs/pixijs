@@ -165,6 +165,56 @@ describe('parseTaggedText', () =>
             expect(runs[1].style.fontSize).toBe(48);
             expect(runs[2].style.fontSize).toBe(24);
         });
+
+        it('should handle < and > characters in text', () =>
+        {
+            const style = new TextStyle({
+                fontSize: 24,
+                tagStyles: {
+                    red: { fill: 'red' }
+                }
+            });
+            const runs = parseTaggedText('Use < and > in text', style);
+
+            expect(runs.length).toBe(1);
+            expect(runs[0].text).toBe('Use < and > in text');
+        });
+
+        it('should handle < characters in tagged text', () =>
+        {
+            const style = new TextStyle({
+                fontSize: 24,
+                tagStyles: {
+                    red: { fill: 'red' },
+                    green: { fill: 'green' },
+                    blue: { fill: 'blue' }
+                }
+            });
+            const runs = parseTaggedText('<red>One </red><green> < </green><blue>Two</blue>', style);
+
+            expect(runs.length).toBe(3);
+            expect(runs[0].text).toBe('One ');
+            expect(runs[1].text).toBe(' < ');
+            expect(runs[2].text).toBe('Two');
+        });
+
+        it('should handle > characters in tagged text', () =>
+        {
+            const style = new TextStyle({
+                fontSize: 24,
+                tagStyles: {
+                    red: { fill: 'red' },
+                    green: { fill: 'green' },
+                    blue: { fill: 'blue' }
+                }
+            });
+            const runs = parseTaggedText('<red>Two </red><green> > </green><blue>One</blue>', style);
+
+            expect(runs.length).toBe(3);
+            expect(runs[0].text).toBe('Two ');
+            expect(runs[1].text).toBe(' > ');
+            expect(runs[2].text).toBe('One');
+        });
     });
 
     describe('getPlainText', () =>
