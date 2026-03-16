@@ -178,6 +178,34 @@ export class PipelineSystem implements System
         this._updatePipeHash();
     }
 
+    /**
+     * Builds a {@link GPURenderBundleEncoderDescriptor} that matches the current render target
+     * configuration (color formats, sample count, and depth/stencil format).
+     * Used by {@link GpuEncoderSystem.beginBundle} to create a compatible render bundle encoder.
+     * @returns A descriptor for creating a GPURenderBundleEncoder.
+     */
+    public getBundleDescriptor(): GPURenderBundleEncoderDescriptor
+    {
+        const colorFormats: GPUTextureFormat[] = [];
+
+        for (let i = 0; i < this._colorTargetCount; i++)
+        {
+            colorFormats.push('bgra8unorm');
+        }
+
+        const descriptor: GPURenderBundleEncoderDescriptor = {
+            colorFormats,
+            sampleCount: this._multisampleCount,
+        };
+
+        if (this._depthStencilFormatData.depth || this._depthStencilFormatData.stencil)
+        {
+            descriptor.depthStencilFormat = this._depthStencilFormat;
+        }
+
+        return descriptor;
+    }
+
     public setPipeline(geometry: Geometry, program: GpuProgram, state: State, passEncoder: GPURenderPassEncoder): void
     {
         const pipeline = this.getPipeline(geometry, program, state);
@@ -343,11 +371,16 @@ export class PipelineSystem implements System
         return this._moduleCache[code];
     }
 
+    /**
+     * Generates and caches a numeric layout key on the geometry based on its sorted attribute
+     * descriptors (offset, format, stride, instancing). Geometries with identical attribute
+     * layouts share the same key, enabling pipeline reuse.
+     * @param geometry - The geometry to generate a layout key for.
+     */
     private _generateBufferKey(geometry: Geometry): number
     {
         const keyGen = [];
         let index = 0;
-        // generate a key..
 
         const attributeKeys = Object.keys(geometry.attributes).sort();
 
