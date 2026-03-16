@@ -42,6 +42,8 @@ export class GpuEncoderSystem implements System
     private _boundVertexBuffer: Record<number, Buffer> = Object.create(null);
     private _boundIndexBuffer: Buffer;
     private _boundPipeline: GPURenderPipeline;
+    /** Stores the real render pass encoder while a render bundle is being recorded. */
+    private _savedPassEncoder: GPURenderPassEncoder | null = null;
 
     private readonly _renderer: WebGPURenderer;
 
@@ -79,6 +81,57 @@ export class GpuEncoderSystem implements System
         }
 
         this.renderPassEncoder = null;
+    }
+
+    /**
+     * Begins recording a render bundle. While recording, all draw commands are captured into a
+     * {@link GPURenderBundleEncoder} instead of the active render pass. The current render pass
+     * encoder is saved and restored when {@link endBundle} is called.
+     *
+     * Render bundles allow pre-recording of draw commands that can be replayed multiple times
+     * via {@link executeBundle}, reducing CPU overhead for repeated draw sequences.
+     * @throws If a render bundle is already being recorded.
+     */
+    public beginBundle(): void
+    {
+        if (this._savedPassEncoder)
+        {
+            throw new Error('Cannot begin a new render bundle while one is already being recorded.');
+        }
+
+        this._savedPassEncoder = this.renderPassEncoder;
+        this._clearCache();
+
+        const descriptor = this._renderer.pipeline.getBundleDescriptor();
+
+        this.renderPassEncoder = this._gpu.device
+            .createRenderBundleEncoder(descriptor) as unknown as GPURenderPassEncoder;
+    }
+
+    /**
+     * Finishes recording the current render bundle and restores the previous render pass encoder.
+     * @returns The recorded {@link GPURenderBundle} ready to be executed via {@link executeBundle}.
+     */
+    public endBundle(): GPURenderBundle
+    {
+        const bundle = (this.renderPassEncoder as unknown as GPURenderBundleEncoder).finish();
+
+        this.renderPassEncoder = this._savedPassEncoder;
+        this._savedPassEncoder = null;
+        this._clearCache();
+
+        return bundle;
+    }
+
+    /**
+     * Replays a previously recorded render bundle on the current render pass.
+     * The bound state cache is cleared since the bundle may set its own pipeline, bind groups, and buffers.
+     * @param bundle - The render bundle to execute.
+     */
+    public executeBundle(bundle: GPURenderBundle): void
+    {
+        this._clearCache();
+        (this.renderPassEncoder as GPURenderPassEncoder).executeBundles([bundle]);
     }
 
     public setViewport(viewport: Rectangle): void
@@ -210,12 +263,14 @@ export class GpuEncoderSystem implements System
         topology?: Topology;
         size?: number;
         start?: number;
+        baseVertex?: number;
         instanceCount?: number;
         skipSync?: boolean;
         firstInstance?: number;
     })
     {
-        const { geometry, shader, state, topology, size, start, instanceCount, skipSync, firstInstance } = options;
+        const { geometry, shader, state, topology, size, start, baseVertex, instanceCount, skipSync, firstInstance }
+            = options;
 
         this.setPipelineFromGeometryProgramAndState(geometry, shader.gpuProgram, state, topology, shader._overrides);
         this.setGeometry(geometry, shader.gpuProgram);
@@ -227,19 +282,57 @@ export class GpuEncoderSystem implements System
                 size || geometry.indexBuffer.data.length,
                 instanceCount ?? geometry.instanceCount,
                 start || 0,
-                0,
+                baseVertex || 0,
                 firstInstance || 0
-
             );
         }
         else
         {
             this.renderPassEncoder.draw(
-                size || geometry.getSize(),
+                size || geometry.vertexCount,
                 instanceCount ?? geometry.instanceCount,
                 start || 0,
                 firstInstance || 0
             );
+        }
+    }
+
+    /**
+     * Sets up the pipeline, geometry, and bind groups then issues an indirect draw call.
+     * Uses `drawIndexedIndirect` when the geometry has an index buffer, otherwise `drawIndirect`.
+     * Draw parameters (vertex count, instance count, etc.) are read from the indirect buffer on the GPU.
+     * @param options - The draw options.
+     * @param options.geometry - The geometry to draw.
+     * @param options.shader - The shader to use.
+     * @param options.state - Optional render state (blending, depth, etc.).
+     * @param options.topology - Optional primitive topology override.
+     * @param options.skipSync - If true, skips syncing uniform groups to their GPU buffers.
+     * @param options.indirectBuffer - The GPU buffer containing the indirect draw parameters.
+     * @param options.indirectOffset - Byte offset into the indirect buffer.
+     */
+    public drawIndirect(options: {
+        geometry: Geometry;
+        shader: Shader;
+        state?: State;
+        topology?: Topology;
+        skipSync?: boolean;
+        indirectBuffer: GPUBuffer;
+        indirectOffset: number;
+    })
+    {
+        const { geometry, shader, state, topology, skipSync, indirectBuffer, indirectOffset } = options;
+
+        this.setPipelineFromGeometryProgramAndState(geometry, shader.gpuProgram, state, topology, shader._overrides);
+        this.setGeometry(geometry, shader.gpuProgram);
+        this._setShaderBindGroups(shader, skipSync);
+
+        if (geometry.indexBuffer)
+        {
+            this.renderPassEncoder.drawIndexedIndirect(indirectBuffer, indirectOffset);
+        }
+        else
+        {
+            this.renderPassEncoder.drawIndirect(indirectBuffer, indirectOffset);
         }
     }
 
@@ -328,6 +421,7 @@ export class GpuEncoderSystem implements System
         this._boundVertexBuffer = null;
         this._boundIndexBuffer = null;
         this._boundPipeline = null;
+        this._savedPassEncoder = null;
     }
 
     protected contextChange(gpu: GPU): void
