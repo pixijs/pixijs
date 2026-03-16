@@ -113,6 +113,11 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
      */
     private _getGpuColorTexture(renderTarget: RenderTarget): GPUTexture
     {
+        if (renderTarget.colorTextures.length === 0)
+        {
+            throw new Error('[GpuRenderTargetAdaptor] cannot get gpu color texture from a depth-only render target');
+        }
+
         const gpuRenderTarget = this._renderTargetSystem.getGpuRenderTarget(renderTarget);
 
         if (gpuRenderTarget.contexts[0])
