@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import { Bounds } from '../../../../scene/container/bounds/Bounds';
 import { uid } from '../../../../utils/data/uid';
+import { deprecation, v8_3_4 } from '../../../../utils/logging/deprecation';
 import { type GlGeometryGpuData } from '../../gl/geometry/GlGeometrySystem';
 import { type GPUDataOwner } from '../../types';
 import { Buffer } from '../buffer/Buffer';
@@ -170,6 +171,9 @@ export class Geometry extends EventEmitter<{
     private readonly _bounds: Bounds = new Bounds();
     private _boundsDirty = true;
 
+    private _vertexCount = 0;
+    private _vertexCountDirty = true;
+
     /**
      * Create a new instance of a geometry
      * @param options - The options for the geometry.
@@ -205,6 +209,7 @@ export class Geometry extends EventEmitter<{
     protected onBufferUpdate(): void
     {
         this._boundsDirty = true;
+        this._vertexCountDirty = true;
         this.emit('update', this);
     }
 
@@ -238,21 +243,45 @@ export class Geometry extends EventEmitter<{
     }
 
     /**
+     * The number of vertices in this geometry, derived from the first non-instanced attribute.
+     * The value is cached and only recalculated when the geometry's buffers or attributes change.
+     */
+    get vertexCount(): number
+    {
+        if (!this._vertexCountDirty) return this._vertexCount;
+
+        this._vertexCountDirty = false;
+
+        const attributes = this.attributes;
+
+        for (const i in attributes)
+        {
+            const attribute = attributes[i];
+
+            if (attribute.instance) continue;
+
+            const buffer = attribute.buffer;
+
+            this._vertexCount = (buffer.data as TypedArray).length / ((attribute.stride / 4) || attribute.size);
+
+            return this._vertexCount;
+        }
+
+        this._vertexCount = 0;
+
+        return 0;
+    }
+
+    /**
      * Used to figure out how many vertices there are in this geometry
      * @returns the number of vertices in the geometry
+     * @deprecated since 8.x, use {@link Geometry.vertexCount} instead
      */
     public getSize(): number
     {
-        for (const i in this.attributes)
-        {
-            const attribute = this.attributes[i];
-            const buffer = attribute.buffer;
+        deprecation(v8_3_4, 'Geometry.getSize is deprecated, please use Geometry.vertexCount instead.');
 
-            // TODO use SIZE again like v7..
-            return (buffer.data as any).length / ((attribute.stride / 4) || attribute.size);
-        }
-
-        return 0;
+        return this.vertexCount;
     }
 
     /**
@@ -276,6 +305,8 @@ export class Geometry extends EventEmitter<{
             attribute.buffer.on('change', this.onBufferUpdate, this);
         }
         this.attributes[name] = attribute;
+
+        this._vertexCountDirty = true;
     }
 
     /**

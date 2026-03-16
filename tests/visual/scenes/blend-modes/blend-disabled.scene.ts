@@ -6,7 +6,6 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should completely overwrite destination when blend is disabled',
-    only: true,
     renderers: {
         webgl2: true,
         webgpu: true,

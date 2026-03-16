@@ -468,12 +468,11 @@ export class GlGeometrySystem implements System
         }
         else if (instanceCount !== 1)
         {
-            // TODO need a better way to calculate size..
-            gl.drawArraysInstanced(glTopology, start || 0, size || geometry.getSize(), instanceCount);
+            gl.drawArraysInstanced(glTopology, start || 0, size || geometry.vertexCount, instanceCount);
         }
         else
         {
-            gl.drawArrays(glTopology, start || 0, size || geometry.getSize());
+            gl.drawArrays(glTopology, start || 0, size || geometry.vertexCount);
         }
 
         return this;
