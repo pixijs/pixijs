@@ -1219,4 +1219,56 @@ describe('EventSystem', () =>
 
         expect(eventSpy).toHaveBeenCalledTimes(2);
     });
+
+    it('should not fire canvas hover events when pointer is over an overlapping DOM element', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene();
+
+        renderer.render(stage);
+
+        const moveSpy = jest.fn();
+        const overSpy = jest.fn();
+
+        graphics.on('pointermove', moveSpy);
+        graphics.on('pointerover', overSpy);
+
+        // Simulate a pointermove whose target is an overlapping div (not the canvas)
+        const overlayDiv = document.createElement('div');
+        const moveEvent = new PointerEvent('pointermove', { clientX: 25, clientY: 25, bubbles: true });
+
+        Object.defineProperty(moveEvent, 'target', { writable: false, value: overlayDiv });
+
+        renderer.events['_onPointerMove'](moveEvent);
+
+        expect(moveSpy).not.toHaveBeenCalled();
+        expect(overSpy).not.toHaveBeenCalled();
+    });
+
+    it('should still fire canvas events during drag when pointer moves over an overlapping DOM element', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene();
+
+        renderer.render(stage);
+
+        // First, press down on the canvas so a drag is in progress
+        renderer.events['_onPointerDown'](
+            new PointerEvent('pointerdown', { clientX: 25, clientY: 25, buttons: 1 })
+        );
+
+        const moveSpy = jest.fn();
+
+        graphics.on('pointermove', moveSpy);
+
+        // Simulate a pointermove over an overlapping div, but with buttons held (dragging)
+        const overlayDiv = document.createElement('div');
+        const dragMoveEvent = new PointerEvent('pointermove', { clientX: 25, clientY: 25, buttons: 1, bubbles: true });
+
+        Object.defineProperty(dragMoveEvent, 'target', { writable: false, value: overlayDiv });
+
+        renderer.events['_onPointerMove'](dragMoveEvent);
+
+        expect(moveSpy).toHaveBeenCalledOnce();
+    });
 });
