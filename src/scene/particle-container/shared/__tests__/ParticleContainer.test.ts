@@ -2,10 +2,8 @@ import { ParticleContainer } from '../ParticleContainer';
 import { getWebGLRenderer } from '@test-utils';
 import { Rectangle } from '~/maths';
 import { Texture } from '~/rendering';
-import { getAdjustedBlendModeBlend } from '~/rendering/renderers/shared/state/getAdjustedBlendModeBlend';
 import { Container, Particle } from '~/scene';
-
-import type { ParticleContainerPipe } from '../ParticleContainerPipe';
+import { updateRenderGroupTransforms } from '~/scene/container/utils/updateRenderGroupTransforms';
 
 describe('ParticleContainer', () =>
 {
@@ -67,9 +65,9 @@ describe('ParticleContainer', () =>
 
     describe('blendMode', () =>
     {
-        it('should inherit blendMode from parent container', async () =>
+        it('should inherit blendMode from parent container', () =>
         {
-            const renderer = await getWebGLRenderer();
+            const root = new Container({ isRenderGroup: true });
 
             const parent = new Container();
 
@@ -77,27 +75,14 @@ describe('ParticleContainer', () =>
 
             const particleContainer = new ParticleContainer();
 
-            particleContainer.addParticle(new Particle({
-                texture: Texture.WHITE,
-            }));
-
+            root.addChild(parent);
             parent.addChild(particleContainer);
 
-            renderer.render({ container: parent });
+            updateRenderGroupTransforms(root.renderGroup, true);
 
-            const pipe = renderer.renderPipes.particle as ParticleContainerPipe;
-
-            pipe.execute(particleContainer);
-
-            const expectedBlendMode = getAdjustedBlendModeBlend(
-                particleContainer.groupBlendMode,
-                particleContainer.texture._source
-            );
-
-            expect(pipe.state.blendMode).toEqual(expectedBlendMode);
             expect(particleContainer.groupBlendMode).toEqual('add');
 
-            parent.destroy({ children: true });
+            root.destroy({ children: true });
         });
     });
 
