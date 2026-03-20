@@ -37,6 +37,44 @@ const depthStencilFormatMap: Record<string, { depth: boolean, stencil: boolean, 
 
 const emptyDepthStencilFormatData = { depth: false, stencil: false, index: 0 };
 
+/**
+ * Rewrites WGSL source by replacing `override` declarations with `const` declarations
+ * whose values are baked in from the provided overrides map. Used as a fallback for
+ * browsers that don't support the `constants` field in `GPURenderPipelineDescriptor` (e.g. Safari).
+ *
+ * Values are formatted according to WGSL literal rules:
+ * - `u32` → unsigned integer suffix (`42u`)
+ * - `i32` → plain integer (`42`)
+ * - `f32` → float with decimal point (`42.0`)
+ * @param source - The WGSL shader source string containing `override` declarations.
+ * @param overrides - A map of override names to their numeric values.
+ * @returns The modified WGSL source with matching `override` declarations replaced by `const`.
+ * @internal
+ * @ignore
+ */
+export function bakeOverridesIntoSource(source: string, overrides: Record<string, number>): string
+{
+    for (const [name, value] of Object.entries(overrides))
+    {
+        const re = new RegExp(
+            `override\\s+${name}\\s*:\\s*(\\w+)\\s*(?:=[^;]*)?;`
+        );
+
+        source = source.replace(re, (_, type) =>
+        {
+            let lit: string;
+
+            if (type === 'u32') lit = `${Math.trunc(value)}u`;
+            else if (type === 'i32') lit = `${Math.trunc(value)}`;
+            else lit = Number.isInteger(value) ? `${value}.0` : `${value}`;
+
+            return `const ${name}: ${type} = ${lit};`;
+        });
+    }
+
+    return source;
+}
+
 // geometryLayouts = 256; // 8 bits // 256 states // value 0-255;
 // shaderKeys = 256; // 8 bits // 256 states // value 0-255;
 // state = 64; // 6 bits // 64 states // value 0-63;
@@ -308,21 +346,39 @@ export class PipelineSystem implements System
 
         const layout = this._renderer.shader.getProgramData(program).pipeline;
 
+        const hasOverrides = Object.keys(overrides.data).length > 0;
+
+        let vertexSource = program.vertex.source;
+        let fragmentSource = program.fragment.source;
+        let constants: Record<string, number> | undefined;
+
+        if (hasOverrides)
+        {
+            if (this._renderer.limits.supportsOverrideConstants)
+            {
+                constants = overrides.data;
+            }
+            else
+            {
+                vertexSource = bakeOverridesIntoSource(vertexSource, overrides.data);
+                fragmentSource = bakeOverridesIntoSource(fragmentSource, overrides.data);
+            }
+        }
+
         const descriptor: GPURenderPipelineDescriptor = {
             // TODO later check if its helpful to create..
             // layout,
             vertex: {
-                module: this._getModule(program.vertex.source),
+                module: this._getModule(vertexSource),
                 entryPoint: program.vertex.entryPoint,
-                constants: overrides.data,
-                // geometry..
+                constants,
                 buffers,
             },
             fragment: {
-                module: this._getModule(program.fragment.source),
+                module: this._getModule(fragmentSource),
                 entryPoint: program.fragment.entryPoint,
                 targets: blendModes,
-                constants: overrides.data,
+                constants,
             },
             primitive: {
                 topology,

@@ -40,6 +40,8 @@ export class GpuLimitsSystem implements System
     public maxTextures: number;
     /** The maximum number of batchable textures */
     public maxBatchableTextures: number;
+    /** Whether the GPU supports pipeline-level `constants` (WGSL `override`). Falls back to source baking when `false`. */
+    public supportsOverrideConstants = false;
 
     private readonly _renderer: WebGPURenderer;
 
@@ -50,8 +52,35 @@ export class GpuLimitsSystem implements System
 
     public contextChange(): void
     {
-        this.maxTextures = this._renderer.device.gpu.device.limits.maxSampledTexturesPerShaderStage;
+        const device = this._renderer.device.gpu.device;
+
+        this.maxTextures = device.limits.maxSampledTexturesPerShaderStage;
         this.maxBatchableTextures = this.maxTextures;
+
+        this._detectOverrideConstantsSupport(device);
+    }
+
+    private _detectOverrideConstantsSupport(device: GPUDevice): void
+    {
+        device.pushErrorScope('validation');
+
+        const testModule = device.createShaderModule({
+            code: 'override TEST_VALUE: f32 = 0.0;\n@compute @workgroup_size(1) fn main() {}',
+        });
+
+        device.createComputePipeline({
+            layout: 'auto',
+            compute: {
+                module: testModule,
+                entryPoint: 'main',
+                constants: { TEST_VALUE: 1.0 },
+            },
+        });
+
+        void device.popErrorScope().then((error) =>
+        {
+            this.supportsOverrideConstants = !error;
+        });
     }
 
     public destroy(): void
