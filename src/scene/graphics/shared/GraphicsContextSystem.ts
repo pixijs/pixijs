@@ -1,12 +1,11 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { getTextureBatchBindGroup } from '../../../rendering/batcher/gpu/getTextureBatchBindGroup';
 import { type BatcherOptions } from '../../../rendering/batcher/shared/Batcher';
 import { DefaultBatcher } from '../../../rendering/batcher/shared/DefaultBatcher';
 import { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
-import { GCManagedHash } from '../../../utils/data/GCManagedHash';
 import { deprecation, v8_3_4 } from '../../../utils/logging/deprecation';
 import { BigPool } from '../../../utils/pool/PoolGroup';
-import { type GPUData } from '../../view/ViewContainer';
+import { AbstractGpuGraphicsContext } from './AbstractGpuGraphicsContext';
+import { AbstractGraphicsContextSystem } from './AbstractGraphicsContextSystem';
 import { buildContextBatches } from './utils/buildContextBatches';
 
 import type { System } from '../../../rendering/renderers/shared/system/System';
@@ -26,48 +25,26 @@ interface GeometryData
  * @category rendering
  * @ignore
  */
-export class GpuGraphicsContext implements GPUData
+export class GpuGraphicsContext extends AbstractGpuGraphicsContext<BatchableGraphics, GraphicsContextRenderData>
 {
-    public isBatchable: boolean;
-    public context: GraphicsContext;
-
-    public batches: BatchableGraphics[] = [];
     public geometryData: GeometryData = {
         vertices: [],
         uvs: [],
         indices: [],
     };
-    public graphicsData: GraphicsContextRenderData;
 
-    public reset()
+    public override reset()
     {
-        if (this.batches)
-        {
-            this.batches.forEach((batch) =>
-            {
-                BigPool.return(batch);
-            });
-        }
-        if (this.graphicsData)
-        {
-            BigPool.return(this.graphicsData);
-        }
+        super.reset();
 
-        this.isBatchable = false;
-        this.context = null;
-
-        this.batches.length = 0;
         this.geometryData.indices.length = 0;
         this.geometryData.vertices.length = 0;
         this.geometryData.uvs.length = 0;
-
-        this.graphicsData = null;
     }
 
-    public destroy()
+    public override destroy()
     {
-        this.reset();
-        this.batches = null;
+        super.destroy();
         this.geometryData = null;
     }
 }
@@ -130,7 +107,9 @@ export interface GraphicsContextSystemOptions
  * @category rendering
  * @advanced
  */
-export class GraphicsContextSystem implements System<GraphicsContextSystemOptions>
+export class GraphicsContextSystem
+    extends AbstractGraphicsContextSystem<GpuGraphicsContext, GraphicsContextRenderData>
+    implements System<GraphicsContextSystemOptions>
 {
     /** @ignore */
     public static extension = {
@@ -150,13 +129,9 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
         bezierSmoothness: 0.5,
     };
 
-    private readonly _renderer: Renderer;
-    private readonly _managedContexts: GCManagedHash<GraphicsContext>;
-
     constructor(renderer: Renderer)
     {
-        this._renderer = renderer;
-        this._managedContexts = new GCManagedHash({ renderer, type: 'resource', name: 'graphicsContext' });
+        super(renderer, 'graphicsContext');
     }
 
     /**
@@ -169,146 +144,26 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
             ?? GraphicsContextSystem.defaultOptions.bezierSmoothness;
     }
 
-    /**
-     * Returns the render data for a given GraphicsContext.
-     * @param context - The GraphicsContext to get the render data for.
-     * @internal
-     */
-    public getContextRenderData(context: GraphicsContext): GraphicsContextRenderData
+    protected _createGpuContext(): GpuGraphicsContext
     {
-        return context._gpuData[this._renderer.uid].graphicsData || this._initContextRenderData(context);
+        return new GpuGraphicsContext();
     }
 
-    /**
-     * Updates the GPU context for a given GraphicsContext.
-     * If the context is dirty, it will rebuild the batches and geometry data.
-     * @param context - The GraphicsContext to update.
-     * @returns The updated GpuGraphicsContext.
-     * @internal
-     */
-    public updateGpuContext(context: GraphicsContext)
+    protected _buildContextData(context: GraphicsContext, gpuContext: GpuGraphicsContext): void
     {
-        const hasContext = !!context._gpuData[this._renderer.uid];
-        const gpuContext: GpuGraphicsContext = context._gpuData[this._renderer.uid] || this._initContext(context);
-
-        if (context.dirty || !hasContext)
-        {
-            if (hasContext)
-            {
-                gpuContext.reset();
-            }
-
-            buildContextBatches(context, gpuContext);
-
-            const batchMode = context.batchMode;
-
-            if (context.customShader || batchMode === 'no-batch')
-            {
-                gpuContext.isBatchable = false;
-            }
-            else if (batchMode === 'auto')
-            {
-                gpuContext.isBatchable = (gpuContext.geometryData.vertices.length < 400);
-            }
-            else
-            {
-                gpuContext.isBatchable = true;
-            }
-
-            context.dirty = false;
-        }
-
-        return gpuContext;
+        buildContextBatches(context, gpuContext);
     }
 
-    /**
-     * Returns the GpuGraphicsContext for a given GraphicsContext.
-     * If it does not exist, it will initialize a new one.
-     * @param context - The GraphicsContext to get the GpuGraphicsContext for.
-     * @returns The GpuGraphicsContext for the given GraphicsContext.
-     * @internal
-     */
-    public getGpuContext(context: GraphicsContext): GpuGraphicsContext
+    protected _getVertexAndIndexCounts(gpuContext: GpuGraphicsContext): { vertices: number; indices: number }
     {
-        return context._gpuData[this._renderer.uid] || this._initContext(context);
+        return {
+            vertices: gpuContext.geometryData.vertices.length,
+            indices: gpuContext.geometryData.indices.length,
+        };
     }
 
-    private _initContextRenderData(context: GraphicsContext): GraphicsContextRenderData
+    protected _createRenderData(maxTextures: number): GraphicsContextRenderData
     {
-        const graphicsData: GraphicsContextRenderData = BigPool.get(GraphicsContextRenderData, {
-            maxTextures: this._renderer.limits.maxBatchableTextures,
-        });
-
-        const gpuContext = context._gpuData[this._renderer.uid];
-        const { batches, geometryData } = gpuContext;
-
-        gpuContext.graphicsData = graphicsData;
-
-        const vertexSize = geometryData.vertices.length;
-        const indexSize = geometryData.indices.length;
-
-        for (let i = 0; i < batches.length; i++)
-        {
-            batches[i].applyTransform = false;
-        }
-
-        const batcher = graphicsData.batcher;
-
-        // TODO we can pool buffers here eventually..
-        batcher.ensureAttributeBuffer(vertexSize);
-        batcher.ensureIndexBuffer(indexSize);
-
-        batcher.begin();
-
-        for (let i = 0; i < batches.length; i++)
-        {
-            const batch = batches[i];
-
-            batcher.add(batch);
-        }
-
-        batcher.finish(graphicsData.instructions);
-
-        const geometry = batcher.geometry;
-
-        // not to self - this works as we are assigning the batchers array buffer
-        // once its up loaded - this buffer is then put back in the pool to be reused.
-        // this mean we don't have to creating new Batchers for each graphics items
-        geometry.indexBuffer.setDataWithSize(batcher.indexBuffer, batcher.indexSize, true);
-        geometry.buffers[0].setDataWithSize(batcher.attributeBuffer.float32View, batcher.attributeSize, true);
-
-        const drawBatches = batcher.batches;
-
-        for (let i = 0; i < drawBatches.length; i++)
-        {
-            const batch = drawBatches[i];
-
-            batch.bindGroup = getTextureBatchBindGroup(
-                batch.textures.textures,
-                batch.textures.count,
-                this._renderer.limits.maxBatchableTextures
-            );
-        }
-
-        return graphicsData;
-    }
-
-    private _initContext(context: GraphicsContext): GpuGraphicsContext
-    {
-        const gpuContext = new GpuGraphicsContext();
-
-        gpuContext.context = context;
-
-        context._gpuData[this._renderer.uid] = gpuContext;
-
-        this._managedContexts.add(context);
-
-        return gpuContext;
-    }
-
-    public destroy()
-    {
-        this._managedContexts.destroy();
-        (this._renderer as null) = null;
+        return BigPool.get(GraphicsContextRenderData, { maxTextures });
     }
 }

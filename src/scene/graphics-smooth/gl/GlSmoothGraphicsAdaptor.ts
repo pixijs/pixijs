@@ -1,34 +1,31 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/matrix/Matrix';
-import { compileHighShaderGlProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
-import { colorBitGl } from '../../../rendering/high-shader/shader-bits/colorBit';
-import { generateTextureBatchBitGl } from '../../../rendering/high-shader/shader-bits/generateTextureBatchBit';
-import { localUniformBitGl } from '../../../rendering/high-shader/shader-bits/localUniformBit';
-import { roundPixelsBitGl } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
 import { getBatchSamplersUniformGroup } from '../../../rendering/renderers/gl/shader/getBatchSamplersUniformGroup';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
-import { executeGlBatches } from '../shared/utils/executeGlBatches';
+import { executeGlBatches } from '../../graphics/shared/utils/executeGlBatches';
+import { SmoothShader } from '../shared/batcher/SmoothShader';
 
 import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRenderer';
 import type { Renderer } from '../../../rendering/renderers/types';
-import type { Graphics } from '../shared/Graphics';
-import type { GraphicsContextSystem } from '../shared/GraphicsContextSystem';
-import type { GraphicsAdaptor, GraphicsPipeLike } from '../shared/GraphicsPipe';
-
+import type { GraphicsAdaptor, GraphicsPipeLike } from '../../graphics/shared/GraphicsAdaptorTypes';
+import type { SmoothGraphics } from '../shared/SmoothGraphics';
+import type { SmoothGraphicsContextSystem } from '../shared/SmoothGraphicsContextSystem';
 /**
- * A GraphicsAdaptor that uses WebGL to render graphics.
+ * WebGL adaptor for non-batchable smooth graphics rendering.
+ * Creates a shader with local uniforms (uTransformMatrix, uColor, uRound)
+ * and delegates to the SmoothShader's GLSL programs.
  * @category rendering
- * @ignore
+ * @internal
  */
-export class GlGraphicsAdaptor implements GraphicsAdaptor
+export class GlSmoothGraphicsAdaptor implements GraphicsAdaptor
 {
     /** @ignore */
     public static extension = {
         type: [
             ExtensionType.WebGLPipesAdaptor,
         ],
-        name: 'graphics',
+        name: 'smoothGraphics',
     } as const;
 
     public shader: Shader;
@@ -43,18 +40,10 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
 
         const maxTextures = renderer.limits.maxBatchableTextures;
 
-        const glProgram = compileHighShaderGlProgram({
-            name: 'graphics',
-            bits: [
-                colorBitGl,
-                generateTextureBatchBitGl(maxTextures),
-                localUniformBitGl,
-                roundPixelsBitGl,
-            ]
-        });
+        const smoothShader = new SmoothShader(maxTextures, true);
 
         this.shader = new Shader({
-            glProgram,
+            glProgram: smoothShader.glProgram,
             resources: {
                 localUniforms: uniforms,
                 batchSamplers: getBatchSamplersUniformGroup(maxTextures),
@@ -62,12 +51,12 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         });
     }
 
-    public execute(graphicsPipe: GraphicsPipeLike, renderable: Graphics): void
+    public execute(graphicsPipe: GraphicsPipeLike, renderable: SmoothGraphics): void
     {
         const context = renderable.context;
         const shader = context.customShader || this.shader;
         const renderer = graphicsPipe.renderer as WebGLRenderer;
-        const contextSystem = renderer.graphicsContext as GraphicsContextSystem;
+        const contextSystem = renderer.smoothGraphicsContext as SmoothGraphicsContextSystem;
 
         const {
             batcher, instructions,

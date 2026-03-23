@@ -1,33 +1,29 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/matrix/Matrix';
-import { compileHighShaderGpuProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
-import { colorBit } from '../../../rendering/high-shader/shader-bits/colorBit';
-import { generateTextureBatchBit } from '../../../rendering/high-shader/shader-bits/generateTextureBatchBit';
-import { localUniformBitGroup2 } from '../../../rendering/high-shader/shader-bits/localUniformBit';
-import { roundPixelsBit } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
-import { executeGpuBatches } from '../shared/utils/executeGpuBatches';
+import { executeGpuBatches } from '../../graphics/shared/utils/executeGpuBatches';
+import { SmoothShader } from '../shared/batcher/SmoothShader';
 
 import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURenderer';
 import type { Renderer } from '../../../rendering/renderers/types';
-import type { Graphics } from '../shared/Graphics';
-import type { GraphicsContextSystem } from '../shared/GraphicsContextSystem';
-import type { GraphicsAdaptor, GraphicsPipeLike } from '../shared/GraphicsPipe';
+import type { GraphicsAdaptor, GraphicsPipeLike } from '../../graphics/shared/GraphicsAdaptorTypes';
+import type { SmoothGraphics } from '../shared/SmoothGraphics';
+import type { SmoothGraphicsContextSystem } from '../shared/SmoothGraphicsContextSystem';
 
 /**
- * A GraphicsAdaptor that uses the GPU to render graphics.
+ * WebGPU adaptor for non-batchable smooth graphics rendering.
  * @category rendering
- * @ignore
+ * @internal
  */
-export class GpuGraphicsAdaptor implements GraphicsAdaptor
+export class GpuSmoothGraphicsAdaptor implements GraphicsAdaptor
 {
     /** @ignore */
     public static extension = {
         type: [
             ExtensionType.WebGPUPipesAdaptor,
         ],
-        name: 'graphics',
+        name: 'smoothGraphics',
     } as const;
 
     public shader: Shader;
@@ -44,34 +40,25 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
 
         this._maxTextures = renderer.limits.maxBatchableTextures;
 
-        const gpuProgram = compileHighShaderGpuProgram({
-            name: 'graphics',
-            bits: [
-                colorBit,
-                generateTextureBatchBit(this._maxTextures),
-
-                localUniformBitGroup2,
-                roundPixelsBit
-            ]
-        });
+        const smoothShader = new SmoothShader(this._maxTextures, true);
 
         this.shader = new Shader({
-            gpuProgram,
+            gpuProgram: smoothShader.gpuProgram,
             resources: {
                 localUniforms,
             },
         });
     }
 
-    public execute(graphicsPipe: GraphicsPipeLike, renderable: Graphics): void
+    public execute(graphicsPipe: GraphicsPipeLike, renderable: SmoothGraphics): void
     {
         const context = renderable.context;
         const shader = context.customShader || this.shader;
         const renderer = graphicsPipe.renderer as WebGPURenderer;
-        const contextSystem = renderer.graphicsContext as GraphicsContextSystem;
+        const contextSystem = renderer.smoothGraphicsContext as SmoothGraphicsContextSystem;
 
         const {
-            batcher, instructions
+            batcher, instructions,
         } = contextSystem.getContextRenderData(context);
 
         executeGpuBatches(renderer, shader, batcher, instructions, graphicsPipe.state, this._maxTextures);
