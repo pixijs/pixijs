@@ -359,7 +359,7 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
             gpuRenderTarget.height = renderTarget.pixelHeight;
         }
 
-        const source = renderTarget.colorTexture || renderTarget.depthStencilTexture;
+        const source = renderTarget.colorAttachments[0]?.texture || renderTarget.depthStencilAttachment?.texture;
         const viewport = this.viewport;
         const arrayLayerCount = source.arrayLayerCount || 1;
 
@@ -644,7 +644,7 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
     {
         if (!this.renderTarget.stencil)
         {
-            this.renderTarget.stencil = true;
+            this.renderTarget.ensureDepthStencilTexture();
 
             this.adaptor.startRenderPass(this.renderTarget, false, null, this.viewport, 0, this.layer);
         }
