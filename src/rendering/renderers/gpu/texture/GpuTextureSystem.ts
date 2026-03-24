@@ -46,6 +46,21 @@ export class GPUTextureGpuData implements GPUData
     }
 }
 
+const viewAspectMap: Record<string, number> = {
+    all: 0,
+    'depth-only': 1,
+    'stencil-only': 2,
+};
+
+const viewDimensionMap: Record<string, number> = {
+    '1d': 1,
+    '2d': 2,
+    '2d-array': 3,
+    cube: 4,
+    'cube-array': 5,
+    '3d': 6,
+};
+
 /**
  * The system that handles textures for the GPU.
  * @category rendering
@@ -272,7 +287,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
         return this._bindGroupHash[texture.uid];
     }
 
-    public getTextureView(texture: BindableTexture)
+    public getTextureView(texture: BindableTexture, viewDescriptor?: GPUTextureViewDescriptor)
     {
         const source = texture.source;
 
@@ -285,14 +300,32 @@ export class GpuTextureSystem implements System, CanvasGenerator
             gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
         }
 
-        const descriptorKey = 0;
+        let descriptorKey = 0;
 
-        gpuData.textureViews[descriptorKey] ||= gpuData.gpuTexture.createView({ dimension: source.viewDimension });
+        if (viewDescriptor)
+        {
+            let overrideBits = 0;
+
+            if (viewDescriptor.aspect) overrideBits |= (viewAspectMap[viewDescriptor.aspect] || 0);
+            if (viewDescriptor.dimension) overrideBits |= ((viewDimensionMap[viewDescriptor.dimension] || 0) << 3);
+
+            descriptorKey |= (overrideBits << 16);
+        }
+
+        gpuData.textureViews[descriptorKey] ||= gpuData.gpuTexture.createView({
+            dimension: source.viewDimension,
+            ...viewDescriptor
+        });
 
         return gpuData.textureViews[descriptorKey];
     }
 
-    public getTextureRenderTargetView(texture: BindableTexture, mipLevel = 0, layer = 0)
+    public getTextureRenderTargetView(
+        texture: BindableTexture,
+        mipLevel = 0,
+        layer = 0,
+        viewDescriptor?: GPUTextureViewDescriptor
+    )
     {
         const source = texture.source;
 
@@ -305,7 +338,17 @@ export class GpuTextureSystem implements System, CanvasGenerator
             gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
         }
 
-        const descriptorKey = (layer * (source.mipLevelCount || 1)) + mipLevel + 1;
+        let descriptorKey = (layer * (source.mipLevelCount || 1)) + mipLevel + 1;
+
+        if (viewDescriptor)
+        {
+            let overrideBits = 0;
+
+            if (viewDescriptor.aspect) overrideBits |= (viewAspectMap[viewDescriptor.aspect] || 0);
+            if (viewDescriptor.dimension) overrideBits |= ((viewDimensionMap[viewDescriptor.dimension] || 0) << 3);
+
+            descriptorKey |= (overrideBits << 16);
+        }
 
         gpuData.textureViews[descriptorKey] ||= gpuData.gpuTexture.createView({
             dimension: '2d',
@@ -313,6 +356,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             mipLevelCount: 1,
             baseArrayLayer: layer,
             arrayLayerCount: 1,
+            ...viewDescriptor
         });
 
         return gpuData.textureViews[descriptorKey];

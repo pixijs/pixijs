@@ -10,9 +10,9 @@ import type { RenderTarget } from './RenderTarget';
  */
 export function isRenderingToScreen(renderTarget: RenderTarget): boolean
 {
-    if (renderTarget.colorTextures.length === 0) return false;
+    if (renderTarget.colorAttachments.length === 0) return false;
 
-    const resource = renderTarget.colorTexture.source.resource;
+    const resource = renderTarget.colorTexture.resource;
 
     return ((globalThis.HTMLCanvasElement && resource instanceof HTMLCanvasElement) && document.body.contains(resource));
 }

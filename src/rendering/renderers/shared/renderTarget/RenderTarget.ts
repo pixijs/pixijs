@@ -34,6 +34,82 @@ export interface RenderTargetOptions
 }
 
 /**
+ * Descriptor for creating a RenderTarget from a WebGPU-flavored descriptor.
+ * @category rendering
+ * @advanced
+ */
+export interface RenderTargetDescriptor
+{
+    /** The color attachments to use */
+    colorAttachments: PixiColorAttachment[];
+    /** The depth/stencil attachment to use */
+    depthStencilAttachment?: PixiDepthStencilAttachment;
+    /** Is this a root element, true if this is gl context owners render target */
+    isRoot?: boolean;
+}
+
+/**
+ * A Pixi-flavored Color Attachment that mirrors the WebGPU spec but replaces low-level JIT requirements
+ * with high-level Pixi objects (like `texture`).
+ * @example
+ * ```typescript
+ * import { RenderTarget, TextureSource } from 'pixi.js';
+ *
+ * const renderTarget = new RenderTarget({
+ *     colorAttachments: [{
+ *         texture: new TextureSource({ width: 100, height: 100 }),
+ *         loadOp: 'clear', // Clears the texture before rendering
+ *         clearValue: [1, 0, 0, 1], // Clears to red
+ *     }]
+ * });
+ * ```
+ * @category rendering
+ * @advanced
+ */
+export interface PixiColorAttachment extends Omit<GPURenderPassColorAttachment, 'view' | 'resolveTarget'>
+{
+    /** The Pixi texture to render to. */
+    texture: TextureSource;
+    /** The Pixi texture for MSAA resolution (if the main texture is multisampled). */
+    resolveTexture?: TextureSource;
+    /**
+     * Optional overrides for how the GPU views the texture (e.g., viewing a specific aspect or dimension).
+     * Rarely needed for 2D, but incredibly powerful for 3D and advanced compute pipelines.
+     */
+    viewDescriptor?: GPUTextureViewDescriptor;
+}
+
+/**
+ * A Pixi-flavored Depth/Stencil Attachment that mirrors the WebGPU spec but replaces low-level JIT requirements
+ * with high-level Pixi objects (like `texture`).
+ * @example
+ * ```typescript
+ * import { RenderTarget, TextureSource } from 'pixi.js';
+ *
+ * const renderTarget = new RenderTarget({
+ *     depthStencilAttachment: {
+ *         texture: new TextureSource({ format: 'depth24plus-stencil8', width: 100, height: 100 }),
+ *         depthLoadOp: 'clear',
+ *         depthClearValue: 1.0,
+ *         depthReadOnly: true, // Only test depth, don't write to it (advanced 3D trick)
+ *     }
+ * });
+ * ```
+ * @category rendering
+ * @advanced
+ */
+export interface PixiDepthStencilAttachment extends Omit<GPURenderPassDepthStencilAttachment, 'view'>
+{
+    /** The Pixi depth/stencil texture to use for testing/writing. */
+    texture: TextureSource;
+    /**
+     * Optional overrides. For example, if you want to perform depth testing while simultaneously
+     * sampling the stencil data in a shader, you can pass `{ aspect: 'depth-only' }`.
+     */
+    viewDescriptor?: GPUTextureViewDescriptor;
+}
+
+/**
  * A class that describes what the renderers are rendering to.
  * This can be as simple as a Texture, or as complex as a multi-texture, multi-sampled render target.
  * Support for stencil and depth buffers is also included.
@@ -69,82 +145,122 @@ export class RenderTarget
     public readonly uid: number = uid('renderTarget');
 
     /**
-     * An array of textures that can be written to by the GPU - mostly this has one texture in Pixi, but you could
-     * write to multiple if required! (eg deferred lighting)
+     * An array of attachments that define exactly how the GPU should render to the color textures.
+     * This includes the texture itself, as well as load/store operations and clear values.
      */
-    public colorTextures: TextureSource[] = [];
-    /** the stencil and depth buffer will right to this texture in WebGPU */
-    public depthStencilTexture: TextureSource;
-    /** if true, will ensure a stencil buffer is added. For WebGPU, this will automatically create a depthStencilTexture */
-    public stencil: boolean;
-    /** if true, will ensure a depth buffer is added. For WebGPU, this will automatically create a depthStencilTexture */
-    public depth: boolean;
+    public colorAttachments: PixiColorAttachment[] = [];
+    /**
+     * An attachment that defines exactly how the GPU should render to the depth/stencil texture.
+     * Includes the texture, load/store operations, and depth/stencil specific clear values.
+     */
+    public depthStencilAttachment?: PixiDepthStencilAttachment;
 
     public dirtyId = 0;
     public isRoot = false;
 
     private readonly _size = new Float32Array(2);
     /** if true, then when the render target is destroyed, it will destroy all the textures that were created for it. */
-    private readonly _managedColorTextures: boolean = false;
+    private _managedColorTextures: boolean = false;
 
     /**
-     * @param [descriptor] - Options for creating a render target.
+     * @param options - Options for creating a render target, or a WebGPU-flavored descriptor.
      */
-    constructor(descriptor: RenderTargetOptions = {})
+    constructor(options: RenderTargetOptions | RenderTargetDescriptor = {})
     {
-        descriptor = { ...RenderTarget.defaultOptions, ...descriptor };
+        const descriptor = 'colorAttachments' in options ? options : this._normalizeOptions(options);
 
-        this.stencil = descriptor.stencil;
-        this.depth = descriptor.depth;
-        this.isRoot = descriptor.isRoot;
+        this.isRoot = descriptor.isRoot ?? false;
+        this.colorAttachments = descriptor.colorAttachments;
+        this.depthStencilAttachment = descriptor.depthStencilAttachment;
 
-        if (typeof descriptor.colorTextures === 'number')
-        {
-            this._managedColorTextures = true;
-
-            for (let i = 0; i < descriptor.colorTextures; i++)
-            {
-                this.colorTextures.push(new TextureSource({
-                    width: descriptor.width,
-                    height: descriptor.height,
-                    resolution: descriptor.resolution,
-                    antialias: descriptor.antialias,
-                })
-                );
-            }
-        }
-        else
-        {
-            this.colorTextures = [...descriptor.colorTextures.map((texture) => texture.source)];
-
-            const colorSource = this.colorTexture.source;
-
-            this.resize(colorSource.width, colorSource.height, colorSource._resolution);
-        }
-
-        // TODO should listen for texture destroyed?
-
-        if (descriptor.depthStencilTexture || this.stencil || this.depth)
-        {
-            // TODO add a test
-            if (descriptor.depthStencilTexture instanceof Texture
-                || descriptor.depthStencilTexture instanceof TextureSource)
-            {
-                this.depthStencilTexture = descriptor.depthStencilTexture.source;
-            }
-            else
-            {
-                this._createDepthStencilTexture(descriptor.width, descriptor.height, descriptor.resolution);
-            }
-        }
-
-        if (this.colorTextures.length === 0 && !this.depthStencilTexture)
+        if (this.colorAttachments.length === 0 && !this.depthStencilAttachment)
         {
             throw new Error('[RenderTarget] no color textures or depth textures were provided. '
                 + 'Provide a depthStencilTexture or set depth/stencil to true when using colorTextures: 0.');
         }
 
-        this.sizeSource.on('resize', this.onSourceResize, this);
+        if (this.colorAttachments.length > 0)
+        {
+            const colorSource = this.colorTexture;
+
+            this.resize(colorSource.width, colorSource.height, colorSource._resolution);
+        }
+
+        if (this.sizeSource)
+        {
+            this.sizeSource.on('resize', this.onSourceResize, this);
+        }
+    }
+
+    private _normalizeOptions(options: RenderTargetOptions): RenderTargetDescriptor
+    {
+        const opts = { ...RenderTarget.defaultOptions, ...options };
+        const colorAttachments: PixiColorAttachment[] = [];
+        let depthStencilAttachment: PixiDepthStencilAttachment | undefined;
+
+        if (typeof opts.colorTextures === 'number')
+        {
+            if (opts.colorTextures > 0)
+            {
+                this._managedColorTextures = true;
+
+                for (let i = 0; i < opts.colorTextures; i++)
+                {
+                    colorAttachments.push({
+                        texture: new TextureSource({
+                            width: opts.width,
+                            height: opts.height,
+                            resolution: opts.resolution,
+                            antialias: opts.antialias,
+                        }),
+                        loadOp: 'clear',
+                        storeOp: 'store',
+                    });
+                }
+            }
+        }
+        else
+        {
+            opts.colorTextures.forEach((texture) =>
+            {
+                colorAttachments.push({
+                    texture: texture.source,
+                    loadOp: 'clear',
+                    storeOp: 'store',
+                });
+            });
+        }
+
+        if (opts.depthStencilTexture || opts.stencil || opts.depth)
+        {
+            if (opts.depthStencilTexture instanceof Texture
+                || opts.depthStencilTexture instanceof TextureSource)
+            {
+                depthStencilAttachment = {
+                    texture: opts.depthStencilTexture.source,
+                };
+            }
+            else
+            {
+                depthStencilAttachment = {
+                    texture: new TextureSource({
+                        width: opts.width,
+                        height: opts.height,
+                        resolution: opts.resolution,
+                        format: 'depth24plus-stencil8',
+                        autoGenerateMipmaps: false,
+                        antialias: false,
+                        mipLevelCount: 1,
+                    }),
+                };
+            }
+        }
+
+        return {
+            colorAttachments,
+            depthStencilAttachment,
+            isRoot: opts.isRoot,
+        };
     }
 
     get size(): [number, number]
@@ -181,18 +297,50 @@ export class RenderTarget
         return this.sizeSource._resolution;
     }
 
+    private _colorTextures: TextureSource[] | null = null;
+    /**
+     * An array of textures that can be written to by the GPU - mostly this has one texture in Pixi, but you could
+     * write to multiple if required! (eg deferred lighting).
+     * This is a backwards-compatible getter that extracts the textures from `colorAttachments`.
+     */
+    get colorTextures(): TextureSource[]
+    {
+        this._colorTextures ||= this.colorAttachments.map((a) => a.texture);
+
+        return this._colorTextures;
+    }
+
+    /** The stencil and depth buffer will write to this texture in WebGPU. */
+    get depthStencilTexture(): TextureSource | null
+    {
+        return this.depthStencilAttachment?.texture ?? null;
+    }
+
+    /** If true, will ensure a depth buffer is added. For WebGPU, this will automatically create a depthStencilTexture. */
+    get depth(): boolean
+    {
+        return !!this.depthStencilAttachment;
+    }
+
+    /** If true, will ensure a stencil buffer is added. For WebGPU, this will automatically create a depthStencilTexture. */
+    get stencil(): boolean
+    {
+        return !!this.depthStencilAttachment;
+    }
+
     get colorTexture(): TextureSource
     {
-        return this.colorTextures[0];
+        return this.colorAttachments[0]?.texture;
     }
 
     /**
      * The texture that drives size, resolution, and resize events.
-     * For standard targets this is `colorTextures[0]`; for depth-only targets it is `depthStencilTexture`.
+     * For standard targets this is `colorAttachments[0].texture`;
+     * for depth-only targets it is `depthStencilAttachment.texture`.
      */
     get sizeSource(): TextureSource
     {
-        return this.colorTextures[0] ?? this.depthStencilTexture;
+        return this.colorAttachments[0]?.texture ?? this.depthStencilAttachment?.texture;
     }
 
     protected onSourceResize(source: TextureSource)
@@ -214,20 +362,20 @@ export class RenderTarget
     {
         this.dirtyId++;
 
-        this.colorTextures.forEach((colorTexture, i) =>
+        this.colorAttachments.forEach((colorAttachment, i) =>
         {
             if (skipColorTexture && i === 0) return;
 
-            colorTexture.source.resize(width, height, resolution);
+            colorAttachment.texture.resize(width, height, resolution);
         });
 
-        if (this.depthStencilTexture)
+        if (this.depthStencilAttachment)
         {
             // For depth-only targets the depth texture IS the size source, so skip
             // when this resize was triggered by the size source's own resize event.
-            if (skipColorTexture && this.colorTextures.length === 0) return;
+            if (skipColorTexture && this.colorAttachments.length === 0) return;
 
-            this.depthStencilTexture.source.resize(width, height, resolution);
+            this.depthStencilAttachment.texture.resize(width, height, resolution);
         }
     }
 
@@ -237,32 +385,34 @@ export class RenderTarget
 
         if (this._managedColorTextures)
         {
-            this.colorTextures.forEach((texture) =>
+            this.colorAttachments.forEach((attachment) =>
             {
-                texture.destroy();
+                attachment.texture.destroy();
             });
         }
 
-        if (this.depthStencilTexture)
+        if (this.depthStencilAttachment)
         {
-            this.depthStencilTexture.destroy();
-            delete this.depthStencilTexture;
+            this.depthStencilAttachment.texture.destroy();
+            delete this.depthStencilAttachment;
         }
     }
 
     private _createDepthStencilTexture(width: number, height: number, resolution: number)
     {
-        if (this.depthStencilTexture) return;
+        if (this.depthStencilAttachment) return;
 
-        this.depthStencilTexture = new TextureSource({
-            width,
-            height,
-            resolution,
-            format: 'depth24plus-stencil8',
-            autoGenerateMipmaps: false,
-            antialias: false,
-            mipLevelCount: 1,
-            // sampleCount: handled by the render target system..
-        });
+        this.depthStencilAttachment = {
+            texture: new TextureSource({
+                width,
+                height,
+                resolution,
+                format: 'depth24plus-stencil8',
+                autoGenerateMipmaps: false,
+                antialias: false,
+                mipLevelCount: 1,
+                // sampleCount: handled by the render target system..
+            }),
+        };
     }
 }

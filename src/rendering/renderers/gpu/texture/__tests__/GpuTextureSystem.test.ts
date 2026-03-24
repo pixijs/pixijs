@@ -1,7 +1,7 @@
-import { Texture } from '../../../../shared/texture/Texture';
+import { Texture } from '../../../shared/texture/Texture';
 import { getWebGPURenderer } from '@test-utils';
 
-import type { WebGPURenderer } from '../../../WebGPURenderer';
+import type { WebGPURenderer } from '../../WebGPURenderer';
 
 describe('GpuTextureSystem', () =>
 {

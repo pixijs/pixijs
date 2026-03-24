@@ -88,9 +88,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
         gpuRenderTarget.descriptor = descriptor;
 
-        if (renderTarget.depthStencilTexture)
+        if (renderTarget.depthStencilAttachment)
         {
-            gpuRenderTarget.depthStencilFormat = renderTarget.depthStencilTexture.source.format;
+            gpuRenderTarget.depthStencilFormat = renderTarget.depthStencilAttachment.texture.format;
         }
 
         // TODO we should not finish a render pass each time we bind
@@ -113,7 +113,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
      */
     private _getGpuColorTexture(renderTarget: RenderTarget): GPUTexture
     {
-        if (renderTarget.colorTextures.length === 0)
+        if (renderTarget.colorAttachments.length === 0)
         {
             throw new Error('[GpuRenderTargetAdaptor] cannot get gpu color texture from a depth-only render target');
         }
@@ -126,7 +126,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         }
 
         return this._renderer.texture.getGpuSource(
-            renderTarget.colorTextures[0].source
+            renderTarget.colorAttachments[0].texture
         );
     }
 
@@ -147,8 +147,8 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
         const gpuRenderTarget = renderTargetSystem.getGpuRenderTarget(renderTarget);
 
-        const colorAttachments = renderTarget.colorTextures.map(
-            (texture, i) =>
+        const colorAttachments = renderTarget.colorAttachments.map(
+            (colorAttachment, i) =>
             {
                 const context = gpuRenderTarget.contexts[i];
 
@@ -165,13 +165,18 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
                     const currentTexture = context.getCurrentTexture();
 
-                    const canvasTextureView = currentTexture.createView();
+                    const canvasTextureView = currentTexture.createView(colorAttachment.viewDescriptor);
 
                     view = canvasTextureView;
                 }
                 else
                 {
-                    view = this._renderer.texture.getTextureRenderTargetView(texture, mipLevel, layer);
+                    view = this._renderer.texture.getTextureRenderTargetView(
+                        colorAttachment.texture,
+                        mipLevel,
+                        layer,
+                        colorAttachment.viewDescriptor
+                    );
                 }
 
                 if (gpuRenderTarget.msaaTextures[i])
@@ -182,46 +187,97 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     );
                 }
 
-                const loadOp = ((clear as CLEAR) & CLEAR.COLOR ? 'clear' : 'load') as GPULoadOp;
+                // If clear parameter is true, override with 'clear', otherwise fallback to attachment's loadOp or 'load'
+                const loadOp = ((clear as CLEAR) & CLEAR.COLOR ? 'clear' : (colorAttachment.loadOp ?? 'load')) as GPULoadOp;
+                const storeOp = colorAttachment.storeOp ?? 'store';
 
-                clearValue ??= renderTargetSystem.defaultClearColor;
-
-                return {
+                const baseAttachment: GPURenderPassColorAttachment = {
                     view,
                     resolveTarget,
-                    clearValue,
-                    storeOp: 'store',
-                    loadOp
+                    storeOp,
+                    loadOp,
                 };
+
+                if (loadOp === 'clear')
+                {
+                    clearValue ??= (colorAttachment.clearValue as RgbaArray) ?? renderTargetSystem.defaultClearColor;
+                    baseAttachment.clearValue = clearValue;
+                }
+
+                for (const key in colorAttachment)
+                {
+                    if (key !== 'texture' && key !== 'viewDescriptor'
+                        && key !== 'clearValue' && key !== 'loadOp' && key !== 'storeOp')
+                    {
+                        (baseAttachment as any)[key] = (colorAttachment as any)[key];
+                    }
+                }
+
+                return baseAttachment;
             }
         ) as GPURenderPassColorAttachment[];
 
         let depthStencilAttachment: GPURenderPassDepthStencilAttachment;
 
-        // if we have a depth or stencil buffer, we need to ensure we have a texture for it
-        // this is WebGPU specific - as WebGL does not require textures to run a depth / stencil buffer
-        if ((renderTarget.stencil || renderTarget.depth) && !renderTarget.depthStencilTexture)
+        // If we have a depth/stencil attachment, ensure its sample count matches the MSAA state.
+        // This is necessary if the stencil buffer was added dynamically after initialization
+        // (e.g. by the mask system calling ensureDepthStencil()).
+        if (renderTarget.depthStencilAttachment)
         {
-            renderTarget.ensureDepthStencilTexture();
-            renderTarget.depthStencilTexture.source.sampleCount = gpuRenderTarget.msaa ? 4 : 1;
-        }
+            if (gpuRenderTarget.msaa)
+            {
+                renderTarget.depthStencilAttachment.texture.sampleCount = 4;
+            }
 
-        if (renderTarget.depthStencilTexture)
-        {
-            const stencil = renderTarget.depthStencilTexture.source.format.includes('stencil');
-
-            const stencilLoadOp = (clear & CLEAR.STENCIL ? 'clear' : 'load') as GPULoadOp;
-            const depthLoadOp = (clear & CLEAR.DEPTH ? 'clear' : 'load') as GPULoadOp;
+            const attachment = renderTarget.depthStencilAttachment;
+            const stencil = attachment.texture.format.includes('stencil');
+            const depth = attachment.texture.format.includes('depth');
 
             depthStencilAttachment = {
-                view: this._renderer.texture
-                    .getTextureRenderTargetView(renderTarget.depthStencilTexture, mipLevel, layer),
-                stencilStoreOp: stencil ? 'store' : undefined,
-                stencilLoadOp: stencil ? stencilLoadOp : undefined,
-                depthClearValue: 1.0,
-                depthLoadOp,
-                depthStoreOp: 'store',
+                view: this._renderer.texture.getTextureRenderTargetView(
+                    attachment.texture,
+                    mipLevel,
+                    layer,
+                    attachment.viewDescriptor
+                ),
             };
+
+            if (stencil && !attachment.stencilReadOnly)
+            {
+                depthStencilAttachment.stencilLoadOp = (clear & CLEAR.STENCIL
+                    ? 'clear' : (attachment.stencilLoadOp ?? 'load')) as GPULoadOp;
+                depthStencilAttachment.stencilStoreOp = attachment.stencilStoreOp ?? 'store';
+
+                if (depthStencilAttachment.stencilLoadOp === 'clear')
+                {
+                    depthStencilAttachment.stencilClearValue = attachment.stencilClearValue ?? 0;
+                }
+            }
+
+            if (depth && !attachment.depthReadOnly)
+            {
+                depthStencilAttachment.depthLoadOp = (clear & CLEAR.DEPTH
+                    ? 'clear' : (attachment.depthLoadOp ?? 'load')) as GPULoadOp;
+                depthStencilAttachment.depthStoreOp = attachment.depthStoreOp ?? 'store';
+
+                if (depthStencilAttachment.depthLoadOp === 'clear')
+                {
+                    depthStencilAttachment.depthClearValue = attachment.depthClearValue ?? 1.0;
+                }
+            }
+
+            // Reapply any other properties from the Pixi attachment that map to WebGPU
+            // (excluding Pixi ones and ones we explicitly set)
+            for (const key in attachment)
+            {
+                if (key !== 'texture' && key !== 'viewDescriptor'
+                    && key !== 'stencilLoadOp' && key !== 'stencilStoreOp' && key !== 'stencilClearValue'
+                    && key !== 'depthLoadOp' && key !== 'depthStoreOp' && key !== 'depthClearValue'
+                )
+                {
+                    (depthStencilAttachment as any)[key] = (attachment as any)[key];
+                }
+            }
         }
 
         const descriptor: GPURenderPassDescriptor = {
@@ -277,12 +333,14 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
         const gpuRenderTarget = new GpuRenderTarget();
 
-        gpuRenderTarget.colorTargetCount = renderTarget.colorTextures.length;
+        gpuRenderTarget.colorTargetCount = renderTarget.colorAttachments.length;
 
         // create a context...
         // is a canvas...
-        renderTarget.colorTextures.forEach((colorTexture, i) =>
+        renderTarget.colorAttachments.forEach((colorAttachment, i) =>
         {
+            const colorTexture = colorAttachment.texture;
+
             if (colorTexture instanceof CanvasSource)
             {
                 const context = colorTexture.resource.getContext(
@@ -313,13 +371,13 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
             gpuRenderTarget.msaa = colorTexture.source.antialias;
 
-            if (colorTexture.source.antialias)
+            if (colorTexture.antialias)
             {
                 const msaaTexture = new TextureSource({
                     width: 0,
                     height: 0,
                     sampleCount: 4,
-                    arrayLayerCount: colorTexture.source.arrayLayerCount,
+                    arrayLayerCount: colorTexture.arrayLayerCount,
                 });
 
                 gpuRenderTarget.msaaTextures[i] = msaaTexture;
@@ -330,9 +388,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         {
             gpuRenderTarget.msaaSamples = 4;
 
-            if (renderTarget.depthStencilTexture)
+            if (renderTarget.depthStencilAttachment)
             {
-                renderTarget.depthStencilTexture.source.sampleCount = 4;
+                renderTarget.depthStencilAttachment.texture.sampleCount = 4;
             }
         }
 
@@ -360,9 +418,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         // TODO This function will be more useful once we cache the descriptors
         const gpuRenderTarget = this._renderTargetSystem.getGpuRenderTarget(renderTarget);
 
-        if (renderTarget.depthStencilTexture && gpuRenderTarget.msaa)
+        if (renderTarget.depthStencilAttachment && gpuRenderTarget.msaa)
         {
-            renderTarget.depthStencilTexture.source.sampleCount = 4;
+            renderTarget.depthStencilAttachment.texture.sampleCount = 4;
         }
     }
 
@@ -375,14 +433,15 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
         if (gpuRenderTarget.msaa)
         {
-            renderTarget.colorTextures.forEach((colorTexture, i) =>
+            renderTarget.colorAttachments.forEach((colorAttachment, i) =>
             {
+                const colorTexture = colorAttachment.texture;
                 const msaaTexture = gpuRenderTarget.msaaTextures[i];
 
                 msaaTexture?.resize(
-                    colorTexture.source.width,
-                    colorTexture.source.height,
-                    colorTexture.source._resolution
+                    colorTexture.width,
+                    colorTexture.height,
+                    colorTexture._resolution
                 );
             });
         }
