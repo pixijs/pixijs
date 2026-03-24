@@ -401,7 +401,7 @@ export class PipelineSystem implements System
             descriptor.depthStencil = {
                 ...this._stencilState,
                 format: this._depthStencilFormat,
-                depthWriteEnabled: formatData.depth ? state.depthTest : false,
+                depthWriteEnabled: formatData.depth ? state.depthMask : false,
                 depthCompare: formatData.depth && state.depthTest ? 'less' : 'always',
             };
         }

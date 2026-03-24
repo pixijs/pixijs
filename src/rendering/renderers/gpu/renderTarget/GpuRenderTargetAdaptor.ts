@@ -242,7 +242,12 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                 ),
             };
 
-            if (stencil && !attachment.stencilReadOnly)
+            const depthReadOnly = attachment.depthReadOnly ?? false;
+            // If depth is read-only, it's highly likely they want to sample the texture,
+            // which requires the ENTIRE texture (including stencil) to be read-only in WebGPU.
+            const stencilReadOnly = attachment.stencilReadOnly ?? depthReadOnly;
+
+            if (stencil && !stencilReadOnly)
             {
                 depthStencilAttachment.stencilLoadOp = (clear & CLEAR.STENCIL
                     ? 'clear' : (attachment.stencilLoadOp ?? 'load')) as GPULoadOp;
@@ -253,8 +258,12 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     depthStencilAttachment.stencilClearValue = attachment.stencilClearValue ?? 0;
                 }
             }
+            else if (stencil && stencilReadOnly)
+            {
+                depthStencilAttachment.stencilReadOnly = true;
+            }
 
-            if (depth && !attachment.depthReadOnly)
+            if (depth && !depthReadOnly)
             {
                 depthStencilAttachment.depthLoadOp = (clear & CLEAR.DEPTH
                     ? 'clear' : (attachment.depthLoadOp ?? 'load')) as GPULoadOp;
@@ -265,14 +274,20 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     depthStencilAttachment.depthClearValue = attachment.depthClearValue ?? 1.0;
                 }
             }
+            else if (depth && depthReadOnly)
+            {
+                depthStencilAttachment.depthReadOnly = true;
+            }
 
             // Reapply any other properties from the Pixi attachment that map to WebGPU
-            // (excluding Pixi ones and ones we explicitly set)
+            // (excluding Pixi ones and ones we explicitly set above)
             for (const key in attachment)
             {
                 if (key !== 'texture' && key !== 'viewDescriptor'
-                    && key !== 'stencilLoadOp' && key !== 'stencilStoreOp' && key !== 'stencilClearValue'
-                    && key !== 'depthLoadOp' && key !== 'depthStoreOp' && key !== 'depthClearValue'
+                    && key !== 'stencilLoadOp' && key !== 'stencilStoreOp'
+                    && key !== 'stencilClearValue' && key !== 'stencilReadOnly'
+                    && key !== 'depthLoadOp' && key !== 'depthStoreOp'
+                    && key !== 'depthClearValue' && key !== 'depthReadOnly'
                 )
                 {
                     (depthStencilAttachment as any)[key] = (attachment as any)[key];
