@@ -1,6 +1,7 @@
 import { BufferResource } from '../../shared/buffer/BufferResource';
 import { UniformGroup } from '../../shared/shader/UniformGroup';
 import { TextureSource } from '../../shared/texture/sources/TextureSource';
+import { TextureView } from '../../shared/texture/TextureView';
 
 import type { Shader } from '../../shared/shader/Shader';
 import type { GlShaderSystem, ShaderSyncFunction } from './GlShaderSystem';
@@ -32,7 +33,7 @@ export function generateShaderSyncCode(shader: Shader, shaderSystem: GlShaderSys
         var resources;
     `];
 
-    let addedTextreSystem = false;
+    let addedTextureSystem = false;
     let textureCount = 0;
 
     const programData = shaderSystem._getProgramData(shader.glProgram);
@@ -82,7 +83,7 @@ export function generateShaderSyncCode(shader: Shader, shaderSystem: GlShaderSys
                     );
                 `);
             }
-            else if (resource instanceof TextureSource)
+            else if (resource instanceof TextureSource || resource instanceof TextureView)
             {
                 const uniformName = shader._uniformBindMap[i as unknown as number][j as unknown as number];
 
@@ -90,9 +91,9 @@ export function generateShaderSyncCode(shader: Shader, shaderSystem: GlShaderSys
 
                 if (uniformData)
                 {
-                    if (!addedTextreSystem)
+                    if (!addedTextureSystem)
                     {
-                        addedTextreSystem = true;
+                        addedTextureSystem = true;
                         headerFragments.push(`
                         var tS = r.texture;
                         `);
