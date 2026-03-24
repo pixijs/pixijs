@@ -360,12 +360,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         // Keep the texture's mip range in sync with the declared mipLevelCount.
         // This is required in WebGL2 for FBO attachments at mipLevel > 0 when using partial mip chains.
-        // Skip for single-mip textures: setting MAX_LEVEL=0 triggers an ANGLE Metal bug
-        // on iOS 18.0–18.1 (https://github.com/pixijs/pixijs/issues/11984).
-        if (source.mipLevelCount > 1)
-        {
-            this._applyMipRange(glTexture, source);
-        }
+        this._applyMipRange(glTexture, source);
 
         if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
         {
@@ -527,6 +522,10 @@ export class GlTextureSystem implements System, CanvasGenerator
     private _applyMipRange(glTexture: GlTexture, source: TextureSource): void
     {
         if (this._renderer.context.webGLVersion !== 2) return;
+
+        // Skip for single-mip textures: setting MAX_LEVEL=0 triggers an ANGLE Metal bug
+        // on iOS 18.0–18.1 (https://github.com/pixijs/pixijs/issues/11984).
+        if (source.mipLevelCount <= 1) return;
 
         const gl = this._gl as WebGL2RenderingContext;
         const maxLevel = Math.max((source.mipLevelCount | 0) - 1, 0);
