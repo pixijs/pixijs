@@ -227,6 +227,7 @@ export * from './renderers/shared/texture/TextureMatrix';
 export * from './renderers/shared/texture/TexturePool';
 export * from './renderers/shared/texture/TextureStyle';
 export * from './renderers/shared/texture/TextureUvs';
+export * from './renderers/shared/texture/TextureView';
 export * from './renderers/shared/texture/utils/getCanvasTexture';
 export * from './renderers/shared/texture/utils/getSupportedCompressedTextureFormats';
 export * from './renderers/shared/texture/utils/getSupportedTextureFormats';

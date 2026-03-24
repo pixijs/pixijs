@@ -6,6 +6,7 @@ import type { UniformGroup } from '../shared/shader/UniformGroup';
 import type { System } from '../shared/system/System';
 import type { TextureSource } from '../shared/texture/sources/TextureSource';
 import type { TextureStyle } from '../shared/texture/TextureStyle';
+import type { TextureView } from '../shared/texture/TextureView';
 import type { GPU } from './GpuDeviceSystem';
 import type { BindGroup } from './shader/BindGroup';
 import type { BindResource } from './shader/BindResource';
@@ -114,6 +115,12 @@ export class BindGroupSystem implements System
                 const texture = resource as TextureSource;
 
                 gpuResource = renderer.texture.getTextureView(texture);
+            }
+            else if (resource._resourceType === 'textureView')
+            {
+                const textureView = resource as TextureView;
+
+                gpuResource = renderer.texture.getTextureView(textureView.source, textureView.viewDescriptor);
             }
 
             entries.push({
