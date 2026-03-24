@@ -1,0 +1,473 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://pixijs.com/schemas/gl2d/1.0/gl2d-schema-pixi.json",
+    "title": "gl2D PixiJS Extensions",
+    "description": "Additive schema for PixiJS-specific node types, extension objects, and resource types. Validates pixi_* extensions and custom node types used alongside the core gl2D schema.",
+    "$defs": {
+        "reference": {
+            "description": "A reference to a node or resource by integer index or string uid",
+            "oneOf": [{ "type": "integer", "minimum": 0 }, { "type": "string" }]
+        },
+        "point2d": {
+            "description": "A 2D point as [x, y]",
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 2,
+            "maxItems": 2
+        },
+        "rectangle": {
+            "description": "A rectangle as [x, y, width, height]",
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 4,
+            "maxItems": 4
+        },
+
+        "pixiContainerNodeExtension": {
+            "description": "PixiJS Container extension. Applicable to ALL node types via the extensions.pixi_container_node key.",
+            "type": "object",
+            "properties": {
+                "origin": {
+                    "description": "Transform origin point in pixels",
+                    "$ref": "#/$defs/point2d"
+                },
+                "skew": {
+                    "description": "Skew in radians [x, y]",
+                    "$ref": "#/$defs/point2d",
+                    "default": [0, 0]
+                },
+                "pivot": {
+                    "description": "Pivot point in pixels [x, y]",
+                    "$ref": "#/$defs/point2d",
+                    "default": [0, 0]
+                },
+                "anchor": {
+                    "description": "Anchor point (normalized [0-1, 0-1])",
+                    "$ref": "#/$defs/point2d",
+                    "default": [0, 0]
+                },
+                "width": {
+                    "description": "Explicit width override",
+                    "type": "number"
+                },
+                "height": {
+                    "description": "Explicit height override",
+                    "type": "number"
+                },
+                "tint": {
+                    "description": "Color tint (CSS color string)",
+                    "type": "string"
+                },
+                "blendMode": {
+                    "description": "Blend mode",
+                    "type": "string",
+                    "default": "normal"
+                },
+                "roundPixels": {
+                    "description": "Whether to round pixel values for rendering",
+                    "type": "boolean",
+                    "default": false
+                },
+                "mask": {
+                    "description": "Masking options",
+                    "type": "object",
+                    "required": ["node"],
+                    "properties": {
+                        "node": {
+                            "description": "Reference to the mask node",
+                            "$ref": "#/$defs/reference"
+                        },
+                        "inverse": {
+                            "description": "Whether the mask is inverted",
+                            "type": "boolean",
+                            "default": false
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "zIndex": {
+                    "description": "Depth sorting order",
+                    "type": "number",
+                    "default": 0
+                },
+                "isRenderGroup": {
+                    "description": "Treat as render group",
+                    "type": "boolean",
+                    "default": false
+                },
+                "renderable": {
+                    "description": "Whether node is rendered",
+                    "type": "boolean",
+                    "default": true
+                },
+                "boundsArea": {
+                    "description": "Cached bounds area [x, y, width, height]",
+                    "$ref": "#/$defs/rectangle"
+                },
+                "sortableChildren": {
+                    "description": "Auto-sort children by zIndex",
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "additionalProperties": false
+        },
+
+        "pixiTextNodeExtension": {
+            "description": "PixiJS Text extension via extensions.pixi_text_node",
+            "type": "object",
+            "properties": {
+                "textureStyle": {
+                    "description": "Texture style options for the internal texture",
+                    "type": "object"
+                },
+                "autoGenerateMipmaps": {
+                    "description": "Generate mipmaps for the text texture",
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "additionalProperties": false
+        },
+
+        "pixiHtmlTextNodeExtension": {
+            "description": "PixiJS HTML Text extension via extensions.pixi_html_text_node",
+            "type": "object",
+            "properties": {
+                "textureStyle": {
+                    "description": "Texture style options for the internal texture",
+                    "type": "object"
+                },
+                "autoGenerateMipmaps": {
+                    "description": "Generate mipmaps for the text texture",
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "additionalProperties": false
+        },
+
+        "pixiTilingSpriteNodeExtension": {
+            "description": "PixiJS Tiling Sprite extension via extensions.pixi_tiling_sprite_node",
+            "type": "object",
+            "properties": {
+                "applyAnchorToTexture": {
+                    "description": "Whether to apply the anchor point to the texture",
+                    "type": "boolean",
+                    "default": false
+                },
+                "clampMargin": {
+                    "description": "Texture edge clamping margin to reduce seams",
+                    "type": "number",
+                    "default": 0.5
+                }
+            },
+            "additionalProperties": false
+        },
+
+        "pixiAnimatedSpriteNodeExtension": {
+            "description": "PixiJS Animated Sprite extension via extensions.pixi_animated_sprite_node",
+            "type": "object",
+            "properties": {
+                "autoUpdate": {
+                    "description": "Whether to use the shared ticker for updates",
+                    "type": "boolean",
+                    "default": true
+                },
+                "updateAnchor": {
+                    "description": "Whether to update anchor to texture's defaultAnchor on frame change",
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "additionalProperties": false
+        },
+
+
+
+
+        "pixiMeshRopeNode": {
+            "description": "A high-level mesh that generates geometry along a path of points",
+            "type": "object",
+            "required": ["type", "texture", "points"],
+            "properties": {
+                "type": { "const": "pixi_mesh_rope" },
+                "texture": {
+                    "description": "Reference to texture resource",
+                    "$ref": "#/$defs/reference"
+                },
+                "points": {
+                    "description": "Flat array of [x, y] pairs for the path",
+                    "type": "array",
+                    "items": { "type": "number" }
+                },
+                "textureScale": {
+                    "description": "Texture mode: 0 = stretch, >0 = repeat with scale factor",
+                    "type": "number",
+                    "default": 0
+                },
+                "autoUpdate": {
+                    "description": "Whether vertices auto-update each frame",
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        },
+
+        "pixiMeshPlaneNode": {
+            "description": "A high-level mesh that generates a subdivided plane from texture dimensions",
+            "type": "object",
+            "required": ["type", "texture"],
+            "properties": {
+                "type": { "const": "pixi_mesh_plane" },
+                "texture": {
+                    "description": "Reference to texture resource",
+                    "$ref": "#/$defs/reference"
+                },
+                "verticesX": {
+                    "description": "Columns of vertices",
+                    "type": "number",
+                    "default": 10
+                },
+                "verticesY": {
+                    "description": "Rows of vertices",
+                    "type": "number",
+                    "default": 10
+                },
+                "autoResize": {
+                    "description": "Whether geometry auto-updates on texture change",
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        },
+
+        "pixiPerspectiveMeshNode": {
+            "description": "A mesh with perspective projection from four corner points",
+            "type": "object",
+            "required": ["type", "texture", "corners"],
+            "properties": {
+                "type": { "const": "pixi_perspective_mesh" },
+                "texture": {
+                    "description": "Reference to texture resource",
+                    "$ref": "#/$defs/reference"
+                },
+                "corners": {
+                    "description": "Flat array of 4 corner points [x0,y0, x1,y1, x2,y2, x3,y3] in clockwise order from top-left",
+                    "type": "array",
+                    "items": { "type": "number" },
+                    "minItems": 8,
+                    "maxItems": 8
+                },
+                "verticesX": {
+                    "description": "Number of columns in the subdivision grid",
+                    "type": "number",
+                    "default": 10
+                },
+                "verticesY": {
+                    "description": "Number of rows in the subdivision grid",
+                    "type": "number",
+                    "default": 10
+                }
+            }
+        },
+
+        "pixiGifSpriteNode": {
+            "description": "Renders an animated GIF from a pixi_gif resource",
+            "type": "object",
+            "required": ["type", "gif"],
+            "properties": {
+                "type": { "const": "pixi_gif_sprite" },
+                "gif": {
+                    "description": "Reference to a pixi_gif resource",
+                    "$ref": "#/$defs/reference"
+                },
+                "animationSpeed": {
+                    "description": "Playback speed multiplier",
+                    "type": "number",
+                    "default": 1
+                },
+                "loop": {
+                    "description": "Whether the animation loops",
+                    "type": "boolean",
+                    "default": true
+                },
+                "autoPlay": {
+                    "description": "Whether to start playing automatically",
+                    "type": "boolean",
+                    "default": false
+                },
+                "autoUpdate": {
+                    "description": "Whether to use the shared ticker for updates",
+                    "type": "boolean",
+                    "default": true
+                },
+                "currentFrame": {
+                    "description": "Frame index to start at (0-based)",
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 0
+                }
+            }
+        },
+
+        "pixiSplitTextNode": {
+            "description": "Splits canvas text into individually transformable lines, words, and characters",
+            "type": "object",
+            "required": ["type", "text", "style"],
+            "properties": {
+                "type": { "const": "pixi_split_text" },
+                "text": {
+                    "description": "The text content to split",
+                    "type": "string"
+                },
+                "style": {
+                    "description": "Reference to a text_style resource",
+                    "$ref": "#/$defs/reference"
+                },
+                "resolution": {
+                    "description": "Resolution of the text rendering (construction-time)",
+                    "type": "number",
+                    "default": 1
+                },
+                "webFont": {
+                    "description": "Reference to a web_font resource (construction-time)",
+                    "$ref": "#/$defs/reference"
+                },
+                "charAnchor": {
+                    "description": "Transform origin for characters [x, y] (0-1 normalized)",
+                    "$ref": "#/$defs/point2d",
+                    "default": [0, 0]
+                },
+                "wordAnchor": {
+                    "description": "Transform origin for words [x, y] (0-1 normalized)",
+                    "$ref": "#/$defs/point2d",
+                    "default": [0, 0]
+                },
+                "lineAnchor": {
+                    "description": "Transform origin for lines [x, y] (0-1 normalized)",
+                    "$ref": "#/$defs/point2d",
+                    "default": [0, 0]
+                },
+                "autoSplit": {
+                    "description": "Whether to auto-update segments on text/style change",
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        },
+
+        "pixiSplitBitmapTextNode": {
+            "description": "Splits bitmap text into individually transformable lines, words, and characters",
+            "type": "object",
+            "required": ["type", "text", "style"],
+            "properties": {
+                "type": { "const": "pixi_split_bitmap_text" },
+                "text": {
+                    "description": "The text content to split",
+                    "type": "string"
+                },
+                "style": {
+                    "description": "Reference to a text_style resource",
+                    "$ref": "#/$defs/reference"
+                },
+                "resolution": {
+                    "description": "Resolution of the text rendering (construction-time)",
+                    "type": "number",
+                    "default": 1
+                },
+                "bitmapFont": {
+                    "description": "Reference to a bitmap_font resource (construction-time)",
+                    "$ref": "#/$defs/reference"
+                },
+                "charAnchor": {
+                    "description": "Transform origin for characters [x, y] (0-1 normalized)",
+                    "$ref": "#/$defs/point2d",
+                    "default": [0, 0]
+                },
+                "wordAnchor": {
+                    "description": "Transform origin for words [x, y] (0-1 normalized)",
+                    "$ref": "#/$defs/point2d",
+                    "default": [0, 0]
+                },
+                "lineAnchor": {
+                    "description": "Transform origin for lines [x, y] (0-1 normalized)",
+                    "$ref": "#/$defs/point2d",
+                    "default": [0, 0]
+                },
+                "autoSplit": {
+                    "description": "Whether to auto-update segments on text/style change",
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        },
+
+        "pixiDomContainerNode": {
+            "description": "Integrates an HTML element into the scene graph. Browser-specific.",
+            "type": "object",
+            "required": ["type", "element"],
+            "properties": {
+                "type": { "const": "pixi_dom_container" },
+                "element": {
+                    "description": "Reference to a pixi_dom_element resource",
+                    "$ref": "#/$defs/reference"
+                },
+                "anchor": {
+                    "description": "Anchor point [x, y] (0-1 normalized)",
+                    "$ref": "#/$defs/point2d",
+                    "default": [0, 0]
+                }
+            }
+        },
+
+        "pixiGifResource": {
+            "description": "GIF animation source data. Referenced by pixi_gif_sprite nodes.",
+            "type": "object",
+            "required": ["type", "uri"],
+            "properties": {
+                "type": { "const": "pixi_gif" },
+                "uid": {
+                    "description": "Unique identifier",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Human-readable name",
+                    "type": "string"
+                },
+                "uri": {
+                    "description": "Path/URL to the GIF file",
+                    "type": "string"
+                },
+                "fps": {
+                    "description": "Fallback FPS if GIF timing data is missing",
+                    "type": "number",
+                    "default": 30
+                }
+            },
+            "additionalProperties": false
+        },
+
+        "pixiDomElementResource": {
+            "description": "Declares a DOM element for use by pixi_dom_container nodes",
+            "type": "object",
+            "required": ["type", "uid"],
+            "properties": {
+                "type": { "const": "pixi_dom_element" },
+                "uid": {
+                    "description": "Unique identifier (used as key in resource map)",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Human-readable name",
+                    "type": "string"
+                },
+                "selector": {
+                    "description": "CSS selector fallback for automatic resolution",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}

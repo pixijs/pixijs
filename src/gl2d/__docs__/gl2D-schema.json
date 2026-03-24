@@ -1,0 +1,1616 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://pixijs.com/schemas/gl2d/1.0/gl2d-schema.json",
+    "title": "gl2D File Format",
+    "description": "A JSON-based 2D scene description format inspired by glTF. Uses a y-down coordinate system (origin top-left, positive x right, positive y down, clockwise rotation in radians). The node graph must be a forest (no cycles); a node may appear in at most one children array. Type and extension names use snake_case; property names use camelCase. Colors are CSS color strings. Custom node/resource types are allowed via vendor-prefixed extensions.",
+    "type": "object",
+    "required": ["asset"],
+    "properties": {
+        "asset": {
+            "$ref": "#/$defs/asset"
+        },
+        "scene": {
+            "description": "Reference to the default scene by index (number) or uid (string)",
+            "oneOf": [{ "type": "integer", "minimum": 0 }, { "type": "string" }]
+        },
+        "scenes": {
+            "description": "Array of scene definitions",
+            "type": "array",
+            "items": { "$ref": "#/$defs/scene" }
+        },
+        "nodes": {
+            "description": "Array of node definitions. The node graph must be a forest: no cycles, each node in at most one children array.",
+            "type": "array",
+            "items": { "$ref": "#/$defs/node" }
+        },
+        "resources": {
+            "description": "Array of resource definitions (textures, images, videos, fonts, graphics contexts, filters, styles, etc.)",
+            "type": "array",
+            "items": { "$ref": "#/$defs/resource" }
+        },
+        "extensionsUsed": {
+            "description": "List of all extension names present in this file",
+            "type": "array",
+            "items": { "type": "string" }
+        },
+        "extensionsRequired": {
+            "description": "List of extension names required to correctly load this file. A consumer that does not understand a required extension should refuse to load.",
+            "type": "array",
+            "items": { "type": "string" }
+        }
+    },
+    "additionalProperties": false,
+    "$defs": {
+        "reference": {
+            "description": "A reference to a node or resource by integer index (position in array) or string uid",
+            "oneOf": [{ "type": "integer", "minimum": 0 }, { "type": "string" }]
+        },
+        "referenceArray": {
+            "description": "An array of references (integer index or string uid)",
+            "type": "array",
+            "items": { "$ref": "#/$defs/reference" }
+        },
+        "point2d": {
+            "description": "A 2D point as [x, y]",
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 2,
+            "maxItems": 2
+        },
+        "matrix2d": {
+            "description": "A 2D affine transform matrix as [a, b, c, d, tx, ty]",
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 6,
+            "maxItems": 6
+        },
+        "rectangle": {
+            "description": "A rectangle as [x, y, width, height]",
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 4,
+            "maxItems": 4
+        },
+        "extensions": {
+            "description": "Engine-specific extension data. Keys are vendor-prefixed extension names (e.g. pixi_, phaser_, gl2d_). Values are open objects.",
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "additionalProperties": true
+            }
+        },
+        "asset": {
+            "description": "Metadata about the gl2D asset. gl2D follows semver: minor versions are additive only, major versions may break.",
+            "type": "object",
+            "required": ["version"],
+            "properties": {
+                "version": {
+                    "description": "gl2D spec version (semver, e.g. \"1.0\")",
+                    "type": "string"
+                },
+                "generator": {
+                    "description": "Tool or library that created this file",
+                    "type": "string"
+                },
+                "minVersion": {
+                    "description": "Minimum gl2D version required to render this file correctly",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "scene": {
+            "description": "A scene is a collection of root nodes. Multiple scenes can exist in one file (e.g. menu, gameplay, credits).",
+            "type": "object",
+            "required": ["name", "nodes"],
+            "properties": {
+                "name": {
+                    "description": "Human-readable name of the scene",
+                    "type": "string"
+                },
+                "nodes": {
+                    "description": "References to root nodes in the global nodes array",
+                    "$ref": "#/$defs/referenceArray"
+                },
+                "width": {
+                    "description": "Design width of the scene in pixels",
+                    "type": "number"
+                },
+                "height": {
+                    "description": "Design height of the scene in pixels",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "coreNodeProperties": {
+            "description": "Properties shared by all node types. If matrix is present, translation/rotation/scale are ignored. Serializers should omit fields matching default values.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "Node type discriminator",
+                    "type": "string"
+                },
+                "uid": {
+                    "description": "Unique identifier used for string references",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Human-readable name",
+                    "type": "string"
+                },
+                "children": {
+                    "description": "References to child nodes. A node may appear in at most one children array.",
+                    "$ref": "#/$defs/referenceArray",
+                    "default": []
+                },
+                "translation": {
+                    "description": "Position [x, y]. Ignored if matrix is present.",
+                    "$ref": "#/$defs/point2d",
+                    "default": [0, 0]
+                },
+                "rotation": {
+                    "description": "Rotation in radians (clockwise). Ignored if matrix is present.",
+                    "type": "number",
+                    "default": 0
+                },
+                "scale": {
+                    "description": "Scale [x, y]. Ignored if matrix is present.",
+                    "$ref": "#/$defs/point2d",
+                    "default": [1, 1]
+                },
+                "matrix": {
+                    "description": "2D affine transform matrix [a, b, c, d, tx, ty]. When present, translation/rotation/scale are ignored. Mutually exclusive with TRS properties.",
+                    "$ref": "#/$defs/matrix2d"
+                },
+                "alpha": {
+                    "description": "Opacity (0.0 to 1.0)",
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "default": 1
+                },
+                "visible": {
+                    "description": "Whether the node is visible",
+                    "type": "boolean",
+                    "default": true
+                },
+                "extensions": {
+                    "$ref": "#/$defs/extensions"
+                }
+            }
+        },
+        "node": {
+            "description": "A node in the scene graph. Discriminated on the 'type' field. Unrecognized types should be treated as containers (children still render, specific behavior lost).",
+            "oneOf": [
+                { "$ref": "#/$defs/containerNode" },
+                { "$ref": "#/$defs/spriteNode" },
+                { "$ref": "#/$defs/tilingSpriteNode" },
+                { "$ref": "#/$defs/nineSliceSpriteNode" },
+                { "$ref": "#/$defs/textNode" },
+                { "$ref": "#/$defs/bitmapTextNode" },
+                { "$ref": "#/$defs/htmlTextNode" },
+                { "$ref": "#/$defs/animatedSpriteNode" },
+                { "$ref": "#/$defs/graphicsNode" },
+                { "$ref": "#/$defs/meshNode" },
+                { "$ref": "#/$defs/particleContainerNode" },
+                { "$ref": "#/$defs/customNode" }
+            ]
+        },
+        "containerNode": {
+            "description": "Groups other nodes and applies hierarchical transforms. No additional core properties beyond shared node properties.",
+            "allOf": [{ "$ref": "#/$defs/coreNodeProperties" }],
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+                "type": { "const": "container" },
+                "uid": true,
+                "name": true,
+                "children": true,
+                "translation": true,
+                "rotation": true,
+                "scale": true,
+                "matrix": true,
+                "alpha": true,
+                "visible": true,
+                "extensions": true
+            },
+            "additionalProperties": false
+        },
+        "spriteNode": {
+            "description": "A texture-based drawable element",
+            "allOf": [{ "$ref": "#/$defs/coreNodeProperties" }],
+            "type": "object",
+            "required": ["type", "texture"],
+            "properties": {
+                "type": { "const": "sprite" },
+                "uid": true,
+                "name": true,
+                "children": true,
+                "translation": true,
+                "rotation": true,
+                "scale": true,
+                "matrix": true,
+                "alpha": true,
+                "visible": true,
+                "extensions": true,
+                "texture": {
+                    "description": "Reference to a texture resource",
+                    "$ref": "#/$defs/reference"
+                }
+            },
+            "additionalProperties": false
+        },
+        "tilingSpriteNode": {
+            "description": "Repeats its texture to fill width/height. Useful for backgrounds, patterns, and infinite scrolling textures.",
+            "allOf": [{ "$ref": "#/$defs/coreNodeProperties" }],
+            "type": "object",
+            "required": ["type", "texture"],
+            "properties": {
+                "type": { "const": "tiling_sprite" },
+                "uid": true,
+                "name": true,
+                "children": true,
+                "translation": true,
+                "rotation": true,
+                "scale": true,
+                "matrix": true,
+                "alpha": true,
+                "visible": true,
+                "extensions": true,
+                "texture": {
+                    "description": "Reference to a texture resource",
+                    "$ref": "#/$defs/reference"
+                },
+                "width": {
+                    "description": "Width of the tiling area in pixels",
+                    "type": "number"
+                },
+                "height": {
+                    "description": "Height of the tiling area in pixels",
+                    "type": "number"
+                },
+                "tileScale": {
+                    "description": "Scale of the tiles [x, y]",
+                    "$ref": "#/$defs/point2d",
+                    "default": [1, 1]
+                },
+                "tilePosition": {
+                    "description": "Offset of the tiles [x, y]",
+                    "$ref": "#/$defs/point2d",
+                    "default": [0, 0]
+                },
+                "tileRotation": {
+                    "description": "Rotation of tiles in radians",
+                    "type": "number",
+                    "default": 0
+                }
+            },
+            "additionalProperties": false
+        },
+        "nineSliceSpriteNode": {
+            "description": "Scales its texture while preserving corners and edges using nine-slice scaling",
+            "allOf": [{ "$ref": "#/$defs/coreNodeProperties" }],
+            "type": "object",
+            "required": ["type", "texture"],
+            "properties": {
+                "type": { "const": "nine_slice_sprite" },
+                "uid": true,
+                "name": true,
+                "children": true,
+                "translation": true,
+                "rotation": true,
+                "scale": true,
+                "matrix": true,
+                "alpha": true,
+                "visible": true,
+                "extensions": true,
+                "texture": {
+                    "description": "Reference to a texture resource",
+                    "$ref": "#/$defs/reference"
+                },
+                "width": {
+                    "description": "Width of the nine-slice sprite in pixels",
+                    "type": "number"
+                },
+                "height": {
+                    "description": "Height of the nine-slice sprite in pixels",
+                    "type": "number"
+                },
+                "leftWidth": {
+                    "description": "Width of the left column in pixels",
+                    "type": "number",
+                    "default": 10
+                },
+                "topHeight": {
+                    "description": "Height of the top row in pixels",
+                    "type": "number",
+                    "default": 10
+                },
+                "rightWidth": {
+                    "description": "Width of the right column in pixels",
+                    "type": "number",
+                    "default": 10
+                },
+                "bottomHeight": {
+                    "description": "Height of the bottom row in pixels",
+                    "type": "number",
+                    "default": 10
+                }
+            },
+            "additionalProperties": false
+        },
+        "textNode": {
+            "description": "Renders text content using a specified text style and optional web font",
+            "allOf": [{ "$ref": "#/$defs/coreNodeProperties" }],
+            "type": "object",
+            "required": ["type", "text", "style"],
+            "properties": {
+                "type": { "const": "text" },
+                "uid": true,
+                "name": true,
+                "children": true,
+                "translation": true,
+                "rotation": true,
+                "scale": true,
+                "matrix": true,
+                "alpha": true,
+                "visible": true,
+                "extensions": true,
+                "text": {
+                    "description": "The text content to display",
+                    "type": "string"
+                },
+                "style": {
+                    "description": "Reference to a text_style resource",
+                    "$ref": "#/$defs/reference"
+                },
+                "resolution": {
+                    "description": "Resolution of the text rendering",
+                    "type": "number",
+                    "default": 1
+                },
+                "webFont": {
+                    "description": "Reference to a web_font resource",
+                    "$ref": "#/$defs/reference"
+                }
+            },
+            "additionalProperties": false
+        },
+        "bitmapTextNode": {
+            "description": "Renders text using a pre-rendered bitmap font atlas for improved performance",
+            "allOf": [{ "$ref": "#/$defs/coreNodeProperties" }],
+            "type": "object",
+            "required": ["type", "text", "style"],
+            "properties": {
+                "type": { "const": "bitmap_text" },
+                "uid": true,
+                "name": true,
+                "children": true,
+                "translation": true,
+                "rotation": true,
+                "scale": true,
+                "matrix": true,
+                "alpha": true,
+                "visible": true,
+                "extensions": true,
+                "text": {
+                    "description": "The text content to display",
+                    "type": "string"
+                },
+                "style": {
+                    "description": "Reference to a text_style resource",
+                    "$ref": "#/$defs/reference"
+                },
+                "resolution": {
+                    "description": "Resolution of the text rendering",
+                    "type": "number",
+                    "default": 1
+                },
+                "bitmapFont": {
+                    "description": "Reference to a bitmap_font resource",
+                    "$ref": "#/$defs/reference"
+                }
+            },
+            "additionalProperties": false
+        },
+        "htmlTextNode": {
+            "description": "Renders HTML/CSS content into a texture",
+            "allOf": [{ "$ref": "#/$defs/coreNodeProperties" }],
+            "type": "object",
+            "required": ["type", "text", "style"],
+            "properties": {
+                "type": { "const": "html_text" },
+                "uid": true,
+                "name": true,
+                "children": true,
+                "translation": true,
+                "rotation": true,
+                "scale": true,
+                "matrix": true,
+                "alpha": true,
+                "visible": true,
+                "extensions": true,
+                "text": {
+                    "description": "HTML content to display",
+                    "type": "string"
+                },
+                "style": {
+                    "description": "Reference to a text_style resource",
+                    "$ref": "#/$defs/reference"
+                },
+                "resolution": {
+                    "description": "Resolution of the text rendering",
+                    "type": "number",
+                    "default": 1
+                }
+            },
+            "additionalProperties": false
+        },
+        "animatedSpriteNode": {
+            "description": "Renders a sequence of texture frames as an animation. Frame source is specified using ONE of two mutually exclusive approaches: 'textures' (array of texture references) OR 'spritesheet' + 'animation' (named animation within a spritesheet).",
+            "allOf": [{ "$ref": "#/$defs/coreNodeProperties" }],
+            "type": "object",
+            "required": ["type"],
+            "oneOf": [
+                {
+                    "required": ["textures"],
+                    "not": {
+                        "anyOf": [
+                            { "required": ["spritesheet"] },
+                            { "required": ["animation"] }
+                        ]
+                    }
+                },
+                {
+                    "required": ["spritesheet", "animation"],
+                    "not": { "required": ["textures"] }
+                }
+            ],
+            "properties": {
+                "type": { "const": "animated_sprite" },
+                "uid": true,
+                "name": true,
+                "children": true,
+                "translation": true,
+                "rotation": true,
+                "scale": true,
+                "matrix": true,
+                "alpha": true,
+                "visible": true,
+                "extensions": true,
+                "textures": {
+                    "description": "Array of texture references for loose-texture animation. Mutually exclusive with spritesheet + animation.",
+                    "$ref": "#/$defs/referenceArray"
+                },
+                "spritesheet": {
+                    "description": "Reference to a spritesheet resource. Used with 'animation'. Mutually exclusive with 'textures'.",
+                    "$ref": "#/$defs/reference"
+                },
+                "animation": {
+                    "description": "Named animation within the spritesheet. Used with 'spritesheet'. Mutually exclusive with 'textures'.",
+                    "type": "string"
+                },
+                "animationSpeed": {
+                    "description": "Playback speed multiplier",
+                    "type": "number",
+                    "default": 1
+                },
+                "loop": {
+                    "description": "Whether the animation loops",
+                    "type": "boolean",
+                    "default": true
+                },
+                "autoPlay": {
+                    "description": "Whether to start playing automatically",
+                    "type": "boolean",
+                    "default": false
+                },
+                "currentFrame": {
+                    "description": "Frame index to start at (0-based)",
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 0
+                }
+            },
+            "additionalProperties": false
+        },
+        "graphicsNode": {
+            "description": "Renders vector graphics from a shared graphics context resource",
+            "allOf": [{ "$ref": "#/$defs/coreNodeProperties" }],
+            "type": "object",
+            "required": ["type", "context"],
+            "properties": {
+                "type": { "const": "graphics" },
+                "uid": true,
+                "name": true,
+                "children": true,
+                "translation": true,
+                "rotation": true,
+                "scale": true,
+                "matrix": true,
+                "alpha": true,
+                "visible": true,
+                "extensions": true,
+                "context": {
+                    "description": "Reference to a graphics_context resource",
+                    "$ref": "#/$defs/reference"
+                }
+            },
+            "additionalProperties": false
+        },
+        "meshNode": {
+            "description": "Renders custom geometry with a texture. Vertex data is stored as flat number arrays.",
+            "allOf": [{ "$ref": "#/$defs/coreNodeProperties" }],
+            "type": "object",
+            "required": ["type", "texture", "vertices", "uvs"],
+            "properties": {
+                "type": { "const": "mesh" },
+                "uid": true,
+                "name": true,
+                "children": true,
+                "translation": true,
+                "rotation": true,
+                "scale": true,
+                "matrix": true,
+                "alpha": true,
+                "visible": true,
+                "extensions": true,
+                "texture": {
+                    "description": "Reference to a texture resource",
+                    "$ref": "#/$defs/reference"
+                },
+                "vertices": {
+                    "description": "Flat array of vertex positions (pairs of x, y)",
+                    "type": "array",
+                    "items": { "type": "number" }
+                },
+                "uvs": {
+                    "description": "Flat array of UV coordinates (pairs of u, v)",
+                    "type": "array",
+                    "items": { "type": "number" }
+                },
+                "indices": {
+                    "description": "Triangle index array",
+                    "type": "array",
+                    "items": { "type": "integer", "minimum": 0 }
+                },
+                "topology": {
+                    "description": "Draw topology for the mesh",
+                    "type": "string",
+                    "enum": [
+                        "point-list",
+                        "line-list",
+                        "line-strip",
+                        "triangle-list",
+                        "triangle-strip"
+                    ],
+                    "default": "triangle-list"
+                }
+            },
+            "additionalProperties": false
+        },
+        "particleContainerNode": {
+            "description": "Renders a large number of particles efficiently using a shared texture. Particle data is stored as parallel flat arrays. Does not support scene graph children.",
+            "allOf": [{ "$ref": "#/$defs/coreNodeProperties" }],
+            "type": "object",
+            "required": ["type", "texture", "positions"],
+            "properties": {
+                "type": { "const": "particle_container" },
+                "uid": true,
+                "name": true,
+                "translation": true,
+                "rotation": true,
+                "scale": true,
+                "matrix": true,
+                "alpha": true,
+                "visible": true,
+                "extensions": true,
+                "texture": {
+                    "description": "Reference to the shared texture resource for all particles",
+                    "$ref": "#/$defs/reference"
+                },
+                "positions": {
+                    "description": "Flat array of [x, y] pairs per particle. Array length must be even; particle count is length / 2.",
+                    "type": "array",
+                    "items": { "type": "number" }
+                },
+                "rotations": {
+                    "description": "One rotation value (radians) per particle. Length must equal particle count.",
+                    "type": "array",
+                    "items": { "type": "number" }
+                },
+                "scales": {
+                    "description": "Flat array of [x, y] scale pairs per particle. Length must equal particle count * 2.",
+                    "type": "array",
+                    "items": { "type": "number" }
+                },
+                "tints": {
+                    "description": "One CSS color string per particle. Length must equal particle count.",
+                    "type": "array",
+                    "items": { "type": "string" }
+                },
+                "alphas": {
+                    "description": "One opacity value (0.0-1.0) per particle. Length must equal particle count.",
+                    "type": "array",
+                    "items": { "type": "number", "minimum": 0, "maximum": 1 }
+                }
+            },
+            "additionalProperties": false
+        },
+        "customNode": {
+            "description": "A custom node type defined via extensions. Must use a vendor-prefixed type name (e.g. 'phaser_tilemap'). Consumers that do not recognize the type should treat it as a container.",
+            "allOf": [{ "$ref": "#/$defs/coreNodeProperties" }],
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+                "type": {
+                    "description": "Vendor-prefixed custom node type. Must not match any core node type.",
+                    "type": "string",
+                    "not": {
+                        "enum": [
+                            "container",
+                            "sprite",
+                            "tiling_sprite",
+                            "nine_slice_sprite",
+                            "text",
+                            "bitmap_text",
+                            "html_text",
+                            "animated_sprite",
+                            "graphics",
+                            "mesh",
+                            "particle_container"
+                        ]
+                    }
+                },
+                "uid": true,
+                "name": true,
+                "children": true,
+                "translation": true,
+                "rotation": true,
+                "scale": true,
+                "matrix": true,
+                "alpha": true,
+                "visible": true,
+                "extensions": true
+            },
+            "additionalProperties": true
+        },
+        "resource": {
+            "description": "A reusable asset: texture, image source, video source, spritesheet, graphics context, text style, web font, bitmap font, canvas gradient, canvas pattern, or filter. Custom resource types are allowed via vendor-prefixed type names.",
+            "oneOf": [
+                { "$ref": "#/$defs/textureResource" },
+                { "$ref": "#/$defs/imageSourceResource" },
+                { "$ref": "#/$defs/videoSourceResource" },
+                { "$ref": "#/$defs/spritesheetResource" },
+                { "$ref": "#/$defs/graphicsContextResource" },
+                { "$ref": "#/$defs/textStyleResource" },
+                { "$ref": "#/$defs/webFontResource" },
+                { "$ref": "#/$defs/bitmapFontResource" },
+                { "$ref": "#/$defs/canvasGradientResource" },
+                { "$ref": "#/$defs/canvasPatternResource" },
+                { "$ref": "#/$defs/filterResource" },
+                { "$ref": "#/$defs/customResource" }
+            ]
+        },
+        "textureSourceBaseProperties": {
+            "description": "Base properties shared by all texture source types (image_source, video_source, etc.)",
+            "type": "object",
+            "properties": {
+                "uid": {
+                    "description": "Unique identifier",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Human-readable name",
+                    "type": "string"
+                },
+                "uri": {
+                    "description": "Path, URL, or data URI to the resource. URIs are relative to the .gl2d file location.",
+                    "type": "string"
+                },
+                "width": {
+                    "description": "Pixel width (actual pixels, not resolution-scaled)",
+                    "type": "number"
+                },
+                "height": {
+                    "description": "Pixel height",
+                    "type": "number"
+                },
+                "resolution": {
+                    "description": "Resolution scale factor (e.g. 2 for @2x)",
+                    "type": "number",
+                    "default": 1
+                },
+                "format": {
+                    "description": "Texture format. Availability of compressed formats depends on platform features.",
+                    "type": "string",
+                    "default": "rgba8unorm"
+                },
+                "antialias": {
+                    "description": "Whether to use antialiasing",
+                    "type": "boolean",
+                    "default": false
+                },
+                "alphaMode": {
+                    "description": "Alpha premultiplication mode",
+                    "type": "string",
+                    "enum": [
+                        "no-premultiply-alpha",
+                        "premultiply-alpha-on-upload",
+                        "premultiplied-alpha"
+                    ]
+                },
+                "addressMode": {
+                    "description": "Wrap mode for U, V, W simultaneously",
+                    "type": "string",
+                    "enum": ["repeat", "clamp", "mirror"],
+                    "default": "clamp"
+                },
+                "addressModeU": {
+                    "description": "Wrap mode for U coordinate",
+                    "type": "string",
+                    "enum": ["repeat", "clamp", "mirror"]
+                },
+                "addressModeV": {
+                    "description": "Wrap mode for V coordinate",
+                    "type": "string",
+                    "enum": ["repeat", "clamp", "mirror"]
+                },
+                "addressModeW": {
+                    "description": "Wrap mode for W coordinate",
+                    "type": "string",
+                    "enum": ["repeat", "clamp", "mirror"]
+                },
+                "scaleMode": {
+                    "description": "Sets mag/min/mipmap filters simultaneously",
+                    "type": "string",
+                    "enum": ["linear", "nearest"],
+                    "default": "linear"
+                },
+                "magFilter": {
+                    "description": "Magnification filter",
+                    "type": "string",
+                    "enum": ["linear", "nearest"]
+                },
+                "minFilter": {
+                    "description": "Minification filter",
+                    "type": "string",
+                    "enum": ["linear", "nearest"]
+                },
+                "mipmapFilter": {
+                    "description": "Mipmap level filter",
+                    "type": "string",
+                    "enum": ["linear", "nearest"]
+                },
+                "lodMinClamp": {
+                    "description": "Minimum LOD clamp",
+                    "type": "number",
+                    "default": 0
+                },
+                "lodMaxClamp": {
+                    "description": "Maximum LOD clamp",
+                    "type": "number",
+                    "default": 100
+                },
+                "extensions": {
+                    "$ref": "#/$defs/extensions"
+                }
+            }
+        },
+        "textureResource": {
+            "description": "A texture resource representing a portion of a texture source. Source can point to an image_source, video_source, or spritesheet. When source is image/video, 'frame' defines the crop rectangle. When source is a spritesheet, 'frameName' identifies the sub-image.",
+            "type": "object",
+            "required": ["type", "source"],
+            "properties": {
+                "type": {
+                    "description": "Resource type discriminator",
+                    "const": "texture"
+                },
+                "uid": {
+                    "description": "Unique identifier",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Human-readable name",
+                    "type": "string"
+                },
+                "source": {
+                    "description": "Reference to a texture source (image_source, video_source) or spritesheet resource",
+                    "$ref": "#/$defs/reference"
+                },
+                "frame": {
+                    "description": "Rectangle crop from source [x, y, width, height]. Used with image/video sources.",
+                    "$ref": "#/$defs/rectangle"
+                },
+                "frameName": {
+                    "description": "Frame name within a spritesheet. Used with spritesheet sources.",
+                    "type": "string"
+                },
+                "extensions": {
+                    "$ref": "#/$defs/extensions"
+                }
+            },
+            "additionalProperties": false
+        },
+        "imageSourceResource": {
+            "description": "A 2D image texture source. Extends TextureSource base properties.",
+            "allOf": [{ "$ref": "#/$defs/textureSourceBaseProperties" }],
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+                "type": {
+                    "description": "Resource type discriminator",
+                    "const": "image_source"
+                },
+                "uid": true,
+                "name": true,
+                "uri": true,
+                "width": true,
+                "height": true,
+                "resolution": true,
+                "format": true,
+                "antialias": true,
+                "alphaMode": true,
+                "addressMode": true,
+                "addressModeU": true,
+                "addressModeV": true,
+                "addressModeW": true,
+                "scaleMode": true,
+                "magFilter": true,
+                "minFilter": true,
+                "mipmapFilter": true,
+                "lodMinClamp": true,
+                "lodMaxClamp": true,
+                "extensions": true
+            },
+            "additionalProperties": false
+        },
+        "videoSourceResource": {
+            "description": "A 2D video texture source. Extends TextureSource base properties with video-specific options.",
+            "allOf": [{ "$ref": "#/$defs/textureSourceBaseProperties" }],
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+                "type": {
+                    "description": "Resource type discriminator",
+                    "const": "video_source"
+                },
+                "uid": true,
+                "name": true,
+                "uri": true,
+                "width": true,
+                "height": true,
+                "resolution": true,
+                "format": true,
+                "antialias": true,
+                "alphaMode": true,
+                "addressMode": true,
+                "addressModeU": true,
+                "addressModeV": true,
+                "addressModeW": true,
+                "scaleMode": true,
+                "magFilter": true,
+                "minFilter": true,
+                "mipmapFilter": true,
+                "lodMinClamp": true,
+                "lodMaxClamp": true,
+                "extensions": true,
+                "autoLoad": {
+                    "description": "Whether to preload the video",
+                    "type": "boolean",
+                    "default": false
+                },
+                "autoPlay": {
+                    "description": "Whether to autoplay the video",
+                    "type": "boolean",
+                    "default": false
+                },
+                "crossorigin": {
+                    "description": "Cross-origin attribute for the video element",
+                    "type": "string"
+                },
+                "loop": {
+                    "description": "Whether the video loops",
+                    "type": "boolean",
+                    "default": false
+                },
+                "muted": {
+                    "description": "Whether the video is muted",
+                    "type": "boolean",
+                    "default": false
+                },
+                "playsinline": {
+                    "description": "Whether the video plays inline (iOS)",
+                    "type": "boolean",
+                    "default": true
+                }
+            },
+            "additionalProperties": false
+        },
+        "spritesheetResource": {
+            "description": "A collection of sprites packed into a single texture atlas",
+            "type": "object",
+            "required": ["type", "uri", "source"],
+            "properties": {
+                "type": {
+                    "description": "Resource type discriminator",
+                    "const": "spritesheet"
+                },
+                "uid": {
+                    "description": "Unique identifier",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Human-readable name",
+                    "type": "string"
+                },
+                "uri": {
+                    "description": "Path or URL to the spritesheet JSON file",
+                    "type": "string"
+                },
+                "source": {
+                    "description": "Reference to the underlying image source resource",
+                    "$ref": "#/$defs/reference"
+                },
+                "extensions": {
+                    "$ref": "#/$defs/extensions"
+                }
+            },
+            "additionalProperties": false
+        },
+        "graphicsContextResource": {
+            "description": "A shared set of vector drawing commands. Multiple graphics nodes can reference the same context. The command list mirrors drawing APIs with interleaved fill/stroke style and path commands.",
+            "type": "object",
+            "required": ["type", "commands"],
+            "properties": {
+                "type": {
+                    "description": "Resource type discriminator",
+                    "const": "graphics_context"
+                },
+                "uid": {
+                    "description": "Unique identifier",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Human-readable name",
+                    "type": "string"
+                },
+                "commands": {
+                    "description": "Ordered list of draw commands (path commands and style commands)",
+                    "type": "array",
+                    "items": { "$ref": "#/$defs/graphicsCommand" }
+                },
+                "extensions": {
+                    "$ref": "#/$defs/extensions"
+                }
+            },
+            "additionalProperties": false
+        },
+        "graphicsCommand": {
+            "description": "A single graphics drawing command. Discriminated on the 'action' field.",
+            "type": "object",
+            "required": ["action"],
+            "properties": {
+                "action": {
+                    "description": "The drawing command action",
+                    "type": "string",
+                    "enum": [
+                        "moveTo",
+                        "lineTo",
+                        "bezierCurveTo",
+                        "quadraticCurveTo",
+                        "arc",
+                        "arcTo",
+                        "closePath",
+                        "rect",
+                        "circle",
+                        "ellipse",
+                        "roundRect",
+                        "poly",
+                        "beginFill",
+                        "endFill",
+                        "beginStroke",
+                        "endStroke"
+                    ]
+                },
+                "x": {
+                    "description": "X coordinate (used by moveTo, lineTo, bezierCurveTo, quadraticCurveTo, arc, rect, circle, ellipse, roundRect)",
+                    "type": "number"
+                },
+                "y": {
+                    "description": "Y coordinate (used by moveTo, lineTo, bezierCurveTo, quadraticCurveTo, arc, rect, circle, ellipse, roundRect)",
+                    "type": "number"
+                },
+                "cp1x": {
+                    "description": "First control point X (bezierCurveTo)",
+                    "type": "number"
+                },
+                "cp1y": {
+                    "description": "First control point Y (bezierCurveTo)",
+                    "type": "number"
+                },
+                "cp2x": {
+                    "description": "Second control point X (bezierCurveTo)",
+                    "type": "number"
+                },
+                "cp2y": {
+                    "description": "Second control point Y (bezierCurveTo)",
+                    "type": "number"
+                },
+                "cpx": {
+                    "description": "Control point X (quadraticCurveTo)",
+                    "type": "number"
+                },
+                "cpy": {
+                    "description": "Control point Y (quadraticCurveTo)",
+                    "type": "number"
+                },
+                "radius": {
+                    "description": "Radius (arc, circle, arcTo, roundRect)",
+                    "type": "number"
+                },
+                "startAngle": {
+                    "description": "Start angle in radians (arc)",
+                    "type": "number"
+                },
+                "endAngle": {
+                    "description": "End angle in radians (arc)",
+                    "type": "number"
+                },
+                "counterclockwise": {
+                    "description": "Whether the arc is drawn counterclockwise (arc)",
+                    "type": "boolean"
+                },
+                "x1": {
+                    "description": "First tangent point X (arcTo)",
+                    "type": "number"
+                },
+                "y1": {
+                    "description": "First tangent point Y (arcTo)",
+                    "type": "number"
+                },
+                "x2": {
+                    "description": "Second tangent point X (arcTo)",
+                    "type": "number"
+                },
+                "y2": {
+                    "description": "Second tangent point Y (arcTo)",
+                    "type": "number"
+                },
+                "width": {
+                    "description": "Width (rect, roundRect, beginStroke)",
+                    "type": "number"
+                },
+                "height": {
+                    "description": "Height (rect, ellipse, roundRect)",
+                    "type": "number"
+                },
+                "halfWidth": {
+                    "description": "Half width of ellipse",
+                    "type": "number"
+                },
+                "halfHeight": {
+                    "description": "Half height of ellipse",
+                    "type": "number"
+                },
+                "points": {
+                    "description": "Flat array of point coordinates for polygon",
+                    "type": "array",
+                    "items": { "type": "number" }
+                },
+                "close": {
+                    "description": "Whether to close the polygon path",
+                    "type": "boolean"
+                },
+                "color": {
+                    "description": "CSS color string (beginFill, beginStroke)",
+                    "type": "string"
+                },
+                "alpha": {
+                    "description": "Alpha value (beginFill, beginStroke)",
+                    "type": "number"
+                },
+                "texture": {
+                    "description": "Reference to a texture resource for textured fills (beginFill)",
+                    "$ref": "#/$defs/reference"
+                },
+                "matrix": {
+                    "description": "Transform matrix for textured fills (beginFill)",
+                    "$ref": "#/$defs/matrix2d"
+                },
+                "alignment": {
+                    "description": "Stroke alignment 0.0 to 1.0 (beginStroke)",
+                    "type": "number"
+                },
+                "cap": {
+                    "description": "Line cap style (beginStroke)",
+                    "type": "string",
+                    "enum": ["butt", "round", "square"]
+                },
+                "join": {
+                    "description": "Line join style (beginStroke)",
+                    "type": "string",
+                    "enum": ["miter", "round", "bevel"]
+                },
+                "miterLimit": {
+                    "description": "Miter limit for sharp joins (beginStroke)",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "textStyleResource": {
+            "description": "Defines reusable styling for text rendering",
+            "type": "object",
+            "required": ["type", "fontFamily"],
+            "properties": {
+                "type": {
+                    "description": "Resource type discriminator",
+                    "const": "text_style"
+                },
+                "uid": {
+                    "description": "Unique identifier",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Human-readable name",
+                    "type": "string"
+                },
+                "fontFamily": {
+                    "description": "Font family name(s) in priority order",
+                    "oneOf": [
+                        { "type": "string" },
+                        {
+                            "type": "array",
+                            "items": { "type": "string" },
+                            "minItems": 1
+                        }
+                    ]
+                },
+                "align": {
+                    "description": "Text alignment",
+                    "type": "string",
+                    "enum": ["left", "center", "right", "justify"],
+                    "default": "left"
+                },
+                "fontSize": {
+                    "description": "Font size in pixels",
+                    "type": "number",
+                    "default": 26
+                },
+                "fontStyle": {
+                    "description": "Font style",
+                    "type": "string",
+                    "enum": ["normal", "italic", "oblique"],
+                    "default": "normal"
+                },
+                "fontVariant": {
+                    "description": "Font variant",
+                    "type": "string",
+                    "enum": ["normal", "small-caps"],
+                    "default": "normal"
+                },
+                "fontWeight": {
+                    "description": "Font weight (string keyword or numeric 100-900)",
+                    "oneOf": [
+                        { "type": "string" },
+                        { "type": "number", "minimum": 1, "maximum": 1000 }
+                    ],
+                    "default": "normal"
+                },
+                "fill": {
+                    "description": "Fill color (CSS color string)",
+                    "type": "string",
+                    "default": "#000000"
+                },
+                "letterSpacing": {
+                    "description": "Additional character spacing in pixels",
+                    "type": "number",
+                    "default": 0
+                },
+                "padding": {
+                    "description": "Text padding in pixels",
+                    "type": "number",
+                    "default": 0
+                },
+                "stroke": {
+                    "description": "Stroke configuration for the text",
+                    "$ref": "#/$defs/textStroke"
+                },
+                "shadow": {
+                    "description": "Drop shadow configuration for the text",
+                    "$ref": "#/$defs/textShadow"
+                },
+                "textBaseline": {
+                    "description": "Vertical alignment baseline",
+                    "type": "string"
+                },
+                "wordWrap": {
+                    "description": "Word wrapping configuration",
+                    "$ref": "#/$defs/textWordWrap"
+                },
+                "extensions": {
+                    "$ref": "#/$defs/extensions"
+                }
+            },
+            "additionalProperties": false
+        },
+        "textStroke": {
+            "description": "Stroke configuration for text rendering",
+            "type": "object",
+            "required": ["fill"],
+            "properties": {
+                "fill": {
+                    "description": "Stroke color (CSS color string)",
+                    "type": "string"
+                },
+                "width": {
+                    "description": "Stroke width in pixels",
+                    "type": "number",
+                    "default": 1
+                },
+                "alignment": {
+                    "description": "Stroke alignment (0.0 to 1.0)",
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "default": 0.5
+                },
+                "cap": {
+                    "description": "Line cap style",
+                    "type": "string",
+                    "enum": ["butt", "round", "square"],
+                    "default": "butt"
+                },
+                "join": {
+                    "description": "Line join style",
+                    "type": "string",
+                    "enum": ["miter", "round", "bevel"],
+                    "default": "miter"
+                },
+                "miterLimit": {
+                    "description": "Miter limit for sharp joins",
+                    "type": "number",
+                    "default": 10
+                }
+            },
+            "additionalProperties": false
+        },
+        "textShadow": {
+            "description": "Drop shadow configuration for text rendering",
+            "type": "object",
+            "properties": {
+                "color": {
+                    "description": "Shadow color (CSS color string)",
+                    "type": "string",
+                    "default": "#000000"
+                },
+                "offsetX": {
+                    "description": "Horizontal shadow offset in pixels",
+                    "type": "number",
+                    "default": 0
+                },
+                "offsetY": {
+                    "description": "Vertical shadow offset in pixels",
+                    "type": "number",
+                    "default": 0
+                },
+                "blur": {
+                    "description": "Shadow blur radius in pixels",
+                    "type": "number",
+                    "default": 0
+                },
+                "alpha": {
+                    "description": "Shadow opacity (0.0 to 1.0)",
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "default": 1
+                }
+            },
+            "additionalProperties": false
+        },
+        "textWordWrap": {
+            "description": "Word wrapping configuration for text rendering",
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "description": "Whether to enable word wrapping",
+                    "type": "boolean",
+                    "default": false
+                },
+                "width": {
+                    "description": "Maximum width in pixels before wrapping",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "webFontResource": {
+            "description": "Defines a web font for text rendering",
+            "type": "object",
+            "required": ["type", "family"],
+            "properties": {
+                "type": {
+                    "description": "Resource type discriminator",
+                    "const": "web_font"
+                },
+                "uid": {
+                    "description": "Unique identifier",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Human-readable name",
+                    "type": "string"
+                },
+                "uri": {
+                    "description": "Path or URL to the font file",
+                    "type": "string"
+                },
+                "family": {
+                    "description": "Font family name",
+                    "type": "string"
+                },
+                "weights": {
+                    "description": "Available font weights",
+                    "type": "array",
+                    "items": { "type": "string" }
+                },
+                "style": {
+                    "description": "Font style descriptor",
+                    "type": "string"
+                },
+                "display": {
+                    "description": "Font display behavior (CSS font-display)",
+                    "type": "string",
+                    "default": "swap"
+                },
+                "stretch": {
+                    "description": "Font stretch descriptor",
+                    "type": "string"
+                },
+                "unicodeRange": {
+                    "description": "Unicode range for the font",
+                    "type": "string"
+                },
+                "variant": {
+                    "description": "Font variant descriptor",
+                    "type": "string"
+                },
+                "featureSettings": {
+                    "description": "Font feature settings (CSS font-feature-settings)",
+                    "type": "string"
+                },
+                "extensions": {
+                    "$ref": "#/$defs/extensions"
+                }
+            },
+            "additionalProperties": false
+        },
+        "bitmapFontResource": {
+            "description": "Defines a pre-rendered bitmap font atlas",
+            "type": "object",
+            "required": ["type", "fontFamily"],
+            "properties": {
+                "type": {
+                    "description": "Resource type discriminator",
+                    "const": "bitmap_font"
+                },
+                "uid": {
+                    "description": "Unique identifier",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Human-readable name",
+                    "type": "string"
+                },
+                "uri": {
+                    "description": "Path or URL to the bitmap font file",
+                    "type": "string"
+                },
+                "fontFamily": {
+                    "description": "Font family name",
+                    "type": "string"
+                },
+                "extensions": {
+                    "$ref": "#/$defs/extensions"
+                }
+            },
+            "additionalProperties": false
+        },
+        "canvasGradientResource": {
+            "description": "Defines linear or radial color gradients for use in fills and strokes",
+            "type": "object",
+            "required": ["type", "gradientType", "gradientUnits", "stops"],
+            "properties": {
+                "type": {
+                    "description": "Resource type discriminator",
+                    "const": "canvas_gradient"
+                },
+                "uid": {
+                    "description": "Unique identifier",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Human-readable name",
+                    "type": "string"
+                },
+                "gradientType": {
+                    "description": "Gradient geometry type",
+                    "type": "string",
+                    "enum": ["linear", "radial"]
+                },
+                "gradientUnits": {
+                    "description": "Coordinate system for gradient definition",
+                    "type": "string",
+                    "enum": ["local", "global"]
+                },
+                "stops": {
+                    "description": "Alternating [position, color] values. Positions are 0.0-1.0 numbers, colors are CSS color strings.",
+                    "type": "array",
+                    "items": {
+                        "oneOf": [{ "type": "number" }, { "type": "string" }]
+                    }
+                },
+                "linear": {
+                    "description": "Linear gradient configuration. Required when gradientType is 'linear'.",
+                    "$ref": "#/$defs/linearGradientConfig"
+                },
+                "radial": {
+                    "description": "Radial gradient configuration. Required when gradientType is 'radial'.",
+                    "$ref": "#/$defs/radialGradientConfig"
+                },
+                "extensions": {
+                    "$ref": "#/$defs/extensions"
+                }
+            },
+            "additionalProperties": false
+        },
+        "linearGradientConfig": {
+            "description": "Configuration for a linear gradient",
+            "type": "object",
+            "required": ["start", "end"],
+            "properties": {
+                "start": {
+                    "description": "Starting point [x, y]",
+                    "$ref": "#/$defs/point2d"
+                },
+                "end": {
+                    "description": "Ending point [x, y]",
+                    "$ref": "#/$defs/point2d"
+                }
+            },
+            "additionalProperties": false
+        },
+        "radialGradientConfig": {
+            "description": "Configuration for a radial gradient",
+            "type": "object",
+            "required": ["outerCircle", "innerCircle"],
+            "properties": {
+                "outerCircle": {
+                    "description": "Outer circle [centerX, centerY, radius]",
+                    "type": "array",
+                    "items": { "type": "number" },
+                    "minItems": 3,
+                    "maxItems": 3
+                },
+                "innerCircle": {
+                    "description": "Inner circle [centerX, centerY, radius]",
+                    "type": "array",
+                    "items": { "type": "number" },
+                    "minItems": 3,
+                    "maxItems": 3
+                }
+            },
+            "additionalProperties": false
+        },
+        "canvasPatternResource": {
+            "description": "Defines a repeating texture pattern for use in fills and strokes",
+            "type": "object",
+            "required": ["type", "source"],
+            "properties": {
+                "type": {
+                    "description": "Resource type discriminator",
+                    "const": "canvas_pattern"
+                },
+                "uid": {
+                    "description": "Unique identifier",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Human-readable name",
+                    "type": "string"
+                },
+                "source": {
+                    "description": "Reference to a texture resource",
+                    "$ref": "#/$defs/reference"
+                },
+                "repeat": {
+                    "description": "Repetition behavior for the pattern",
+                    "type": "string",
+                    "enum": ["repeat", "repeat-x", "repeat-y", "no-repeat"],
+                    "default": "repeat"
+                },
+                "transform": {
+                    "description": "2D transformation matrix [a, b, c, d, tx, ty] applied to the pattern",
+                    "$ref": "#/$defs/matrix2d"
+                },
+                "extensions": {
+                    "$ref": "#/$defs/extensions"
+                }
+            },
+            "additionalProperties": false
+        },
+        "filterResource": {
+            "description": "Defines a visual effect that can be applied to nodes via the gl2d_filters standard extension. Filter types use the open type system; the core spec defines 'blur' and 'alpha', engines can add vendor-specific types with prefixed names.",
+            "type": "object",
+            "required": ["type", "filterType"],
+            "properties": {
+                "type": {
+                    "description": "Resource type discriminator",
+                    "const": "filter"
+                },
+                "uid": {
+                    "description": "Unique identifier",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Human-readable name",
+                    "type": "string"
+                },
+                "filterType": {
+                    "description": "Filter type identifier. Standard types: 'blur', 'alpha'. Vendor-specific types use prefixed names (e.g. 'pixi_displacement').",
+                    "type": "string"
+                },
+                "params": {
+                    "description": "Filter-specific parameters. Structure depends on filterType.",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "extensions": {
+                    "$ref": "#/$defs/extensions"
+                }
+            },
+            "additionalProperties": false
+        },
+        "customResource": {
+            "description": "A custom resource type defined via extensions. Must use a vendor-prefixed type name (e.g. 'spine_skeleton'). Unknown resource types are skipped by consumers.",
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+                "type": {
+                    "description": "Vendor-prefixed custom resource type. Must not match any core resource type.",
+                    "type": "string",
+                    "not": {
+                        "enum": [
+                            "texture",
+                            "image_source",
+                            "video_source",
+                            "spritesheet",
+                            "graphics_context",
+                            "text_style",
+                            "web_font",
+                            "bitmap_font",
+                            "canvas_gradient",
+                            "canvas_pattern",
+                            "filter"
+                        ]
+                    }
+                },
+                "uid": {
+                    "description": "Unique identifier",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Human-readable name",
+                    "type": "string"
+                },
+                "extensions": {
+                    "$ref": "#/$defs/extensions"
+                }
+            },
+            "additionalProperties": true
+        }
+    }
+}
