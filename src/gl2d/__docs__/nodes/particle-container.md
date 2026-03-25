@@ -4,7 +4,7 @@
 
 Renders a large number of particles efficiently using a shared texture. Particle data is stored as parallel flat arrays for compact serialization and direct GPU buffer mapping.
 
-All nodes also support the [PixiJS Container Extension](container.md#pixijs-container-extension) for properties like anchor, tint, blendMode, and more.
+All nodes also support the [PixiJS Container Extension](container.md#pixijs-container-extension) for properties like anchor, tint, and more.
 
 Particle containers do not support scene graph children. Wrap in a `container` node for hierarchy.
 

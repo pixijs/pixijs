@@ -4,7 +4,7 @@
 
 Renders vector graphics from a shared [graphics context](../gl2D-resources.md#graphics-context) resource.
 
-All nodes also support the [PixiJS Container Extension](container.md#pixijs-container-extension) for properties like anchor, tint, blendMode, and more.
+All nodes also support the [PixiJS Container Extension](container.md#pixijs-container-extension) for properties like anchor, tint, and more.
 
 ```json
 {

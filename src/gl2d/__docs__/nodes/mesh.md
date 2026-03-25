@@ -4,7 +4,7 @@
 
 Renders custom geometry with a texture. Vertex data is stored as flat number arrays.
 
-All nodes also support the [PixiJS Container Extension](container.md#pixijs-container-extension) for properties like anchor, tint, blendMode, and more.
+All nodes also support the [PixiJS Container Extension](container.md#pixijs-container-extension) for properties like anchor, tint, and more.
 
 ```json
 {

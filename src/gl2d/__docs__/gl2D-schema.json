@@ -175,6 +175,34 @@
                     "type": "boolean",
                     "default": true
                 },
+                "blendMode": {
+                    "description": "Blend mode (W3C Compositing spec + common extras)",
+                    "type": "string",
+                    "enum": [
+                        "normal", "multiply", "screen", "overlay", "darken", "lighten",
+                        "color-dodge", "color-burn", "hard-light", "soft-light",
+                        "difference", "exclusion", "hue", "saturation", "color", "luminosity",
+                        "add", "subtract", "erase", "none"
+                    ],
+                    "default": "normal"
+                },
+                "mask": {
+                    "description": "Masking options",
+                    "type": "object",
+                    "required": ["node"],
+                    "properties": {
+                        "node": {
+                            "description": "Reference to the mask node",
+                            "$ref": "#/$defs/reference"
+                        },
+                        "inverse": {
+                            "description": "Whether the mask is inverted",
+                            "type": "boolean",
+                            "default": false
+                        }
+                    },
+                    "additionalProperties": false
+                },
                 "extensions": {
                     "$ref": "#/$defs/extensions"
                 }

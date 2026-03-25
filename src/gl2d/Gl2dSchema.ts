@@ -18,6 +18,49 @@ export type Gl2dRectangle = [x: number, y: number, width: number, height: number
 
 export type Gl2dCircle = [centerX: number, centerY: number, radius: number];
 
+export type Gl2dBlendMode =
+    | 'normal'
+    | 'multiply'
+    | 'screen'
+    | 'overlay'
+    | 'darken'
+    | 'lighten'
+    | 'color-dodge'
+    | 'color-burn'
+    | 'hard-light'
+    | 'soft-light'
+    | 'difference'
+    | 'exclusion'
+    | 'hue'
+    | 'saturation'
+    | 'color'
+    | 'luminosity'
+    | 'add'
+    | 'subtract'
+    | 'erase'
+    | 'none';
+
+export type Gl2dPixiBlendMode =
+    | 'normal-npm'
+    | 'add-npm'
+    | 'screen-npm'
+    | 'linear-burn'
+    | 'linear-dodge'
+    | 'linear-light'
+    | 'pin-light'
+    | 'vivid-light'
+    | 'hard-mix'
+    | 'negation'
+    | 'min'
+    | 'max'
+    | 'divide';
+
+export interface Gl2dMaskOptions
+{
+    node: Gl2dRef;
+    inverse?: boolean;
+}
+
 // --- Root File --------------------------------------------------------------
 
 export interface Gl2dFile
@@ -50,36 +93,59 @@ export interface Gl2dScene
 
 // --- Nodes ------------------------------------------------------------------
 
-// Core node properties shared by all node types
-export interface Gl2dCoreNodeProperties
+// Non-transform properties shared by all node types
+export interface Gl2dNodePropertiesBase
 {
     type: string;
     uid?: string;
     name?: string;
     children?: Gl2dRef[];
-    translation?: Gl2dPoint2d;
-    rotation?: number;
-    scale?: Gl2dPoint2d;
-    matrix?: Gl2dMatrix2d;
     alpha?: number;
     visible?: boolean;
+    blendMode?: Gl2dBlendMode;
+    mask?: Gl2dMaskOptions;
     extensions?: Gl2dNodeExtensions;
 }
 
+// TRS transform: forbids matrix
+export interface Gl2dTRSTransform
+{
+    translation?: Gl2dPoint2d;
+    rotation?: number;
+    scale?: Gl2dPoint2d;
+    matrix?: never;
+}
+
+// Matrix transform: forbids TRS
+export interface Gl2dMatrixTransform
+{
+    matrix: Gl2dMatrix2d;
+    translation?: never;
+    rotation?: never;
+    scale?: never;
+}
+
+export type Gl2dTransform = Gl2dTRSTransform | Gl2dMatrixTransform;
+
+// Core node properties shared by all node types (TRS and matrix are mutually exclusive)
+export type Gl2dCoreNodeProperties = Gl2dNodePropertiesBase & Gl2dTransform;
+
 // Core node types
 
-export interface Gl2dContainerNode extends Gl2dCoreNodeProperties
+interface Gl2dContainerNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'container';
 }
+export type Gl2dContainerNode = Gl2dContainerNodeBase & Gl2dTransform;
 
-export interface Gl2dSpriteNode extends Gl2dCoreNodeProperties
+interface Gl2dSpriteNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'sprite';
     texture: Gl2dRef;
 }
+export type Gl2dSpriteNode = Gl2dSpriteNodeBase & Gl2dTransform;
 
-export interface Gl2dTilingSpriteNode extends Gl2dCoreNodeProperties
+interface Gl2dTilingSpriteNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'tiling_sprite';
     texture: Gl2dRef;
@@ -89,8 +155,9 @@ export interface Gl2dTilingSpriteNode extends Gl2dCoreNodeProperties
     tilePosition?: Gl2dPoint2d;
     tileRotation?: number;
 }
+export type Gl2dTilingSpriteNode = Gl2dTilingSpriteNodeBase & Gl2dTransform;
 
-export interface Gl2dNineSliceSpriteNode extends Gl2dCoreNodeProperties
+interface Gl2dNineSliceSpriteNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'nine_slice_sprite';
     texture: Gl2dRef;
@@ -101,8 +168,9 @@ export interface Gl2dNineSliceSpriteNode extends Gl2dCoreNodeProperties
     rightWidth?: number;
     bottomHeight?: number;
 }
+export type Gl2dNineSliceSpriteNode = Gl2dNineSliceSpriteNodeBase & Gl2dTransform;
 
-export interface Gl2dTextNode extends Gl2dCoreNodeProperties
+interface Gl2dTextNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'text';
     text: string;
@@ -110,8 +178,9 @@ export interface Gl2dTextNode extends Gl2dCoreNodeProperties
     resolution?: number;
     webFont?: Gl2dRef;
 }
+export type Gl2dTextNode = Gl2dTextNodeBase & Gl2dTransform;
 
-export interface Gl2dBitmapTextNode extends Gl2dCoreNodeProperties
+interface Gl2dBitmapTextNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'bitmap_text';
     text: string;
@@ -119,8 +188,9 @@ export interface Gl2dBitmapTextNode extends Gl2dCoreNodeProperties
     resolution?: number;
     bitmapFont?: Gl2dRef;
 }
+export type Gl2dBitmapTextNode = Gl2dBitmapTextNodeBase & Gl2dTransform;
 
-export interface Gl2dHtmlTextNode extends Gl2dCoreNodeProperties
+interface Gl2dHtmlTextNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'html_text';
     text: string;
@@ -128,9 +198,10 @@ export interface Gl2dHtmlTextNode extends Gl2dCoreNodeProperties
     resolution?: number;
     webFont?: Gl2dRef;
 }
+export type Gl2dHtmlTextNode = Gl2dHtmlTextNodeBase & Gl2dTransform;
 
 // Animated sprite: textures XOR (spritesheet + animation)
-interface Gl2dAnimatedSpriteBase extends Gl2dCoreNodeProperties
+interface Gl2dAnimatedSpriteBase extends Gl2dNodePropertiesBase
 {
     type: 'animated_sprite';
     animationSpeed?: number;
@@ -139,29 +210,32 @@ interface Gl2dAnimatedSpriteBase extends Gl2dCoreNodeProperties
     currentFrame?: number;
 }
 
-export interface Gl2dAnimatedSpriteTexturesNode extends Gl2dAnimatedSpriteBase
+interface Gl2dAnimatedSpriteTexturesBase extends Gl2dAnimatedSpriteBase
 {
     textures: Gl2dRef[];
     spritesheet?: never;
     animation?: never;
 }
 
-export interface Gl2dAnimatedSpriteSheetNode extends Gl2dAnimatedSpriteBase
+interface Gl2dAnimatedSpriteSheetBase extends Gl2dAnimatedSpriteBase
 {
     spritesheet: Gl2dRef;
     animation: string;
     textures?: never;
 }
 
+export type Gl2dAnimatedSpriteTexturesNode = Gl2dAnimatedSpriteTexturesBase & Gl2dTransform;
+export type Gl2dAnimatedSpriteSheetNode = Gl2dAnimatedSpriteSheetBase & Gl2dTransform;
 export type Gl2dAnimatedSpriteNode = Gl2dAnimatedSpriteTexturesNode | Gl2dAnimatedSpriteSheetNode;
 
-export interface Gl2dGraphicsNode extends Gl2dCoreNodeProperties
+interface Gl2dGraphicsNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'graphics';
     context: Gl2dRef;
 }
+export type Gl2dGraphicsNode = Gl2dGraphicsNodeBase & Gl2dTransform;
 
-export interface Gl2dMeshNode extends Gl2dCoreNodeProperties
+interface Gl2dMeshNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'mesh';
     texture: Gl2dRef;
@@ -170,6 +244,7 @@ export interface Gl2dMeshNode extends Gl2dCoreNodeProperties
     indices?: number[];
     topology?: Gl2dTopology;
 }
+export type Gl2dMeshNode = Gl2dMeshNodeBase & Gl2dTransform;
 
 export type Gl2dTopology =
     | 'point-list'
@@ -178,7 +253,7 @@ export type Gl2dTopology =
     | 'triangle-list'
     | 'triangle-strip';
 
-export interface Gl2dParticleContainerNode extends Gl2dCoreNodeProperties
+interface Gl2dParticleContainerNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'particle_container';
     texture: Gl2dRef;
@@ -188,12 +263,14 @@ export interface Gl2dParticleContainerNode extends Gl2dCoreNodeProperties
     tints?: string[];
     alphas?: number[];
 }
+export type Gl2dParticleContainerNode = Gl2dParticleContainerNodeBase & Gl2dTransform;
 
-export interface Gl2dCustomNode extends Gl2dCoreNodeProperties
+interface Gl2dCustomNodeBase extends Gl2dNodePropertiesBase
 {
     type: string;
     [key: string]: unknown;
 }
+export type Gl2dCustomNode = Gl2dCustomNodeBase & Gl2dTransform;
 
 export type Gl2dCoreNode =
     | Gl2dContainerNode
@@ -211,7 +288,7 @@ export type Gl2dCoreNode =
 
 // --- PixiJS Extension Nodes -------------------------------------------------
 
-export interface Gl2dPixiMeshPlaneNode extends Gl2dCoreNodeProperties
+interface Gl2dPixiMeshPlaneNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'pixi_mesh_plane';
     texture: Gl2dRef;
@@ -219,8 +296,9 @@ export interface Gl2dPixiMeshPlaneNode extends Gl2dCoreNodeProperties
     verticesY?: number;
     autoResize?: boolean;
 }
+export type Gl2dPixiMeshPlaneNode = Gl2dPixiMeshPlaneNodeBase & Gl2dTransform;
 
-export interface Gl2dPixiMeshRopeNode extends Gl2dCoreNodeProperties
+interface Gl2dPixiMeshRopeNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'pixi_mesh_rope';
     texture: Gl2dRef;
@@ -228,8 +306,9 @@ export interface Gl2dPixiMeshRopeNode extends Gl2dCoreNodeProperties
     textureScale?: number;
     autoUpdate?: boolean;
 }
+export type Gl2dPixiMeshRopeNode = Gl2dPixiMeshRopeNodeBase & Gl2dTransform;
 
-export interface Gl2dPixiPerspectiveMeshNode extends Gl2dCoreNodeProperties
+interface Gl2dPixiPerspectiveMeshNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'pixi_perspective_mesh';
     texture: Gl2dRef;
@@ -242,8 +321,9 @@ export interface Gl2dPixiPerspectiveMeshNode extends Gl2dCoreNodeProperties
     verticesX?: number;
     verticesY?: number;
 }
+export type Gl2dPixiPerspectiveMeshNode = Gl2dPixiPerspectiveMeshNodeBase & Gl2dTransform;
 
-export interface Gl2dPixiGifSpriteNode extends Gl2dCoreNodeProperties
+interface Gl2dPixiGifSpriteNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'pixi_gif_sprite';
     gif: Gl2dRef;
@@ -253,8 +333,9 @@ export interface Gl2dPixiGifSpriteNode extends Gl2dCoreNodeProperties
     autoUpdate?: boolean;
     currentFrame?: number;
 }
+export type Gl2dPixiGifSpriteNode = Gl2dPixiGifSpriteNodeBase & Gl2dTransform;
 
-export interface Gl2dPixiSplitTextNode extends Gl2dCoreNodeProperties
+interface Gl2dPixiSplitTextNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'pixi_split_text';
     text: string;
@@ -266,8 +347,9 @@ export interface Gl2dPixiSplitTextNode extends Gl2dCoreNodeProperties
     lineAnchor?: Gl2dPoint2d;
     autoSplit?: boolean;
 }
+export type Gl2dPixiSplitTextNode = Gl2dPixiSplitTextNodeBase & Gl2dTransform;
 
-export interface Gl2dPixiSplitBitmapTextNode extends Gl2dCoreNodeProperties
+interface Gl2dPixiSplitBitmapTextNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'pixi_split_bitmap_text';
     text: string;
@@ -279,13 +361,15 @@ export interface Gl2dPixiSplitBitmapTextNode extends Gl2dCoreNodeProperties
     lineAnchor?: Gl2dPoint2d;
     autoSplit?: boolean;
 }
+export type Gl2dPixiSplitBitmapTextNode = Gl2dPixiSplitBitmapTextNodeBase & Gl2dTransform;
 
-export interface Gl2dPixiDomContainerNode extends Gl2dCoreNodeProperties
+interface Gl2dPixiDomContainerNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'pixi_dom_container';
     element: Gl2dRef;
     anchor?: Gl2dPoint2d;
 }
+export type Gl2dPixiDomContainerNode = Gl2dPixiDomContainerNodeBase & Gl2dTransform;
 
 export type Gl2dPixiNode =
     | Gl2dPixiMeshPlaneNode
@@ -320,20 +404,33 @@ export interface Gl2dPixiContainerExtension
     width?: number;
     height?: number;
     tint?: string;
-    blendMode?: string;
+    blendMode?: Gl2dPixiBlendMode;
     roundPixels?: boolean;
-    mask?: Gl2dPixiMaskOptions;
     zIndex?: number;
     isRenderGroup?: boolean;
     renderable?: boolean;
     boundsArea?: Gl2dRectangle;
     sortableChildren?: boolean;
-}
 
-export interface Gl2dPixiMaskOptions
-{
-    node: Gl2dRef;
-    inverse?: boolean;
+    // Events
+    eventMode?: 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
+    interactiveChildren?: boolean;
+    cursor?: string;
+
+    // Accessibility
+    accessible?: boolean;
+    accessibleChildren?: boolean;
+    accessibleHint?: string;
+    accessiblePointerEvents?: string;
+    accessibleText?: string;
+    accessibleTitle?: string;
+    accessibleType?: string;
+    tabIndex?: number;
+
+    // Culling
+    cullArea?: Gl2dRectangle;
+    cullableChildren?: boolean;
+    cullable?: boolean;
 }
 
 export interface Gl2dPixiTextNodeExtension

@@ -4,7 +4,7 @@
 
 A PixiJS-specific mesh that generates perspective-projected geometry from four corner points. The mesh subdivides the texture across a grid to approximate perspective distortion.
 
-All nodes also support the [PixiJS Container Extension](../container.md#pixijs-container-extension) for properties like anchor, tint, blendMode, and more.
+All nodes also support the [PixiJS Container Extension](../container.md#pixijs-container-extension) for properties like anchor, tint, and more.
 
 Requires `pixi_perspective_mesh` in `extensionsUsed` or `extensionsRequired`.
 

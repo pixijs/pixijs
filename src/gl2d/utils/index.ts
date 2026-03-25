@@ -1,0 +1,50 @@
+import { Color } from '../../color/Color';
+import { RectangleLike } from '../../culling/Culler';
+import { ObservablePoint } from '../../maths/point/ObservablePoint';
+import { PointData } from '../../maths/point/PointData';
+import { Gl2dPoint2d, Gl2dRectangle } from '../Gl2dSchema';
+import { deepRemoveUndefinedOrNull } from './deepRemoveUndefinedOrNull';
+
+export const gl2dUtils = {
+    removeUndefinedOrNull: deepRemoveUndefinedOrNull,
+    checkObservablePoint: (point: ObservablePoint, defaultValue: Gl2dPoint2d): null | Gl2dPoint2d => {
+        // check if the value exists
+        if (!point) return undefined;
+
+        // check if the value is the default value
+        return point._x === defaultValue[0] && point._y === defaultValue[1] ? null : [point._x, point._y];
+    },
+    checkPoint: (point: PointData, defaultValue: Gl2dPoint2d): null | Gl2dPoint2d => {
+        // check if the value exists
+        if (!point) return undefined;
+
+        // check if the value is the default value
+        return point.x === defaultValue[0] && point.y === defaultValue[1] ? null : [point.x, point.y];
+    },
+    checkValue: (value: any, defaultValue: any): null | any => {
+        // check if the value exists
+        // eslint-disable-next-line no-eq-null, eqeqeq
+        if (value == null) return undefined;
+
+        // check if the value is the default value
+        return value === defaultValue ? null : value;
+    },
+    checkColor: (color: Color, defaultValue: string): null | string => {
+        // check if the value exists
+        if (!color) return undefined;
+
+        // check if the value is the default value
+        return color.toHex() === defaultValue ? null : color.toHex();
+    },
+    checkRectangle: (rectangle: RectangleLike, defaultValue: Gl2dRectangle | null): null | Gl2dRectangle => {
+        if (!rectangle) return undefined;
+        if (!defaultValue) return [rectangle.x, rectangle.y, rectangle.width, rectangle.height];
+
+        return rectangle.x === defaultValue[0] &&
+            rectangle.y === defaultValue[1] &&
+            rectangle.width === defaultValue[2] &&
+            rectangle.height === defaultValue[3]
+            ? null
+            : [rectangle.x, rectangle.y, rectangle.width, rectangle.height];
+    },
+};

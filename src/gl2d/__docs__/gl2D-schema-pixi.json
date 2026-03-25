@@ -59,31 +59,19 @@
                     "type": "string"
                 },
                 "blendMode": {
-                    "description": "Blend mode",
+                    "description": "PixiJS-only blend modes (core modes are in coreNodeProperties)",
                     "type": "string",
-                    "default": "normal"
+                    "enum": [
+                        "normal-npm", "add-npm", "screen-npm",
+                        "linear-burn", "linear-dodge", "linear-light",
+                        "pin-light", "vivid-light", "hard-mix",
+                        "negation", "min", "max", "divide"
+                    ]
                 },
                 "roundPixels": {
                     "description": "Whether to round pixel values for rendering",
                     "type": "boolean",
                     "default": false
-                },
-                "mask": {
-                    "description": "Masking options",
-                    "type": "object",
-                    "required": ["node"],
-                    "properties": {
-                        "node": {
-                            "description": "Reference to the mask node",
-                            "$ref": "#/$defs/reference"
-                        },
-                        "inverse": {
-                            "description": "Whether the mask is inverted",
-                            "type": "boolean",
-                            "default": false
-                        }
-                    },
-                    "additionalProperties": false
                 },
                 "zIndex": {
                     "description": "Depth sorting order",
@@ -106,6 +94,72 @@
                 },
                 "sortableChildren": {
                     "description": "Auto-sort children by zIndex",
+                    "type": "boolean",
+                    "default": false
+                },
+                "eventMode": {
+                    "description": "Event mode for interaction",
+                    "type": "string",
+                    "enum": ["none", "passive", "auto", "static", "dynamic"],
+                    "default": "passive"
+                },
+                "interactiveChildren": {
+                    "description": "Whether children can receive pointer events",
+                    "type": "boolean",
+                    "default": true
+                },
+                "cursor": {
+                    "description": "CSS cursor style when hovering",
+                    "type": "string"
+                },
+                "accessible": {
+                    "description": "Whether accessible to assistive technologies",
+                    "type": "boolean",
+                    "default": false
+                },
+                "accessibleChildren": {
+                    "description": "Whether children are accessible",
+                    "type": "boolean",
+                    "default": true
+                },
+                "accessibleHint": {
+                    "description": "Hint text for assistive technologies (aria-label)",
+                    "type": "string"
+                },
+                "accessiblePointerEvents": {
+                    "description": "pointer-events CSS value for accessible div",
+                    "type": "string",
+                    "default": "auto"
+                },
+                "accessibleText": {
+                    "description": "Text content of the accessible shadow div",
+                    "type": "string"
+                },
+                "accessibleTitle": {
+                    "description": "Title attribute of the accessible shadow div",
+                    "type": "string"
+                },
+                "accessibleType": {
+                    "description": "HTML element type for the accessible shadow div",
+                    "type": "string",
+                    "default": "button"
+                },
+                "tabIndex": {
+                    "description": "Tab index for keyboard navigation",
+                    "type": "integer",
+                    "default": 0
+                },
+                "cullArea": {
+                    "description": "Custom culling area [x, y, width, height]",
+                    "$ref": "#/$defs/rectangle"
+                },
+                "cullableChildren": {
+                    "description": "Whether children can be culled",
+                    "type": "boolean",
+                    "default": true
+                },
+                "cullable": {
+                    "description": "Whether node is culled when outside view",
                     "type": "boolean",
                     "default": false
                 }

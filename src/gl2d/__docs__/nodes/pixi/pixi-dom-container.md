@@ -4,7 +4,7 @@
 
 A PixiJS-specific node that integrates an HTML element into the scene graph. References a `pixi_dom_element` resource that declares which element to use.
 
-All nodes also support the [PixiJS Container Extension](../container.md#pixijs-container-extension) for properties like anchor, tint, blendMode, and more.
+All nodes also support the [PixiJS Container Extension](../container.md#pixijs-container-extension) for properties like anchor, tint, and more.
 
 This is a browser-specific node type. Non-browser consumers cannot render it meaningfully.
 

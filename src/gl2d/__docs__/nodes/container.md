@@ -10,7 +10,12 @@ Groups other nodes, applies hierarchical transforms.
     "name": "Player",
     "children": [1, 2],
     "translation": [200, 150],
-    "alpha": 0.8
+    "alpha": 0.8,
+    "blendMode": "multiply",
+    "mask": {
+        "node": 3,
+        "inverse": false
+    }
 }
 ```
 
@@ -31,12 +36,7 @@ Container has no additional core properties beyond the [shared node properties](
             "width": 200,
             "height": 200,
             "tint": "#ff0000",
-            "blendMode": "normal",
             "roundPixels": true,
-            "mask": {
-                "node": 3,
-                "inverse": false
-            },
             "zIndex": 1,
             "isRenderGroup": false,
             "renderable": true,
@@ -56,18 +56,9 @@ Container has no additional core properties beyond the [shared node properties](
 | width            | number           | Explicit width override                |          | No       |
 | height           | number           | Explicit height override               |          | No       |
 | tint             | string           | Color tint (CSS color string)          |          | No       |
-| blendMode        | string           | Blend mode                             | "normal" | No       |
 | roundPixels      | boolean          | Whether to round pixel values          | false    | No       |
-| mask             | object           | Masking options                        |          | No       |
 | zIndex           | number           | Depth sorting order                    | 0        | No       |
 | isRenderGroup    | boolean          | Treat as render group                  | false    | No       |
 | renderable       | boolean          | Whether node is rendered               | true     | No       |
 | boundsArea       | number[]         | Cached bounds area                     |          | No       |
 | sortableChildren | boolean          | Auto-sort children by zIndex           | false    | No       |
-
-### Masking Options
-
-| Name    | Type             | Description                  | Default | Required |
-| ------- | ---------------- | ---------------------------- | ------- | -------- |
-| node    | number \| string | Reference to the mask node   |         | Yes      |
-| inverse | boolean          | Whether the mask is inverted | false   | No       |

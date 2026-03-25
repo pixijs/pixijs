@@ -4,7 +4,7 @@
 
 A PixiJS-specific node that splits bitmap text into individually transformable lines, words, and characters. The deserializer re-splits the text from the input parameters.
 
-All nodes also support the [PixiJS Container Extension](../container.md#pixijs-container-extension) for properties like anchor, tint, blendMode, and more.
+All nodes also support the [PixiJS Container Extension](../container.md#pixijs-container-extension) for properties like anchor, tint, and more.
 
 Requires `pixi_split_bitmap_text` in `extensionsUsed` or `extensionsRequired`.
 

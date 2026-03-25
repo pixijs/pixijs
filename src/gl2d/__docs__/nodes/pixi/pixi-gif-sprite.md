@@ -4,7 +4,7 @@
 
 A PixiJS-specific node that renders an animated GIF. References a `pixi_gif` resource for frame data.
 
-All nodes also support the [PixiJS Container Extension](../container.md#pixijs-container-extension) for properties like anchor, tint, blendMode, and more.
+All nodes also support the [PixiJS Container Extension](../container.md#pixijs-container-extension) for properties like anchor, tint, and more.
 
 Requires `pixi_gif_sprite` in `extensionsUsed` or `extensionsRequired`.
 

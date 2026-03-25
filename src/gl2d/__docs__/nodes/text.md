@@ -4,7 +4,7 @@
 
 Renders text content using a specified [text style](../gl2D-resources.md#text-style) and optional [web font](../gl2D-resources.md#web-font).
 
-All nodes also support the [PixiJS Container Extension](container.md#pixijs-container-extension) for properties like anchor, tint, blendMode, and more.
+All nodes also support the [PixiJS Container Extension](container.md#pixijs-container-extension) for properties like anchor, tint, and more.
 
 ```json
 {

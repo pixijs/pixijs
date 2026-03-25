@@ -4,7 +4,7 @@
 
 Renders HTML/CSS content into a texture.
 
-All nodes also support the [PixiJS Container Extension](container.md#pixijs-container-extension) for properties like anchor, tint, blendMode, and more.
+All nodes also support the [PixiJS Container Extension](container.md#pixijs-container-extension) for properties like anchor, tint, and more.
 
 ```json
 {

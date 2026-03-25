@@ -4,7 +4,7 @@
 
 A PixiJS-specific high-level mesh type that generates geometry along a path of points.
 
-All nodes also support the [PixiJS Container Extension](../container.md#pixijs-container-extension) for properties like anchor, tint, blendMode, and more.
+All nodes also support the [PixiJS Container Extension](../container.md#pixijs-container-extension) for properties like anchor, tint, and more.
 
 Requires `pixi_mesh_rope` in `extensionsUsed` or `extensionsRequired`.
 

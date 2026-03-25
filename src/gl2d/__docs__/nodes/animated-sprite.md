@@ -4,7 +4,7 @@
 
 Renders a sequence of texture frames as an animation.
 
-All nodes also support the [PixiJS Container Extension](container.md#pixijs-container-extension) for properties like anchor, tint, blendMode, and more.
+All nodes also support the [PixiJS Container Extension](container.md#pixijs-container-extension) for properties like anchor, tint, and more.
 
 The frame source is specified using **one** of two mutually exclusive approaches:
 

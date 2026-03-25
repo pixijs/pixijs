@@ -4,7 +4,7 @@
 
 A **tiling sprite** repeats its texture to fill the node's width and height. Useful for backgrounds, patterns, and infinite scrolling textures.
 
-All nodes also support the [PixiJS Container Extension](container.md#pixijs-container-extension) for properties like anchor, tint, blendMode, and more.
+All nodes also support the [PixiJS Container Extension](container.md#pixijs-container-extension) for properties like anchor, tint, and more.
 
 ```json
 {

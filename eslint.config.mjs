@@ -209,4 +209,10 @@ export default tseslint.config(
         },
         plugins: { '@stylistic': stylistic },
     },
+    {
+        files: ['src/gl2d/**/*'],
+        rules: {
+            camelcase: 'off',
+        },
+    }
 );

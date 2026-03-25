@@ -28,7 +28,22 @@ All node types share these core properties:
 | matrix      | [number, number, number, number, number, number] | 2D affine transform matrix `[a, b, c, d, tx, ty]` |         | No       |
 | alpha       | number                                           | Opacity (0.0 - 1.0)                               | 1       | No       |
 | visible     | boolean                                          | Whether the node is visible                       | true    | No       |
+| blendMode   | enum                                             | Blend mode                                        | "normal"| No       |
+| mask        | object                                           | Masking options                                   |         | No       |
 | extensions  | object                                           | Engine-specific extension data                    |         | No       |
+
+### Blend Mode Values
+
+W3C Compositing spec modes plus common extras:
+
+`normal`, `multiply`, `screen`, `overlay`, `darken`, `lighten`, `color-dodge`, `color-burn`, `hard-light`, `soft-light`, `difference`, `exclusion`, `hue`, `saturation`, `color`, `luminosity`, `add`, `subtract`, `erase`, `none`
+
+### Masking Options
+
+| Name    | Type             | Description                  | Default | Required |
+| ------- | ---------------- | ---------------------------- | ------- | -------- |
+| node    | number \| string | Reference to the mask node   |         | Yes      |
+| inverse | boolean          | Whether the mask is inverted | false   | No       |
 
 ### Transform Mutual Exclusivity
 

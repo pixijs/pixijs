@@ -4,7 +4,7 @@
 
 A PixiJS-specific high-level mesh type that generates a subdivided plane. The plane geometry is constructed from the texture dimensions and vertex grid density.
 
-All nodes also support the [PixiJS Container Extension](../container.md#pixijs-container-extension) for properties like anchor, tint, blendMode, and more.
+All nodes also support the [PixiJS Container Extension](../container.md#pixijs-container-extension) for properties like anchor, tint, and more.
 
 Requires `pixi_mesh_plane` in `extensionsUsed` or `extensionsRequired`.
 
