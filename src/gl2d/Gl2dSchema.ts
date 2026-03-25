@@ -1,0 +1,930 @@
+/* eslint-disable requireMemberAPI/require-member-api-doc */
+/* eslint-disable requireExport/require-export-jsdoc */
+
+// ============================================================================
+// gl2D File Format – TypeScript Schema
+// Covers core spec + PixiJS extensions
+// ============================================================================
+
+// --- Primitives -------------------------------------------------------------
+
+export type Gl2dRef = number | string;
+
+export type Gl2dPoint2d = [x: number, y: number];
+
+export type Gl2dMatrix2d = [a: number, b: number, c: number, d: number, tx: number, ty: number];
+
+export type Gl2dRectangle = [x: number, y: number, width: number, height: number];
+
+export type Gl2dCircle = [centerX: number, centerY: number, radius: number];
+
+// --- Root File --------------------------------------------------------------
+
+export interface Gl2dFile
+{
+    asset: Gl2dAsset;
+    scene?: Gl2dRef;
+    scenes?: Gl2dScene[];
+    nodes?: Gl2dNode[];
+    resources?: Gl2dResource[];
+    extensionsUsed?: string[];
+    extensionsRequired?: string[];
+}
+
+export interface Gl2dAsset
+{
+    version: string;
+    generator?: string;
+    minVersion?: string;
+}
+
+// --- Scenes -----------------------------------------------------------------
+
+export interface Gl2dScene
+{
+    name: string;
+    nodes: Gl2dRef[];
+    width?: number;
+    height?: number;
+}
+
+// --- Nodes ------------------------------------------------------------------
+
+// Core node properties shared by all node types
+export interface Gl2dCoreNodeProperties
+{
+    type: string;
+    uid?: string;
+    name?: string;
+    children?: Gl2dRef[];
+    translation?: Gl2dPoint2d;
+    rotation?: number;
+    scale?: Gl2dPoint2d;
+    matrix?: Gl2dMatrix2d;
+    alpha?: number;
+    visible?: boolean;
+    extensions?: Gl2dNodeExtensions;
+}
+
+// Core node types
+
+export interface Gl2dContainerNode extends Gl2dCoreNodeProperties
+{
+    type: 'container';
+}
+
+export interface Gl2dSpriteNode extends Gl2dCoreNodeProperties
+{
+    type: 'sprite';
+    texture: Gl2dRef;
+}
+
+export interface Gl2dTilingSpriteNode extends Gl2dCoreNodeProperties
+{
+    type: 'tiling_sprite';
+    texture: Gl2dRef;
+    width?: number;
+    height?: number;
+    tileScale?: Gl2dPoint2d;
+    tilePosition?: Gl2dPoint2d;
+    tileRotation?: number;
+}
+
+export interface Gl2dNineSliceSpriteNode extends Gl2dCoreNodeProperties
+{
+    type: 'nine_slice_sprite';
+    texture: Gl2dRef;
+    width?: number;
+    height?: number;
+    leftWidth?: number;
+    topHeight?: number;
+    rightWidth?: number;
+    bottomHeight?: number;
+}
+
+export interface Gl2dTextNode extends Gl2dCoreNodeProperties
+{
+    type: 'text';
+    text: string;
+    style: Gl2dRef;
+    resolution?: number;
+    webFont?: Gl2dRef;
+}
+
+export interface Gl2dBitmapTextNode extends Gl2dCoreNodeProperties
+{
+    type: 'bitmap_text';
+    text: string;
+    style: Gl2dRef;
+    resolution?: number;
+    bitmapFont?: Gl2dRef;
+}
+
+export interface Gl2dHtmlTextNode extends Gl2dCoreNodeProperties
+{
+    type: 'html_text';
+    text: string;
+    style: Gl2dRef;
+    resolution?: number;
+    webFont?: Gl2dRef;
+}
+
+// Animated sprite: textures XOR (spritesheet + animation)
+interface Gl2dAnimatedSpriteBase extends Gl2dCoreNodeProperties
+{
+    type: 'animated_sprite';
+    animationSpeed?: number;
+    loop?: boolean;
+    autoPlay?: boolean;
+    currentFrame?: number;
+}
+
+export interface Gl2dAnimatedSpriteTexturesNode extends Gl2dAnimatedSpriteBase
+{
+    textures: Gl2dRef[];
+    spritesheet?: never;
+    animation?: never;
+}
+
+export interface Gl2dAnimatedSpriteSheetNode extends Gl2dAnimatedSpriteBase
+{
+    spritesheet: Gl2dRef;
+    animation: string;
+    textures?: never;
+}
+
+export type Gl2dAnimatedSpriteNode = Gl2dAnimatedSpriteTexturesNode | Gl2dAnimatedSpriteSheetNode;
+
+export interface Gl2dGraphicsNode extends Gl2dCoreNodeProperties
+{
+    type: 'graphics';
+    context: Gl2dRef;
+}
+
+export interface Gl2dMeshNode extends Gl2dCoreNodeProperties
+{
+    type: 'mesh';
+    texture: Gl2dRef;
+    vertices: number[];
+    uvs: number[];
+    indices?: number[];
+    topology?: Gl2dTopology;
+}
+
+export type Gl2dTopology =
+    | 'point-list'
+    | 'line-list'
+    | 'line-strip'
+    | 'triangle-list'
+    | 'triangle-strip';
+
+export interface Gl2dParticleContainerNode extends Gl2dCoreNodeProperties
+{
+    type: 'particle_container';
+    texture: Gl2dRef;
+    positions: number[];
+    rotations?: number[];
+    scales?: number[];
+    tints?: string[];
+    alphas?: number[];
+}
+
+export interface Gl2dCustomNode extends Gl2dCoreNodeProperties
+{
+    type: string;
+    [key: string]: unknown;
+}
+
+export type Gl2dCoreNode =
+    | Gl2dContainerNode
+    | Gl2dSpriteNode
+    | Gl2dTilingSpriteNode
+    | Gl2dNineSliceSpriteNode
+    | Gl2dTextNode
+    | Gl2dBitmapTextNode
+    | Gl2dHtmlTextNode
+    | Gl2dAnimatedSpriteNode
+    | Gl2dGraphicsNode
+    | Gl2dMeshNode
+    | Gl2dParticleContainerNode
+    | Gl2dCustomNode;
+
+// --- PixiJS Extension Nodes -------------------------------------------------
+
+export interface Gl2dPixiMeshPlaneNode extends Gl2dCoreNodeProperties
+{
+    type: 'pixi_mesh_plane';
+    texture: Gl2dRef;
+    verticesX?: number;
+    verticesY?: number;
+    autoResize?: boolean;
+}
+
+export interface Gl2dPixiMeshRopeNode extends Gl2dCoreNodeProperties
+{
+    type: 'pixi_mesh_rope';
+    texture: Gl2dRef;
+    points: number[];
+    textureScale?: number;
+    autoUpdate?: boolean;
+}
+
+export interface Gl2dPixiPerspectiveMeshNode extends Gl2dCoreNodeProperties
+{
+    type: 'pixi_perspective_mesh';
+    texture: Gl2dRef;
+    corners: [
+        x0: number, y0: number,
+        x1: number, y1: number,
+        x2: number, y2: number,
+        x3: number, y3: number,
+    ];
+    verticesX?: number;
+    verticesY?: number;
+}
+
+export interface Gl2dPixiGifSpriteNode extends Gl2dCoreNodeProperties
+{
+    type: 'pixi_gif_sprite';
+    gif: Gl2dRef;
+    animationSpeed?: number;
+    loop?: boolean;
+    autoPlay?: boolean;
+    autoUpdate?: boolean;
+    currentFrame?: number;
+}
+
+export interface Gl2dPixiSplitTextNode extends Gl2dCoreNodeProperties
+{
+    type: 'pixi_split_text';
+    text: string;
+    style: Gl2dRef;
+    resolution?: number;
+    webFont?: Gl2dRef;
+    charAnchor?: Gl2dPoint2d;
+    wordAnchor?: Gl2dPoint2d;
+    lineAnchor?: Gl2dPoint2d;
+    autoSplit?: boolean;
+}
+
+export interface Gl2dPixiSplitBitmapTextNode extends Gl2dCoreNodeProperties
+{
+    type: 'pixi_split_bitmap_text';
+    text: string;
+    style: Gl2dRef;
+    resolution?: number;
+    bitmapFont?: Gl2dRef;
+    charAnchor?: Gl2dPoint2d;
+    wordAnchor?: Gl2dPoint2d;
+    lineAnchor?: Gl2dPoint2d;
+    autoSplit?: boolean;
+}
+
+export interface Gl2dPixiDomContainerNode extends Gl2dCoreNodeProperties
+{
+    type: 'pixi_dom_container';
+    element: Gl2dRef;
+    anchor?: Gl2dPoint2d;
+}
+
+export type Gl2dPixiNode =
+    | Gl2dPixiMeshPlaneNode
+    | Gl2dPixiMeshRopeNode
+    | Gl2dPixiPerspectiveMeshNode
+    | Gl2dPixiGifSpriteNode
+    | Gl2dPixiSplitTextNode
+    | Gl2dPixiSplitBitmapTextNode
+    | Gl2dPixiDomContainerNode;
+
+export type Gl2dNode = Gl2dCoreNode | Gl2dPixiNode;
+
+// --- Node Extensions --------------------------------------------------------
+
+export interface Gl2dNodeExtensions
+{
+    pixi_container_node?: Gl2dPixiContainerExtension;
+    pixi_text_node?: Gl2dPixiTextNodeExtension;
+    pixi_html_text_node?: Gl2dPixiHtmlTextNodeExtension;
+    pixi_tiling_sprite_node?: Gl2dPixiTilingSpriteNodeExtension;
+    pixi_animated_sprite_node?: Gl2dPixiAnimatedSpriteNodeExtension;
+    gl2d_filters?: Gl2dFiltersExtension;
+    [key: string]: unknown;
+}
+
+export interface Gl2dPixiContainerExtension
+{
+    origin?: Gl2dPoint2d;
+    skew?: Gl2dPoint2d;
+    pivot?: Gl2dPoint2d;
+    anchor?: Gl2dPoint2d;
+    width?: number;
+    height?: number;
+    tint?: string;
+    blendMode?: string;
+    roundPixels?: boolean;
+    mask?: Gl2dPixiMaskOptions;
+    zIndex?: number;
+    isRenderGroup?: boolean;
+    renderable?: boolean;
+    boundsArea?: Gl2dRectangle;
+    sortableChildren?: boolean;
+}
+
+export interface Gl2dPixiMaskOptions
+{
+    node: Gl2dRef;
+    inverse?: boolean;
+}
+
+export interface Gl2dPixiTextNodeExtension
+{
+    textureStyle?: Record<string, unknown>;
+    autoGenerateMipmaps?: boolean;
+}
+
+export interface Gl2dPixiHtmlTextNodeExtension
+{
+    textureStyle?: Record<string, unknown>;
+    autoGenerateMipmaps?: boolean;
+}
+
+export interface Gl2dPixiTilingSpriteNodeExtension
+{
+    applyAnchorToTexture?: boolean;
+    clampMargin?: number;
+}
+
+export interface Gl2dPixiAnimatedSpriteNodeExtension
+{
+    autoUpdate?: boolean;
+    updateAnchor?: boolean;
+}
+
+export interface Gl2dFiltersExtension
+{
+    filters: Gl2dRef[];
+}
+
+// --- Resources --------------------------------------------------------------
+
+// Texture
+
+export interface Gl2dTextureResource
+{
+    type: 'texture';
+    uid?: string;
+    name?: string;
+    source: Gl2dRef;
+    frame?: Gl2dRectangle;
+    frameName?: string;
+    extensions?: Gl2dResourceExtensions;
+}
+
+// Texture sources
+
+export type Gl2dAlphaMode =
+    | 'no-premultiply-alpha'
+    | 'premultiply-alpha-on-upload'
+    | 'premultiplied-alpha';
+
+export type Gl2dWrapMode = 'repeat' | 'clamp' | 'mirror';
+
+export type Gl2dScaleMode = 'linear' | 'nearest';
+
+export type Gl2dCompareFunction =
+    | 'never'
+    | 'less'
+    | 'equal'
+    | 'less-equal'
+    | 'greater'
+    | 'not-equal'
+    | 'greater-equal'
+    | 'always';
+
+export interface Gl2dTextureSourceBase
+{
+    uid?: string;
+    name?: string;
+    uri?: string;
+    width?: number;
+    height?: number;
+    resolution?: number;
+    format?: string;
+    antialias?: boolean;
+    alphaMode?: Gl2dAlphaMode;
+    addressMode?: Gl2dWrapMode;
+    addressModeU?: Gl2dWrapMode;
+    addressModeV?: Gl2dWrapMode;
+    addressModeW?: Gl2dWrapMode;
+    scaleMode?: Gl2dScaleMode;
+    magFilter?: Gl2dScaleMode;
+    minFilter?: Gl2dScaleMode;
+    mipmapFilter?: Gl2dScaleMode;
+    lodMinClamp?: number;
+    lodMaxClamp?: number;
+    extensions?: Gl2dResourceExtensions;
+}
+
+export interface Gl2dImageSourceResource extends Gl2dTextureSourceBase
+{
+    type: 'image_source';
+}
+
+export interface Gl2dVideoSourceResource extends Gl2dTextureSourceBase
+{
+    type: 'video_source';
+    autoLoad?: boolean;
+    autoPlay?: boolean;
+    crossorigin?: string;
+    loop?: boolean;
+    muted?: boolean;
+    playsinline?: boolean;
+}
+
+// Spritesheet
+
+export interface Gl2dSpritesheetResource
+{
+    type: 'spritesheet';
+    uid?: string;
+    name?: string;
+    uri: string;
+    source: Gl2dRef;
+    extensions?: Gl2dResourceExtensions;
+}
+
+// Graphics context
+
+export interface Gl2dGraphicsContextResource
+{
+    type: 'graphics_context';
+    uid?: string;
+    name?: string;
+    commands: Gl2dGraphicsCommand[];
+    extensions?: Gl2dResourceExtensions;
+}
+
+// Text style
+
+export interface Gl2dTextStyleResource
+{
+    type: 'text_style';
+    uid?: string;
+    name?: string;
+    fontFamily: string | string[];
+    align?: Gl2dTextAlign;
+    fontSize?: number;
+    fontStyle?: Gl2dFontStyle;
+    fontVariant?: Gl2dFontVariant;
+    fontWeight?: string | number;
+    fill?: string;
+    letterSpacing?: number;
+    padding?: number;
+    stroke?: Gl2dTextStroke;
+    shadow?: Gl2dTextShadow;
+    textBaseline?: string;
+    wordWrap?: Gl2dTextWordWrap;
+    extensions?: Gl2dResourceExtensions;
+}
+
+export type Gl2dTextAlign = 'left' | 'center' | 'right' | 'justify';
+
+export type Gl2dFontStyle = 'normal' | 'italic' | 'oblique';
+
+export type Gl2dFontVariant = 'normal' | 'small-caps';
+
+export type Gl2dLineCap = 'butt' | 'round' | 'square';
+
+export type Gl2dLineJoin = 'miter' | 'round' | 'bevel';
+
+export interface Gl2dTextStroke
+{
+    fill: string;
+    width?: number;
+    alignment?: number;
+    cap?: Gl2dLineCap;
+    join?: Gl2dLineJoin;
+    miterLimit?: number;
+}
+
+export interface Gl2dTextShadow
+{
+    color?: string;
+    offsetX?: number;
+    offsetY?: number;
+    blur?: number;
+    alpha?: number;
+}
+
+export interface Gl2dTextWordWrap
+{
+    enabled?: boolean;
+    width?: number;
+}
+
+// Canvas gradient
+
+export interface Gl2dCanvasGradientResource
+{
+    type: 'canvas_gradient';
+    uid?: string;
+    name?: string;
+    gradientType: 'linear' | 'radial';
+    gradientUnits: 'local' | 'global';
+    stops: (number | string)[];
+    linear?: Gl2dLinearGradientConfig;
+    radial?: Gl2dRadialGradientConfig;
+    extensions?: Gl2dResourceExtensions;
+}
+
+export interface Gl2dLinearGradientConfig
+{
+    start: Gl2dPoint2d;
+    end: Gl2dPoint2d;
+}
+
+export interface Gl2dRadialGradientConfig
+{
+    outerCircle: Gl2dCircle;
+    innerCircle: Gl2dCircle;
+}
+
+// Canvas pattern
+
+export type Gl2dPatternRepeat = 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat';
+
+export interface Gl2dCanvasPatternResource
+{
+    type: 'canvas_pattern';
+    uid?: string;
+    name?: string;
+    source: Gl2dRef;
+    repeat?: Gl2dPatternRepeat;
+    transform?: Gl2dMatrix2d;
+    extensions?: Gl2dResourceExtensions;
+}
+
+// Web font
+
+export interface Gl2dWebFontResource
+{
+    type: 'web_font';
+    uid?: string;
+    name?: string;
+    uri?: string;
+    family: string;
+    weights?: string[];
+    style?: string;
+    display?: string;
+    stretch?: string;
+    unicodeRange?: string;
+    variant?: string;
+    featureSettings?: string;
+    extensions?: Gl2dResourceExtensions;
+}
+
+// Bitmap font
+
+export interface Gl2dBitmapFontResource
+{
+    type: 'bitmap_font';
+    uid?: string;
+    name?: string;
+    uri?: string;
+    fontFamily: string;
+    extensions?: Gl2dResourceExtensions;
+}
+
+// Filter
+
+export interface Gl2dFilterResource
+{
+    type: 'filter';
+    uid?: string;
+    name?: string;
+    filterType: string;
+    params?: Record<string, unknown>;
+    extensions?: Gl2dResourceExtensions;
+}
+
+// Custom resource
+
+export interface Gl2dCustomResource
+{
+    type: string;
+    uid?: string;
+    name?: string;
+    extensions?: Gl2dResourceExtensions;
+    [key: string]: unknown;
+}
+
+// PixiJS extension resources
+
+export interface Gl2dPixiGifResource
+{
+    type: 'pixi_gif';
+    uid?: string;
+    name?: string;
+    uri: string;
+    fps?: number;
+}
+
+export interface Gl2dPixiDomElementResource
+{
+    type: 'pixi_dom_element';
+    uid: string;
+    name?: string;
+    selector?: string;
+}
+
+// Resource unions
+
+export type Gl2dCoreResource =
+    | Gl2dTextureResource
+    | Gl2dImageSourceResource
+    | Gl2dVideoSourceResource
+    | Gl2dSpritesheetResource
+    | Gl2dGraphicsContextResource
+    | Gl2dTextStyleResource
+    | Gl2dCanvasGradientResource
+    | Gl2dCanvasPatternResource
+    | Gl2dWebFontResource
+    | Gl2dBitmapFontResource
+    | Gl2dFilterResource
+    | Gl2dCustomResource;
+
+export type Gl2dPixiResource =
+    | Gl2dPixiGifResource
+    | Gl2dPixiDomElementResource;
+
+export type Gl2dResource = Gl2dCoreResource | Gl2dPixiResource;
+
+// --- Resource Extensions ----------------------------------------------------
+
+export interface Gl2dResourceExtensions
+{
+    pixi_texture_resource?: Gl2dPixiTextureExtension;
+    pixi_texture_source_resource?: Gl2dPixiTextureSourceExtension;
+    pixi_spritesheet?: Gl2dPixiSpritesheetExtension;
+    pixi_text_style_resource?: Gl2dPixiTextStyleExtension;
+    pixi_wrap_mode?: Gl2dPixiWrapModeExtension;
+    pixi_canvas_gradient?: Gl2dPixiCanvasGradientExtension;
+    [key: string]: unknown;
+}
+
+export interface Gl2dPixiTextureExtension
+{
+    orig?: Gl2dRectangle;
+    trim?: Gl2dRectangle;
+    defaultAnchor?: Gl2dPoint2d;
+    defaultBorders?: [left: number, top: number, right: number, bottom: number];
+    rotate?: number;
+    dynamic?: boolean;
+}
+
+export interface Gl2dPixiTextureSourceExtension
+{
+    dimensions?: '1d' | '2d' | '3d';
+    mipLevelCount?: number;
+    autoGenerateMipmaps?: boolean;
+    autoGarbageCollect?: boolean;
+    compare?: Gl2dCompareFunction;
+    maxAnisotropy?: number;
+}
+
+export interface Gl2dPixiSpritesheetExtension
+{
+    cachePrefix?: string;
+}
+
+export interface Gl2dPixiTextStyleExtension
+{
+    trim?: boolean;
+    leading?: number;
+    lineHeight?: number;
+}
+
+export interface Gl2dPixiWrapModeExtension
+{
+    breakWords?: boolean;
+    whiteSpace?: string;
+}
+
+export interface Gl2dPixiCanvasGradientExtension
+{
+    textureSize?: number;
+    wrapMode?: string;
+    scale?: number;
+    rotation?: number;
+}
+
+// --- Graphics Commands (discriminated union) --------------------------------
+
+// Path commands
+
+export interface Gl2dMoveToCommand
+{
+    action: 'moveTo';
+    x: number;
+    y: number;
+}
+
+export interface Gl2dLineToCommand
+{
+    action: 'lineTo';
+    x: number;
+    y: number;
+}
+
+export interface Gl2dBezierCurveToCommand
+{
+    action: 'bezierCurveTo';
+    cp1x: number;
+    cp1y: number;
+    cp2x: number;
+    cp2y: number;
+    x: number;
+    y: number;
+}
+
+export interface Gl2dQuadraticCurveToCommand
+{
+    action: 'quadraticCurveTo';
+    cpx: number;
+    cpy: number;
+    x: number;
+    y: number;
+}
+
+export interface Gl2dArcCommand
+{
+    action: 'arc';
+    x: number;
+    y: number;
+    radius: number;
+    startAngle: number;
+    endAngle: number;
+    counterclockwise?: boolean;
+}
+
+export interface Gl2dArcToCommand
+{
+    action: 'arcTo';
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+    radius: number;
+}
+
+export interface Gl2dClosePathCommand
+{
+    action: 'closePath';
+}
+
+export interface Gl2dRectCommand
+{
+    action: 'rect';
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
+export interface Gl2dCircleCommand
+{
+    action: 'circle';
+    x: number;
+    y: number;
+    radius: number;
+}
+
+export interface Gl2dEllipseCommand
+{
+    action: 'ellipse';
+    x: number;
+    y: number;
+    halfWidth: number;
+    halfHeight: number;
+}
+
+export interface Gl2dRoundRectCommand
+{
+    action: 'roundRect';
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    radius: number;
+}
+
+export interface Gl2dPolyCommand
+{
+    action: 'poly';
+    points: number[];
+    close?: boolean;
+}
+
+// Style commands
+
+export interface Gl2dBeginFillCommand
+{
+    action: 'beginFill';
+    color?: string;
+    alpha?: number;
+    texture?: Gl2dRef;
+    matrix?: Gl2dMatrix2d;
+}
+
+export interface Gl2dEndFillCommand
+{
+    action: 'endFill';
+}
+
+export interface Gl2dBeginStrokeCommand
+{
+    action: 'beginStroke';
+    color?: string;
+    alpha?: number;
+    width?: number;
+    alignment?: number;
+    cap?: Gl2dLineCap;
+    join?: Gl2dLineJoin;
+    miterLimit?: number;
+}
+
+export interface Gl2dEndStrokeCommand
+{
+    action: 'endStroke';
+}
+
+export type Gl2dGraphicsCommand =
+    | Gl2dMoveToCommand
+    | Gl2dLineToCommand
+    | Gl2dBezierCurveToCommand
+    | Gl2dQuadraticCurveToCommand
+    | Gl2dArcCommand
+    | Gl2dArcToCommand
+    | Gl2dClosePathCommand
+    | Gl2dRectCommand
+    | Gl2dCircleCommand
+    | Gl2dEllipseCommand
+    | Gl2dRoundRectCommand
+    | Gl2dPolyCommand
+    | Gl2dBeginFillCommand
+    | Gl2dEndFillCommand
+    | Gl2dBeginStrokeCommand
+    | Gl2dEndStrokeCommand;
+
+// --- Core Node Type Constants -----------------------------------------------
+
+export const GL2D_CORE_NODE_TYPES = [
+    'container',
+    'sprite',
+    'tiling_sprite',
+    'nine_slice_sprite',
+    'text',
+    'bitmap_text',
+    'html_text',
+    'animated_sprite',
+    'graphics',
+    'mesh',
+    'particle_container',
+] as const;
+
+export type Gl2dCoreNodeType = typeof GL2D_CORE_NODE_TYPES[number];
+
+export const GL2D_CORE_RESOURCE_TYPES = [
+    'texture',
+    'image_source',
+    'video_source',
+    'spritesheet',
+    'graphics_context',
+    'text_style',
+    'web_font',
+    'bitmap_font',
+    'canvas_gradient',
+    'canvas_pattern',
+    'filter',
+] as const;
+
+export type Gl2dCoreResourceType = typeof GL2D_CORE_RESOURCE_TYPES[number];
+
+export const GL2D_PIXI_NODE_TYPES = [
+    'pixi_mesh_plane',
+    'pixi_mesh_rope',
+    'pixi_perspective_mesh',
+    'pixi_gif_sprite',
+    'pixi_split_text',
+    'pixi_split_bitmap_text',
+    'pixi_dom_container',
+] as const;
+
+export type Gl2dPixiNodeType = typeof GL2D_PIXI_NODE_TYPES[number];
+
+export const GL2D_PIXI_RESOURCE_TYPES = [
+    'pixi_gif',
+    'pixi_dom_element',
+] as const;
+
+export type Gl2dPixiResourceType = typeof GL2D_PIXI_RESOURCE_TYPES[number];
