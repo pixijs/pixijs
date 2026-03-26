@@ -126,6 +126,7 @@ async function loadAsTexture(
     const { parseAsGraphicsContext: _p, ...rest } = asset.data ?? {};
     const base = new ImageSource({
         resource: canvas,
+        uri: asset.src,
         alphaMode: 'premultiply-alpha-on-upload',
         resolution,
         ...rest,

@@ -1,9 +1,9 @@
-import { CORE_NODE_DEFAULTS } from './defaults';
-import { gl2dUtils } from './utils';
+import { CORE_NODE_DEFAULTS } from '../defaults';
+import { gl2dUtils } from '../utils';
 
-import type { Container } from '../scene/container/Container';
-import type { Gl2dNodePropertiesBase, Gl2dTRSTransform } from './Gl2dSchema';
-import type { Gl2dSerializeContext } from './serializeContext';
+import type { Container } from '../../scene/container/Container';
+import type { Gl2dNodePropertiesBase, Gl2dTRSTransform } from '../Gl2dSchema';
+import type { Gl2dSerializeContext } from '../serializeContext';
 
 /**
  * Serializes the common properties shared by all node types.

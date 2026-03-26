@@ -1,12 +1,12 @@
 import { Color } from '../../color/Color';
 import { warn } from '../../utils/logging/warn';
 import { PIXI_CONTAINER_DEFAULTS } from '../defaults';
-import { serializeCoreNodeProperties } from '../serializeCoreNodeProperties';
 import { gl2dUtils } from '../utils';
+import { serializeCoreNodeProperties } from './serializeCoreNodeProperties';
 
 import type { Container } from '../../scene/container/Container';
 import type { Gl2dContainerNode, Gl2dPixiContainerExtension, Gl2dRef } from '../Gl2dSchema';
-import type { Gl2dSerializeAsyncContext, Gl2dSerializeContext } from '../serializeContext';
+import type { Gl2dSerializeContext } from '../serializeContext';
 
 interface ContainerSetup
 {
@@ -34,9 +34,10 @@ export function serializeContainerExtensions(container: Container, node: Gl2dCon
             width: gl2dUtils.checkValue(container.width, PIXI_CONTAINER_DEFAULTS.width),
             height: gl2dUtils.checkValue(container.height, PIXI_CONTAINER_DEFAULTS.height),
             tint: gl2dUtils.checkColor(Color.shared.setValue(container.tint), PIXI_CONTAINER_DEFAULTS.tint),
-            blendMode: container.localBlendMode === 'inherit'
-                ? null
-                : gl2dUtils.checkValue(container.localBlendMode, PIXI_CONTAINER_DEFAULTS.blendMode),
+            blendMode:
+                container.localBlendMode === 'inherit'
+                    ? null
+                    : gl2dUtils.checkValue(container.localBlendMode, PIXI_CONTAINER_DEFAULTS.blendMode),
             roundPixels: gl2dUtils.checkValue((container as any).roundPixels, PIXI_CONTAINER_DEFAULTS.roundPixels),
             zIndex: gl2dUtils.checkValue(container.zIndex, PIXI_CONTAINER_DEFAULTS.zIndex),
             isRenderGroup: gl2dUtils.checkValue(container.isRenderGroup, PIXI_CONTAINER_DEFAULTS.isRenderGroup),
@@ -111,12 +112,38 @@ function setupContainerNode(container: Container, ctx: Gl2dSerializeContext): Co
     return { node, index };
 }
 
-function applyMask(node: Gl2dContainerNode, container: Container, maskRef: Gl2dRef): void
+/**
+ * Applies a mask to a container node.
+ * @param node - The container node to apply the mask to
+ * @param container - The container to apply the mask to
+ * @param ctx - The serialization context
+ * @category gl2d
+ * @internal
+ */
+export function applyMask(node: Gl2dContainerNode, container: Container, ctx: Gl2dSerializeContext)
 {
-    node.mask = {
-        node: maskRef,
-        inverse: container._maskOptions?.inverse ?? false,
-    };
+    const mask = container.mask;
+
+    // eslint-disable-next-line no-eq-null, eqeqeq
+    if (mask != null)
+    {
+        if (typeof mask === 'number')
+        {
+            warn('[gl2d] Mask is a number, which is not supported');
+
+            return null;
+        }
+        const maskRef = mask.toGl2d(ctx);
+
+        node.mask = {
+            node: maskRef,
+            inverse: container._maskOptions?.inverse ?? false,
+        };
+
+        return maskRef;
+    }
+
+    return null;
 }
 
 /**
@@ -141,58 +168,7 @@ export function serializeContainer(container: Container, ctx: Gl2dSerializeConte
         (node.children ??= []).push((children[i] as Container).toGl2d(ctx));
     }
 
-    const mask = container.mask;
-
-    // eslint-disable-next-line no-eq-null, eqeqeq
-    if (mask != null)
-    {
-        if (typeof mask === 'number')
-        {
-            warn('[gl2d] Mask is a number, which is not supported');
-
-            return index;
-        }
-        applyMask(node, container, mask.toGl2d(ctx));
-    }
-
-    return index;
-}
-
-/**
- * Serializes a Container into a gl2d node (async).
- * @param container - The container to serialize
- * @param ctx - The async serialization context
- * @returns Promise resolving to index into ctx.gl2d.nodes
- * @category gl2d
- * @standard
- */
-export async function serializeContainerAsync(container: Container, ctx: Gl2dSerializeAsyncContext): Promise<Gl2dRef>
-{
-    const result = setupContainerNode(container, ctx);
-
-    if (typeof result !== 'object') return result;
-
-    const { node, index } = result;
-    const children = container.children;
-
-    for (let i = 0; i < children.length; i++)
-    {
-        (node.children ??= []).push(await (children[i] as Container).toGl2dAsync(ctx));
-    }
-
-    const mask = container.mask;
-
-    // eslint-disable-next-line no-eq-null, eqeqeq
-    if (mask != null)
-    {
-        if (typeof mask === 'number')
-        {
-            warn('[gl2d] Mask is a number, which is not supported');
-
-            return index;
-        }
-        applyMask(node, container, await (mask as Container).toGl2dAsync(ctx));
-    }
+    applyMask(node, container, ctx);
 
     return index;
 }

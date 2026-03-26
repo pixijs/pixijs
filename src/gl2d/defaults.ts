@@ -1,4 +1,11 @@
-import type { Gl2dNodePropertiesBase, Gl2dPixiContainerExtension, Gl2dTRSTransform } from './Gl2dSchema';
+import type {
+    Gl2dImageSourceResource,
+    Gl2dNodePropertiesBase,
+    Gl2dPixiContainerExtension,
+    Gl2dPixiTextureExtension,
+    Gl2dPixiTextureSourceExtension,
+    Gl2dTRSTransform,
+} from './Gl2dSchema';
 
 /**
  * Default values for core gl2d node properties.
@@ -7,7 +14,10 @@ import type { Gl2dNodePropertiesBase, Gl2dPixiContainerExtension, Gl2dTRSTransfo
  * @internal
  */
 export const CORE_NODE_DEFAULTS: Required<
-    Omit<Gl2dNodePropertiesBase, 'type' | 'uid' | 'name' | 'children' | 'extensions' | 'mask'>
+    Omit<
+        Gl2dNodePropertiesBase,
+        'type' | 'uid' | 'name' | 'children' | 'extensions' | 'mask'
+    >
 > &
     Required<Omit<Gl2dTRSTransform, 'matrix'>> = {
         translation: [0, 0],
@@ -24,7 +34,9 @@ export const CORE_NODE_DEFAULTS: Required<
  * @category gl2d
  * @internal
  */
-export const PIXI_CONTAINER_DEFAULTS: Required<Omit<Gl2dPixiContainerExtension, 'blendMode'>> & {
+export const PIXI_CONTAINER_DEFAULTS: Required<
+    Omit<Gl2dPixiContainerExtension, 'blendMode'>
+> & {
     blendMode: string;
 } = {
     origin: [0, 0],
@@ -61,4 +73,62 @@ export const PIXI_CONTAINER_DEFAULTS: Required<Omit<Gl2dPixiContainerExtension, 
     cullArea: [0, 0, 0, 0],
     cullableChildren: true,
     cullable: false,
+};
+
+/**
+ * Default values for the pixi_texture_resource extension.
+ * Properties omitted from output when they match these values.
+ * @category gl2d
+ * @internal
+ */
+export const PIXI_TEXTURE_DEFAULTS: Required<Gl2dPixiTextureExtension> = {
+    orig: null,
+    trim: null,
+    defaultAnchor: null,
+    defaultBorders: null,
+    rotate: 0,
+    dynamic: false,
+};
+
+/**
+ * Default values for the pixi_texture_source_resource extension.
+ * Properties omitted from output when they match these values.
+ * @category gl2d
+ * @internal
+ */
+export const PIXI_TEXTURE_SOURCE_DEFAULTS: Required<Gl2dPixiTextureSourceExtension>
+    = {
+        dimensions: '2d',
+        mipLevelCount: 1,
+        autoGenerateMipmaps: false,
+        autoGarbageCollect: true,
+        compare: null,
+        maxAnisotropy: 1,
+        addressModeU: 'clamp-to-edge',
+        addressModeV: 'clamp-to-edge',
+        addressModeW: 'clamp-to-edge',
+        magFilter: 'linear',
+        minFilter: 'linear',
+        mipmapFilter: 'linear',
+        lodMinClamp: 0,
+        lodMaxClamp: 100,
+    };
+
+/**
+ * Default values for core image_source resource properties.
+ * @category gl2d
+ * @internal
+ */
+export const IMAGE_SOURCE_DEFAULTS: Omit<
+    Required<Gl2dImageSourceResource>,
+    'type' | 'uid' | 'name' | 'uri' | 'extensions'
+> = {
+    resolution: 1,
+    alphaMode: 'premultiply-alpha-on-upload' as const,
+    antialias: false,
+    scaleMode: 'linear' as const,
+    format: 'bgra8unorm' as const,
+    addressMode: 'clamp' as const,
+    width: 1,
+    height: 1,
 };

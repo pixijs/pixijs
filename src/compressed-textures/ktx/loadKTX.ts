@@ -46,6 +46,7 @@ export const loadKTX = {
 
         const compressedTextureSource = new CompressedSource({
             ...textureOptions,
+            uri: asset.src,
             resolution: asset.data?.resolution || getResolutionOfUrl(url),
         });
 

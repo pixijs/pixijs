@@ -1,6 +1,8 @@
 /* eslint-disable requireMemberAPI/require-member-api-doc */
 /* eslint-disable requireExport/require-export-jsdoc */
 
+import { type TextureStyle } from '../rendering/renderers/shared/texture/TextureStyle';
+
 // ============================================================================
 // gl2D File Format – TypeScript Schema
 // Covers core spec + PixiJS extensions
@@ -70,8 +72,8 @@ export interface Gl2dFile
     scenes?: Gl2dScene[];
     nodes?: Gl2dNode[];
     resources?: Gl2dResource[];
-    extensionsUsed?: string[];
-    extensionsRequired?: string[];
+    extensionsUsed?: (keyof Gl2dResourceExtensions)[];
+    extensionsRequired?: (keyof Gl2dResourceExtensions)[];
 }
 
 export interface Gl2dAsset
@@ -97,7 +99,7 @@ export interface Gl2dScene
 export interface Gl2dNodePropertiesBase
 {
     type: string;
-    uid?: string;
+    uid: string;
     name?: string;
     children?: Gl2dRef[];
     alpha?: number;
@@ -246,12 +248,7 @@ interface Gl2dMeshNodeBase extends Gl2dNodePropertiesBase
 }
 export type Gl2dMeshNode = Gl2dMeshNodeBase & Gl2dTransform;
 
-export type Gl2dTopology =
-    | 'point-list'
-    | 'line-list'
-    | 'line-strip'
-    | 'triangle-list'
-    | 'triangle-strip';
+export type Gl2dTopology = 'point-list' | 'line-list' | 'line-strip' | 'triangle-list' | 'triangle-strip';
 
 interface Gl2dParticleContainerNodeBase extends Gl2dNodePropertiesBase
 {
@@ -312,12 +309,7 @@ interface Gl2dPixiPerspectiveMeshNodeBase extends Gl2dNodePropertiesBase
 {
     type: 'pixi_perspective_mesh';
     texture: Gl2dRef;
-    corners: [
-        x0: number, y0: number,
-        x1: number, y1: number,
-        x2: number, y2: number,
-        x3: number, y3: number,
-    ];
+    corners: [x0: number, y0: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number];
     verticesX?: number;
     verticesY?: number;
 }
@@ -469,7 +461,7 @@ export interface Gl2dFiltersExtension
 export interface Gl2dTextureResource
 {
     type: 'texture';
-    uid?: string;
+    uid: `texture_resource_${string}`;
     name?: string;
     source: Gl2dRef;
     frame?: Gl2dRectangle;
@@ -479,28 +471,15 @@ export interface Gl2dTextureResource
 
 // Texture sources
 
-export type Gl2dAlphaMode =
-    | 'no-premultiply-alpha'
-    | 'premultiply-alpha-on-upload'
-    | 'premultiplied-alpha';
+export type Gl2dAlphaMode = 'no-premultiply-alpha' | 'premultiply-alpha-on-upload' | 'premultiplied-alpha';
 
 export type Gl2dWrapMode = 'repeat' | 'clamp' | 'mirror';
 
 export type Gl2dScaleMode = 'linear' | 'nearest';
 
-export type Gl2dCompareFunction =
-    | 'never'
-    | 'less'
-    | 'equal'
-    | 'less-equal'
-    | 'greater'
-    | 'not-equal'
-    | 'greater-equal'
-    | 'always';
-
 export interface Gl2dTextureSourceBase
 {
-    uid?: string;
+    uid: string;
     name?: string;
     uri?: string;
     width?: number;
@@ -510,26 +489,20 @@ export interface Gl2dTextureSourceBase
     antialias?: boolean;
     alphaMode?: Gl2dAlphaMode;
     addressMode?: Gl2dWrapMode;
-    addressModeU?: Gl2dWrapMode;
-    addressModeV?: Gl2dWrapMode;
-    addressModeW?: Gl2dWrapMode;
     scaleMode?: Gl2dScaleMode;
-    magFilter?: Gl2dScaleMode;
-    minFilter?: Gl2dScaleMode;
-    mipmapFilter?: Gl2dScaleMode;
-    lodMinClamp?: number;
-    lodMaxClamp?: number;
     extensions?: Gl2dResourceExtensions;
 }
 
 export interface Gl2dImageSourceResource extends Gl2dTextureSourceBase
 {
     type: 'image_source';
+    uid: `image_source_${string}`;
 }
 
 export interface Gl2dVideoSourceResource extends Gl2dTextureSourceBase
 {
     type: 'video_source';
+    uid: `video_source_${string}`;
     autoLoad?: boolean;
     autoPlay?: boolean;
     crossorigin?: string;
@@ -543,7 +516,7 @@ export interface Gl2dVideoSourceResource extends Gl2dTextureSourceBase
 export interface Gl2dSpritesheetResource
 {
     type: 'spritesheet';
-    uid?: string;
+    uid: `spritesheet_resource_${string}`;
     name?: string;
     uri: string;
     source: Gl2dRef;
@@ -555,7 +528,7 @@ export interface Gl2dSpritesheetResource
 export interface Gl2dGraphicsContextResource
 {
     type: 'graphics_context';
-    uid?: string;
+    uid: `graphics_context_resource_${string}`;
     name?: string;
     commands: Gl2dGraphicsCommand[];
     extensions?: Gl2dResourceExtensions;
@@ -566,7 +539,7 @@ export interface Gl2dGraphicsContextResource
 export interface Gl2dTextStyleResource
 {
     type: 'text_style';
-    uid?: string;
+    uid: `text_style_resource_${string}`;
     name?: string;
     fontFamily: string | string[];
     align?: Gl2dTextAlign;
@@ -624,7 +597,7 @@ export interface Gl2dTextWordWrap
 export interface Gl2dCanvasGradientResource
 {
     type: 'canvas_gradient';
-    uid?: string;
+    uid: `canvas_gradient_resource_${string}`;
     name?: string;
     gradientType: 'linear' | 'radial';
     gradientUnits: 'local' | 'global';
@@ -653,7 +626,7 @@ export type Gl2dPatternRepeat = 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat'
 export interface Gl2dCanvasPatternResource
 {
     type: 'canvas_pattern';
-    uid?: string;
+    uid: `canvas_pattern_resource_${string}`;
     name?: string;
     source: Gl2dRef;
     repeat?: Gl2dPatternRepeat;
@@ -666,7 +639,7 @@ export interface Gl2dCanvasPatternResource
 export interface Gl2dWebFontResource
 {
     type: 'web_font';
-    uid?: string;
+    uid: `web_font_resource_${string}`;
     name?: string;
     uri?: string;
     family: string;
@@ -685,7 +658,7 @@ export interface Gl2dWebFontResource
 export interface Gl2dBitmapFontResource
 {
     type: 'bitmap_font';
-    uid?: string;
+    uid: `bitmap_font_resource_${string}`;
     name?: string;
     uri?: string;
     fontFamily: string;
@@ -697,7 +670,7 @@ export interface Gl2dBitmapFontResource
 export interface Gl2dFilterResource
 {
     type: 'filter';
-    uid?: string;
+    uid: `filter_resource_${string}`;
     name?: string;
     filterType: string;
     params?: Record<string, unknown>;
@@ -709,7 +682,7 @@ export interface Gl2dFilterResource
 export interface Gl2dCustomResource
 {
     type: string;
-    uid?: string;
+    uid: string;
     name?: string;
     extensions?: Gl2dResourceExtensions;
     [key: string]: unknown;
@@ -720,7 +693,7 @@ export interface Gl2dCustomResource
 export interface Gl2dPixiGifResource
 {
     type: 'pixi_gif';
-    uid?: string;
+    uid: `pixi_gif_resource_${string}`;
     name?: string;
     uri: string;
     fps?: number;
@@ -729,7 +702,7 @@ export interface Gl2dPixiGifResource
 export interface Gl2dPixiDomElementResource
 {
     type: 'pixi_dom_element';
-    uid: string;
+    uid: `pixi_dom_element_resource_${string}`;
     name?: string;
     selector?: string;
 }
@@ -750,11 +723,9 @@ export type Gl2dCoreResource =
     | Gl2dFilterResource
     | Gl2dCustomResource;
 
-export type Gl2dPixiResource =
-    | Gl2dPixiGifResource
-    | Gl2dPixiDomElementResource;
+export type Gl2dPixiResource = Gl2dPixiGifResource | Gl2dPixiDomElementResource;
 
-export type Gl2dResource = Gl2dCoreResource | Gl2dPixiResource;
+export type Gl2dResource = Gl2dCoreResource | Gl2dPixiResource | Gl2dTextureSourceBase;
 
 // --- Resource Extensions ----------------------------------------------------
 
@@ -781,11 +752,19 @@ export interface Gl2dPixiTextureExtension
 
 export interface Gl2dPixiTextureSourceExtension
 {
+    addressModeU?: TextureStyle['addressMode'];
+    addressModeV?: TextureStyle['addressMode'];
+    addressModeW?: TextureStyle['addressMode'];
+    magFilter?: TextureStyle['magFilter'];
+    minFilter?: TextureStyle['minFilter'];
+    mipmapFilter?: TextureStyle['mipmapFilter'];
+    lodMinClamp?: number;
+    lodMaxClamp?: number;
     dimensions?: '1d' | '2d' | '3d';
     mipLevelCount?: number;
     autoGenerateMipmaps?: boolean;
     autoGarbageCollect?: boolean;
-    compare?: Gl2dCompareFunction;
+    compare?: TextureStyle['compare'];
     maxAnisotropy?: number;
 }
 
@@ -989,7 +968,7 @@ export const GL2D_CORE_NODE_TYPES = [
     'particle_container',
 ] as const;
 
-export type Gl2dCoreNodeType = typeof GL2D_CORE_NODE_TYPES[number];
+export type Gl2dCoreNodeType = (typeof GL2D_CORE_NODE_TYPES)[number];
 
 export const GL2D_CORE_RESOURCE_TYPES = [
     'texture',
@@ -1005,7 +984,7 @@ export const GL2D_CORE_RESOURCE_TYPES = [
     'filter',
 ] as const;
 
-export type Gl2dCoreResourceType = typeof GL2D_CORE_RESOURCE_TYPES[number];
+export type Gl2dCoreResourceType = (typeof GL2D_CORE_RESOURCE_TYPES)[number];
 
 export const GL2D_PIXI_NODE_TYPES = [
     'pixi_mesh_plane',
@@ -1017,11 +996,8 @@ export const GL2D_PIXI_NODE_TYPES = [
     'pixi_dom_container',
 ] as const;
 
-export type Gl2dPixiNodeType = typeof GL2D_PIXI_NODE_TYPES[number];
+export type Gl2dPixiNodeType = (typeof GL2D_PIXI_NODE_TYPES)[number];
 
-export const GL2D_PIXI_RESOURCE_TYPES = [
-    'pixi_gif',
-    'pixi_dom_element',
-] as const;
+export const GL2D_PIXI_RESOURCE_TYPES = ['pixi_gif', 'pixi_dom_element'] as const;
 
-export type Gl2dPixiResourceType = typeof GL2D_PIXI_RESOURCE_TYPES[number];
+export type Gl2dPixiResourceType = (typeof GL2D_PIXI_RESOURCE_TYPES)[number];

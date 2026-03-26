@@ -178,6 +178,7 @@ export const spritesheetAsset = {
             }
 
             const spritesheet = new Spritesheet({
+                uri: options.src,
                 texture: texture.source,
                 data: asset,
                 cachePrefix

@@ -3,10 +3,54 @@ import { RectangleLike } from '../../culling/Culler';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { PointData } from '../../maths/point/PointData';
 import { Gl2dPoint2d, Gl2dRectangle } from '../Gl2dSchema';
-import { deepRemoveUndefinedOrNull } from './deepRemoveUndefinedOrNull';
 
 export const gl2dUtils = {
-    removeUndefinedOrNull: deepRemoveUndefinedOrNull,
+    removeUndefinedOrNull: <T>(value: T, depth: number = Infinity): T =>
+    {
+        if (depth === 0) return value;
+
+        if (Array.isArray(value))
+        {
+            // Iterate backwards so we can safely splice while iterating
+            for (let i = value.length - 1; i >= 0; i--)
+            {
+                const item = value[i];
+
+                if (item === undefined || item === null)
+                {
+                    value.splice(i, 1);
+                }
+                else
+                {
+                    gl2dUtils.removeUndefinedOrNull(item, depth - 1);
+                }
+            }
+
+            return value;
+        }
+
+        if (value && typeof value === 'object')
+        {
+            for (const key of Object.keys(value as object))
+            {
+                const val = (value as Record<string, unknown>)[key];
+
+                if (val === undefined || val === null)
+                {
+                    delete (value as Record<string, unknown>)[key];
+                }
+                else
+                {
+                    gl2dUtils.removeUndefinedOrNull(val, depth - 1);
+                }
+            }
+
+            return value;
+        }
+
+        // Primitives are returned as-is
+        return value;
+    },
     checkObservablePoint: (point: ObservablePoint, defaultValue: Gl2dPoint2d): null | Gl2dPoint2d => {
         // check if the value exists
         if (!point) return undefined;

@@ -165,15 +165,7 @@ Base type for texture data sources (images, videos, buffers).
 | antialias    | boolean | Whether to use antialiasing                              | false        | No       |
 | alphaMode    | string  | Alpha mode (see [Alpha Modes](#alpha-modes))             |              | No       |
 | addressMode  | string  | Wrap mode for U, V, W simultaneously                     | "clamp"      | No       |
-| addressModeU | string  | Wrap mode for U coordinate                               |              | No       |
-| addressModeV | string  | Wrap mode for V coordinate                               |              | No       |
-| addressModeW | string  | Wrap mode for W coordinate                               |              | No       |
 | scaleMode    | string  | Sets mag/min/mipmap filters simultaneously               | "linear"     | No       |
-| magFilter    | string  | Magnification filter                                     |              | No       |
-| minFilter    | string  | Minification filter                                      |              | No       |
-| mipmapFilter | string  | Mipmap level filter                                      |              | No       |
-| lodMinClamp  | number  | Minimum LOD clamp                                        | 0            | No       |
-| lodMaxClamp  | number  | Maximum LOD clamp                                        | 100          | No       |
 
 ### PixiJS Texture Source Extension
 
@@ -181,6 +173,14 @@ Base type for texture data sources (images, videos, buffers).
 {
     "extensions": {
         "pixi_texture_source_resource": {
+            "addressModeU": "clamp",
+            "addressModeV": "clamp",
+            "addressModeW": "clamp",
+            "magFilter": "linear",
+            "minFilter": "linear",
+            "mipmapFilter": "linear",
+            "lodMinClamp": 0,
+            "lodMaxClamp": 100,
             "dimensions": "2d",
             "mipLevelCount": 1,
             "autoGenerateMipmaps": true,
@@ -194,6 +194,14 @@ Base type for texture data sources (images, videos, buffers).
 
 | Name                | Type    | Description                           | Default | Required |
 | ------------------- | ------- | ------------------------------------- | ------- | -------- |
+| addressModeU        | string  | Wrap mode for U coordinate            |         | No       |
+| addressModeV        | string  | Wrap mode for V coordinate            |         | No       |
+| addressModeW        | string  | Wrap mode for W coordinate            |         | No       |
+| magFilter           | string  | Magnification filter                  |         | No       |
+| minFilter           | string  | Minification filter                   |         | No       |
+| mipmapFilter        | string  | Mipmap level filter                   |         | No       |
+| lodMinClamp         | number  | Minimum LOD clamp                     | 0       | No       |
+| lodMaxClamp         | number  | Maximum LOD clamp                     | 100     | No       |
 | dimensions          | string  | Texture dimensions ("1d", "2d", "3d") | "2d"    | No       |
 | mipLevelCount       | number  | Number of mip levels                  | 1       | No       |
 | autoGenerateMipmaps | boolean | Auto-generate mipmaps                 | false   | No       |

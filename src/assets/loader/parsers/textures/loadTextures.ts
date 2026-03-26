@@ -125,7 +125,7 @@ export const loadTextures: LoaderParser<Texture, TextureSourceOptions, LoadTextu
 
     async load(url: string, asset: ResolvedAsset<TextureSourceOptions>, loader: Loader): Promise<Texture>
     {
-        let src: any = null;
+        let src: ImageLike | ImageBitmap | undefined | null = null;
 
         if (globalThis.createImageBitmap && this.config.preferCreateImageBitmap)
         {
@@ -165,6 +165,7 @@ export const loadTextures: LoaderParser<Texture, TextureSourceOptions, LoadTextu
             resource: src,
             alphaMode: 'premultiply-alpha-on-upload',
             resolution: asset.data?.resolution || getResolutionOfUrl(url),
+            uri: asset.src,
             ...asset.data,
         });
 

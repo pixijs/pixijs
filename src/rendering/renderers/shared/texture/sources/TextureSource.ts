@@ -27,6 +27,8 @@ import type { TextureResourceOrOptions } from '../utils/textureFrom';
  */
 export interface TextureSourceOptions<T extends Record<string, any> = any> extends TextureStyleOptions
 {
+    /** The URI of the texture source. */
+    uri?: string;
     /**
      * the resource that will be uploaded to the GPU. This is where we get our pixels from
      * eg an ImageBimt / Canvas / Video etc
@@ -137,6 +139,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public readonly uid: number = uid('textureSource');
     /** optional label, can be used for debugging */
     public label: string;
+    /** The URI of the texture source. */
+    public uri?: string;
 
     /**
      * The resource type used by this TextureSource. This is used by the bind groups to determine
@@ -267,6 +271,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         options = { ...TextureSource.defaultOptions, ...options };
 
         this.label = options.label ?? '';
+        this.uri = options.uri;
         this.resource = options.resource;
         this.autoGarbageCollect = options.autoGarbageCollect;
         this._resolution = options.resolution;

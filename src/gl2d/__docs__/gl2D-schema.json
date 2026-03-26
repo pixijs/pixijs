@@ -775,51 +775,11 @@
                     "enum": ["repeat", "clamp", "mirror"],
                     "default": "clamp"
                 },
-                "addressModeU": {
-                    "description": "Wrap mode for U coordinate",
-                    "type": "string",
-                    "enum": ["repeat", "clamp", "mirror"]
-                },
-                "addressModeV": {
-                    "description": "Wrap mode for V coordinate",
-                    "type": "string",
-                    "enum": ["repeat", "clamp", "mirror"]
-                },
-                "addressModeW": {
-                    "description": "Wrap mode for W coordinate",
-                    "type": "string",
-                    "enum": ["repeat", "clamp", "mirror"]
-                },
                 "scaleMode": {
                     "description": "Sets mag/min/mipmap filters simultaneously",
                     "type": "string",
                     "enum": ["linear", "nearest"],
                     "default": "linear"
-                },
-                "magFilter": {
-                    "description": "Magnification filter",
-                    "type": "string",
-                    "enum": ["linear", "nearest"]
-                },
-                "minFilter": {
-                    "description": "Minification filter",
-                    "type": "string",
-                    "enum": ["linear", "nearest"]
-                },
-                "mipmapFilter": {
-                    "description": "Mipmap level filter",
-                    "type": "string",
-                    "enum": ["linear", "nearest"]
-                },
-                "lodMinClamp": {
-                    "description": "Minimum LOD clamp",
-                    "type": "number",
-                    "default": 0
-                },
-                "lodMaxClamp": {
-                    "description": "Maximum LOD clamp",
-                    "type": "number",
-                    "default": 100
                 },
                 "extensions": {
                     "$ref": "#/$defs/extensions"
@@ -881,15 +841,7 @@
                 "antialias": true,
                 "alphaMode": true,
                 "addressMode": true,
-                "addressModeU": true,
-                "addressModeV": true,
-                "addressModeW": true,
                 "scaleMode": true,
-                "magFilter": true,
-                "minFilter": true,
-                "mipmapFilter": true,
-                "lodMinClamp": true,
-                "lodMaxClamp": true,
                 "extensions": true
             },
             "additionalProperties": false
@@ -914,15 +866,7 @@
                 "antialias": true,
                 "alphaMode": true,
                 "addressMode": true,
-                "addressModeU": true,
-                "addressModeV": true,
-                "addressModeW": true,
                 "scaleMode": true,
-                "magFilter": true,
-                "minFilter": true,
-                "mipmapFilter": true,
-                "lodMinClamp": true,
-                "lodMaxClamp": true,
                 "extensions": true,
                 "autoLoad": {
                     "description": "Whether to preload the video",

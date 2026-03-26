@@ -42,6 +42,7 @@ export const loadBasis = {
 
         const compressedTextureSource = new CompressedSource({
             ...textureOptions,
+            uri: asset.src,
             resolution: asset.data?.resolution || getResolutionOfUrl(url),
         });
 

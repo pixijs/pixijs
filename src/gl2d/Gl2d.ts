@@ -1,6 +1,5 @@
-import { createSerializeAsyncContext, createSerializeContext } from './serializeContext';
+import { createSerializeContext } from './serializeContext';
 
-import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
 import type { Gl2dFile, Gl2dRef } from './Gl2dSchema';
 import type { Gl2dSerializeContext } from './serializeContext';
@@ -46,21 +45,6 @@ export const Gl2d = {
     {
         const ctx = createSerializeContext();
         const rootRef = root.toGl2d(ctx);
-
-        return buildGl2dFile(rootRef, ctx);
-    },
-
-    /**
-     * Asynchronously serialize a scene graph into a Gl2dFile.
-     * Uses the renderer to extract textures that lack URLs.
-     * @param root - Root container of the scene graph
-     * @param renderer - The renderer for texture extraction
-     * @returns A complete Gl2dFile
-     */
-    async serializeAsync(root: Container, renderer: Renderer): Promise<Gl2dFile>
-    {
-        const ctx = createSerializeAsyncContext(renderer);
-        const rootRef = await root.toGl2dAsync(ctx);
 
         return buildGl2dFile(rootRef, ctx);
     },
