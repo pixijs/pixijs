@@ -380,6 +380,8 @@ Extends TextureSource. Represents a 2D video.
 | loop        | boolean | Whether video loops        | false   | No       |
 | muted       | boolean | Whether video is muted     | false   | No       |
 | playsinline | boolean | Whether video plays inline | true    | No       |
+| preload     | boolean | Whether to fully preload video | false | No       |
+| fps         | "auto" \| number | Frame rate cap ("auto" = every render) | "auto" | No |
 
 ---
 

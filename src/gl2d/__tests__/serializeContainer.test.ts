@@ -1,5 +1,6 @@
 import '~/accessibility/init';
 import '~/events/init';
+import '~/rendering/init';
 import { Gl2d } from '../Gl2d';
 import '../init';
 import { Rectangle } from '~/maths/shapes/Rectangle';
@@ -417,5 +418,49 @@ describe('gl2d Container serialization', () =>
         expect(node.extensions?.pixi_container_node?.cullable).toBeUndefined();
         expect(node.extensions?.pixi_container_node?.cullableChildren).toBeUndefined();
         expect(node.extensions?.pixi_container_node?.cullArea).toBeUndefined();
+    });
+
+    // --- Mask ---
+
+    it('should serialize container with mask', () =>
+    {
+        const container = new Container();
+        const maskContainer = new Container();
+
+        container.mask = maskContainer;
+
+        const file = Gl2d.serialize(container);
+
+        expect(file.nodes[0].mask).toBeDefined();
+        expect(typeof file.nodes[0].mask.node).toBe('number');
+        expect(file.nodes[0].mask.inverse).toBe(false);
+    });
+
+    it('should serialize container with inverse mask', () =>
+    {
+        const container = new Container();
+        const maskContainer = new Container();
+
+        container.setMask({ mask: maskContainer, inverse: true });
+
+        const file = Gl2d.serialize(container);
+
+        expect(file.nodes[0].mask).toBeDefined();
+        expect(file.nodes[0].mask.inverse).toBe(true);
+    });
+
+    // --- Missing extension properties ---
+
+    it('should serialize non-default blendMode in extension', () =>
+    {
+        const container = new Container();
+
+        container.blendMode = 'add';
+
+        const file = Gl2d.serialize(container);
+        const ext = file.nodes[0].extensions?.pixi_container_node;
+
+        expect(ext).toBeDefined();
+        expect(ext.blendMode).toBe('add');
     });
 });

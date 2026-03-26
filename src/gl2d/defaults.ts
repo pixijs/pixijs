@@ -5,6 +5,7 @@ import type {
     Gl2dPixiTextureExtension,
     Gl2dPixiTextureSourceExtension,
     Gl2dTRSTransform,
+    Gl2dVideoSourceResource,
 } from './Gl2dSchema';
 
 /**
@@ -113,6 +114,26 @@ export const PIXI_TEXTURE_SOURCE_DEFAULTS: Required<Gl2dPixiTextureSourceExtensi
         lodMinClamp: 0,
         lodMaxClamp: 100,
     };
+
+/**
+ * Default values for video_source resource properties.
+ * Properties omitted from output when they match these values.
+ * @category gl2d
+ * @internal
+ */
+export const VIDEO_SOURCE_DEFAULTS: Omit<
+    Required<Gl2dVideoSourceResource>,
+    'type' | 'uid' | 'name' | 'uri' | 'extensions' | 'crossorigin'
+    | 'resolution' | 'alphaMode' | 'antialias' | 'scaleMode' | 'format' | 'addressMode' | 'width' | 'height'
+> = {
+    autoPlay: true,
+    autoLoad: true,
+    loop: false,
+    muted: true,
+    playsinline: true,
+    preload: false,
+    fps: 'auto' as const,
+};
 
 /**
  * Default values for core image_source resource properties.

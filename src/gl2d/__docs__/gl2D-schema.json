@@ -896,6 +896,19 @@
                     "description": "Whether the video plays inline (iOS)",
                     "type": "boolean",
                     "default": true
+                },
+                "preload": {
+                    "description": "Whether to fully preload the video before playback",
+                    "type": "boolean",
+                    "default": false
+                },
+                "fps": {
+                    "description": "Frame rate cap for texture updates (\"auto\" = update every render)",
+                    "oneOf": [
+                        { "const": "auto" },
+                        { "type": "number", "exclusiveMinimum": 0 }
+                    ],
+                    "default": "auto"
                 }
             },
             "additionalProperties": false

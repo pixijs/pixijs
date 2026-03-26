@@ -87,7 +87,10 @@ function serializeTextureSourceExtensions(
  * @category gl2d
  * @internal
  */
-export function serializeCoreTextureSource(source: TextureSource, ctx: Gl2dSerializeContext): Gl2dTextureSourceBase
+export function serializeCoreTextureSource(
+    source: TextureSource,
+    ctx: Gl2dSerializeContext,
+): Gl2dTextureSourceBase & { type: 'texture_source' }
 {
     let uri = getTextureSourceUri(source);
 
@@ -107,7 +110,7 @@ export function serializeCoreTextureSource(source: TextureSource, ctx: Gl2dSeria
         'mirror-repeat': 'mirror',
     };
 
-    const resource: Required<Gl2dTextureSourceBase> = gl2dUtils.removeUndefinedOrNull(
+    const resource: Required<Gl2dTextureSourceBase & { type: 'texture_source' }> = gl2dUtils.removeUndefinedOrNull(
         {
             type: 'texture_source',
             uid: `texture_source_${String(source.uid)}`,
@@ -119,7 +122,10 @@ export function serializeCoreTextureSource(source: TextureSource, ctx: Gl2dSeria
             format: gl2dUtils.checkValue(source.format, IMAGE_SOURCE_DEFAULTS.format),
             antialias: gl2dUtils.checkValue(source.antialias, IMAGE_SOURCE_DEFAULTS.antialias),
             alphaMode: gl2dUtils.checkValue(source.alphaMode, IMAGE_SOURCE_DEFAULTS.alphaMode),
-            addressMode: gl2dUtils.checkValue(wrapModeMap[source.style?.addressMode], IMAGE_SOURCE_DEFAULTS.addressMode),
+            addressMode: gl2dUtils.checkValue(
+                wrapModeMap[source.style?.addressMode],
+                IMAGE_SOURCE_DEFAULTS.addressMode,
+            ),
             scaleMode: gl2dUtils.checkValue(source.style?.scaleMode, IMAGE_SOURCE_DEFAULTS.scaleMode),
             extensions: undefined,
         },

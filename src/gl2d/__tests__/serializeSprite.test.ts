@@ -1,7 +1,11 @@
 import '~/accessibility/init';
 import '~/events/init';
+import '~/rendering/init';
 import { Gl2d } from '../Gl2d';
 import '../init';
+import { basePath } from '@test-utils';
+import { Assets, loadTextures } from '~/assets';
+import { extensions } from '~/extensions';
 import { Rectangle } from '~/maths/shapes/Rectangle';
 import { TextureSource } from '~/rendering/renderers/shared/texture/sources/TextureSource';
 import { Texture } from '~/rendering/renderers/shared/texture/Texture';
@@ -23,6 +27,20 @@ function createTestTexture(options: { label?: string; width?: number; height?: n
 
 describe('gl2d Sprite serialization', () =>
 {
+    extensions.add(loadTextures);
+
+    beforeAll(async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+    });
+
+    afterAll(() =>
+    {
+        Assets.reset();
+    });
+
     it('should serialize a Sprite with Texture.EMPTY', () =>
     {
         const sprite = new Sprite();
@@ -41,9 +59,9 @@ describe('gl2d Sprite serialization', () =>
         expect(file.resources.length).toBeGreaterThanOrEqual(1);
     });
 
-    it('should serialize a Sprite with a URL-loaded texture', () =>
+    it('should serialize a Sprite with a URL-loaded texture', async () =>
     {
-        const texture = createTestTexture({ label: 'bunny.png', width: 100, height: 100 });
+        const texture = await Assets.load<Texture>('textures/bunny.png');
         const sprite = new Sprite(texture);
         const file = Gl2d.serialize(sprite);
 
@@ -58,9 +76,9 @@ describe('gl2d Sprite serialization', () =>
         const imageSource = file.resources[textureResource.source as number] as Gl2dImageSourceResource;
 
         expect(imageSource.type).toBe('image_source');
-        expect(imageSource.uri).toBe('bunny.png');
-        expect(imageSource.width).toBe(100);
-        expect(imageSource.height).toBe(100);
+        expect(imageSource.uri).toContain('textures/bunny.png');
+        expect(imageSource.width).toBe(texture.source.width);
+        expect(imageSource.height).toBe(texture.source.height);
     });
 
     it('should serialize non-default transform values', () =>
@@ -162,9 +180,9 @@ describe('gl2d Sprite serialization', () =>
         expect(ext.roundPixels).toBe(true);
     });
 
-    it('should deduplicate shared textures', () =>
+    it('should deduplicate shared textures', async () =>
     {
-        const texture = createTestTexture({ label: 'shared.png' });
+        const texture = await Assets.load<Texture>('textures/bunny.png');
         const parent = new Container();
         const spriteA = new Sprite(texture);
         const spriteB = new Sprite(texture);
@@ -185,16 +203,16 @@ describe('gl2d Sprite serialization', () =>
         expect(imageResources).toHaveLength(1);
     });
 
-    it('should deduplicate shared texture source across different textures', () =>
+    it('should deduplicate shared texture source across different textures', async () =>
     {
-        const source = new TextureSource({ width: 128, height: 128, label: 'atlas.png' });
+        const loaded = await Assets.load<Texture>('textures/bunny.png');
         const textureA = new Texture({
-            source,
-            frame: new Rectangle(0, 0, 64, 64),
+            source: loaded.source,
+            frame: new Rectangle(0, 0, 13, 13),
         });
         const textureB = new Texture({
-            source,
-            frame: new Rectangle(64, 0, 64, 64),
+            source: loaded.source,
+            frame: new Rectangle(13, 0, 13, 13),
         });
 
         const parent = new Container();
@@ -340,5 +358,39 @@ describe('gl2d Sprite serialization', () =>
         expect(file.scenes[0].nodes).toEqual([0]);
         expect(file.nodes.length).toBeGreaterThanOrEqual(1);
         expect(file.resources).toBeDefined();
+    });
+
+    it('should serialize sprite with mask', () =>
+    {
+        const sprite = new Sprite(createTestTexture());
+        const maskContainer = new Container();
+
+        sprite.mask = maskContainer;
+
+        const file = Gl2d.serialize(sprite);
+        const node = file.nodes[0] as Gl2dSpriteNode;
+
+        expect(node.mask).toBeDefined();
+        expect(typeof node.mask.node).toBe('number');
+        expect(node.mask.inverse).toBe(false);
+    });
+
+    it('should serialize defaultBorders in pixi_texture_resource extension', () =>
+    {
+        const source = new TextureSource({ width: 100, height: 100, label: 'btn.png' });
+        const texture = new Texture({
+            source,
+            defaultBorders: { left: 10, top: 15, right: 20, bottom: 25 },
+        });
+
+        const sprite = new Sprite(texture);
+        const file = Gl2d.serialize(sprite);
+
+        const node = file.nodes[0] as Gl2dSpriteNode;
+        const texResource = file.resources[node.texture as number] as Gl2dTextureResource;
+        const ext = texResource.extensions?.pixi_texture_resource;
+
+        expect(ext).toBeDefined();
+        expect(ext.defaultBorders).toEqual([10, 15, 20, 25]);
     });
 });

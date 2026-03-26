@@ -509,6 +509,8 @@ export interface Gl2dVideoSourceResource extends Gl2dTextureSourceBase
     loop?: boolean;
     muted?: boolean;
     playsinline?: boolean;
+    preload?: boolean;
+    fps?: 'auto' | number;
 }
 
 // Spritesheet
@@ -725,7 +727,7 @@ export type Gl2dCoreResource =
 
 export type Gl2dPixiResource = Gl2dPixiGifResource | Gl2dPixiDomElementResource;
 
-export type Gl2dResource = Gl2dCoreResource | Gl2dPixiResource | Gl2dTextureSourceBase;
+export type Gl2dResource = Gl2dCoreResource | Gl2dPixiResource | (Gl2dTextureSourceBase & { type: 'texture_source' });
 
 // --- Resource Extensions ----------------------------------------------------
 
