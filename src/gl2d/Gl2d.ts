@@ -1,10 +1,11 @@
 import { createSerializeContext } from './serializeContext';
+import { type Gl2dRef } from './types/Gl2dTypes';
+import { type Gl2dPixiFile } from './types/pixi/PixiGl2dTypes';
 
 import type { Container } from '../scene/container/Container';
-import type { Gl2dFile, Gl2dRef } from './Gl2dSchema';
 import type { Gl2dSerializeContext } from './serializeContext';
 
-function buildGl2dFile(rootRef: Gl2dRef, ctx: Gl2dSerializeContext): Gl2dFile
+function buildGl2dFile(rootRef: Gl2dRef, ctx: Gl2dSerializeContext): Gl2dPixiFile
 {
     const { nodes, resources, extensionsUsed, extensionsRequired } = ctx.gl2d;
     const sceneName = (typeof rootRef === 'number' ? nodes[rootRef]?.name : undefined) ?? 'scene';
@@ -41,7 +42,7 @@ export const Gl2d = {
      * @param root - Root container of the scene graph
      * @returns A complete Gl2dFile
      */
-    serialize(root: Container): Gl2dFile
+    serialize(root: Container): Gl2dPixiFile
     {
         const ctx = createSerializeContext();
         const rootRef = root.toGl2d(ctx);

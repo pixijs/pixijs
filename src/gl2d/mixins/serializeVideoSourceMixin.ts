@@ -1,7 +1,7 @@
 import { serializeVideoSource } from '../serializers/resources/textures/serializeVideoSource';
+import { type Gl2dRef } from '../types/Gl2dTypes';
 
 import type { VideoSource } from '../../rendering/renderers/shared/texture/sources/VideoSource';
-import type { Gl2dRef } from '../Gl2dSchema';
 import type { Gl2dSerializeContext } from '../serializeContext';
 
 /** @internal */

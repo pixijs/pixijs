@@ -1,15 +1,16 @@
 import { type Spritesheet } from '../../../spritesheet/Spritesheet';
-import { type Gl2dRef, type Gl2dSpritesheetResource } from '../../Gl2dSchema';
 import { type Gl2dSerializeContext } from '../../serializeContext';
+import { type Gl2dRef, type Gl2dSerializerInput } from '../../types/Gl2dTypes';
+import { type Gl2dPixiSpritesheetResource } from '../../types/pixi/PixiGl2dResources';
 import { gl2dUtils } from '../../utils';
 
 function buildSpritesheetResource(
     spritesheet: Spritesheet,
     sourceRef: Gl2dRef,
     ctx: Gl2dSerializeContext,
-): Gl2dSpritesheetResource
+): Gl2dPixiSpritesheetResource
 {
-    const node: Required<Gl2dSpritesheetResource> = gl2dUtils.removeUndefinedOrNull(
+    const node: Required<Gl2dPixiSpritesheetResource> = gl2dUtils.removeUndefinedOrNull(
         {
             type: 'spritesheet',
             name: undefined,
@@ -21,11 +22,17 @@ function buildSpritesheetResource(
         1,
     );
 
-    if (spritesheet.cachePrefix)
+    const extInput: Gl2dSerializerInput<Gl2dPixiSpritesheetResource['extensions']['pixi_spritesheet']> = {
+        cachePrefix: spritesheet.cachePrefix ?? undefined,
+    };
+
+    const ext = gl2dUtils.removeUndefinedOrNull(extInput, 1) as Required<
+        Gl2dPixiSpritesheetResource['extensions']['pixi_spritesheet']
+    >;
+
+    if (Object.keys(ext).length > 0)
     {
-        node.extensions = {
-            pixi_spritesheet: { cachePrefix: spritesheet.cachePrefix },
-        };
+        node.extensions = { pixi_spritesheet: ext };
         ctx.gl2d.extensionsUsed.add('pixi_spritesheet');
     }
 

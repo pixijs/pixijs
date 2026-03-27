@@ -1,7 +1,7 @@
 import { serializeSprite } from '../serializers/serializeSprite';
+import { type Gl2dRef } from '../types/Gl2dTypes';
 
 import type { Sprite } from '../../scene/sprite/Sprite';
-import type { Gl2dRef } from '../Gl2dSchema';
 import type { Gl2dSerializeContext } from '../serializeContext';
 
 /** @internal */

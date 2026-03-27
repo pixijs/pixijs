@@ -1,12 +1,7 @@
-import type {
-    Gl2dImageSourceResource,
-    Gl2dNodePropertiesBase,
-    Gl2dPixiContainerExtension,
-    Gl2dPixiTextureExtension,
-    Gl2dPixiTextureSourceExtension,
-    Gl2dTRSTransform,
-    Gl2dVideoSourceResource,
-} from './Gl2dSchema';
+import { type Gl2dNode } from './types/Gl2dNodes';
+import { type Gl2dImageSourceResource, type Gl2dVideoSourceResource } from './types/Gl2DResources';
+import { type Gl2dPixiContainerNode } from './types/pixi/PixiGl2dNodes';
+import { type Gl2dPixiTextureResource, type Gl2dPixiTextureSourceResource } from './types/pixi/PixiGl2dResources';
 
 /**
  * Default values for core gl2d node properties.
@@ -15,19 +10,15 @@ import type {
  * @internal
  */
 export const CORE_NODE_DEFAULTS: Required<
-    Omit<
-        Gl2dNodePropertiesBase,
-        'type' | 'uid' | 'name' | 'children' | 'extensions' | 'mask'
-    >
-> &
-    Required<Omit<Gl2dTRSTransform, 'matrix'>> = {
-        translation: [0, 0],
-        rotation: 0,
-        scale: [1, 1],
-        alpha: 1,
-        visible: true,
-        blendMode: 'normal',
-    };
+    Omit<Gl2dNode, 'type' | 'uid' | 'name' | 'children' | 'extensions' | 'mask'>
+> = {
+    translation: [0, 0],
+    rotation: 0,
+    scale: [1, 1],
+    alpha: 1,
+    visible: true,
+    blendMode: 'normal',
+};
 
 /**
  * Default values for the pixi_container_node extension.
@@ -35,9 +26,7 @@ export const CORE_NODE_DEFAULTS: Required<
  * @category gl2d
  * @internal
  */
-export const PIXI_CONTAINER_DEFAULTS: Required<
-    Omit<Gl2dPixiContainerExtension, 'blendMode'>
-> & {
+export const PIXI_CONTAINER_DEFAULTS: Required<Gl2dPixiContainerNode['extensions']['pixi_container_node']> & {
     blendMode: string;
 } = {
     origin: [0, 0],
@@ -82,7 +71,7 @@ export const PIXI_CONTAINER_DEFAULTS: Required<
  * @category gl2d
  * @internal
  */
-export const PIXI_TEXTURE_DEFAULTS: Required<Gl2dPixiTextureExtension> = {
+export const PIXI_TEXTURE_DEFAULTS: Required<Gl2dPixiTextureResource['extensions']['pixi_texture_resource']> = {
     orig: null,
     trim: null,
     defaultAnchor: null,
@@ -97,23 +86,24 @@ export const PIXI_TEXTURE_DEFAULTS: Required<Gl2dPixiTextureExtension> = {
  * @category gl2d
  * @internal
  */
-export const PIXI_TEXTURE_SOURCE_DEFAULTS: Required<Gl2dPixiTextureSourceExtension>
-    = {
-        dimensions: '2d',
-        mipLevelCount: 1,
-        autoGenerateMipmaps: false,
-        autoGarbageCollect: true,
-        compare: null,
-        maxAnisotropy: 1,
-        addressModeU: 'clamp-to-edge',
-        addressModeV: 'clamp-to-edge',
-        addressModeW: 'clamp-to-edge',
-        magFilter: 'linear',
-        minFilter: 'linear',
-        mipmapFilter: 'linear',
-        lodMinClamp: 0,
-        lodMaxClamp: 100,
-    };
+export const PIXI_TEXTURE_SOURCE_DEFAULTS: Required<
+    Gl2dPixiTextureSourceResource['extensions']['pixi_texture_source_resource']
+> = {
+    dimensions: '2d',
+    mipLevelCount: 1,
+    autoGenerateMipmaps: false,
+    autoGarbageCollect: true,
+    compare: null,
+    maxAnisotropy: 1,
+    addressModeU: 'clamp-to-edge',
+    addressModeV: 'clamp-to-edge',
+    addressModeW: 'clamp-to-edge',
+    magFilter: 'linear',
+    minFilter: 'linear',
+    mipmapFilter: 'linear',
+    lodMinClamp: 0,
+    lodMaxClamp: 100,
+};
 
 /**
  * Default values for video_source resource properties.
@@ -123,8 +113,20 @@ export const PIXI_TEXTURE_SOURCE_DEFAULTS: Required<Gl2dPixiTextureSourceExtensi
  */
 export const VIDEO_SOURCE_DEFAULTS: Omit<
     Required<Gl2dVideoSourceResource>,
-    'type' | 'uid' | 'name' | 'uri' | 'extensions' | 'crossorigin'
-    | 'resolution' | 'alphaMode' | 'antialias' | 'scaleMode' | 'format' | 'addressMode' | 'width' | 'height'
+    | 'type'
+    | 'uid'
+    | 'name'
+    | 'uri'
+    | 'extensions'
+    | 'crossorigin'
+    | 'resolution'
+    | 'alphaMode'
+    | 'antialias'
+    | 'scaleMode'
+    | 'format'
+    | 'addressMode'
+    | 'width'
+    | 'height'
 > = {
     autoPlay: true,
     autoLoad: true,

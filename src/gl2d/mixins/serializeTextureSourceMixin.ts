@@ -1,7 +1,7 @@
 import { serializeTextureSource } from '../serializers/resources/textures/serializeTextureSource';
+import { type Gl2dRef } from '../types/Gl2dTypes';
 
 import type { TextureSource } from '../../rendering/renderers/shared/texture/sources/TextureSource';
-import type { Gl2dRef } from '../Gl2dSchema';
 import type { Gl2dSerializeContext } from '../serializeContext';
 
 /** @internal */

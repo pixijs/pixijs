@@ -871,12 +871,12 @@
                 "autoLoad": {
                     "description": "Whether to preload the video",
                     "type": "boolean",
-                    "default": false
+                    "default": true
                 },
                 "autoPlay": {
                     "description": "Whether to autoplay the video",
                     "type": "boolean",
-                    "default": false
+                    "default": true
                 },
                 "crossorigin": {
                     "description": "Cross-origin attribute for the video element",
@@ -890,7 +890,7 @@
                 "muted": {
                     "description": "Whether the video is muted",
                     "type": "boolean",
-                    "default": false
+                    "default": true
                 },
                 "playsinline": {
                     "description": "Whether the video plays inline (iOS)",

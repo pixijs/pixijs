@@ -142,6 +142,35 @@ describe('gl2d VideoSource serialization', () =>
         expect(videoResource.crossorigin).toBe('anonymous');
     });
 
+    it('should omit default autoLoad', () =>
+    {
+        const source = createTestVideoSource({ label: 'clip.mp4', autoLoad: true });
+        const texture = new Texture({ source });
+        const sprite = new Sprite(texture);
+        const file = Gl2d.serialize(sprite);
+
+        const node = file.nodes[0] as Gl2dSpriteNode;
+        const textureResource = file.resources[node.texture as number] as Gl2dTextureResource;
+        const videoResource = file.resources[textureResource.source as number] as Gl2dVideoSourceResource;
+
+        expect(videoResource.autoLoad).toBeUndefined();
+    });
+
+    it('should serialize autoLoad=false as non-default', () =>
+    {
+        const source = createTestVideoSource({ label: 'clip.mp4' });
+        // helper sets autoLoad: false, which differs from VIDEO_SOURCE_DEFAULTS.autoLoad (true)
+        const texture = new Texture({ source });
+        const sprite = new Sprite(texture);
+        const file = Gl2d.serialize(sprite);
+
+        const node = file.nodes[0] as Gl2dSpriteNode;
+        const textureResource = file.resources[node.texture as number] as Gl2dTextureResource;
+        const videoResource = file.resources[textureResource.source as number] as Gl2dVideoSourceResource;
+
+        expect(videoResource.autoLoad).toBe(false);
+    });
+
     it('should serialize non-default autoPlay', () =>
     {
         const source = createTestVideoSource({ label: 'clip.mp4', autoPlay: true });

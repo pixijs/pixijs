@@ -1,19 +1,18 @@
 import '~/accessibility/init';
 import '~/events/init';
 import { Gl2d } from '../Gl2d';
+import { type Gl2dPixiTextureResource, type Gl2dPixiTextureSourceResource } from '../types/pixi/PixiGl2dResources';
 import '../init';
 import { TextureSource } from '~/rendering/renderers/shared/texture/sources/TextureSource';
 import { Texture } from '~/rendering/renderers/shared/texture/Texture';
 import { Sprite } from '~/scene/sprite/Sprite';
 
-import type { Gl2dTextureResource, Gl2dTextureSourceBase } from '../Gl2dSchema';
-
-function getTextureSourceResource(file: ReturnType<typeof Gl2d.serialize>): Gl2dTextureSourceBase
+function getTextureSourceResource(file: ReturnType<typeof Gl2d.serialize>): Gl2dPixiTextureSourceResource
 {
     const node = file.nodes[0] as any;
-    const textureResource = file.resources[node.texture as number] as Gl2dTextureResource;
+    const textureResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
 
-    return file.resources[textureResource.source as number] as Gl2dTextureSourceBase;
+    return file.resources[textureResource.source as number] as unknown as Gl2dPixiTextureSourceResource;
 }
 
 describe('gl2d TextureSource serialization', () =>

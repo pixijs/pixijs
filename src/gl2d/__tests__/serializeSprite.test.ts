@@ -2,6 +2,8 @@ import '~/accessibility/init';
 import '~/events/init';
 import '~/rendering/init';
 import { Gl2d } from '../Gl2d';
+import { type Gl2dPixiSpriteNode } from '../types/pixi/PixiGl2dNodes';
+import { type Gl2dPixiImageSourceResource, type Gl2dPixiTextureResource } from '../types/pixi/PixiGl2dResources';
 import '../init';
 import { basePath } from '@test-utils';
 import { Assets, loadTextures } from '~/assets';
@@ -11,8 +13,6 @@ import { TextureSource } from '~/rendering/renderers/shared/texture/sources/Text
 import { Texture } from '~/rendering/renderers/shared/texture/Texture';
 import { Container } from '~/scene/container/Container';
 import { Sprite } from '~/scene/sprite/Sprite';
-
-import type { Gl2dImageSourceResource, Gl2dSpriteNode, Gl2dTextureResource } from '../Gl2dSchema';
 
 function createTestTexture(options: { label?: string; width?: number; height?: number } = {}): Texture
 {
@@ -48,7 +48,7 @@ describe('gl2d Sprite serialization', () =>
 
         expect(file.nodes).toHaveLength(1);
 
-        const node = file.nodes[0] as Gl2dSpriteNode;
+        const node = file.nodes[0] as Gl2dPixiSpriteNode;
 
         expect(node.type).toBe('sprite');
         expect(node.uid).toBeDefined();
@@ -65,15 +65,15 @@ describe('gl2d Sprite serialization', () =>
         const sprite = new Sprite(texture);
         const file = Gl2d.serialize(sprite);
 
-        const node = file.nodes[0] as Gl2dSpriteNode;
+        const node = file.nodes[0] as Gl2dPixiSpriteNode;
 
         expect(node.type).toBe('sprite');
 
-        const textureResource = file.resources[node.texture as number] as Gl2dTextureResource;
+        const textureResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
 
         expect(textureResource.type).toBe('texture');
 
-        const imageSource = file.resources[textureResource.source as number] as Gl2dImageSourceResource;
+        const imageSource = file.resources[textureResource.source as number] as Gl2dPixiImageSourceResource;
 
         expect(imageSource.type).toBe('image_source');
         expect(imageSource.uri).toContain('textures/bunny.png');
@@ -191,8 +191,8 @@ describe('gl2d Sprite serialization', () =>
 
         const file = Gl2d.serialize(parent);
 
-        const nodeA = file.nodes[1] as Gl2dSpriteNode;
-        const nodeB = file.nodes[2] as Gl2dSpriteNode;
+        const nodeA = file.nodes[1] as Gl2dPixiSpriteNode;
+        const nodeB = file.nodes[2] as Gl2dPixiSpriteNode;
 
         expect(nodeA.texture).toBe(nodeB.texture);
 
@@ -227,8 +227,8 @@ describe('gl2d Sprite serialization', () =>
         expect(textureResources).toHaveLength(2);
         expect(imageResources).toHaveLength(1);
 
-        const texResA = textureResources[0] as Gl2dTextureResource;
-        const texResB = textureResources[1] as Gl2dTextureResource;
+        const texResA = textureResources[0] as Gl2dPixiTextureResource;
+        const texResB = textureResources[1] as Gl2dPixiTextureResource;
 
         expect(texResA.source).toBe(texResB.source);
     });
@@ -244,8 +244,8 @@ describe('gl2d Sprite serialization', () =>
         const sprite = new Sprite(texture);
         const file = Gl2d.serialize(sprite);
 
-        const node = file.nodes[0] as Gl2dSpriteNode;
-        const texResource = file.resources[node.texture as number] as Gl2dTextureResource;
+        const node = file.nodes[0] as Gl2dPixiSpriteNode;
+        const texResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
 
         expect(texResource.frame).toEqual([10, 20, 50, 60]);
     });
@@ -256,8 +256,8 @@ describe('gl2d Sprite serialization', () =>
         const sprite = new Sprite(texture);
         const file = Gl2d.serialize(sprite);
 
-        const node = file.nodes[0] as Gl2dSpriteNode;
-        const texResource = file.resources[node.texture as number] as Gl2dTextureResource;
+        const node = file.nodes[0] as Gl2dPixiSpriteNode;
+        const texResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
 
         expect(texResource.frame).toBeUndefined();
     });
@@ -277,8 +277,8 @@ describe('gl2d Sprite serialization', () =>
         const sprite = new Sprite(texture);
         const file = Gl2d.serialize(sprite);
 
-        const node = file.nodes[0] as Gl2dSpriteNode;
-        const texResource = file.resources[node.texture as number] as Gl2dTextureResource;
+        const node = file.nodes[0] as Gl2dPixiSpriteNode;
+        const texResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
         const ext = texResource.extensions?.pixi_texture_resource;
 
         expect(ext).toBeDefined();
@@ -328,7 +328,7 @@ describe('gl2d Sprite serialization', () =>
     {
         const sprite = new Sprite(createTestTexture());
         const file = Gl2d.serialize(sprite);
-        const node = file.nodes[0] as Gl2dSpriteNode;
+        const node = file.nodes[0] as Gl2dPixiSpriteNode;
 
         expect(node.children).toBeUndefined();
     });
@@ -337,7 +337,7 @@ describe('gl2d Sprite serialization', () =>
     {
         const sprite = new Sprite(createTestTexture());
         const file = Gl2d.serialize(sprite);
-        const node = file.nodes[0] as Gl2dSpriteNode;
+        const node = file.nodes[0] as Gl2dPixiSpriteNode;
 
         expect(node.mask).toBeUndefined();
     });
@@ -368,7 +368,7 @@ describe('gl2d Sprite serialization', () =>
         sprite.mask = maskContainer;
 
         const file = Gl2d.serialize(sprite);
-        const node = file.nodes[0] as Gl2dSpriteNode;
+        const node = file.nodes[0] as Gl2dPixiSpriteNode;
 
         expect(node.mask).toBeDefined();
         expect(typeof node.mask.node).toBe('number');
@@ -386,8 +386,8 @@ describe('gl2d Sprite serialization', () =>
         const sprite = new Sprite(texture);
         const file = Gl2d.serialize(sprite);
 
-        const node = file.nodes[0] as Gl2dSpriteNode;
-        const texResource = file.resources[node.texture as number] as Gl2dTextureResource;
+        const node = file.nodes[0] as Gl2dPixiSpriteNode;
+        const texResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
         const ext = texResource.extensions?.pixi_texture_resource;
 
         expect(ext).toBeDefined();

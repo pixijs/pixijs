@@ -8,7 +8,7 @@ describe('gl2dUtils', () =>
     {
         it('should remove undefined keys from objects', () =>
         {
-            const obj = { a: 1, b: undefined, c: 3 };
+            const obj: Record<string, unknown> = { a: 1, b: undefined, c: 3 };
             const result = gl2dUtils.removeUndefinedOrNull(obj);
 
             expect(result).toEqual({ a: 1, c: 3 });
@@ -17,7 +17,7 @@ describe('gl2dUtils', () =>
 
         it('should remove null keys from objects', () =>
         {
-            const obj = { a: 1, b: null, c: 3 };
+            const obj: Record<string, unknown> = { a: 1, b: null, c: 3 };
             const result = gl2dUtils.removeUndefinedOrNull(obj);
 
             expect(result).toEqual({ a: 1, c: 3 });
@@ -34,7 +34,7 @@ describe('gl2dUtils', () =>
 
         it('should return value as-is when depth is 0', () =>
         {
-            const obj = { a: 1, b: undefined, c: null };
+            const obj: Record<string, unknown> = { a: 1, b: undefined, c: null };
             const result = gl2dUtils.removeUndefinedOrNull(obj, 0);
 
             expect(result).toEqual({ a: 1, b: undefined, c: null });
@@ -42,7 +42,7 @@ describe('gl2dUtils', () =>
 
         it('should handle nested objects recursively', () =>
         {
-            const obj = { a: { b: undefined, c: 1 }, d: null };
+            const obj: Record<string, unknown> = { a: { b: undefined, c: 1 }, d: null };
             const result = gl2dUtils.removeUndefinedOrNull(obj);
 
             expect(result).toEqual({ a: { c: 1 } });
@@ -58,18 +58,18 @@ describe('gl2dUtils', () =>
 
     describe('checkObservablePoint', () =>
     {
-        const noop = () => { /* noop */ };
+        const observer = { _onUpdate: () => { /* noop */ } };
 
         it('should return [x, y] when different from default', () =>
         {
-            const point = new ObservablePoint(noop, 10, 20);
+            const point = new ObservablePoint(observer, 10, 20);
 
             expect(gl2dUtils.checkObservablePoint(point, [0, 0])).toEqual([10, 20]);
         });
 
         it('should return null when equal to default', () =>
         {
-            const point = new ObservablePoint(noop, 0, 0);
+            const point = new ObservablePoint(observer, 0, 0);
 
             expect(gl2dUtils.checkObservablePoint(point, [0, 0])).toBeNull();
         });

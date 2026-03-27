@@ -1,6 +1,8 @@
+import { type Gl2dPixiNode, type Gl2dPixiNodeExtensionName } from './types/pixi/PixiGl2dNodes';
+import { type Gl2dPixiResource, type Gl2dPixiResourceExtensionName } from './types/pixi/PixiGl2dResources';
+
 import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
-import type { Gl2dNode, Gl2dResource, Gl2dResourceExtensions } from './Gl2dSchema';
 
 /**
  * Subset of Gl2dFile built up during serialization.
@@ -9,10 +11,10 @@ import type { Gl2dNode, Gl2dResource, Gl2dResourceExtensions } from './Gl2dSchem
  */
 export interface ToGL2D
 {
-    nodes: Gl2dNode[];
-    resources: Gl2dResource[];
-    extensionsUsed: Set<keyof Gl2dResourceExtensions>;
-    extensionsRequired: Set<keyof Gl2dResourceExtensions>;
+    nodes: Gl2dPixiNode[];
+    resources: Gl2dPixiResource[];
+    extensionsUsed: Set<Gl2dPixiNodeExtensionName | Gl2dPixiResourceExtensionName>;
+    extensionsRequired: Set<Gl2dPixiNodeExtensionName | Gl2dPixiResourceExtensionName>;
 }
 
 /**

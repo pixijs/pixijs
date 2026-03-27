@@ -1,31 +1,37 @@
 import { type Texture } from '../../../../rendering/renderers/shared/texture/Texture';
 import { PIXI_TEXTURE_DEFAULTS } from '../../../defaults';
+import { type Gl2dRef, type Gl2dSerializerInput } from '../../../types/Gl2dTypes';
+import { type Gl2dPixiTextureResource } from '../../../types/pixi/PixiGl2dResources';
 import { gl2dUtils } from '../../../utils';
 import { findFrameName, findSpritesheetForSource } from '../utils/spritesheetUtils';
 
-import type { Gl2dPixiTextureExtension, Gl2dRef, Gl2dTextureResource } from '../../../Gl2dSchema';
 import type { Gl2dSerializeContext } from '../../../serializeContext';
 
-function serializeTextureExtensions(texture: Texture, resource: Gl2dTextureResource, ctx: Gl2dSerializeContext): void
+function serializeTextureExtensions(
+    texture: Texture,
+    resource: Gl2dPixiTextureResource,
+    ctx: Gl2dSerializeContext,
+): void
 {
-    const ext: Required<Gl2dPixiTextureExtension> = gl2dUtils.removeUndefinedOrNull(
-        {
-            orig: gl2dUtils.checkRectangle(texture.orig, [0, 0, texture.source.width, texture.source.height]),
-            trim: gl2dUtils.checkRectangle(texture.trim, [0, 0, texture.source.width, texture.source.height]),
-            defaultAnchor: texture.defaultAnchor ? [texture.defaultAnchor.x, texture.defaultAnchor.y] : undefined,
-            defaultBorders: texture.defaultBorders
-                ? [
-                    texture.defaultBorders.left,
-                    texture.defaultBorders.top,
-                    texture.defaultBorders.right,
-                    texture.defaultBorders.bottom,
-                ]
-                : undefined,
-            rotate: gl2dUtils.checkValue(texture.rotate, PIXI_TEXTURE_DEFAULTS.rotate),
-            dynamic: gl2dUtils.checkValue(texture.dynamic, PIXI_TEXTURE_DEFAULTS.dynamic),
-        },
-        1,
-    );
+    const input: Gl2dSerializerInput<Gl2dPixiTextureResource['extensions']['pixi_texture_resource']> = {
+        orig: gl2dUtils.checkRectangle(texture.orig, [0, 0, texture.source.width, texture.source.height]),
+        trim: gl2dUtils.checkRectangle(texture.trim, [0, 0, texture.source.width, texture.source.height]),
+        defaultAnchor: texture.defaultAnchor ? [texture.defaultAnchor.x, texture.defaultAnchor.y] : undefined,
+        defaultBorders: texture.defaultBorders
+            ? [
+                texture.defaultBorders.left,
+                texture.defaultBorders.top,
+                texture.defaultBorders.right,
+                texture.defaultBorders.bottom,
+            ]
+            : undefined,
+        rotate: gl2dUtils.checkValue(texture.rotate, PIXI_TEXTURE_DEFAULTS.rotate),
+        dynamic: gl2dUtils.checkValue(texture.dynamic, PIXI_TEXTURE_DEFAULTS.dynamic),
+    };
+
+    const ext = gl2dUtils.removeUndefinedOrNull(input, 1) as Required<
+        Gl2dPixiTextureResource['extensions']['pixi_texture_resource']
+    >;
 
     if (Object.keys(ext).length > 0)
     {
@@ -63,11 +69,12 @@ export function serializeTexture(texture: Texture, ctx: Gl2dSerializeContext): G
         sourceRef = texture.source.toGl2d(ctx);
     }
 
-    const resource: Gl2dTextureResource = {
+    const resource: Gl2dPixiTextureResource = {
         type: 'texture',
         uid: `texture_resource_${String(texture.uid)}`,
         name: texture.label,
         source: sourceRef,
+        extensions: undefined,
     };
 
     if (spritesheetResult)

@@ -1,6 +1,7 @@
 import { type ImageSource } from '../../../../rendering/renderers/shared/texture/sources/ImageSource';
-import { type Gl2dImageSourceResource, type Gl2dRef } from '../../../Gl2dSchema';
 import { type Gl2dSerializeContext } from '../../../serializeContext';
+import { type Gl2dRef } from '../../../types/Gl2dTypes';
+import { type Gl2dPixiImageSourceResource } from '../../../types/pixi/PixiGl2dResources';
 import { serializeCoreTextureSource } from './serializeTextureSource';
 
 /** @internal */
@@ -21,7 +22,7 @@ export function serializeImageSource(source: ImageSource, ctx: Gl2dSerializeCont
     if (existing !== undefined) return existing;
 
     const resource = serializeCoreTextureSource(source, ctx);
-    const imageResource = { ...resource, type: 'image_source' } as Gl2dImageSourceResource;
+    const imageResource: Gl2dPixiImageSourceResource = { ...resource, type: 'image_source' };
     const index = ctx.gl2d.resources.length;
 
     ctx.gl2d.resources.push(imageResource);

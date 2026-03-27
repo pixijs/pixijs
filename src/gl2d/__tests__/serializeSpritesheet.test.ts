@@ -1,6 +1,8 @@
 import '~/accessibility/init';
 import '~/events/init';
 import { Gl2d } from '../Gl2d';
+import { type Gl2dPixiSpriteNode } from '../types/pixi/PixiGl2dNodes';
+import { type Gl2dPixiSpritesheetResource, type Gl2dPixiTextureResource } from '../types/pixi/PixiGl2dResources';
 import '../init';
 import { Cache } from '~/assets/cache/Cache';
 import { TextureSource } from '~/rendering/renderers/shared/texture/sources/TextureSource';
@@ -8,8 +10,6 @@ import { Texture } from '~/rendering/renderers/shared/texture/Texture';
 import { Container } from '~/scene/container/Container';
 import { Sprite } from '~/scene/sprite/Sprite';
 import { Spritesheet } from '~/spritesheet/Spritesheet';
-
-import type { Gl2dSpriteNode, Gl2dSpritesheetResource, Gl2dTextureResource } from '../Gl2dSchema';
 
 function createTestSpritesheet(options: {
     label?: string;
@@ -73,7 +73,7 @@ describe('gl2d Spritesheet serialization', () =>
 
         const spritesheetResources = file.resources.filter(
             (r) => r.type === 'spritesheet',
-        ) as Gl2dSpritesheetResource[];
+        ) as Gl2dPixiSpritesheetResource[];
 
         expect(spritesheetResources).toHaveLength(1);
         expect(spritesheetResources[0].type).toBe('spritesheet');
@@ -93,7 +93,7 @@ describe('gl2d Spritesheet serialization', () =>
 
         const spritesheetResources = file.resources.filter(
             (r) => r.type === 'spritesheet',
-        ) as Gl2dSpritesheetResource[];
+        ) as Gl2dPixiSpritesheetResource[];
 
         expect(spritesheetResources).toHaveLength(1);
         expect(spritesheetResources[0].extensions?.pixi_spritesheet).toBeDefined();
@@ -133,8 +133,8 @@ describe('gl2d Spritesheet serialization', () =>
         const sprite = new Sprite(texture);
         const file = Gl2d.serialize(sprite);
 
-        const node = file.nodes[0] as Gl2dSpriteNode;
-        const texResource = file.resources[node.texture as number] as Gl2dTextureResource;
+        const node = file.nodes[0] as Gl2dPixiSpriteNode;
+        const texResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
 
         // Source should point to the spritesheet resource, not directly to texture_source
         const sourceResource = file.resources[texResource.source as number];
@@ -152,8 +152,8 @@ describe('gl2d Spritesheet serialization', () =>
         const sprite = new Sprite(texture);
         const file = Gl2d.serialize(sprite);
 
-        const node = file.nodes[0] as Gl2dSpriteNode;
-        const texResource = file.resources[node.texture as number] as Gl2dTextureResource;
+        const node = file.nodes[0] as Gl2dPixiSpriteNode;
+        const texResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
 
         expect(texResource.frameName).toBe('frame1.png');
     });

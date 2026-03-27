@@ -374,11 +374,11 @@ Extends TextureSource. Represents a 2D video.
 
 | Name        | Type    | Description                | Default | Required |
 | ----------- | ------- | -------------------------- | ------- | -------- |
-| autoLoad    | boolean | Whether to preload video   | false   | No       |
-| autoPlay    | boolean | Whether to autoplay video  | false   | No       |
+| autoLoad    | boolean | Whether to preload video   | true    | No       |
+| autoPlay    | boolean | Whether to autoplay video  | true    | No       |
 | crossorigin | string  | Cross-origin attribute     |         | No       |
 | loop        | boolean | Whether video loops        | false   | No       |
-| muted       | boolean | Whether video is muted     | false   | No       |
+| muted       | boolean | Whether video is muted     | true    | No       |
 | playsinline | boolean | Whether video plays inline | true    | No       |
 | preload     | boolean | Whether to fully preload video | false | No       |
 | fps         | "auto" \| number | Frame rate cap ("auto" = every render) | "auto" | No |
@@ -575,12 +575,10 @@ Defines reusable styling for text rendering.
         "pixi_text_style_resource": {
             "trim": true,
             "leading": 4,
-            "lineHeight": 28
-        },
-        "pixi_wrap_mode": {
+            "lineHeight": 28,
             "breakWords": false,
             "whiteSpace": "normal"
-        }
+        },
     }
 }
 ```

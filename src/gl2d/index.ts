@@ -1,7 +1,6 @@
 // Auto-generated code, do not edit manually
 export * from './defaults';
 export * from './Gl2d';
-export * from './Gl2dSchema';
 export * from './mixins/Gl2dSerializeMixin';
 export * from './mixins/serializeContainerMixin';
 export * from './mixins/serializeImageSourceMixin';
@@ -34,3 +33,10 @@ export * from './serializers/resources/utils/spritesheetUtils';
 export * from './serializers/serializeContainer';
 export * from './serializers/serializeCoreNodeProperties';
 export * from './serializers/serializeSprite';
+export * from './types/Gl2DExtensions';
+export * from './types/Gl2dNodes';
+export * from './types/Gl2DResources';
+export * from './types/Gl2dTypes';
+export * from './types/pixi/PixiGl2dNodes';
+export * from './types/pixi/PixiGl2dResources';
+export * from './types/pixi/PixiGl2dTypes';

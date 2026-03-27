@@ -2,7 +2,7 @@ import { Color } from '../../color/Color';
 import { RectangleLike } from '../../culling/Culler';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { PointData } from '../../maths/point/PointData';
-import { Gl2dPoint2d, Gl2dRectangle } from '../Gl2dSchema';
+import { Gl2dPoint2d, Gl2dRectangle } from '../types/Gl2dTypes';
 
 export const gl2dUtils = {
     removeUndefinedOrNull: <T>(value: T, depth: number = Infinity): T =>
@@ -65,7 +65,7 @@ export const gl2dUtils = {
         // check if the value is the default value
         return point.x === defaultValue[0] && point.y === defaultValue[1] ? null : [point.x, point.y];
     },
-    checkValue: (value: any, defaultValue: any): null | any => {
+    checkValue: <T>(value: T, defaultValue: T): null | T => {
         // check if the value exists
         // eslint-disable-next-line no-eq-null, eqeqeq
         if (value == null) return undefined;

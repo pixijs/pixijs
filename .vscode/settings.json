@@ -1,6 +1,7 @@
 {
     "typescript.preferences.autoImportFileExcludePatterns": [
       "src/*/**/index.ts",
+      "src/*/**/init.ts",
       "src/index.ts",
       "src/index.docs.ts",
       "src/bundle.*.ts",

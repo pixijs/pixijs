@@ -45,7 +45,7 @@ Applied to nodes. References [filter resources](./gl2D-resources.md#filter). Arr
 - **extensionsRequired**: list of extensions required to correctly load the file; a consumer that doesn't understand a required extension should refuse to load
 
 ```json
-"extensionsUsed": ["pixi_container_node", "pixi_sprite_node", "gl2d_filters"],
+"extensionsUsed": ["pixi_container_node", "gl2d_filters"],
 "extensionsRequired": ["pixi_texture_resource"]
 ```
 

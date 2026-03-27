@@ -1,7 +1,7 @@
 import { serializeContainer } from '../serializers/serializeContainer';
+import { type Gl2dRef } from '../types/Gl2dTypes';
 
 import type { Container } from '../../scene/container/Container';
-import type { Gl2dRef } from '../Gl2dSchema';
 import type { Gl2dSerializeContext } from '../serializeContext';
 
 export type { Gl2dSerializeMixin } from './Gl2dSerializeMixin';
