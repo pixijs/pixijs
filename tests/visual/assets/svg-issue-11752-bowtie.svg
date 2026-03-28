@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 250">
+    <!-- Exact reproduction from https://github.com/pixijs/pixijs/issues/11752
+         graphics.moveTo(50, 50); graphics.lineTo(200, 200);
+         graphics.lineTo(200, 50); graphics.lineTo(50, 200); graphics.closePath(); -->
+    <path d="M 50 50 L 200 200 L 200 50 L 50 200 Z" fill="#FF6B6B"/>
+</svg>
