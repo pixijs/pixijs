@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    <!-- Self-intersecting pentagram. Maintainer @ivanpopelyshev said
+         "Switch earcut to tess" as the solution for this class of shapes.
+         With nonzero fill, entire star including center should be solid. -->
+    <path d="M 100 10 L 155 180 L 20 70 L 180 70 L 45 180 Z" fill="#e040e0"/>
+</svg>
