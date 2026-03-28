@@ -13,7 +13,7 @@ import { buildPolygon } from '../buildCommands/buildPolygon';
 import { buildRectangle } from '../buildCommands/buildRectangle';
 import { buildTriangle } from '../buildCommands/buildTriangle';
 import { generateTextureMatrix as generateTextureFillMatrix } from './generateTextureFillMatrix';
-import { triangulateWithHoles } from './triangulateWithHoles';
+import { Tess2, triangulateWithHoles } from './triangulateWithHoles';
 
 import type { Polygon } from '../../../../maths/shapes/Polygon';
 import type { Topology } from '../../../../rendering/renderers/shared/geometry/const';
@@ -168,6 +168,83 @@ function addShapePathToGeometryData(
 )
 {
     const { vertices, uvs, indices } = geometryData;
+
+    // For fill paths with multiple contours and no explicit holes: batch all
+    // contours into a single tessellation call so the tessellator can compute
+    // winding across all contours, producing correct holes via winding cancellation.
+    // The winding rule (nonzero vs evenodd) determines how overlapping regions are filled.
+    if (!isStroke && shapePath.shapePrimitives.length > 1
+        && shapePath.shapePrimitives.every((p) => !p.holes))
+    {
+        const windingRule = shapePath.signed ? Tess2.WINDING_ODD : Tess2.WINDING_NONZERO;
+        const allContours: number[][] = [];
+
+        for (const { shape, transform: matrix } of shapePath.shapePrimitives)
+        {
+            const points: number[] = [];
+            const build = shapeBuilders[shape.type];
+
+            if (!build.build(shape, points)) continue;
+            if (matrix) transformVertices(points, matrix);
+            allContours.push(points);
+        }
+
+        if (allContours.length > 0)
+        {
+            const allPoints: number[] = [];
+            const holeIndices: number[] = [];
+
+            for (let ci = 0; ci < allContours.length; ci++)
+            {
+                if (ci > 0) holeIndices.push(allPoints.length / 2);
+
+                const contour = allContours[ci];
+
+                for (let j = 0; j < contour.length; j++)
+                {
+                    allPoints.push(contour[j]);
+                }
+            }
+
+            const indexOffset = indices.length;
+            const vertOffset = vertices.length / 2;
+
+            triangulateWithHoles(allPoints, holeIndices, vertices, 2, vertOffset, indices, indexOffset, windingRule);
+
+            const uvsOffset = uvs.length / 2;
+            const texture = (style as ConvertedFillStyle).texture;
+
+            if (texture !== Texture.WHITE)
+            {
+                const textureMatrix = generateTextureFillMatrix(
+                    tempTextureMatrix, style as ConvertedFillStyle,
+                    shapePath.shapePrimitives[0].shape, shapePath.shapePrimitives[0].transform
+                );
+
+                buildUvs(vertices, 2, vertOffset, uvs, uvsOffset, 2, (vertices.length / 2) - vertOffset, textureMatrix);
+            }
+            else
+            {
+                buildSimpleUvs(uvs, uvsOffset, 2, (vertices.length / 2) - vertOffset);
+            }
+
+            const graphicsBatch = BigPool.get(BatchableGraphics);
+
+            graphicsBatch.indexOffset = indexOffset;
+            graphicsBatch.indexSize = indices.length - indexOffset;
+            graphicsBatch.attributeOffset = vertOffset;
+            graphicsBatch.attributeSize = (vertices.length / 2) - vertOffset;
+            graphicsBatch.baseColor = (style as ConvertedFillStyle).color;
+            graphicsBatch.alpha = (style as ConvertedFillStyle).alpha;
+            graphicsBatch.texture = texture;
+            graphicsBatch.geometryData = geometryData;
+            graphicsBatch.topology = 'triangle-list';
+
+            batches.push(graphicsBatch);
+        }
+
+        return;
+    }
 
     shapePath.shapePrimitives.forEach(({ shape, transform: matrix, holes }) =>
     {

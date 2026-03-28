@@ -83,7 +83,8 @@ describe('SVGParser Fill Rule', () =>
 
     it('should handle single subpath with evenodd using original behavior', () =>
     {
-        // Test 5: Single subpath with evenodd should use original behavior
+        // Test 5: Single subpath with evenodd should pass checkForHoles=true
+        // so the tessellator uses WINDING_ODD for evenodd fill rule
         const svgSingleEvenodd = `
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
                 <path d="M 100 20 L 120 80 L 180 80 L 135 120 L 155 180 L 100 145 L 45 180 L 65 120 L 20 80 L 80 80 Z"
@@ -100,7 +101,7 @@ describe('SVGParser Fill Rule', () =>
 
         const pathData = getFillInstructionData(context);
 
-        expect(pathData.path.checkForHoles).toBe(false);
+        expect(pathData.path.checkForHoles).toBe(true);
     });
 
     it('should handle single subpath with nonzero using original behavior', () =>

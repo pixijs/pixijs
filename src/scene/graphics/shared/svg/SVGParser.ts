@@ -3,8 +3,6 @@ import { GraphicsPath } from '../path/GraphicsPath';
 import { parseSVGDefinitions } from './parseSVGDefinitions';
 import { parseSVGFloatAttribute } from './parseSVGFloatAttribute';
 import { parseSVGStyle } from './parseSVGStyle';
-import { checkForNestedPattern } from './utils/fillOperations';
-import { appendSVGPath, calculatePathArea, extractSubpaths } from './utils/pathOperations';
 
 import type { FillGradient } from '../fill/FillGradient';
 import type { FillStyle, StrokeStyle } from '../FillTypes';
@@ -144,84 +142,13 @@ function renderChildren(svg: SVGElement, session: Session, fillStyle: FillStyle,
 
             const fillRule = svg.getAttribute('fill-rule') as string;
 
-            const subpaths = extractSubpaths(d);
-            const hasExplicitEvenodd = fillRule === 'evenodd';
-            const hasMultipleSubpaths = subpaths.length > 1;
-
-            const shouldProcessHoles = hasExplicitEvenodd && hasMultipleSubpaths;
-
-            if (shouldProcessHoles)
-            {
-                const subpathsWithArea = subpaths.map((subpath) => ({
-                    path: subpath,
-                    area: calculatePathArea(subpath)
-                }));
-
-                subpathsWithArea.sort((a, b) => b.area - a.area);
-
-                // For complex cases, prefer multiple holes approach
-                const useMultipleHolesApproach = subpaths.length > 3 || !checkForNestedPattern(subpathsWithArea);
-
-                if (useMultipleHolesApproach)
-                {
-                    // Multiple holes approach: first (largest) is fill, rest are holes
-                    for (let i = 0; i < subpathsWithArea.length; i++)
-                    {
-                        const subpath = subpathsWithArea[i];
-                        const isMainShape = i === 0;
-
-                        session.context.beginPath();
-                        const newPath = new GraphicsPath(undefined, true); // Always use evenodd for hole processing
-
-                        appendSVGPath(subpath.path, newPath);
-                        session.context.path(newPath);
-
-                        if (isMainShape)
-                        {
-                            if (fillStyle) session.context.fill(fillStyle);
-                            if (strokeStyle) session.context.stroke(strokeStyle);
-                        }
-                        else
-                        {
-                            session.context.cut();
-                        }
-                    }
-                }
-                else
-                {
-                    // Nested holes approach: alternate between fill and cut
-                    for (let i = 0; i < subpathsWithArea.length; i++)
-                    {
-                        const subpath = subpathsWithArea[i];
-                        const isHole = i % 2 === 1; // Odd indices are holes
-
-                        session.context.beginPath();
-                        const newPath = new GraphicsPath(undefined, true); // Always use evenodd for hole processing
-
-                        appendSVGPath(subpath.path, newPath);
-                        session.context.path(newPath);
-
-                        if (isHole)
-                        {
-                            session.context.cut();
-                        }
-                        else
-                        {
-                            if (fillStyle) session.context.fill(fillStyle);
-                            if (strokeStyle) session.context.stroke(strokeStyle);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                const useEvenoddForGraphicsPath = fillRule ? (fillRule === 'evenodd') : true;
-
-                graphicsPath = new GraphicsPath(d, useEvenoddForGraphicsPath);
-                session.context.path(graphicsPath);
-                if (fillStyle) session.context.fill(fillStyle);
-                if (strokeStyle) session.context.stroke(strokeStyle);
-            }
+            // Pass fill-rule to GraphicsPath so the tessellator can apply
+            // the correct winding rule (WINDING_ODD for evenodd, WINDING_NONZERO
+            // for nonzero). No heuristic hole detection needed — tess2 handles both.
+            graphicsPath = new GraphicsPath(d, fillRule === 'evenodd');
+            session.context.path(graphicsPath);
+            if (fillStyle) session.context.fill(fillStyle);
+            if (strokeStyle) session.context.stroke(strokeStyle);
             break;
         }
 
