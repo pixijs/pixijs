@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    <!-- Two concentric circle-like rectangles with opposite winding.
+         With nonzero fill rule, the inner rectangle should be a hole. -->
+    <path d="
+    M 10 10 L 190 10 L 190 190 L 10 190 Z
+    M 50 50 L 50 150 L 150 150 L 150 50 Z
+  " fill="black" />
+</svg>
