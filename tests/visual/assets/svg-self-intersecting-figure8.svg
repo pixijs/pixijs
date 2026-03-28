@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    <!-- Figure-8: a single cubic bezier path that loops over itself.
+         Both lobes should be filled symmetrically. -->
+    <path d="M 100 100 C 100 10 190 10 190 100 C 190 190 100 190 100 100 C 100 10 10 10 10 100 C 10 190 100 190 100 100 Z" fill="#40a0ff"/>
+</svg>
