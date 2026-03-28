@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 100">
+    <!-- Original reproduction from ShukantPal's JSFiddle fhoepg6m:
+         graphics.moveTo(10, 80); graphics.bezierCurveTo(40, 40, 80, 120, 120, 80);
+         The cubic bezier creates a self-intersecting loop when closed. -->
+    <path d="M 10 80 C 40 40 80 120 120 80 Z" fill="black"/>
+</svg>
