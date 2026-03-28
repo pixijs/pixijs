@@ -187,8 +187,15 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     );
                 }
 
-                // If clear parameter is true, override with 'clear', otherwise fallback to attachment's loadOp or 'load'
-                const loadOp = ((clear as CLEAR) & CLEAR.COLOR ? 'clear' : (colorAttachment.loadOp ?? 'load')) as GPULoadOp;
+                let loadOp = colorAttachment.loadOp;
+
+                if (clear !== undefined)
+                {
+                    loadOp = (clear as CLEAR) & CLEAR.COLOR ? 'clear' : 'load';
+                }
+
+                clearValue ??= renderTargetSystem.defaultClearColor;
+
                 const storeOp = colorAttachment.storeOp ?? 'store';
 
                 const baseAttachment: GPURenderPassColorAttachment = {
