@@ -1,4 +1,4 @@
-import { type Gl2dNode } from './types/Gl2dNodes';
+import { type Gl2dBaseNode } from './types/Gl2dNodes';
 import { type Gl2dImageSourceResource, type Gl2dVideoSourceResource } from './types/Gl2DResources';
 import { type Gl2dPixiContainerNode } from './types/pixi/PixiGl2dNodes';
 import { type Gl2dPixiTextureResource, type Gl2dPixiTextureSourceResource } from './types/pixi/PixiGl2dResources';
@@ -10,7 +10,7 @@ import { type Gl2dPixiTextureResource, type Gl2dPixiTextureSourceResource } from
  * @internal
  */
 export const CORE_NODE_DEFAULTS: Required<
-    Omit<Gl2dNode, 'type' | 'uid' | 'name' | 'children' | 'extensions' | 'mask'>
+    Pick<Gl2dBaseNode, 'translation' | 'rotation' | 'scale' | 'alpha' | 'visible' | 'blendMode'>
 > = {
     translation: [0, 0],
     rotation: 0,

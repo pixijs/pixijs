@@ -3,7 +3,11 @@ import { warn } from '../../../../utils/logging/warn';
 import { IMAGE_SOURCE_DEFAULTS, PIXI_TEXTURE_SOURCE_DEFAULTS } from '../../../defaults';
 import { type Gl2dWrapMode } from '../../../types/Gl2DResources';
 import { type Gl2dRef, type Gl2dSerializerInput } from '../../../types/Gl2dTypes';
-import { type Gl2dPixiTextureSourceResource } from '../../../types/pixi/PixiGl2dResources';
+import {
+    type Gl2dPixiGenericTextureSourceResource,
+    type Gl2dPixiTextureSourceResource,
+    type Gl2dPixiTextureSourceResourceExtension,
+} from '../../../types/pixi/PixiGl2dResources';
 import { gl2dUtils } from '../../../utils';
 
 import type { TextureSource } from '../../../../rendering/renderers/shared/texture/sources/TextureSource';
@@ -39,13 +43,13 @@ function extractDataUri(source: TextureSource): string | undefined
     return undefined;
 }
 
-function serializeTextureSourceExtensions(
+function serializeTextureSourceExtensions<TType extends string>(
     source: TextureSource,
-    resource: Gl2dPixiTextureSourceResource,
+    resource: Gl2dPixiTextureSourceResource<TType>,
     ctx: Gl2dSerializeContext,
 ): void
 {
-    const input: Gl2dSerializerInput<Gl2dPixiTextureSourceResource['extensions']['pixi_texture_source_resource']> = {
+    const input: Gl2dSerializerInput<Gl2dPixiTextureSourceResourceExtension> = {
         dimensions: gl2dUtils.checkValue(source.dimension, PIXI_TEXTURE_SOURCE_DEFAULTS.dimensions),
         mipLevelCount: gl2dUtils.checkValue(source.mipLevelCount, PIXI_TEXTURE_SOURCE_DEFAULTS.mipLevelCount),
         autoGenerateMipmaps: gl2dUtils.checkValue(
@@ -68,13 +72,11 @@ function serializeTextureSourceExtensions(
         lodMaxClamp: gl2dUtils.checkValue(source.style?.lodMaxClamp, PIXI_TEXTURE_SOURCE_DEFAULTS.lodMaxClamp),
     };
 
-    const ext = gl2dUtils.removeUndefinedOrNull(input, 1) as Required<
-        Gl2dPixiTextureSourceResource['extensions']['pixi_texture_source_resource']
-    >;
+    const ext = gl2dUtils.removeUndefinedOrNull(input, 1);
 
     if (Object.keys(ext).length > 0)
     {
-        resource.extensions = { ...resource.extensions, pixi_texture_source_resource: ext };
+        resource.extensions = { pixi_texture_source_resource: ext };
         ctx.gl2d.extensionsUsed.add('pixi_texture_source_resource');
     }
 }
@@ -90,7 +92,7 @@ function serializeTextureSourceExtensions(
 export function serializeCoreTextureSource(
     source: TextureSource,
     ctx: Gl2dSerializeContext,
-): Gl2dPixiTextureSourceResource & { type: 'texture_source' }
+): Gl2dPixiGenericTextureSourceResource
 {
     let uri = getTextureSourceUri(source);
 
@@ -110,28 +112,24 @@ export function serializeCoreTextureSource(
         'mirror-repeat': 'mirror',
     };
 
-    const resource: Required<Gl2dPixiTextureSourceResource & { type: 'texture_source' }>
-        = gl2dUtils.removeUndefinedOrNull(
-            {
-                type: 'texture_source',
-                uid: `texture_source_${String(source.uid)}`,
-                name: source.label,
-                uri,
-                width: gl2dUtils.checkValue(source.width, IMAGE_SOURCE_DEFAULTS.width),
-                height: gl2dUtils.checkValue(source.height, IMAGE_SOURCE_DEFAULTS.height),
-                resolution: gl2dUtils.checkValue(source._resolution, IMAGE_SOURCE_DEFAULTS.resolution),
-                format: gl2dUtils.checkValue(source.format, IMAGE_SOURCE_DEFAULTS.format),
-                antialias: gl2dUtils.checkValue(source.antialias, IMAGE_SOURCE_DEFAULTS.antialias),
-                alphaMode: gl2dUtils.checkValue(source.alphaMode, IMAGE_SOURCE_DEFAULTS.alphaMode),
-                addressMode: gl2dUtils.checkValue(
-                    wrapModeMap[source.style?.addressMode],
-                    IMAGE_SOURCE_DEFAULTS.addressMode,
-                ),
-                scaleMode: gl2dUtils.checkValue(source.style?.scaleMode, IMAGE_SOURCE_DEFAULTS.scaleMode),
-                extensions: undefined,
-            },
-            1,
-        );
+    const resource = gl2dUtils.compact<Gl2dPixiGenericTextureSourceResource>({
+        type: 'texture_source',
+        uid: `texture_source_${String(source.uid)}`,
+        name: source.label,
+        uri,
+        width: gl2dUtils.checkValue(source.width, IMAGE_SOURCE_DEFAULTS.width),
+        height: gl2dUtils.checkValue(source.height, IMAGE_SOURCE_DEFAULTS.height),
+        resolution: gl2dUtils.checkValue(source._resolution, IMAGE_SOURCE_DEFAULTS.resolution),
+        format: gl2dUtils.checkValue(source.format, IMAGE_SOURCE_DEFAULTS.format),
+        antialias: gl2dUtils.checkValue(source.antialias, IMAGE_SOURCE_DEFAULTS.antialias),
+        alphaMode: gl2dUtils.checkValue(source.alphaMode, IMAGE_SOURCE_DEFAULTS.alphaMode),
+        addressMode: gl2dUtils.checkValue(
+            wrapModeMap[source.style?.addressMode],
+            IMAGE_SOURCE_DEFAULTS.addressMode,
+        ),
+        scaleMode: gl2dUtils.checkValue(source.style?.scaleMode, IMAGE_SOURCE_DEFAULTS.scaleMode),
+        extensions: undefined,
+    });
 
     serializeTextureSourceExtensions(source, resource, ctx);
 
@@ -146,7 +144,10 @@ export function serializeCoreTextureSource(
  * @category gl2d
  * @internal
  */
-export function serializeTextureSource(source: TextureSource, ctx: Gl2dSerializeContext): Gl2dRef
+export function serializeTextureSource(
+    source: TextureSource,
+    ctx: Gl2dSerializeContext,
+): Gl2dRef
 {
     const existing = ctx.resourceMap.get(source);
 

@@ -1,4 +1,4 @@
-import { serializeContainer } from '../serializers/serializeContainer';
+import { serializeContainer } from '../serializers/nodes/serializeContainer';
 import { type Gl2dRef } from '../types/Gl2dTypes';
 
 import type { Container } from '../../scene/container/Container';

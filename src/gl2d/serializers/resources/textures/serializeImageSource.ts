@@ -22,7 +22,11 @@ export function serializeImageSource(source: ImageSource, ctx: Gl2dSerializeCont
     if (existing !== undefined) return existing;
 
     const resource = serializeCoreTextureSource(source, ctx);
-    const imageResource: Gl2dPixiImageSourceResource = { ...resource, type: 'image_source' };
+    const imageResource: Gl2dPixiImageSourceResource = {
+        ...resource,
+        type: 'image_source',
+        uid: `image_source_${String(source.uid)}`,
+    };
     const index = ctx.gl2d.resources.length;
 
     ctx.gl2d.resources.push(imageResource);

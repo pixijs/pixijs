@@ -7,7 +7,11 @@ import { Texture } from '~/rendering/renderers/shared/texture/Texture';
 import { Container } from '~/scene/container/Container';
 import { Sprite } from '~/scene/sprite/Sprite';
 
-import type { Gl2dSpriteNode, Gl2dTextureResource, Gl2dVideoSourceResource } from '../Gl2dSchema';
+import type { Gl2dPixiSpriteNode as Gl2dSpriteNode } from '../types/pixi/PixiGl2dNodes';
+import type {
+    Gl2dPixiTextureResource,
+    Gl2dPixiVideoSourceResource,
+} from '../types/pixi/PixiGl2dResources';
 
 function createTestVideoSource(options: {
     label?: string;
@@ -47,8 +51,8 @@ describe('gl2d VideoSource serialization', () =>
         const file = Gl2d.serialize(sprite);
 
         const node = file.nodes[0] as Gl2dSpriteNode;
-        const textureResource = file.resources[node.texture as number] as Gl2dTextureResource;
-        const videoResource = file.resources[textureResource.source as number] as Gl2dVideoSourceResource;
+        const textureResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
+        const videoResource = file.resources[textureResource.source as number] as Gl2dPixiVideoSourceResource;
 
         expect(videoResource).toBeDefined();
         expect(videoResource.type).toBe('video_source');
@@ -64,8 +68,8 @@ describe('gl2d VideoSource serialization', () =>
         const file = Gl2d.serialize(sprite);
 
         const node = file.nodes[0] as Gl2dSpriteNode;
-        const textureResource = file.resources[node.texture as number] as Gl2dTextureResource;
-        const videoResource = file.resources[textureResource.source as number] as Gl2dVideoSourceResource;
+        const textureResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
+        const videoResource = file.resources[textureResource.source as number] as Gl2dPixiVideoSourceResource;
 
         expect(videoResource.loop).toBe(true);
         expect(videoResource.muted).toBe(false);
@@ -79,8 +83,8 @@ describe('gl2d VideoSource serialization', () =>
         const file = Gl2d.serialize(sprite);
 
         const node = file.nodes[0] as Gl2dSpriteNode;
-        const textureResource = file.resources[node.texture as number] as Gl2dTextureResource;
-        const videoResource = file.resources[textureResource.source as number] as Gl2dVideoSourceResource;
+        const textureResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
+        const videoResource = file.resources[textureResource.source as number] as Gl2dPixiVideoSourceResource;
 
         expect(videoResource.loop).toBeUndefined();
         expect(videoResource.muted).toBeUndefined();
@@ -99,7 +103,7 @@ describe('gl2d VideoSource serialization', () =>
         const file = Gl2d.serialize(parent);
 
         const videoResources = file.resources.filter(
-            (r): r is Gl2dVideoSourceResource => (r as Gl2dVideoSourceResource).type === 'video_source',
+            (r): r is Gl2dPixiVideoSourceResource => (r as Gl2dPixiVideoSourceResource).type === 'video_source',
         );
 
         expect(videoResources).toHaveLength(1);
@@ -117,11 +121,11 @@ describe('gl2d VideoSource serialization', () =>
         expect(node.type).toBe('sprite');
         expect(typeof node.texture).toBe('number');
 
-        const textureResource = file.resources[node.texture as number] as Gl2dTextureResource;
+        const textureResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
 
         expect(textureResource.type).toBe('texture');
 
-        const videoResource = file.resources[textureResource.source as number] as Gl2dVideoSourceResource;
+        const videoResource = file.resources[textureResource.source as number] as Gl2dPixiVideoSourceResource;
 
         expect(videoResource.type).toBe('video_source');
         expect(videoResource.width).toBe(320);
@@ -136,8 +140,8 @@ describe('gl2d VideoSource serialization', () =>
         const file = Gl2d.serialize(sprite);
 
         const node = file.nodes[0] as Gl2dSpriteNode;
-        const textureResource = file.resources[node.texture as number] as Gl2dTextureResource;
-        const videoResource = file.resources[textureResource.source as number] as Gl2dVideoSourceResource;
+        const textureResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
+        const videoResource = file.resources[textureResource.source as number] as Gl2dPixiVideoSourceResource;
 
         expect(videoResource.crossorigin).toBe('anonymous');
     });
@@ -150,8 +154,8 @@ describe('gl2d VideoSource serialization', () =>
         const file = Gl2d.serialize(sprite);
 
         const node = file.nodes[0] as Gl2dSpriteNode;
-        const textureResource = file.resources[node.texture as number] as Gl2dTextureResource;
-        const videoResource = file.resources[textureResource.source as number] as Gl2dVideoSourceResource;
+        const textureResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
+        const videoResource = file.resources[textureResource.source as number] as Gl2dPixiVideoSourceResource;
 
         expect(videoResource.autoLoad).toBeUndefined();
     });
@@ -165,8 +169,8 @@ describe('gl2d VideoSource serialization', () =>
         const file = Gl2d.serialize(sprite);
 
         const node = file.nodes[0] as Gl2dSpriteNode;
-        const textureResource = file.resources[node.texture as number] as Gl2dTextureResource;
-        const videoResource = file.resources[textureResource.source as number] as Gl2dVideoSourceResource;
+        const textureResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
+        const videoResource = file.resources[textureResource.source as number] as Gl2dPixiVideoSourceResource;
 
         expect(videoResource.autoLoad).toBe(false);
     });
@@ -179,8 +183,8 @@ describe('gl2d VideoSource serialization', () =>
         const file = Gl2d.serialize(sprite);
 
         const node = file.nodes[0] as Gl2dSpriteNode;
-        const textureResource = file.resources[node.texture as number] as Gl2dTextureResource;
-        const videoResource = file.resources[textureResource.source as number] as Gl2dVideoSourceResource;
+        const textureResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
+        const videoResource = file.resources[textureResource.source as number] as Gl2dPixiVideoSourceResource;
 
         // autoPlay: true is the default in VIDEO_SOURCE_DEFAULTS, so it should be omitted
         // BUT the helper sets autoPlay: false by default, so autoPlay: true overrides that
@@ -198,8 +202,8 @@ describe('gl2d VideoSource serialization', () =>
         const file = Gl2d.serialize(sprite);
 
         const node = file.nodes[0] as Gl2dSpriteNode;
-        const textureResource = file.resources[node.texture as number] as Gl2dTextureResource;
-        const videoResource = file.resources[textureResource.source as number] as Gl2dVideoSourceResource;
+        const textureResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
+        const videoResource = file.resources[textureResource.source as number] as Gl2dPixiVideoSourceResource;
 
         expect(videoResource.autoPlay).toBe(false);
     });
@@ -212,8 +216,8 @@ describe('gl2d VideoSource serialization', () =>
         const file = Gl2d.serialize(sprite);
 
         const node = file.nodes[0] as Gl2dSpriteNode;
-        const textureResource = file.resources[node.texture as number] as Gl2dTextureResource;
-        const videoResource = file.resources[textureResource.source as number] as Gl2dVideoSourceResource;
+        const textureResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
+        const videoResource = file.resources[textureResource.source as number] as Gl2dPixiVideoSourceResource;
 
         expect(videoResource.fps).toBe(30);
     });
@@ -226,8 +230,8 @@ describe('gl2d VideoSource serialization', () =>
         const file = Gl2d.serialize(sprite);
 
         const node = file.nodes[0] as Gl2dSpriteNode;
-        const textureResource = file.resources[node.texture as number] as Gl2dTextureResource;
-        const videoResource = file.resources[textureResource.source as number] as Gl2dVideoSourceResource;
+        const textureResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
+        const videoResource = file.resources[textureResource.source as number] as Gl2dPixiVideoSourceResource;
 
         expect(videoResource.fps).toBeUndefined();
     });
@@ -240,8 +244,8 @@ describe('gl2d VideoSource serialization', () =>
         const file = Gl2d.serialize(sprite);
 
         const node = file.nodes[0] as Gl2dSpriteNode;
-        const textureResource = file.resources[node.texture as number] as Gl2dTextureResource;
-        const videoResource = file.resources[textureResource.source as number] as Gl2dVideoSourceResource;
+        const textureResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
+        const videoResource = file.resources[textureResource.source as number] as Gl2dPixiVideoSourceResource;
 
         expect(videoResource.preload).toBe(true);
     });
@@ -254,8 +258,8 @@ describe('gl2d VideoSource serialization', () =>
         const file = Gl2d.serialize(sprite);
 
         const node = file.nodes[0] as Gl2dSpriteNode;
-        const textureResource = file.resources[node.texture as number] as Gl2dTextureResource;
-        const videoResource = file.resources[textureResource.source as number] as Gl2dVideoSourceResource;
+        const textureResource = file.resources[node.texture as number] as Gl2dPixiTextureResource;
+        const videoResource = file.resources[textureResource.source as number] as Gl2dPixiVideoSourceResource;
 
         expect(videoResource.preload).toBeUndefined();
     });

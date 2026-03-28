@@ -1,5 +1,7 @@
-import { type Gl2dPixiNode, type Gl2dPixiNodeExtensionName } from './types/pixi/PixiGl2dNodes';
-import { type Gl2dPixiResource, type Gl2dPixiResourceExtensionName } from './types/pixi/PixiGl2dResources';
+import { type Gl2dNodeExtensionName } from './types/Gl2DExtensions';
+import { type Gl2dResourceExtensionName } from './types/Gl2DResources';
+import { type Gl2dPixiNode } from './types/pixi/PixiGl2dNodes';
+import { type Gl2dPixiResource } from './types/pixi/PixiGl2dResources';
 
 import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
@@ -13,8 +15,8 @@ export interface ToGL2D
 {
     nodes: Gl2dPixiNode[];
     resources: Gl2dPixiResource[];
-    extensionsUsed: Set<Gl2dPixiNodeExtensionName | Gl2dPixiResourceExtensionName>;
-    extensionsRequired: Set<Gl2dPixiNodeExtensionName | Gl2dPixiResourceExtensionName>;
+    extensionsUsed: Set<Gl2dNodeExtensionName | Gl2dResourceExtensionName>;
+    extensionsRequired: Set<Gl2dNodeExtensionName | Gl2dResourceExtensionName>;
 }
 
 /**

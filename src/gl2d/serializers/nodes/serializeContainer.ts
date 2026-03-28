@@ -1,13 +1,17 @@
-import { Color } from '../../color/Color';
-import { warn } from '../../utils/logging/warn';
-import { PIXI_CONTAINER_DEFAULTS } from '../defaults';
-import { type Gl2dRef, type Gl2dSerializerInput } from '../types/Gl2dTypes';
-import { type Gl2dPixiContainerNode, type Gl2dPixiNode } from '../types/pixi/PixiGl2dNodes';
-import { gl2dUtils } from '../utils';
-import { serializeCoreNodeProperties } from './serializeCoreNodeProperties';
+import { Color } from '../../../color/Color';
+import { warn } from '../../../utils/logging/warn';
+import { PIXI_CONTAINER_DEFAULTS } from '../../defaults';
+import { type Gl2dRef, type Gl2dSerializerInput } from '../../types/Gl2dTypes';
+import {
+    type Gl2dPixiContainerNode,
+    type Gl2dPixiContainerNodeExtension,
+    type Gl2dPixiNode,
+} from '../../types/pixi/PixiGl2dNodes';
+import { gl2dUtils } from '../../utils';
+import { serializeCoreNodeProperties } from '../serializeCoreNodeProperties';
 
-import type { Container } from '../../scene/container/Container';
-import type { Gl2dSerializeContext } from '../serializeContext';
+import type { Container } from '../../../scene/container/Container';
+import type { Gl2dSerializeContext } from '../../serializeContext';
 
 interface ContainerSetup
 {
@@ -30,7 +34,7 @@ export function serializeContainerExtensions(
     ctx: Gl2dSerializeContext,
 )
 {
-    const input: Gl2dSerializerInput<Gl2dPixiNode['extensions']['pixi_container_node']> = {
+    const input: Gl2dSerializerInput<Gl2dPixiContainerNodeExtension> = {
         origin: gl2dUtils.checkObservablePoint(container._origin, PIXI_CONTAINER_DEFAULTS.origin),
         skew: gl2dUtils.checkObservablePoint(container._skew, PIXI_CONTAINER_DEFAULTS.skew),
         pivot: gl2dUtils.checkObservablePoint(container._pivot, PIXI_CONTAINER_DEFAULTS.pivot),
@@ -73,15 +77,17 @@ export function serializeContainerExtensions(
         cullable: gl2dUtils.checkValue(container.cullable, PIXI_CONTAINER_DEFAULTS.cullable),
     };
 
-    const ext = gl2dUtils.removeUndefinedOrNull(input, 1);
+    const ext = gl2dUtils.compact(input);
 
     if (Object.keys(ext).length > 0)
     {
         node.extensions = { pixi_container_node: ext };
         ctx.gl2d.extensionsUsed.add('pixi_container_node');
+
+        return ext;
     }
 
-    return ext as Gl2dPixiContainerNode['extensions']['pixi_container_node'];
+    return undefined;
 }
 
 function setupContainerNode(container: Container, ctx: Gl2dSerializeContext): ContainerSetup | Gl2dRef
@@ -98,7 +104,7 @@ function setupContainerNode(container: Container, ctx: Gl2dSerializeContext): Co
         );
     }
 
-    const node = serializeCoreNodeProperties<Gl2dPixiContainerNode>(container, ctx, 'container');
+    const node: Gl2dPixiContainerNode = serializeCoreNodeProperties(container, ctx, 'container');
 
     serializeContainerExtensions(container, node, ctx);
     const index = ctx.gl2d.nodes.length;
@@ -117,7 +123,11 @@ function setupContainerNode(container: Container, ctx: Gl2dSerializeContext): Co
  * @category gl2d
  * @internal
  */
-export function applyMask(node: Gl2dPixiNode, container: Container, ctx: Gl2dSerializeContext)
+export function applyMask(
+    node: Gl2dPixiNode,
+    container: Container,
+    ctx: Gl2dSerializeContext,
+): Gl2dRef | null
 {
     const mask = container.mask;
 

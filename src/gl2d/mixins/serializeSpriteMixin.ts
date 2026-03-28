@@ -1,4 +1,4 @@
-import { serializeSprite } from '../serializers/serializeSprite';
+import { serializeSprite } from '../serializers/nodes/serializeSprite';
 import { type Gl2dRef } from '../types/Gl2dTypes';
 
 import type { Sprite } from '../../scene/sprite/Sprite';

@@ -3,11 +3,13 @@
 
 import { type Gl2dNodeExtensionName } from './Gl2DExtensions';
 import { type Gl2dNode } from './Gl2dNodes';
-import { type Gl2dResource } from './Gl2DResources';
+import { type Gl2dResource, type Gl2dResourceExtensionName } from './Gl2DResources';
 
 export type Gl2dSerializerInput<T> = {
     [K in keyof T]-?: T[K] | null | undefined;
 };
+
+export type Gl2dSimplify<T> = { [K in keyof T]: T[K] } & {};
 
 export type Gl2dRef = number | string;
 
@@ -41,28 +43,25 @@ export type Gl2dBlendMode =
     | 'erase'
     | 'none';
 
-export type Gl2dPixiBlendMode =
-    | 'normal-npm'
-    | 'add-npm'
-    | 'screen-npm'
-    | 'linear-burn'
-    | 'linear-dodge'
-    | 'linear-light'
-    | 'pin-light'
-    | 'vivid-light'
-    | 'hard-mix'
-    | 'negation'
-    | 'min'
-    | 'max'
-    | 'divide';
-
 export interface Gl2dMaskOptions
 {
     node: Gl2dRef;
     inverse?: boolean;
 }
 
-export interface Gl2dFile
+export interface Gl2dScene
+{
+    name: string;
+    nodes: Gl2dRef[];
+    width?: number;
+    height?: number;
+}
+
+export interface Gl2dFile<
+    TNode extends Gl2dNode = Gl2dNode,
+    TResource extends Gl2dResource = Gl2dResource,
+    TExtension extends string = Gl2dNodeExtensionName | Gl2dResourceExtensionName,
+>
 {
     asset: {
         version: string;
@@ -70,14 +69,9 @@ export interface Gl2dFile
         minVersion?: string;
     };
     scene?: Gl2dRef;
-    scenes?: {
-        name: string;
-        nodes: Gl2dRef[];
-        width?: number;
-        height?: number;
-    }[];
-    nodes?: Gl2dNode[];
-    resources?: Gl2dResource[];
-    extensionsUsed?: Gl2dNodeExtensionName[];
-    extensionsRequired?: Gl2dNodeExtensionName[];
+    scenes?: Gl2dScene[];
+    nodes?: TNode[];
+    resources?: TResource[];
+    extensionsUsed?: TExtension[];
+    extensionsRequired?: TExtension[];
 }

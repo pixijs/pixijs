@@ -2,10 +2,13 @@ import { Color } from '../../color/Color';
 import { RectangleLike } from '../../culling/Culler';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { PointData } from '../../maths/point/PointData';
-import { Gl2dPoint2d, Gl2dRectangle } from '../types/Gl2dTypes';
+import { type Gl2dPoint2d, type Gl2dRectangle } from '../types/Gl2dTypes';
 
 export const gl2dUtils = {
-    removeUndefinedOrNull: <T>(value: T, depth: number = Infinity): T =>
+    compact: <T extends object>(
+        value: { [K in keyof T]: T[K] | null | undefined },
+        depth: number = 1,
+    ): T =>
     {
         if (depth === 0) return value;
 
@@ -22,7 +25,7 @@ export const gl2dUtils = {
                 }
                 else
                 {
-                    gl2dUtils.removeUndefinedOrNull(item, depth - 1);
+                    gl2dUtils.compact(item, depth - 1);
                 }
             }
 
@@ -41,7 +44,7 @@ export const gl2dUtils = {
                 }
                 else
                 {
-                    gl2dUtils.removeUndefinedOrNull(val, depth - 1);
+                    gl2dUtils.compact(val as object, depth - 1);
                 }
             }
 
@@ -50,22 +53,23 @@ export const gl2dUtils = {
 
         // Primitives are returned as-is
         return value;
+
     },
-    checkObservablePoint: (point: ObservablePoint, defaultValue: Gl2dPoint2d): null | Gl2dPoint2d => {
+    checkObservablePoint: (point: ObservablePoint, defaultValue: Gl2dPoint2d): Gl2dPoint2d | null | undefined => {
         // check if the value exists
         if (!point) return undefined;
 
         // check if the value is the default value
         return point._x === defaultValue[0] && point._y === defaultValue[1] ? null : [point._x, point._y];
     },
-    checkPoint: (point: PointData, defaultValue: Gl2dPoint2d): null | Gl2dPoint2d => {
+    checkPoint: (point: PointData, defaultValue: Gl2dPoint2d): Gl2dPoint2d | null | undefined => {
         // check if the value exists
         if (!point) return undefined;
 
         // check if the value is the default value
         return point.x === defaultValue[0] && point.y === defaultValue[1] ? null : [point.x, point.y];
     },
-    checkValue: <T>(value: T, defaultValue: T): null | T => {
+    checkValue: <T>(value: T, defaultValue: T): T | null | undefined => {
         // check if the value exists
         // eslint-disable-next-line no-eq-null, eqeqeq
         if (value == null) return undefined;
@@ -73,14 +77,14 @@ export const gl2dUtils = {
         // check if the value is the default value
         return value === defaultValue ? null : value;
     },
-    checkColor: (color: Color, defaultValue: string): null | string => {
+    checkColor: (color: Color, defaultValue: string): string | null | undefined => {
         // check if the value exists
         if (!color) return undefined;
 
         // check if the value is the default value
         return color.toHex() === defaultValue ? null : color.toHex();
     },
-    checkRectangle: (rectangle: RectangleLike, defaultValue: Gl2dRectangle | null): null | Gl2dRectangle => {
+    checkRectangle: (rectangle: RectangleLike, defaultValue: Gl2dRectangle | null): Gl2dRectangle | null | undefined => {
         if (!rectangle) return undefined;
         if (!defaultValue) return [rectangle.x, rectangle.y, rectangle.width, rectangle.height];
 

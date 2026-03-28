@@ -1,90 +1,130 @@
 /* eslint-disable requireMemberAPI/require-member-api-doc */
 /* eslint-disable requireExport/require-export-jsdoc */
 
+import { type Gl2dExtensionBag } from './Gl2DExtensions';
 import { type Gl2dRectangle, type Gl2dRef } from './Gl2dTypes';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface Gl2dResourceExtensions {}
-export type Gl2dResource =
-    | Gl2dTextureResource
-    | Gl2dImageSourceResource
-    | Gl2dVideoSourceResource
-    | Gl2dSpritesheetResource
-    | Gl2dCustomResource;
+export interface Gl2dResourceExtensionRegistry {}
 
-export type Gl2dResourceType =
-    | Gl2dTextureResource['type']
-    | Gl2dImageSourceResource['type']
-    | Gl2dVideoSourceResource['type']
-    | Gl2dSpritesheetResource['type']
-    | Gl2dCustomResource['type'];
+export type Gl2dResourceExtensionName = Extract<keyof Gl2dResourceExtensionRegistry, string>;
+
+export type Gl2dResourceExtensions<
+    TKeys extends Gl2dResourceExtensionName = Gl2dResourceExtensionName,
+> = Gl2dExtensionBag<Gl2dResourceExtensionRegistry, TKeys>;
 
 export type Gl2dAlphaMode = 'no-premultiply-alpha' | 'premultiply-alpha-on-upload' | 'premultiplied-alpha';
 export type Gl2dWrapMode = 'repeat' | 'clamp' | 'mirror';
 export type Gl2dScaleMode = 'linear' | 'nearest';
 
-export interface Gl2dTextureResource
+export interface Gl2dResourceBase<
+    TType extends string = string,
+    TExtensions extends Gl2dResourceExtensionName = Gl2dResourceExtensionName,
+>
 {
-    type: 'texture';
-    uid: `texture_resource_${string}`;
-    name?: string;
-    source: Gl2dRef;
-    frame?: Gl2dRectangle;
-    frameName?: string;
-    extensions?: Gl2dResourceExtensions;
-}
-
-export interface Gl2dTextureSourceResource
-{
+    type: TType;
     uid: string;
-    name?: string;
-    uri: string;
-    width?: number;
-    height?: number;
-    resolution?: number;
-    format?: string;
-    antialias?: boolean;
-    alphaMode?: Gl2dAlphaMode;
-    addressMode?: Gl2dWrapMode;
-    scaleMode?: Gl2dScaleMode;
-    extensions?: Gl2dResourceExtensions;
+    name: string;
+    extensions?: Gl2dResourceExtensions<TExtensions>;
 }
 
-export interface Gl2dImageSourceResource extends Gl2dTextureSourceResource
+export type Gl2dTextureSourceResourceType = 'texture_source' | 'image_source' | 'video_source';
+
+export interface Gl2dTextureSourceResource<
+    TType extends string = Gl2dTextureSourceResourceType,
+    TExtensions extends Gl2dResourceExtensionName = Gl2dResourceExtensionName,
+> extends Gl2dResourceBase<TType, TExtensions>
 {
-    type: 'image_source';
+    uid: `${string}_${string}`;
+    name: string;
+    uri: string;
+    width: number;
+    height: number;
+    resolution: number;
+    format: string;
+    antialias: boolean;
+    alphaMode: Gl2dAlphaMode;
+    addressMode: Gl2dWrapMode;
+    scaleMode: Gl2dScaleMode;
+}
+
+export interface Gl2dGenericTextureSourceResource
+    extends Gl2dTextureSourceResource<'texture_source'>
+{
+    uid: `texture_source_${string}`;
+}
+
+export interface Gl2dImageSourceResource
+    extends Gl2dTextureSourceResource<'image_source'>
+{
     uid: `image_source_${string}`;
 }
 
-export interface Gl2dVideoSourceResource extends Gl2dTextureSourceResource
+export interface Gl2dVideoSourceResource
+    extends Gl2dTextureSourceResource<'video_source'>
 {
-    type: 'video_source';
     uid: `video_source_${string}`;
-    autoLoad?: boolean;
-    autoPlay?: boolean;
-    crossorigin?: string;
-    loop?: boolean;
-    muted?: boolean;
-    playsinline?: boolean;
-    preload?: boolean;
-    fps?: 'auto' | number;
+    autoLoad: boolean;
+    autoPlay: boolean;
+    crossorigin: string;
+    loop: boolean;
+    muted: boolean;
+    playsinline: boolean;
+    preload: boolean;
+    fps: 'auto' | number;
 }
+
+export type Gl2dTextureSourceResourceRef = Gl2dRef;
+
+type Gl2dTextureResourceBase = Gl2dResourceBase<'texture'> & {
+    uid: `texture_resource_${string}`;
+};
+
+export type Gl2dTextureBackedTextureResource = Gl2dTextureResourceBase & {
+    source: Gl2dTextureSourceResourceRef;
+    frame: Gl2dRectangle;
+    frameName?: never;
+};
+
+export type Gl2dSpritesheetBackedTextureResource = Gl2dTextureResourceBase & {
+    source: Gl2dRef;
+    frame?: never;
+    frameName: string;
+};
+
+export type Gl2dTextureResource = Gl2dTextureBackedTextureResource | Gl2dSpritesheetBackedTextureResource;
 
 export interface Gl2dSpritesheetResource
+    extends Gl2dResourceBase<'spritesheet'>
 {
-    type: 'spritesheet';
     uid: `spritesheet_${string}`;
     uri: string;
-    source: Gl2dRef;
-    extensions?: Gl2dResourceExtensions;
+    source: Gl2dTextureSourceResourceRef;
 }
 
-export interface Gl2dCustomResource
+export interface Gl2dResourceRegistry
 {
-    type: string;
-    uid: string;
-    uri: string;
-    name?: string;
-    extensions?: Gl2dResourceExtensions;
-    [key: string]: unknown;
+    texture: Gl2dTextureResource;
+    texture_source: Gl2dGenericTextureSourceResource;
+    image_source: Gl2dImageSourceResource;
+    video_source: Gl2dVideoSourceResource;
+    spritesheet: Gl2dSpritesheetResource;
 }
+
+export type Gl2dResourceKind = Extract<keyof Gl2dResourceRegistry, string>;
+
+export type Gl2dResourceOf<
+    TKind extends Gl2dResourceKind = Gl2dResourceKind,
+> = Gl2dResourceRegistry[TKind];
+
+export type Gl2dResource = Gl2dResourceOf;
+
+export type Gl2dResourceType = Gl2dResource['type'];
+
+export type Gl2dCustomResource<
+    TType extends string = string,
+    TExtensions extends Gl2dResourceExtensionName = Gl2dResourceExtensionName,
+> = Gl2dResourceBase<TType, TExtensions> & {
+    uri: string;
+    [key: string]: unknown;
+};

@@ -32,27 +32,24 @@ export function serializeVideoSource(source: VideoSource, ctx: Gl2dSerializeCont
 
     const crossorigin = typeof opts.crossorigin === 'string' ? opts.crossorigin : undefined;
 
-    const resource: Gl2dPixiVideoSourceResource = gl2dUtils.removeUndefinedOrNull(
-        {
-            ...base,
-            type: 'video_source' as const,
-            uid: `video_source_${String(source.uid)}` as const,
+    const resource = gl2dUtils.compact<Gl2dPixiVideoSourceResource>({
+        ...base,
+        type: 'video_source',
+        uid: `video_source_${String(source.uid)}`,
+        // eslint-disable-next-line dot-notation
+        autoPlay: gl2dUtils.checkValue(source['autoPlay'], VIDEO_SOURCE_DEFAULTS.autoPlay),
+        autoLoad: gl2dUtils.checkValue(opts.autoLoad, VIDEO_SOURCE_DEFAULTS.autoLoad),
+        loop: gl2dUtils.checkValue(opts.loop, VIDEO_SOURCE_DEFAULTS.loop),
+        muted: gl2dUtils.checkValue(opts.muted, VIDEO_SOURCE_DEFAULTS.muted),
+        playsinline: gl2dUtils.checkValue(opts.playsinline, VIDEO_SOURCE_DEFAULTS.playsinline),
+        preload: gl2dUtils.checkValue(opts.preload, VIDEO_SOURCE_DEFAULTS.preload),
+        fps: gl2dUtils.checkValue(
             // eslint-disable-next-line dot-notation
-            autoPlay: gl2dUtils.checkValue(source['autoPlay'], VIDEO_SOURCE_DEFAULTS.autoPlay),
-            autoLoad: gl2dUtils.checkValue(opts.autoLoad, VIDEO_SOURCE_DEFAULTS.autoLoad),
-            loop: gl2dUtils.checkValue(opts.loop, VIDEO_SOURCE_DEFAULTS.loop),
-            muted: gl2dUtils.checkValue(opts.muted, VIDEO_SOURCE_DEFAULTS.muted),
-            playsinline: gl2dUtils.checkValue(opts.playsinline, VIDEO_SOURCE_DEFAULTS.playsinline),
-            preload: gl2dUtils.checkValue(opts.preload, VIDEO_SOURCE_DEFAULTS.preload),
-            fps: gl2dUtils.checkValue(
-                // eslint-disable-next-line dot-notation
-                source['_updateFPS'] === 0 ? 'auto' : source['_updateFPS'],
-                VIDEO_SOURCE_DEFAULTS.fps,
-            ),
-            crossorigin,
-        },
-        1,
-    );
+            source['_updateFPS'] === 0 ? 'auto' : source['_updateFPS'],
+            VIDEO_SOURCE_DEFAULTS.fps,
+        ),
+        crossorigin,
+    });
 
     const index = ctx.gl2d.resources.length;
 

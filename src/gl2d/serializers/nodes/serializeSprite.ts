@@ -1,10 +1,10 @@
-import { type Gl2dRef } from '../types/Gl2dTypes';
-import { type Gl2dPixiSpriteNode } from '../types/pixi/PixiGl2dNodes';
+import { type Gl2dRef } from '../../types/Gl2dTypes';
+import { type Gl2dPixiSpriteNode } from '../../types/pixi/PixiGl2dNodes';
+import { serializeCoreNodeProperties } from '../serializeCoreNodeProperties';
 import { applyMask, serializeContainerExtensions } from './serializeContainer';
-import { serializeCoreNodeProperties } from './serializeCoreNodeProperties';
 
-import type { Sprite } from '../../scene/sprite/Sprite';
-import type { Gl2dSerializeContext } from '../serializeContext';
+import type { Sprite } from '../../../scene/sprite/Sprite';
+import type { Gl2dSerializeContext } from '../../serializeContext';
 
 interface SpriteSetup
 {
@@ -12,13 +12,17 @@ interface SpriteSetup
     index: Gl2dRef;
 }
 
-function setupSpriteNode(sprite: Sprite, textureRef: Gl2dRef, ctx: Gl2dSerializeContext): SpriteSetup | Gl2dRef
+function setupSpriteNode(
+    sprite: Sprite,
+    textureRef: Gl2dRef,
+    ctx: Gl2dSerializeContext,
+): SpriteSetup | Gl2dRef
 {
     const existing = ctx.nodeMap.get(sprite);
 
     if (existing !== undefined) return existing;
 
-    const core = serializeCoreNodeProperties<Gl2dPixiSpriteNode>(sprite, ctx, 'sprite');
+    const core = serializeCoreNodeProperties(sprite, ctx, 'sprite');
     const node: Gl2dPixiSpriteNode = { ...core, texture: textureRef };
 
     serializeContainerExtensions(sprite, node, ctx);

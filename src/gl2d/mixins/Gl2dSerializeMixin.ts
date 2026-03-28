@@ -7,8 +7,8 @@ import type { Gl2dSerializeContext } from '../serializeContext';
  * @category gl2d
  * @standard
  */
-export interface Gl2dSerializeMixin
+export interface Gl2dSerializeMixin<TRef = Gl2dRef>
 {
     /** Sync-serialize this object into the gl2d context. */
-    toGl2d(ctx: Gl2dSerializeContext): Gl2dRef;
+    toGl2d(ctx: Gl2dSerializeContext): TRef;
 }
