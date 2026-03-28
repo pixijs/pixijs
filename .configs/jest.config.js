@@ -16,7 +16,7 @@ module.exports = {
         '\\.wgsl$': 'jest-raw-loader',
         '\\.js$': ['babel-jest', { plugins: ['@babel/plugin-transform-modules-commonjs'] }]
     },
-    transformIgnorePatterns: ['/node_modules/(?!earcut|@types/earcut)'],
+    transformIgnorePatterns: ['/node_modules/(?!earcut|@types/earcut|tess2)'],
     moduleNameMapper: {
         '^worker:(.*)$': '$1',
         '^~/(.*)$': '<rootDir>/src/$1',

@@ -58,6 +58,7 @@
     "gifuct-js": "^2.1.2",
     "ismobilejs": "^1.1.1",
     "parse-svg-path": "^0.1.2",
+    "tess2": "^1.0.0",
     "tiny-lru": "^11.4.7"
   },
   "devDependencies": {
