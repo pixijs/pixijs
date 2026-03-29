@@ -2,6 +2,7 @@
 export * from './defaults';
 export * from './Gl2d';
 export * from './mixins/Gl2dSerializeMixin';
+export * from './mixins/serializeBufferImageSourceMixin';
 export * from './mixins/serializeContainerMixin';
 export * from './mixins/serializeImageSourceMixin';
 export * from './mixins/serializeNineSliceSpriteMixin';

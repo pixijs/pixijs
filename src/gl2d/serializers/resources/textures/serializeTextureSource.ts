@@ -37,8 +37,10 @@ function extractDataUri(source: TextureSource): string | undefined
         return (resource as any).toDataURL();
     }
 
-    // TODO: it could be a imagebitmap, a buffer, a htmlimageelement, a video etc
-    // however, we need the renderer to extract the data uri from these resources
+    if (ArrayBuffer.isView(resource) || resource instanceof ArrayBuffer)
+    {
+        return 'buffer://raw';
+    }
 
     return undefined;
 }

@@ -39,6 +39,7 @@ Third-party resource types are allowed via vendor-prefixed type names (e.g., `"t
 - [Texture Source](#texture-source)
     - [Image Source](#image-source)
     - [Video Source](#video-source)
+    - [Buffer Image Source](#buffer-image-source)
 - [Spritesheet](#spritesheet)
 - [Graphics Context](#graphics-context)
 - [Text Style](#text-style)
@@ -382,6 +383,23 @@ Extends TextureSource. Represents a 2D video.
 | playsinline | boolean | Whether video plays inline | true    | No       |
 | preload     | boolean | Whether to fully preload video | false | No       |
 | fps         | "auto" \| number | Frame rate cap ("auto" = every render) | "auto" | No |
+
+### Buffer Image Source
+
+Extends TextureSource. Represents raw pixel data from a TypedArray or ArrayBuffer. The `uri` field contains the raw pixel data as a flat number array rather than a path or data URI. The `format` field indicates the GPU texture format and implicitly determines the expected TypedArray type (e.g., `rgba32float` for `Float32Array`, `bgra8unorm` for `Uint8Array`).
+
+```json
+{
+    "type": "buffer_image_source",
+    "uid": "noiseBuffer",
+    "width": 4,
+    "height": 1,
+    "format": "bgra8unorm",
+    "uri": [255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 255, 255, 255, 255]
+}
+```
+
+The `uri` field is a flat number array containing the pixel data. No additional properties beyond the base [Texture Source](#texture-source) fields.
 
 ---
 

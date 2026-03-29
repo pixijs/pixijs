@@ -710,6 +710,7 @@
                 { "$ref": "#/$defs/textureResource" },
                 { "$ref": "#/$defs/imageSourceResource" },
                 { "$ref": "#/$defs/videoSourceResource" },
+                { "$ref": "#/$defs/bufferImageSourceResource" },
                 { "$ref": "#/$defs/spritesheetResource" },
                 { "$ref": "#/$defs/graphicsContextResource" },
                 { "$ref": "#/$defs/textStyleResource" },
@@ -910,6 +911,35 @@
                     ],
                     "default": "auto"
                 }
+            },
+            "additionalProperties": false
+        },
+        "bufferImageSourceResource": {
+            "description": "A raw pixel buffer texture source. Extends TextureSource base properties. The uri field contains the raw pixel data as a number array.",
+            "allOf": [{ "$ref": "#/$defs/textureSourceBaseProperties" }],
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+                "type": {
+                    "description": "Resource type discriminator",
+                    "const": "buffer_image_source"
+                },
+                "uid": true,
+                "name": true,
+                "uri": {
+                    "description": "Raw pixel data as a flat number array",
+                    "type": "array",
+                    "items": { "type": "number" }
+                },
+                "width": true,
+                "height": true,
+                "resolution": true,
+                "format": true,
+                "antialias": true,
+                "alphaMode": true,
+                "addressMode": true,
+                "scaleMode": true,
+                "extensions": true
             },
             "additionalProperties": false
         },
@@ -1572,6 +1602,7 @@
                             "texture",
                             "image_source",
                             "video_source",
+                            "buffer_image_source",
                             "spritesheet",
                             "graphics_context",
                             "text_style",

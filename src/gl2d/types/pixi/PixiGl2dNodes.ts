@@ -18,40 +18,40 @@ import { type Gl2dPixiBlendMode } from './PixiGl2dTypes';
 
 export interface Gl2dPixiContainerNodeExtension
 {
-    origin?: Gl2dPoint2d;
-    skew?: Gl2dPoint2d;
-    pivot?: Gl2dPoint2d;
-    anchor?: Gl2dPoint2d;
-    width?: number;
-    height?: number;
-    tint?: string;
-    blendMode?: Gl2dPixiBlendMode;
-    roundPixels?: boolean;
-    zIndex?: number;
-    isRenderGroup?: boolean;
-    renderable?: boolean;
-    boundsArea?: Gl2dRectangle;
-    sortableChildren?: boolean;
-    eventMode?: 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
-    interactiveChildren?: boolean;
-    cursor?: string;
-    accessible?: boolean;
-    accessibleChildren?: boolean;
-    accessibleHint?: string;
-    accessiblePointerEvents?: string;
-    accessibleText?: string;
-    accessibleTitle?: string;
-    accessibleType?: string;
-    tabIndex?: number;
-    cullArea?: Gl2dRectangle;
-    cullableChildren?: boolean;
-    cullable?: boolean;
+    origin: Gl2dPoint2d;
+    skew: Gl2dPoint2d;
+    pivot: Gl2dPoint2d;
+    anchor: Gl2dPoint2d;
+    width: number;
+    height: number;
+    tint: string;
+    blendMode: Gl2dPixiBlendMode;
+    roundPixels: boolean;
+    zIndex: number;
+    isRenderGroup: boolean;
+    renderable: boolean;
+    boundsArea: Gl2dRectangle;
+    sortableChildren: boolean;
+    eventMode: 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
+    interactiveChildren: boolean;
+    cursor: string;
+    accessible: boolean;
+    accessibleChildren: boolean;
+    accessibleHint: string;
+    accessiblePointerEvents: string;
+    accessibleText: string;
+    accessibleTitle: string;
+    accessibleType: string;
+    tabIndex: number;
+    cullArea: Gl2dRectangle;
+    cullableChildren: boolean;
+    cullable: boolean;
 }
 
 export interface Gl2dPixiTilingSpriteNodeExtension
 {
-    applyAnchorToTexture?: boolean;
-    clampMargin?: number;
+    applyAnchorToTexture: boolean;
+    clampMargin: number;
 }
 
 declare module '../Gl2DExtensions'

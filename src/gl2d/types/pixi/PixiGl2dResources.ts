@@ -4,6 +4,7 @@
 import { type TextureStyle } from '../../../rendering/renderers/shared/texture/TextureStyle';
 import { type ReplaceExtensions } from '../Gl2DExtensions';
 import {
+    type Gl2dBufferImageSourceResource,
     type Gl2dGenericTextureSourceResource,
     type Gl2dImageSourceResource,
     type Gl2dResourceExtensionName,
@@ -115,6 +116,11 @@ export type Gl2dPixiVideoSourceResource = ReplaceResourceExtensions<
     Gl2dPixiTextureSourceExtensionKeys
 >;
 
+export type Gl2dPixiBufferImageSourceResource = ReplaceResourceExtensions<
+    Gl2dBufferImageSourceResource,
+    Gl2dPixiTextureSourceExtensionKeys
+>;
+
 export type Gl2dPixiSpritesheetResource = ReplaceResourceExtensions<
     Gl2dSpritesheetResource,
     Gl2dPixiSpritesheetExtensionKeys
@@ -125,6 +131,7 @@ export type Gl2dPixiResource =
     | Gl2dPixiGenericTextureSourceResource
     | Gl2dPixiImageSourceResource
     | Gl2dPixiVideoSourceResource
+    | Gl2dPixiBufferImageSourceResource
     | Gl2dPixiSpritesheetResource;
 
 export type Gl2dPixiResourceType = Gl2dPixiResource['type'];

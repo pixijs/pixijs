@@ -28,7 +28,7 @@ export interface Gl2dResourceBase<
     extensions?: Gl2dResourceExtensions<TExtensions>;
 }
 
-export type Gl2dTextureSourceResourceType = 'texture_source' | 'image_source' | 'video_source';
+export type Gl2dTextureSourceResourceType = 'texture_source' | 'image_source' | 'video_source' | 'buffer_image_source';
 
 export interface Gl2dTextureSourceResource<
     TType extends string = Gl2dTextureSourceResourceType,
@@ -74,6 +74,13 @@ export interface Gl2dVideoSourceResource
     fps: 'auto' | number;
 }
 
+export interface Gl2dBufferImageSourceResource
+    extends Omit<Gl2dTextureSourceResource<'buffer_image_source'>, 'uri'>
+{
+    uid: `buffer_image_source_${string}`;
+    uri: number[];
+}
+
 export type Gl2dTextureSourceResourceRef = Gl2dRef;
 
 type Gl2dTextureResourceBase = Gl2dResourceBase<'texture'> & {
@@ -108,6 +115,7 @@ export interface Gl2dResourceRegistry
     texture_source: Gl2dGenericTextureSourceResource;
     image_source: Gl2dImageSourceResource;
     video_source: Gl2dVideoSourceResource;
+    buffer_image_source: Gl2dBufferImageSourceResource;
     spritesheet: Gl2dSpritesheetResource;
 }
 

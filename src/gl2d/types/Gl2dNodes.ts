@@ -66,8 +66,8 @@ export type Gl2dTilingSpriteNode<
 > = Gl2dNodeWithExclusiveTransform<
     Gl2dBaseNode<'tiling_sprite', TExtensions> & {
         texture: Gl2dRef;
-        width?: number;
-        height?: number;
+        width: number;
+        height: number;
         tileScale?: Gl2dPoint2d;
         tilePosition?: Gl2dPoint2d;
         tileRotation?: number;
@@ -79,8 +79,8 @@ export type Gl2dNineSliceSpriteNode<
 > = Gl2dNodeWithExclusiveTransform<
     Gl2dBaseNode<'nine_slice_sprite', TExtensions> & {
         texture: Gl2dRef;
-        width?: number;
-        height?: number;
+        width: number;
+        height: number;
         leftWidth?: number;
         topHeight?: number;
         rightWidth?: number;
