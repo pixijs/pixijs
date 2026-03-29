@@ -72,7 +72,7 @@ function serializeTextureSourceExtensions<TType extends string>(
         lodMaxClamp: gl2dUtils.checkValue(source.style?.lodMaxClamp, PIXI_TEXTURE_SOURCE_DEFAULTS.lodMaxClamp),
     };
 
-    const ext = gl2dUtils.removeUndefinedOrNull(input, 1);
+    const ext = gl2dUtils.compact(input);
 
     if (Object.keys(ext).length > 0)
     {

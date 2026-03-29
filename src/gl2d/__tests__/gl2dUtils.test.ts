@@ -4,12 +4,12 @@ import { ObservablePoint } from '~/maths/point/ObservablePoint';
 
 describe('gl2dUtils', () =>
 {
-    describe('removeUndefinedOrNull', () =>
+    describe('compact', () =>
     {
         it('should remove undefined keys from objects', () =>
         {
             const obj: Record<string, unknown> = { a: 1, b: undefined, c: 3 };
-            const result = gl2dUtils.removeUndefinedOrNull(obj);
+            const result = gl2dUtils.compact(obj);
 
             expect(result).toEqual({ a: 1, c: 3 });
             expect('b' in result).toBe(false);
@@ -18,7 +18,7 @@ describe('gl2dUtils', () =>
         it('should remove null keys from objects', () =>
         {
             const obj: Record<string, unknown> = { a: 1, b: null, c: 3 };
-            const result = gl2dUtils.removeUndefinedOrNull(obj);
+            const result = gl2dUtils.compact(obj);
 
             expect(result).toEqual({ a: 1, c: 3 });
             expect('b' in result).toBe(false);
@@ -27,7 +27,7 @@ describe('gl2dUtils', () =>
         it('should remove undefined and null items from arrays', () =>
         {
             const arr = [1, undefined, 3, null, 5];
-            const result = gl2dUtils.removeUndefinedOrNull(arr);
+            const result = gl2dUtils.compact(arr);
 
             expect(result).toEqual([1, 3, 5]);
         });
@@ -35,7 +35,7 @@ describe('gl2dUtils', () =>
         it('should return value as-is when depth is 0', () =>
         {
             const obj: Record<string, unknown> = { a: 1, b: undefined, c: null };
-            const result = gl2dUtils.removeUndefinedOrNull(obj, 0);
+            const result = gl2dUtils.compact(obj, 0);
 
             expect(result).toEqual({ a: 1, b: undefined, c: null });
         });
@@ -43,16 +43,16 @@ describe('gl2dUtils', () =>
         it('should handle nested objects recursively', () =>
         {
             const obj: Record<string, unknown> = { a: { b: undefined, c: 1 }, d: null };
-            const result = gl2dUtils.removeUndefinedOrNull(obj);
+            const result = gl2dUtils.compact(obj, Infinity);
 
             expect(result).toEqual({ a: { c: 1 } });
         });
 
         it('should return primitives as-is', () =>
         {
-            expect(gl2dUtils.removeUndefinedOrNull(42)).toBe(42);
-            expect(gl2dUtils.removeUndefinedOrNull('hello')).toBe('hello');
-            expect(gl2dUtils.removeUndefinedOrNull(true)).toBe(true);
+            expect(gl2dUtils.compact(42)).toBe(42);
+            expect(gl2dUtils.compact('hello')).toBe('hello');
+            expect(gl2dUtils.compact(true)).toBe(true);
         });
     });
 

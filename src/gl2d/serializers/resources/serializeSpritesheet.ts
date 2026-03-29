@@ -22,7 +22,7 @@ function buildSpritesheetResource(
         cachePrefix: gl2dUtils.checkValue(spritesheet.cachePrefix, ''),
     };
 
-    const ext = gl2dUtils.removeUndefinedOrNull(extInput, 1);
+    const ext = gl2dUtils.compact(extInput);
 
     if (Object.keys(ext).length > 0)
     {

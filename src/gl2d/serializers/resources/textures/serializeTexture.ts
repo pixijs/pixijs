@@ -29,7 +29,7 @@ function serializeTextureExtensions(
         dynamic: gl2dUtils.checkValue(texture.dynamic, PIXI_TEXTURE_DEFAULTS.dynamic),
     };
 
-    const ext = gl2dUtils.removeUndefinedOrNull(input, 1);
+    const ext = gl2dUtils.compact(input);
 
     if (Object.keys(ext).length > 0)
     {

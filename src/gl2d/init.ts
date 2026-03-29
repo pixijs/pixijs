@@ -5,6 +5,7 @@ import { VideoSource } from '../rendering/renderers/shared/texture/sources/Video
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { Container } from '../scene/container/Container';
 import { Sprite } from '../scene/sprite/Sprite';
+import { TilingSprite } from '../scene/sprite-tiling/TilingSprite';
 import { Spritesheet } from '../spritesheet/Spritesheet';
 import { serializeContainerMixin } from './mixins/serializeContainerMixin';
 import { serializeImageSourceMixin } from './mixins/serializeImageSourceMixin';
@@ -12,12 +13,14 @@ import { serializeSpriteMixin } from './mixins/serializeSpriteMixin';
 import { serializeSpritesheetMixin } from './mixins/serializeSpritesheetMixin';
 import { serializeTextureMixin } from './mixins/serializeTextureMixin';
 import { serializeTextureSourceMixin } from './mixins/serializeTextureSourceMixin';
+import { serializeTilingSpriteMixin } from './mixins/serializeTilingSpriteMixin';
 import { serializeVideoSourceMixin } from './mixins/serializeVideoSourceMixin';
 
 export * from './index';
 
 extensions.mixin(Container, serializeContainerMixin);
 extensions.mixin(Sprite, serializeSpriteMixin);
+extensions.mixin(TilingSprite, serializeTilingSpriteMixin);
 extensions.mixin(Texture, serializeTextureMixin);
 extensions.mixin(TextureSource, serializeTextureSourceMixin);
 extensions.mixin(ImageSource, serializeImageSourceMixin);

@@ -7,7 +7,7 @@ import {
     type Gl2dNodeExtensions,
     type ReplaceExtensions,
 } from '../Gl2DExtensions';
-import { type Gl2dContainerNode, type Gl2dSpriteNode } from '../Gl2dNodes';
+import { type Gl2dContainerNode, type Gl2dSpriteNode, type Gl2dTilingSpriteNode } from '../Gl2dNodes';
 import { type Gl2dPoint2d, type Gl2dRectangle } from '../Gl2dTypes';
 import { type Gl2dPixiBlendMode } from './PixiGl2dTypes';
 
@@ -43,16 +43,23 @@ export interface Gl2dPixiContainerNodeExtension
     cullable?: boolean;
 }
 
+export interface Gl2dPixiTilingSpriteNodeExtension
+{
+    applyAnchorToTexture?: boolean;
+    clampMargin?: number;
+}
+
 declare module '../Gl2DExtensions'
 {
     interface Gl2dNodeExtensionRegistry
     {
         pixi_container_node: Gl2dPixiContainerNodeExtension;
+        pixi_tiling_sprite_node: Gl2dPixiTilingSpriteNodeExtension;
     }
 }
 
 type Gl2dPixiNodeExtensionKeys = Extract<
-    'gl2d_filters' | 'pixi_container_node',
+    'gl2d_filters' | 'pixi_container_node' | 'pixi_tiling_sprite_node',
     Gl2dNodeExtensionName
 >;
 
@@ -78,4 +85,9 @@ export type Gl2dPixiSpriteNode = ReplaceNodeExtensions<
     Gl2dPixiNodeExtensionKeys
 >;
 
-export type Gl2dPixiNode = Gl2dPixiContainerNode | Gl2dPixiSpriteNode;
+export type Gl2dPixiTilingSpriteNode = ReplaceNodeExtensions<
+    Gl2dTilingSpriteNode<Gl2dPixiNodeExtensionKeys>,
+    Gl2dPixiNodeExtensionKeys
+>;
+
+export type Gl2dPixiNode = Gl2dPixiContainerNode | Gl2dPixiSpriteNode | Gl2dPixiTilingSpriteNode;

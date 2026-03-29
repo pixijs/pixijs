@@ -1,6 +1,7 @@
 import { type Gl2dBaseNode } from './types/Gl2dNodes';
 import { type Gl2dImageSourceResource, type Gl2dVideoSourceResource } from './types/Gl2DResources';
-import { type Gl2dPixiContainerNode } from './types/pixi/PixiGl2dNodes';
+import { type Gl2dPoint2d } from './types/Gl2dTypes';
+import { type Gl2dPixiContainerNode, type Gl2dPixiTilingSpriteNodeExtension } from './types/pixi/PixiGl2dNodes';
 import { type Gl2dPixiTextureResource, type Gl2dPixiTextureSourceResource } from './types/pixi/PixiGl2dResources';
 
 /**
@@ -154,4 +155,31 @@ export const IMAGE_SOURCE_DEFAULTS: Omit<
     addressMode: 'clamp' as const,
     width: 1,
     height: 1,
+};
+
+/**
+ * Default values for tiling_sprite core node properties.
+ * Properties omitted from output when they match these values.
+ * @category gl2d
+ * @internal
+ */
+export const TILING_SPRITE_NODE_DEFAULTS: {
+    tileScale: Gl2dPoint2d;
+    tilePosition: Gl2dPoint2d;
+    tileRotation: number;
+} = {
+    tileScale: [1, 1],
+    tilePosition: [0, 0],
+    tileRotation: 0,
+};
+
+/**
+ * Default values for the pixi_tiling_sprite_node extension.
+ * Properties omitted from output when they match these values.
+ * @category gl2d
+ * @internal
+ */
+export const PIXI_TILING_SPRITE_NODE_DEFAULTS: Required<Gl2dPixiTilingSpriteNodeExtension> = {
+    applyAnchorToTexture: false,
+    clampMargin: 0.5,
 };

@@ -61,10 +61,24 @@ export type Gl2dSpriteNode<
     }
 >;
 
+export type Gl2dTilingSpriteNode<
+    TExtensions extends Gl2dNodeExtensionName = 'gl2d_filters',
+> = Gl2dNodeWithExclusiveTransform<
+    Gl2dBaseNode<'tiling_sprite', TExtensions> & {
+        texture: Gl2dRef;
+        width?: number;
+        height?: number;
+        tileScale?: Gl2dPoint2d;
+        tilePosition?: Gl2dPoint2d;
+        tileRotation?: number;
+    }
+>;
+
 export interface Gl2dNodeRegistry
 {
     container: Gl2dContainerNode;
     sprite: Gl2dSpriteNode;
+    tiling_sprite: Gl2dTilingSpriteNode;
 }
 
 export type Gl2dNodeKind = Extract<keyof Gl2dNodeRegistry, string>;

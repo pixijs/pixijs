@@ -8,6 +8,7 @@ export * from './mixins/serializeSpriteMixin';
 export * from './mixins/serializeSpritesheetMixin';
 export * from './mixins/serializeTextureMixin';
 export * from './mixins/serializeTextureSourceMixin';
+export * from './mixins/serializeTilingSpriteMixin';
 export * from './mixins/serializeVideoSourceMixin';
 export * from './serializeContext';
 export * from './serializers/nodes/serializeAnimatedSprite';
