@@ -40,6 +40,7 @@ Third-party resource types are allowed via vendor-prefixed type names (e.g., `"t
     - [Image Source](#image-source)
     - [Video Source](#video-source)
     - [Buffer Image Source](#buffer-image-source)
+    - [Compressed Source](#compressed-source)
 - [Spritesheet](#spritesheet)
 - [Graphics Context](#graphics-context)
 - [Text Style](#text-style)
@@ -400,6 +401,19 @@ Extends TextureSource. Represents raw pixel data from a TypedArray or ArrayBuffe
 ```
 
 The `uri` field is a flat number array containing the pixel data. No additional properties beyond the base [Texture Source](#texture-source) fields.
+
+### Compressed Source
+
+Extends TextureSource. Represents a GPU-compressed texture loaded from a file (KTX2, DDS, Basis, etc.). The `uri` points to the compressed texture file. No additional properties beyond the base [Texture Source](#texture-source) fields.
+
+```json
+{
+    "type": "compressed_source",
+    "uid": "compressedBg",
+    "uri": "/textures/background.ktx2",
+    "format": "bc3-rgba-unorm"
+}
+```
 
 ---
 

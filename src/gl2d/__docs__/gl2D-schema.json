@@ -705,12 +705,13 @@
             "additionalProperties": true
         },
         "resource": {
-            "description": "A reusable asset: texture, image source, video source, spritesheet, graphics context, text style, web font, bitmap font, canvas gradient, canvas pattern, or filter. Custom resource types are allowed via vendor-prefixed type names.",
+            "description": "A reusable asset: texture, image source, video source, compressed source, spritesheet, graphics context, text style, web font, bitmap font, canvas gradient, canvas pattern, or filter. Custom resource types are allowed via vendor-prefixed type names.",
             "oneOf": [
                 { "$ref": "#/$defs/textureResource" },
                 { "$ref": "#/$defs/imageSourceResource" },
                 { "$ref": "#/$defs/videoSourceResource" },
                 { "$ref": "#/$defs/bufferImageSourceResource" },
+                { "$ref": "#/$defs/compressedSourceResource" },
                 { "$ref": "#/$defs/spritesheetResource" },
                 { "$ref": "#/$defs/graphicsContextResource" },
                 { "$ref": "#/$defs/textStyleResource" },
@@ -931,6 +932,31 @@
                     "type": "array",
                     "items": { "type": "number" }
                 },
+                "width": true,
+                "height": true,
+                "resolution": true,
+                "format": true,
+                "antialias": true,
+                "alphaMode": true,
+                "addressMode": true,
+                "scaleMode": true,
+                "extensions": true
+            },
+            "additionalProperties": false
+        },
+        "compressedSourceResource": {
+            "description": "A GPU-compressed texture source (KTX2, DDS, Basis, etc.). Extends TextureSource base properties. The uri points to the compressed texture file.",
+            "allOf": [{ "$ref": "#/$defs/textureSourceBaseProperties" }],
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+                "type": {
+                    "description": "Resource type discriminator",
+                    "const": "compressed_source"
+                },
+                "uid": true,
+                "name": true,
+                "uri": true,
                 "width": true,
                 "height": true,
                 "resolution": true,
@@ -1603,6 +1629,7 @@
                             "image_source",
                             "video_source",
                             "buffer_image_source",
+                            "compressed_source",
                             "spritesheet",
                             "graphics_context",
                             "text_style",
