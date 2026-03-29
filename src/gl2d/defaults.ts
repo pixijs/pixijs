@@ -183,3 +183,21 @@ export const PIXI_TILING_SPRITE_NODE_DEFAULTS: Required<Gl2dPixiTilingSpriteNode
     applyAnchorToTexture: false,
     clampMargin: 0.5,
 };
+
+/**
+ * Default values for nine_slice_sprite core node properties.
+ * Properties omitted from output when they match these values.
+ * @category gl2d
+ * @internal
+ */
+export const NINE_SLICE_SPRITE_NODE_DEFAULTS: {
+    leftWidth: number;
+    topHeight: number;
+    rightWidth: number;
+    bottomHeight: number;
+} = {
+    leftWidth: 10,
+    topHeight: 10,
+    rightWidth: 10,
+    bottomHeight: 10,
+};

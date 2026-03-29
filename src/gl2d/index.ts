@@ -4,6 +4,7 @@ export * from './Gl2d';
 export * from './mixins/Gl2dSerializeMixin';
 export * from './mixins/serializeContainerMixin';
 export * from './mixins/serializeImageSourceMixin';
+export * from './mixins/serializeNineSliceSpriteMixin';
 export * from './mixins/serializeSpriteMixin';
 export * from './mixins/serializeSpritesheetMixin';
 export * from './mixins/serializeTextureMixin';

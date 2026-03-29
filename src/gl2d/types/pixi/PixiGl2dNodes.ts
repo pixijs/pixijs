@@ -7,7 +7,12 @@ import {
     type Gl2dNodeExtensions,
     type ReplaceExtensions,
 } from '../Gl2DExtensions';
-import { type Gl2dContainerNode, type Gl2dSpriteNode, type Gl2dTilingSpriteNode } from '../Gl2dNodes';
+import {
+    type Gl2dContainerNode,
+    type Gl2dNineSliceSpriteNode,
+    type Gl2dSpriteNode,
+    type Gl2dTilingSpriteNode,
+} from '../Gl2dNodes';
 import { type Gl2dPoint2d, type Gl2dRectangle } from '../Gl2dTypes';
 import { type Gl2dPixiBlendMode } from './PixiGl2dTypes';
 
@@ -90,4 +95,13 @@ export type Gl2dPixiTilingSpriteNode = ReplaceNodeExtensions<
     Gl2dPixiNodeExtensionKeys
 >;
 
-export type Gl2dPixiNode = Gl2dPixiContainerNode | Gl2dPixiSpriteNode | Gl2dPixiTilingSpriteNode;
+export type Gl2dPixiNineSliceSpriteNode = ReplaceNodeExtensions<
+    Gl2dNineSliceSpriteNode<Gl2dPixiNodeExtensionKeys>,
+    Gl2dPixiNodeExtensionKeys
+>;
+
+export type Gl2dPixiNode =
+    | Gl2dPixiContainerNode
+    | Gl2dPixiSpriteNode
+    | Gl2dPixiTilingSpriteNode
+    | Gl2dPixiNineSliceSpriteNode;
