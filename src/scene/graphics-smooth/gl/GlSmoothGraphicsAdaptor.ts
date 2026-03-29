@@ -3,14 +3,11 @@ import { Matrix } from '../../../maths/matrix/Matrix';
 import { getBatchSamplersUniformGroup } from '../../../rendering/renderers/gl/shader/getBatchSamplersUniformGroup';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
-import { executeGlBatches } from '../../graphics/shared/utils/executeGlBatches';
+import { AbstractGlGraphicsAdaptor } from '../../graphics/gl/AbstractGlGraphicsAdaptor';
 import { SmoothShader } from '../shared/batcher/SmoothShader';
 
-import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRenderer';
 import type { Renderer } from '../../../rendering/renderers/types';
-import type { GraphicsAdaptor, GraphicsPipeLike } from '../../graphics/shared/GraphicsAdaptorTypes';
-import type { SmoothGraphics } from '../shared/SmoothGraphics';
-import type { SmoothGraphicsContextSystem } from '../shared/SmoothGraphicsContextSystem';
+
 /**
  * WebGL adaptor for non-batchable smooth graphics rendering.
  * Creates a shader with local uniforms (uTransformMatrix, uColor, uRound)
@@ -18,7 +15,7 @@ import type { SmoothGraphicsContextSystem } from '../shared/SmoothGraphicsContex
  * @category rendering
  * @internal
  */
-export class GlSmoothGraphicsAdaptor implements GraphicsAdaptor
+export class GlSmoothGraphicsAdaptor extends AbstractGlGraphicsAdaptor
 {
     /** @ignore */
     public static extension = {
@@ -28,7 +25,10 @@ export class GlSmoothGraphicsAdaptor implements GraphicsAdaptor
         name: 'smoothGraphics',
     } as const;
 
-    public shader: Shader;
+    constructor()
+    {
+        super('smoothGraphicsContext');
+    }
 
     public contextChange(renderer: Renderer): void
     {
@@ -49,25 +49,5 @@ export class GlSmoothGraphicsAdaptor implements GraphicsAdaptor
                 batchSamplers: getBatchSamplersUniformGroup(maxTextures),
             }
         });
-    }
-
-    public execute(graphicsPipe: GraphicsPipeLike, renderable: SmoothGraphics): void
-    {
-        const context = renderable.context;
-        const shader = context.customShader || this.shader;
-        const renderer = graphicsPipe.renderer as WebGLRenderer;
-        const contextSystem = renderer.smoothGraphicsContext as SmoothGraphicsContextSystem;
-
-        const {
-            batcher, instructions,
-        } = contextSystem.getContextRenderData(context);
-
-        executeGlBatches(renderer, shader, batcher, instructions, graphicsPipe.state);
-    }
-
-    public destroy(): void
-    {
-        this.shader.destroy(true);
-        this.shader = null;
     }
 }

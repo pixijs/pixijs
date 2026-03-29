@@ -5,6 +5,7 @@ import { type RoundedRectangle } from '../../../../maths/shapes/RoundedRectangle
 import { transformVertices } from '../../../../rendering/renderers/shared/geometry/utils/transformVertices';
 import { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
 import { BigPool } from '../../../../utils/pool/PoolGroup';
+import { closePointEps } from '../../../graphics/shared/const';
 import { shapeBuilders } from '../../../graphics/shared/utils/buildContextBatches';
 import { BatchableSmoothGraphics } from '../BatchableSmoothGraphics';
 import { SmoothBuildData } from '../SmoothBuildData';
@@ -156,7 +157,7 @@ export function buildSmoothContextData(
                     const closed = (shape as Polygon).closePath ?? true;
 
                     // Deduplicate and clean points for line building
-                    const eps = buildData.closePointEps;
+                    const eps = closePointEps;
                     const cleanPoints: number[] = [points[0], points[1]];
 
                     for (let k = 2; k < points.length; k += 2)

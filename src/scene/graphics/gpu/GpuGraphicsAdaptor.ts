@@ -7,20 +7,16 @@ import { localUniformBitGroup2 } from '../../../rendering/high-shader/shader-bit
 import { roundPixelsBit } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
-import { executeGpuBatches } from '../shared/utils/executeGpuBatches';
+import { AbstractGpuGraphicsAdaptor } from './AbstractGpuGraphicsAdaptor';
 
-import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURenderer';
 import type { Renderer } from '../../../rendering/renderers/types';
-import type { Graphics } from '../shared/Graphics';
-import type { GraphicsContextSystem } from '../shared/GraphicsContextSystem';
-import type { GraphicsAdaptor, GraphicsPipeLike } from '../shared/GraphicsPipe';
 
 /**
  * A GraphicsAdaptor that uses the GPU to render graphics.
  * @category rendering
  * @ignore
  */
-export class GpuGraphicsAdaptor implements GraphicsAdaptor
+export class GpuGraphicsAdaptor extends AbstractGpuGraphicsAdaptor
 {
     /** @ignore */
     public static extension = {
@@ -30,9 +26,10 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
         name: 'graphics',
     } as const;
 
-    public shader: Shader;
-
-    private _maxTextures = 0;
+    constructor()
+    {
+        super('graphicsContext');
+    }
 
     public contextChange(renderer: Renderer): void
     {
@@ -61,25 +58,5 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
                 localUniforms,
             },
         });
-    }
-
-    public execute(graphicsPipe: GraphicsPipeLike, renderable: Graphics): void
-    {
-        const context = renderable.context;
-        const shader = context.customShader || this.shader;
-        const renderer = graphicsPipe.renderer as WebGPURenderer;
-        const contextSystem = renderer.graphicsContext as GraphicsContextSystem;
-
-        const {
-            batcher, instructions
-        } = contextSystem.getContextRenderData(context);
-
-        executeGpuBatches(renderer, shader, batcher, instructions, graphicsPipe.state, this._maxTextures);
-    }
-
-    public destroy(): void
-    {
-        this.shader.destroy(true);
-        this.shader = null;
     }
 }

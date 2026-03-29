@@ -8,20 +8,16 @@ import { roundPixelsBitGl } from '../../../rendering/high-shader/shader-bits/rou
 import { getBatchSamplersUniformGroup } from '../../../rendering/renderers/gl/shader/getBatchSamplersUniformGroup';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
-import { executeGlBatches } from '../shared/utils/executeGlBatches';
+import { AbstractGlGraphicsAdaptor } from './AbstractGlGraphicsAdaptor';
 
-import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRenderer';
 import type { Renderer } from '../../../rendering/renderers/types';
-import type { Graphics } from '../shared/Graphics';
-import type { GraphicsContextSystem } from '../shared/GraphicsContextSystem';
-import type { GraphicsAdaptor, GraphicsPipeLike } from '../shared/GraphicsPipe';
 
 /**
  * A GraphicsAdaptor that uses WebGL to render graphics.
  * @category rendering
  * @ignore
  */
-export class GlGraphicsAdaptor implements GraphicsAdaptor
+export class GlGraphicsAdaptor extends AbstractGlGraphicsAdaptor
 {
     /** @ignore */
     public static extension = {
@@ -31,7 +27,10 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         name: 'graphics',
     } as const;
 
-    public shader: Shader;
+    constructor()
+    {
+        super('graphicsContext');
+    }
 
     public contextChange(renderer: Renderer): void
     {
@@ -60,25 +59,5 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
                 batchSamplers: getBatchSamplersUniformGroup(maxTextures),
             }
         });
-    }
-
-    public execute(graphicsPipe: GraphicsPipeLike, renderable: Graphics): void
-    {
-        const context = renderable.context;
-        const shader = context.customShader || this.shader;
-        const renderer = graphicsPipe.renderer as WebGLRenderer;
-        const contextSystem = renderer.graphicsContext as GraphicsContextSystem;
-
-        const {
-            batcher, instructions,
-        } = contextSystem.getContextRenderData(context);
-
-        executeGlBatches(renderer, shader, batcher, instructions, graphicsPipe.state);
-    }
-
-    public destroy(): void
-    {
-        this.shader.destroy(true);
-        this.shader = null;
     }
 }

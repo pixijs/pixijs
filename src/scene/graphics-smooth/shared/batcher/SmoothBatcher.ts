@@ -82,12 +82,10 @@ export class SmoothBatcher extends Batcher
             : Math.sqrt(Math.abs((a * d) - (b * c)));
         const effectiveLineWidth = smoothElement.lineWidth * elementScale;
 
-        const avgScale = elementScale;
-
         // Pack alignment + pixelLine into a single float:
         // integer part = 0 (pixelLine/no-scale) or 1 (normal scale)
-        // fractional part = alignment (0-1)
-        const stylePacked = (smoothElement.pixelLine ? 0 : 1) + smoothElement.alignment;
+        // fractional part = alignment (0 to <1)
+        const stylePacked = (smoothElement.pixelLine ? 0 : 1) + Math.min(smoothElement.alignment, 0.999);
 
         const argb = smoothElement.color;
         const textureIdAndRound = (textureId << 16) | (smoothElement.roundPixels & 0xFFFF);
@@ -96,40 +94,33 @@ export class SmoothBatcher extends Batcher
         {
             const srcBase = (offset + i) * GEOM_STRIDE;
 
-            // Transform prev (2 floats)
             const prevX = srcFloats[srcBase];
             const prevY = srcFloats[srcBase + 1];
 
             float32View[index] = (a * prevX) + (c * prevY) + tx;
             float32View[index + 1] = (b * prevX) + (d * prevY) + ty;
 
-            // Transform point1 (2 floats)
             const p1x = srcFloats[srcBase + 2];
             const p1y = srcFloats[srcBase + 3];
 
             float32View[index + 2] = (a * p1x) + (c * p1y) + tx;
             float32View[index + 3] = (b * p1x) + (d * p1y) + ty;
 
-            // Transform point2 (2 floats)
             const p2x = srcFloats[srcBase + 4];
             const p2y = srcFloats[srcBase + 5];
 
             float32View[index + 4] = (a * p2x) + (c * p2y) + tx;
             float32View[index + 5] = (b * p2x) + (d * p2y) + ty;
 
-            // Transform next (2 floats)
             const nextX = srcFloats[srcBase + 6];
             const nextY = srcFloats[srcBase + 7];
 
             float32View[index + 6] = (a * nextX) + (c * nextY) + tx;
             float32View[index + 7] = (b * nextX) + (d * nextY) + ty;
 
-            // Travel (scaled by avgScale)
-            float32View[index + 8] = srcFloats[srcBase + 8] * avgScale;
-            // VertexJoint (unchanged)
+            float32View[index + 8] = srcFloats[srcBase + 8] * elementScale;
             float32View[index + 9] = srcFloats[srcBase + 9];
 
-            // Per-vertex style data
             float32View[index + 10] = effectiveLineWidth;
             float32View[index + 11] = stylePacked;
             uint32View[index + 12] = argb;
@@ -166,6 +157,8 @@ export class SmoothBatcher extends Batcher
     public _updateMaxTextures(maxTextures: number): void
     {
         if (this.shader.maxTextures === maxTextures) return;
+        // Don't destroy the old shader; it's a module singleton that other SmoothBatcher
+        // instances may still reference. It will be GC'd when no references remain.
         smoothShader = new SmoothShader(maxTextures);
         this.shader = smoothShader as SmoothShader;
     }

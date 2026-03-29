@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import { BigPool } from '../../../utils/pool/PoolGroup';
+import { AbstractGraphicsContextRenderData } from '../../graphics/shared/AbstractGraphicsContextRenderData';
 import { AbstractGraphicsContextSystem } from '../../graphics/shared/AbstractGraphicsContextSystem';
 import { SmoothBatcher } from './batcher/SmoothBatcher';
 import { buildSmoothContextData } from './builders/buildSmoothContextData';
@@ -15,26 +15,16 @@ import type { GraphicsContext } from '../../graphics/shared/GraphicsContext';
  * @category rendering
  * @internal
  */
-export class SmoothGraphicsContextRenderData
+export class SmoothGraphicsContextRenderData extends AbstractGraphicsContextRenderData<SmoothBatcher>
 {
-    public batcher: SmoothBatcher;
-    public instructions = new InstructionSet();
-
-    public init(options: { maxTextures: number })
+    protected _createBatcher(maxTextures: number): SmoothBatcher
     {
-        const maxTextures = options.maxTextures;
-
-        this.batcher ? this.batcher._updateMaxTextures(maxTextures) : this.batcher = new SmoothBatcher({ maxTextures });
-        this.instructions.reset();
+        return new SmoothBatcher({ maxTextures });
     }
 
-    public destroy()
+    protected _updateBatcher(maxTextures: number): void
     {
-        this.batcher.destroy();
-        this.instructions.destroy();
-
-        this.batcher = null;
-        this.instructions = null;
+        this.batcher._updateMaxTextures(maxTextures);
     }
 }
 

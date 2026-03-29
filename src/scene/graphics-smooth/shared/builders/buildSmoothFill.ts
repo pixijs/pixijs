@@ -1,4 +1,6 @@
 import { earcut } from '../../../../utils/utils';
+import { closePointEps } from '../../../graphics/shared/const';
+import { getOrientationOfPoints } from '../../../graphics/shared/utils/getOrientationOfPoints';
 import { JOINT_TYPE } from '../const';
 
 import type { SmoothBuildData } from '../SmoothBuildData';
@@ -7,6 +9,7 @@ const tempPn: number[] = [];
 
 /**
  * Fix polygon winding orientation for earcut.
+ * Outer rings must be CCW, holes must be CW.
  * @param points - flat [x,y,...] array
  * @param hole - true if this is a hole (should be clockwise)
  */
@@ -14,25 +17,12 @@ function fixOrientation(points: number[], hole = false): void
 {
     const m = points.length;
 
-    if (m < 6)
-    {
-        return;
-    }
+    if (m < 6) return;
 
-    let area = 0;
+    const orientation = getOrientationOfPoints(points);
+    const needsReverse = (!hole && orientation === 1) || (hole && orientation === -1);
 
-    for (let i = 0, x1 = points[m - 2], y1 = points[m - 1]; i < m; i += 2)
-    {
-        const x2 = points[i];
-        const y2 = points[i + 1];
-
-        area += (x2 - x1) * (y2 + y1);
-
-        x1 = x2;
-        y1 = y2;
-    }
-
-    if ((!hole && area > 0) || (hole && area <= 0))
+    if (needsReverse)
     {
         const n = m / 2;
 
@@ -66,7 +56,7 @@ export function buildSmoothFill(
 ): number[]
 {
     const { verts, joints } = buildData;
-    const eps = buildData.closePointEps;
+    const eps = closePointEps;
 
     if (points.length < 6)
     {

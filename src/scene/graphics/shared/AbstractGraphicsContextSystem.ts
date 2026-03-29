@@ -64,6 +64,7 @@ export abstract class AbstractGraphicsContextSystem<
                 gpuContext.reset();
             }
 
+            gpuContext.context = context;
             this._buildContextData(context, gpuContext);
 
             const batchMode = context.batchMode;

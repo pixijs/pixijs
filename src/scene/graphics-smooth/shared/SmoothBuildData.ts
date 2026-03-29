@@ -1,5 +1,3 @@
-import { closePointEps } from '../../graphics/shared/const';
-
 /**
  * Intermediate build data for smooth graphics geometry generation.
  * Accumulates vertex positions and joint type information during shape building.
@@ -16,8 +14,6 @@ export class SmoothBuildData
     public vertexSize = 0;
     /** Total index count after segment packing */
     public indexSize = 0;
-    /** Epsilon for close-point deduplication */
-    public closePointEps = closePointEps;
 
     public clear(): void
     {

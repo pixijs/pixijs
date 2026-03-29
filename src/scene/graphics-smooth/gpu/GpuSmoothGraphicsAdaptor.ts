@@ -2,21 +2,17 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
-import { executeGpuBatches } from '../../graphics/shared/utils/executeGpuBatches';
+import { AbstractGpuGraphicsAdaptor } from '../../graphics/gpu/AbstractGpuGraphicsAdaptor';
 import { SmoothShader } from '../shared/batcher/SmoothShader';
 
-import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURenderer';
 import type { Renderer } from '../../../rendering/renderers/types';
-import type { GraphicsAdaptor, GraphicsPipeLike } from '../../graphics/shared/GraphicsAdaptorTypes';
-import type { SmoothGraphics } from '../shared/SmoothGraphics';
-import type { SmoothGraphicsContextSystem } from '../shared/SmoothGraphicsContextSystem';
 
 /**
  * WebGPU adaptor for non-batchable smooth graphics rendering.
  * @category rendering
  * @internal
  */
-export class GpuSmoothGraphicsAdaptor implements GraphicsAdaptor
+export class GpuSmoothGraphicsAdaptor extends AbstractGpuGraphicsAdaptor
 {
     /** @ignore */
     public static extension = {
@@ -26,9 +22,10 @@ export class GpuSmoothGraphicsAdaptor implements GraphicsAdaptor
         name: 'smoothGraphics',
     } as const;
 
-    public shader: Shader;
-
-    private _maxTextures = 0;
+    constructor()
+    {
+        super('smoothGraphicsContext');
+    }
 
     public contextChange(renderer: Renderer): void
     {
@@ -48,25 +45,5 @@ export class GpuSmoothGraphicsAdaptor implements GraphicsAdaptor
                 localUniforms,
             },
         });
-    }
-
-    public execute(graphicsPipe: GraphicsPipeLike, renderable: SmoothGraphics): void
-    {
-        const context = renderable.context;
-        const shader = context.customShader || this.shader;
-        const renderer = graphicsPipe.renderer as WebGPURenderer;
-        const contextSystem = renderer.smoothGraphicsContext as SmoothGraphicsContextSystem;
-
-        const {
-            batcher, instructions,
-        } = contextSystem.getContextRenderData(context);
-
-        executeGpuBatches(renderer, shader, batcher, instructions, graphicsPipe.state, this._maxTextures);
-    }
-
-    public destroy(): void
-    {
-        this.shader.destroy(true);
-        this.shader = null;
     }
 }

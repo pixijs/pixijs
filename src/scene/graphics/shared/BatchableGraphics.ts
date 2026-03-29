@@ -1,41 +1,15 @@
-import { Matrix } from '../../../maths/matrix/Matrix';
-import { multiplyHexColors } from '../../container/utils/multiplyHexColors';
+import { AbstractBatchableGraphics } from './AbstractBatchableGraphics';
 
-import type { Batch, Batcher } from '../../../rendering/batcher/shared/Batcher';
 import type { DefaultBatchableMeshElement } from '../../../rendering/batcher/shared/DefaultBatcher';
-import type { Topology } from '../../../rendering/renderers/shared/geometry/const';
-import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { Graphics } from './Graphics';
-
-const identityMatrix = new Matrix();
 
 /**
  * A batchable graphics object.
  * @ignore
  */
-export class BatchableGraphics implements DefaultBatchableMeshElement
+export class BatchableGraphics extends AbstractBatchableGraphics<Graphics> implements DefaultBatchableMeshElement
 {
-    public readonly packAsQuad = false;
     public batcherName = 'default';
-
-    public texture: Texture;
-
-    public topology: Topology = 'triangle-list';
-    public renderable: Graphics;
-    public indexOffset: number;
-    public indexSize: number;
-    public attributeOffset: number;
-    public attributeSize: number;
-    public baseColor: number;
-    public alpha: number;
-    public applyTransform = true;
-    public roundPixels: 0 | 1 = 0;
-
-    public _indexStart: number;
-    public _textureId: number;
-    public _attributeStart: number;
-    public _batcher: Batcher = null;
-    public _batch: Batch = null;
 
     public geometryData: { vertices: number[]; uvs: number[]; indices: number[]; };
 
@@ -52,36 +26,6 @@ export class BatchableGraphics implements DefaultBatchableMeshElement
     get indices()
     {
         return this.geometryData.indices;
-    }
-
-    get blendMode()
-    {
-        if (this.renderable && this.applyTransform)
-        {
-            return this.renderable.groupBlendMode;
-        }
-
-        return 'normal';
-    }
-
-    get color()
-    {
-        const rgb = this.baseColor;
-        const bgr = (rgb >> 16) | (rgb & 0xff00) | ((rgb & 0xff) << 16);
-        const renderable = this.renderable;
-
-        if (renderable)
-        {
-            return multiplyHexColors(bgr, renderable.groupColor)
-            + ((this.alpha * renderable.groupAlpha * 255) << 24);
-        }
-
-        return bgr + ((this.alpha * 255) << 24);
-    }
-
-    get transform()
-    {
-        return this.renderable?.groupTransform || identityMatrix;
     }
 
     public copyTo(gpuBuffer: BatchableGraphics)
@@ -101,19 +45,9 @@ export class BatchableGraphics implements DefaultBatchableMeshElement
         gpuBuffer.topology = this.topology;
     }
 
-    public reset()
+    public override destroy()
     {
-        this.applyTransform = true;
-        this.renderable = null;
-        this.topology = 'triangle-list';
-    }
-
-    public destroy()
-    {
-        this.renderable = null;
-        this.texture = null;
+        super.destroy();
         this.geometryData = null;
-        this._batcher = null;
-        this._batch = null;
     }
 }

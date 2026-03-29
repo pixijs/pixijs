@@ -1,10 +1,9 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { type BatcherOptions } from '../../../rendering/batcher/shared/Batcher';
 import { DefaultBatcher } from '../../../rendering/batcher/shared/DefaultBatcher';
-import { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import { deprecation, v8_3_4 } from '../../../utils/logging/deprecation';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { AbstractGpuGraphicsContext } from './AbstractGpuGraphicsContext';
+import { AbstractGraphicsContextRenderData } from './AbstractGraphicsContextRenderData';
 import { AbstractGraphicsContextSystem } from './AbstractGraphicsContextSystem';
 import { buildContextBatches } from './utils/buildContextBatches';
 
@@ -54,19 +53,8 @@ export class GpuGraphicsContext extends AbstractGpuGraphicsContext<BatchableGrap
  * @category rendering
  * @ignore
  */
-export class GraphicsContextRenderData
+export class GraphicsContextRenderData extends AbstractGraphicsContextRenderData<DefaultBatcher>
 {
-    public batcher: DefaultBatcher;
-    public instructions = new InstructionSet();
-
-    public init(options: BatcherOptions)
-    {
-        const maxTextures = options.maxTextures;
-
-        this.batcher ? this.batcher._updateMaxTextures(maxTextures) : this.batcher = new DefaultBatcher({ maxTextures });
-        this.instructions.reset();
-    }
-
     /**
      * @deprecated since version 8.0.0
      * Use `batcher.geometry` instead.
@@ -81,13 +69,14 @@ export class GraphicsContextRenderData
         return this.batcher.geometry;
     }
 
-    public destroy()
+    protected _createBatcher(maxTextures: number): DefaultBatcher
     {
-        this.batcher.destroy();
-        this.instructions.destroy();
+        return new DefaultBatcher({ maxTextures });
+    }
 
-        this.batcher = null;
-        this.instructions = null;
+    protected _updateBatcher(maxTextures: number): void
+    {
+        this.batcher._updateMaxTextures(maxTextures);
     }
 }
 

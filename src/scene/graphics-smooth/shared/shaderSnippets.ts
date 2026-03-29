@@ -128,7 +128,7 @@ void main(void){
     float expand = 1.0;
     float resolution = 1.0;
 
-    vTextureId = aTextureIdAndRound.x;
+    vTextureId = aTextureIdAndRound.y;
     vTextureCoord = vec2(0.0);
 
     vec2 pos;
@@ -647,7 +647,7 @@ fn mainVertex(input: VSInput) -> VSOutput {
     let expand: f32 = 1.0;
     let resolution: f32 = 1.0;
 
-    output.vTextureId = input.aTextureIdAndRound.x;
+    output.vTextureId = input.aTextureIdAndRound.y;
     output.vTextureCoord = vec2<f32>(0.0);
     output.vLine1 = vec4<f32>(0.0, 10.0, 1.0, 0.0);
     output.vLine2 = vec4<f32>(0.0, 10.0, 1.0, 0.0);
