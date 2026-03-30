@@ -88,12 +88,24 @@ export type Gl2dNineSliceSpriteNode<
     }
 >;
 
+export type Gl2dTextNode<
+    TExtensions extends Gl2dNodeExtensionName = 'gl2d_filters',
+> = Gl2dNodeWithExclusiveTransform<
+    Gl2dBaseNode<'text', TExtensions> & {
+        text: string;
+        style: Gl2dRef;
+        resolution?: number;
+        webFont?: Gl2dRef | Gl2dRef[];
+    }
+>;
+
 export interface Gl2dNodeRegistry
 {
     container: Gl2dContainerNode;
     sprite: Gl2dSpriteNode;
     tiling_sprite: Gl2dTilingSpriteNode;
     nine_slice_sprite: Gl2dNineSliceSpriteNode;
+    text: Gl2dTextNode;
 }
 
 export type Gl2dNodeKind = Extract<keyof Gl2dNodeRegistry, string>;

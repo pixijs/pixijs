@@ -2,7 +2,7 @@ import { type TextureStyle } from '../../../../rendering/renderers/shared/textur
 import { warn } from '../../../../utils/logging/warn';
 import { IMAGE_SOURCE_DEFAULTS, PIXI_TEXTURE_SOURCE_DEFAULTS } from '../../../defaults';
 import { type Gl2dWrapMode } from '../../../types/Gl2DResources';
-import { type Gl2dRef, type Gl2dSerializerInput } from '../../../types/Gl2dTypes';
+import { type Gl2dRef } from '../../../types/Gl2dTypes';
 import {
     type Gl2dPixiGenericTextureSourceResource,
     type Gl2dPixiTextureSourceResource,
@@ -45,13 +45,43 @@ function extractDataUri(source: TextureSource): string | undefined
     return undefined;
 }
 
+type TextureStyleFields = Pick<
+    Gl2dPixiTextureSourceResourceExtension,
+    'addressModeU' | 'addressModeV' | 'addressModeW'
+    | 'magFilter' | 'minFilter' | 'mipmapFilter'
+    | 'lodMinClamp' | 'lodMaxClamp'
+    | 'compare' | 'maxAnisotropy'
+>;
+
+/**
+ * @param style - The texture style to serialize
+ * @internal
+ */
+export function serializeTextureStyleFields(style: TextureStyle): TextureStyleFields
+{
+    return gl2dUtils.compact({
+        addressModeU: gl2dUtils.checkValue(style.addressModeU, PIXI_TEXTURE_SOURCE_DEFAULTS.addressModeU),
+        addressModeV: gl2dUtils.checkValue(style.addressModeV, PIXI_TEXTURE_SOURCE_DEFAULTS.addressModeV),
+        addressModeW: gl2dUtils.checkValue(style.addressModeW, PIXI_TEXTURE_SOURCE_DEFAULTS.addressModeW),
+        magFilter: gl2dUtils.checkValue(style.magFilter, PIXI_TEXTURE_SOURCE_DEFAULTS.magFilter),
+        minFilter: gl2dUtils.checkValue(style.minFilter, PIXI_TEXTURE_SOURCE_DEFAULTS.minFilter),
+        mipmapFilter: gl2dUtils.checkValue(style.mipmapFilter, PIXI_TEXTURE_SOURCE_DEFAULTS.mipmapFilter),
+        lodMinClamp: gl2dUtils.checkValue(style.lodMinClamp, PIXI_TEXTURE_SOURCE_DEFAULTS.lodMinClamp),
+        lodMaxClamp: gl2dUtils.checkValue(style.lodMaxClamp, PIXI_TEXTURE_SOURCE_DEFAULTS.lodMaxClamp),
+        compare: style.compare ?? undefined,
+        maxAnisotropy: gl2dUtils.checkValue(style.maxAnisotropy, PIXI_TEXTURE_SOURCE_DEFAULTS.maxAnisotropy),
+    });
+}
+
 function serializeTextureSourceExtensions<TType extends string>(
     source: TextureSource,
     resource: Gl2dPixiTextureSourceResource<TType>,
     ctx: Gl2dSerializeContext,
 ): void
 {
-    const input: Gl2dSerializerInput<Gl2dPixiTextureSourceResourceExtension> = {
+    const styleFields = source.style ? serializeTextureStyleFields(source.style) : {};
+
+    const ext = gl2dUtils.compact({
         dimensions: gl2dUtils.checkValue(source.dimension, PIXI_TEXTURE_SOURCE_DEFAULTS.dimensions),
         mipLevelCount: gl2dUtils.checkValue(source.mipLevelCount, PIXI_TEXTURE_SOURCE_DEFAULTS.mipLevelCount),
         autoGenerateMipmaps: gl2dUtils.checkValue(
@@ -62,19 +92,8 @@ function serializeTextureSourceExtensions<TType extends string>(
             source.autoGarbageCollect,
             PIXI_TEXTURE_SOURCE_DEFAULTS.autoGarbageCollect,
         ),
-        compare: source.style?.compare,
-        maxAnisotropy: gl2dUtils.checkValue(source.style?.maxAnisotropy, PIXI_TEXTURE_SOURCE_DEFAULTS.maxAnisotropy),
-        addressModeU: gl2dUtils.checkValue(source.style?.addressModeU, PIXI_TEXTURE_SOURCE_DEFAULTS.addressModeU),
-        addressModeV: gl2dUtils.checkValue(source.style?.addressModeV, PIXI_TEXTURE_SOURCE_DEFAULTS.addressModeV),
-        addressModeW: gl2dUtils.checkValue(source.style?.addressModeW, PIXI_TEXTURE_SOURCE_DEFAULTS.addressModeW),
-        magFilter: gl2dUtils.checkValue(source.style?.magFilter, PIXI_TEXTURE_SOURCE_DEFAULTS.magFilter),
-        minFilter: gl2dUtils.checkValue(source.style?.minFilter, PIXI_TEXTURE_SOURCE_DEFAULTS.minFilter),
-        mipmapFilter: gl2dUtils.checkValue(source.style?.mipmapFilter, PIXI_TEXTURE_SOURCE_DEFAULTS.mipmapFilter),
-        lodMinClamp: gl2dUtils.checkValue(source.style?.lodMinClamp, PIXI_TEXTURE_SOURCE_DEFAULTS.lodMinClamp),
-        lodMaxClamp: gl2dUtils.checkValue(source.style?.lodMaxClamp, PIXI_TEXTURE_SOURCE_DEFAULTS.lodMaxClamp),
-    };
-
-    const ext = gl2dUtils.compact(input);
+        ...styleFields,
+    });
 
     if (Object.keys(ext).length > 0)
     {

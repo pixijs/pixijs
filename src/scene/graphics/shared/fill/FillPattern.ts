@@ -72,6 +72,11 @@ export class FillPattern implements CanvasPattern
     public _texture: Texture;
     /** The transform matrix applied to the pattern */
     public transform = new Matrix();
+    /**
+     * The repetition mode for the pattern
+     * @internal
+     */
+    public _repeat: PatternRepetition | null = null;
 
     constructor(texture: Texture, repetition?: PatternRepetition)
     {
@@ -86,6 +91,7 @@ export class FillPattern implements CanvasPattern
         {
             texture.source.style.addressModeU = repetitionMap[repetition].addressModeU as WRAP_MODE;
             texture.source.style.addressModeV = repetitionMap[repetition].addressModeV as WRAP_MODE;
+            this._repeat = repetition;
         }
     }
 

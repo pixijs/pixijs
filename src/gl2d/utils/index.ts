@@ -78,11 +78,34 @@ export const gl2dUtils = {
         return value === defaultValue ? null : value;
     },
     checkColor: (color: Color, defaultValue: string): string | null | undefined => {
-        // check if the value exists
         if (!color) return undefined;
 
-        // check if the value is the default value
-        return color.toHex() === defaultValue ? null : color.toHex();
+        const hex = color.toHex();
+
+        return hex === defaultValue ? null : hex;
+    },
+    checkArrayEquals: <T>(value: T[], defaultValue: T[]): T[] | null | undefined =>
+    {
+        // eslint-disable-next-line no-eq-null, eqeqeq
+        if (value == null) return undefined;
+
+        if (value.length !== defaultValue.length) return value;
+
+        for (let i = 0; i < value.length; i++)
+        {
+            if (value[i] !== defaultValue[i]) return value;
+        }
+
+        return null;
+    },
+    cleanFontFamily: (fontFamily: string | string[]): string | string[] =>
+    {
+        if (typeof fontFamily === 'string')
+        {
+            return fontFamily.replace(/^["']|["']$/g, '');
+        }
+
+        return fontFamily.map((f) => f.replace(/^["']|["']$/g, ''));
     },
     checkRectangle: (rectangle: RectangleLike, defaultValue: Gl2dRectangle | null): Gl2dRectangle | null | undefined => {
         if (!rectangle) return undefined;

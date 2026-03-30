@@ -9,6 +9,8 @@ export * from './mixins/serializeImageSourceMixin';
 export * from './mixins/serializeNineSliceSpriteMixin';
 export * from './mixins/serializeSpriteMixin';
 export * from './mixins/serializeSpritesheetMixin';
+export * from './mixins/serializeTextMixin';
+export * from './mixins/serializeTextStyleMixin';
 export * from './mixins/serializeTextureMixin';
 export * from './mixins/serializeTextureSourceMixin';
 export * from './mixins/serializeTilingSpriteMixin';

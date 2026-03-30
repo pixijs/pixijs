@@ -201,3 +201,103 @@ export const NINE_SLICE_SPRITE_NODE_DEFAULTS: {
     rightWidth: 10,
     bottomHeight: 10,
 };
+
+/**
+ * @category gl2d
+ * @internal
+ */
+export const TEXT_NODE_DEFAULTS = {
+    resolution: 1,
+};
+
+/**
+ * @category gl2d
+ * @internal
+ */
+export const TEXT_STYLE_DEFAULTS = {
+    fontSize: 26,
+    fontStyle: 'normal' as const,
+    fontVariant: 'normal' as const,
+    fontWeight: 'normal' as const,
+    fill: '#000000',
+    align: 'left' as const,
+    letterSpacing: 0,
+    padding: 0,
+    textBaseline: 'alphabetic' as const,
+    breakWords: false,
+    whiteSpace: 'pre' as const,
+};
+
+/**
+ * @category gl2d
+ * @internal
+ */
+export const TEXT_STYLE_STROKE_DEFAULTS = {
+    width: 1,
+    alignment: 0.5,
+    cap: 'butt' as const,
+    join: 'miter' as const,
+    miterLimit: 10,
+};
+
+/**
+ * @category gl2d
+ * @internal
+ */
+export const TEXT_STYLE_SHADOW_DEFAULTS = {
+    color: '#000000',
+    offsetX: 0,
+    offsetY: 0,
+    blur: 0,
+    alpha: 1,
+};
+
+/**
+ * @category gl2d
+ * @internal
+ */
+export const PIXI_TEXT_NODE_DEFAULTS = {
+    autoGenerateMipmaps: false,
+};
+
+/**
+ * @category gl2d
+ * @internal
+ */
+export const PIXI_TEXT_STYLE_DEFAULTS = {
+    trim: false,
+    leading: 0,
+    lineHeight: 0,
+};
+
+/**
+ * @category gl2d
+ * @internal
+ */
+export const WEB_FONT_DEFAULTS = {
+    display: 'auto',
+    style: 'normal',
+    stretch: 'normal',
+    unicodeRange: 'U+0-10FFFF',
+    featureSettings: 'normal',
+    weights: ['normal'] as string[],
+};
+
+/**
+ * @category gl2d
+ * @internal
+ */
+export const CANVAS_PATTERN_DEFAULTS = {
+    repeat: 'repeat' as const,
+};
+
+/**
+ * @category gl2d
+ * @internal
+ */
+export const PIXI_CANVAS_GRADIENT_DEFAULTS = {
+    textureSize: 256,
+    wrapMode: 'clamp-to-edge' as const,
+    scale: 1,
+    rotation: 0,
+};

@@ -19,6 +19,12 @@ declare module '../spritesheet/Spritesheet'
     interface Spritesheet extends Gl2dSerializeMixin<Gl2dRef> {}
 }
 
+declare module '../scene/text/TextStyle'
+{
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    interface TextStyle extends Gl2dSerializeMixin<Gl2dRef> {}
+}
+
 declare global
 {
     namespace PixiMixins

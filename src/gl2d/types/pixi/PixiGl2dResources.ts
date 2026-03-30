@@ -5,6 +5,8 @@ import { type TextureStyle } from '../../../rendering/renderers/shared/texture/T
 import { type ReplaceExtensions } from '../Gl2DExtensions';
 import {
     type Gl2dBufferImageSourceResource,
+    type Gl2dCanvasGradientResource,
+    type Gl2dCanvasPatternResource,
     type Gl2dCompressedSourceResource,
     type Gl2dGenericTextureSourceResource,
     type Gl2dImageSourceResource,
@@ -12,10 +14,12 @@ import {
     type Gl2dResourceExtensionRegistry,
     type Gl2dResourceExtensions,
     type Gl2dSpritesheetResource,
+    type Gl2dTextStyleResource,
     type Gl2dTextureResource,
     type Gl2dTextureSourceResource,
     type Gl2dTextureSourceResourceType,
     type Gl2dVideoSourceResource,
+    type Gl2dWebFontResource,
 } from '../Gl2DResources';
 import { type Gl2dPoint2d, type Gl2dRectangle } from '../Gl2dTypes';
 
@@ -52,6 +56,22 @@ export interface Gl2dPixiSpritesheetExtension
     cachePrefix?: string;
 }
 
+export interface Gl2dPixiTextStyleResourceExtension
+{
+    trim?: boolean;
+    leading?: number;
+    lineHeight?: number;
+    tagStyles?: Record<string, unknown>;
+}
+
+export interface Gl2dPixiCanvasGradientExtension
+{
+    textureSize?: number;
+    wrapMode?: string;
+    scale?: number;
+    rotation?: number;
+}
+
 declare module '../Gl2DResources'
 {
     interface Gl2dResourceExtensionRegistry
@@ -59,6 +79,8 @@ declare module '../Gl2DResources'
         pixi_texture_resource: Gl2dPixiTextureResourceExtension;
         pixi_texture_source_resource: Gl2dPixiTextureSourceResourceExtension;
         pixi_spritesheet: Gl2dPixiSpritesheetExtension;
+        pixi_text_style_resource: Gl2dPixiTextStyleResourceExtension;
+        pixi_canvas_gradient: Gl2dPixiCanvasGradientExtension;
     }
 }
 
@@ -132,6 +154,30 @@ export type Gl2dPixiSpritesheetResource = ReplaceResourceExtensions<
     Gl2dPixiSpritesheetExtensionKeys
 >;
 
+type Gl2dPixiTextStyleExtensionKeys = Extract<
+    'pixi_text_style_resource',
+    Gl2dResourceExtensionName
+>;
+
+type Gl2dPixiCanvasGradientExtensionKeys = Extract<
+    'pixi_canvas_gradient',
+    Gl2dResourceExtensionName
+>;
+
+export type Gl2dPixiTextStyleResource = ReplaceResourceExtensions<
+    Gl2dTextStyleResource,
+    Gl2dPixiTextStyleExtensionKeys
+>;
+
+export type Gl2dPixiWebFontResource = Gl2dWebFontResource;
+
+export type Gl2dPixiCanvasGradientResource = ReplaceResourceExtensions<
+    Gl2dCanvasGradientResource,
+    Gl2dPixiCanvasGradientExtensionKeys
+>;
+
+export type Gl2dPixiCanvasPatternResource = Gl2dCanvasPatternResource;
+
 export type Gl2dPixiResource =
     | Gl2dPixiTextureResource
     | Gl2dPixiGenericTextureSourceResource
@@ -139,6 +185,10 @@ export type Gl2dPixiResource =
     | Gl2dPixiVideoSourceResource
     | Gl2dPixiBufferImageSourceResource
     | Gl2dPixiCompressedSourceResource
-    | Gl2dPixiSpritesheetResource;
+    | Gl2dPixiSpritesheetResource
+    | Gl2dPixiTextStyleResource
+    | Gl2dPixiWebFontResource
+    | Gl2dPixiCanvasGradientResource
+    | Gl2dPixiCanvasPatternResource;
 
 export type Gl2dPixiResourceType = Gl2dPixiResource['type'];

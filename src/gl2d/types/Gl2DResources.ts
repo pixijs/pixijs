@@ -2,7 +2,7 @@
 /* eslint-disable requireExport/require-export-jsdoc */
 
 import { type Gl2dExtensionBag } from './Gl2DExtensions';
-import { type Gl2dRectangle, type Gl2dRef } from './Gl2dTypes';
+import { type Gl2dCircle, type Gl2dMatrix2d, type Gl2dPoint2d, type Gl2dRectangle, type Gl2dRef } from './Gl2dTypes';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface Gl2dResourceExtensionRegistry {}
@@ -120,6 +120,93 @@ export interface Gl2dSpritesheetResource
     source: Gl2dTextureSourceResourceRef;
 }
 
+export interface Gl2dTextStyleStroke
+{
+    fill: string | Gl2dRef;
+    width?: number;
+    alignment?: number;
+    cap?: string;
+    join?: string;
+    miterLimit?: number;
+}
+
+export interface Gl2dTextStyleShadow
+{
+    color?: string;
+    offsetX?: number;
+    offsetY?: number;
+    blur?: number;
+    alpha?: number;
+}
+
+export interface Gl2dTextStyleWordWrap
+{
+    enabled: boolean;
+    width?: number;
+}
+
+export interface Gl2dTextStyleResource
+    extends Gl2dResourceBase<'text_style'>
+{
+    uid: `text_style_${string}`;
+    fontFamily: string | string[];
+    fontSize?: number;
+    fontStyle?: string;
+    fontVariant?: string;
+    fontWeight?: string | number;
+    fill?: string | Gl2dRef;
+    align?: string;
+    letterSpacing?: number;
+    padding?: number;
+    textBaseline?: string;
+    stroke?: Gl2dTextStyleStroke;
+    shadow?: Gl2dTextStyleShadow;
+    wordWrap?: Gl2dTextStyleWordWrap;
+    breakWords?: boolean;
+    whiteSpace?: string;
+}
+
+export interface Gl2dWebFontResource
+    extends Gl2dResourceBase<'web_font'>
+{
+    uid: `web_font_${string}`;
+    family: string;
+    uri?: string;
+    weights?: string[];
+    style?: string;
+    display?: string;
+    stretch?: string;
+    unicodeRange?: string;
+    variant?: string;
+    featureSettings?: string;
+}
+
+export interface Gl2dCanvasGradientResource
+    extends Gl2dResourceBase<'canvas_gradient'>
+{
+    uid: `canvas_gradient_${string}`;
+    gradientType: string;
+    gradientUnits: string;
+    stops: (number | string)[];
+    linear?: {
+        start: Gl2dPoint2d;
+        end: Gl2dPoint2d;
+    };
+    radial?: {
+        outerCircle: Gl2dCircle;
+        innerCircle: Gl2dCircle;
+    };
+}
+
+export interface Gl2dCanvasPatternResource
+    extends Gl2dResourceBase<'canvas_pattern'>
+{
+    uid: `canvas_pattern_${string}`;
+    source: Gl2dRef;
+    repeat?: string;
+    transform?: Gl2dMatrix2d;
+}
+
 export interface Gl2dResourceRegistry
 {
     texture: Gl2dTextureResource;
@@ -129,6 +216,10 @@ export interface Gl2dResourceRegistry
     buffer_image_source: Gl2dBufferImageSourceResource;
     compressed_source: Gl2dCompressedSourceResource;
     spritesheet: Gl2dSpritesheetResource;
+    text_style: Gl2dTextStyleResource;
+    web_font: Gl2dWebFontResource;
+    canvas_gradient: Gl2dCanvasGradientResource;
+    canvas_pattern: Gl2dCanvasPatternResource;
 }
 
 export type Gl2dResourceKind = Extract<keyof Gl2dResourceRegistry, string>;
