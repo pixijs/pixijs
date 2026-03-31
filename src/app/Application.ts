@@ -358,6 +358,16 @@ export class Application<R extends Renderer = Renderer>
     }
 
     /**
+     * Get the html div element that holds all DOM Container elements.
+     * @readonly
+     * @type {HTMLDivElement}
+     */
+    get domContainerRoot()
+    {
+        return this.renderer.renderPipes.dom._domElement;
+    }
+
+    /**
      * Destroys the application and all of its resources.
      *
      * This method should be called when you want to completely
