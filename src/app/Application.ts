@@ -103,7 +103,7 @@ export interface ApplicationPlugin
  *    autoDensity: true,           // Adjust for device pixel ratio
  *
  *    // Advanced options
- *    preference: 'webgl',         // Renderer preference ('webgl' or 'webgpu')
+ *    preference: 'webgl',         // Renderer preference ('webgl', 'webgpu', 'canvas', or an array)
  *    powerPreference: 'high-performance' // GPU power preference
  * });
  * ```
