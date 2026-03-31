@@ -23,22 +23,23 @@ type Formats = keyof typeof imageTypes;
 /**
  * Options for creating an image from a renderer.
  * Controls the output format and quality of extracted images.
- * @example
+ * @example Extract as PNG (default)
  * ```ts
- * // Extract as PNG (default)
  * const pngImage = await renderer.extract.image({
  *     target: sprite,
  *     format: 'png'
  * });
- *
- * // Extract as JPEG with quality setting
+ * ```
+ * @example Extract as JPEG with quality setting
+ * ```ts
  * const jpgImage = await renderer.extract.image({
  *     target: sprite,
  *     format: 'jpg',
  *     quality: 0.8
  * });
- *
- * // Extract as WebP for better compression
+ * ```
+ * @example Extract as WebP for better compression
+ * ```ts
  * const webpImage = await renderer.extract.image({
  *     target: sprite,
  *     format: 'webp',
@@ -55,14 +56,15 @@ export interface ImageOptions
      * - 'png': Lossless format, best for images with text or sharp edges
      * - 'jpg': Lossy format, smaller file size, good for photos
      * - 'webp': Modern format with better compression
-     * @example
+     * @example Extract as PNG
      * ```ts
-     * // Extract as PNG
      * const pngImage = await renderer.extract.image({
      *     target: sprite,
      *     format: 'png'
      * });
-     * // Extract as JPEG
+     * ```
+     * @example Extract as JPEG
+     * ```ts
      * const jpgImage = await renderer.extract.image({
      *     target: sprite,
      *     format: 'jpg',
@@ -77,15 +79,16 @@ export interface ImageOptions
      * Only applies to lossy formats (jpg, webp).
      * - 1: Maximum quality
      * - 0: Maximum compression
-     * @example
+     * @example Extract as JPEG with 80% quality
      * ```ts
-     * // Extract as JPEG with 80% quality
      * const jpgImage = await renderer.extract.image({
      *     target: sprite,
      *     format: 'jpg',
      *     quality: 0.8
      * });
-     * // Extract as WebP with 90% quality
+     * ```
+     * @example Extract as WebP with 90% quality
+     * ```ts
      * const webpImage = await renderer.extract.image({
      *     target: sprite,
      *     format: 'webp',
@@ -100,14 +103,14 @@ export interface ImageOptions
 /**
  * Options for extracting content from a renderer.
  * These options control how content is extracted and processed from the renderer.
- * @example
+ * @example Basic extraction
  * ```ts
- * // Basic extraction
  * const pixels = renderer.extract.pixels({
  *     target: sprite,
  * });
- *
- * // Extract with custom region and resolution
+ * ```
+ * @example Extract with custom region and resolution
+ * ```ts
  * const canvas = renderer.extract.canvas({
  *     target: container,
  *     frame: new Rectangle(0, 0, 100, 100),
@@ -128,13 +131,13 @@ export interface BaseExtractOptions
 {
     /**
      * The target to extract. Can be a Container or Texture.
-     * @example
+     * @example Extract from a sprite
      * ```ts
-     * // Extract from a sprite
      * const sprite = new Sprite(texture);
      * renderer.extract.pixels({ target: sprite });
-     *
-     * // Extract from a texture directly
+     * ```
+     * @example Extract from a texture directly
+     * ```ts
      * renderer.extract.pixels({ target: texture });
      * ```
      */
@@ -142,9 +145,8 @@ export interface BaseExtractOptions
 
     /**
      * The region of the target to extract. If not specified, extracts the entire target.
-     * @example
+     * @example Extract a specific region
      * ```ts
-     * // Extract a specific region
      * renderer.extract.canvas({
      *     target: sprite,
      *     frame: new Rectangle(10, 10, 100, 100)
@@ -156,9 +158,8 @@ export interface BaseExtractOptions
     /**
      * The resolution of the extracted content. Higher values create sharper images.
      * @default 1
-     * @example
+     * @example Extract at 2x resolution for retina displays
      * ```ts
-     * // Extract at 2x resolution for retina displays
      * renderer.extract.image({
      *     target: sprite,
      *     resolution: 2
@@ -170,15 +171,15 @@ export interface BaseExtractOptions
     /**
      * The color used to clear the extracted content before rendering.
      * Can be a hex number, string, or array of numbers.
-     * @example
+     * @example Clear with red background
      * ```ts
-     * // Clear with red background
      * renderer.extract.canvas({
      *     target: sprite,
      *     clearColor: '#ff0000'
      * });
-     *
-     * // Clear with semi-transparent black
+     * ```
+     * @example Clear with semi-transparent black
+     * ```ts
      * renderer.extract.canvas({
      *     target: sprite,
      *     clearColor: [0, 0, 0, 0.5]
@@ -191,9 +192,8 @@ export interface BaseExtractOptions
      * Whether to enable anti-aliasing during extraction.
      * Improves quality but may affect performance.
      * @default false
-     * @example
+     * @example Enable anti-aliasing for smoother edges
      * ```ts
-     * // Enable anti-aliasing for smoother edges
      * renderer.extract.image({
      *     target: graphics,
      *     antialias: true
@@ -205,15 +205,15 @@ export interface BaseExtractOptions
 /**
  * Options for extracting an HTMLImage from the renderer.
  * Combines base extraction options with image-specific settings.
- * @example
+ * @example Basic PNG extraction
  * ```ts
- * // Basic PNG extraction
  * const image = await renderer.extract.image({
  *     target: sprite,
  *     format: 'png'
  * });
- *
- * // High-quality JPEG with custom region
+ * ```
+ * @example High-quality JPEG with custom region
+ * ```ts
  * const image = await renderer.extract.image({
  *     target: container,
  *     format: 'jpg',
@@ -221,8 +221,9 @@ export interface BaseExtractOptions
  *     frame: new Rectangle(0, 0, 100, 100),
  *     resolution: 2
  * });
- *
- * // WebP with background and anti-aliasing
+ * ```
+ * @example WebP with background and anti-aliasing
+ * ```ts
  * const image = await renderer.extract.image({
  *     target: graphics,
  *     format: 'webp',
@@ -251,29 +252,32 @@ export type ExtractImageOptions = BaseExtractOptions & ImageOptions;
 /**
  * Options for extracting and downloading content from a renderer.
  * Combines base extraction options with download-specific settings.
- * @example
+ * @example Basic download with default filename
  * ```ts
- * // Basic download with default filename
  * renderer.extract.download({
  *     target: sprite
  * });
- *
- * // Download with custom filename and region
+ * ```
+ * @example Download with custom filename and region
+ * ```ts
+ * //
  * renderer.extract.download({
  *     target: container,
  *     filename: 'screenshot.png',
  *     frame: new Rectangle(0, 0, 100, 100)
  * });
- *
- * // Download with high resolution and background
+ * ```
+ * @example Download with high resolution and background
+ * ```ts
  * renderer.extract.download({
  *     target: stage,
  *     filename: 'hd-capture.png',
  *     resolution: 2,
  *     clearColor: '#ff0000'
  * });
- *
- * // Download with anti-aliasing
+ * ```
+ * @example Download with anti-aliasing
+ * ```ts
  * renderer.extract.download({
  *     target: graphics,
  *     filename: 'smooth.png',
@@ -314,27 +318,29 @@ export type ExtractDownloadOptions = BaseExtractOptions & {
 /**
  * Options for extracting content from a renderer. Represents a union of all possible extraction option types.
  * Used by various extraction methods to support different output formats and configurations.
- * @example
+ * @example Basic canvas extraction
  * ```ts
- * // Basic canvas extraction
  * const canvas = renderer.extract.canvas({
  *     target: sprite
  * });
- *
- * // Image extraction with format
+ * ```
+ * @example Image extraction with format
+ * ```ts
  * const image = await renderer.extract.image({
  *     target: sprite,
  *     format: 'png',
  *     quality: 1
  * });
- *
- * // Download with filename
+ * ```
+ * @example Download with filename
+ * ```ts
  * renderer.extract.download({
  *     target: sprite,
  *     filename: 'screenshot.png'
  * });
- *
- * // Advanced extraction with multiple options
+ * ```
+ * @example Advanced extraction with multiple options
+ * ```ts
  * const image = await renderer.extract.image({
  *     target: container,
  *     frame: new Rectangle(0, 0, 100, 100),
@@ -442,9 +448,8 @@ export class ExtractSystem implements System
 
     /**
      * Default options for image extraction.
-     * @example
+     * @example Customize default options
      * ```ts
-     * // Customize default options
      * ExtractSystem.defaultImageOptions.format = 'webp';
      * ExtractSystem.defaultImageOptions.quality = 0.8;
      *
@@ -488,14 +493,14 @@ export class ExtractSystem implements System
      * Creates an IImage from a display object or texture.
      * @param options - Options for creating the image, or the target to extract
      * @returns Promise that resolves with the generated IImage
-     * @example
+     * @example Basic usage with a sprite
      * ```ts
-     * // Basic usage with a sprite
      * const sprite = new Sprite(texture);
      * const image = await renderer.extract.image(sprite);
      * document.body.appendChild(image);
-     *
-     * // Advanced usage with options
+     * ```
+     * @example Advanced usage with options
+     * ```ts
      * const image = await renderer.extract.image({
      *     target: container,
      *     format: 'webp',
@@ -505,8 +510,9 @@ export class ExtractSystem implements System
      *     clearColor: '#ff0000',
      *     antialias: true
      * });
-     *
-     * // Extract directly from a texture
+     * ```
+     * @example Extract directly from a texture
+     * ```ts
      * const texture = Texture.from('myTexture.png');
      * const image = await renderer.extract.image(texture);
      * ```
@@ -532,14 +538,14 @@ export class ExtractSystem implements System
      * a canvas using `Extract.canvas` and then converting it to a base64 string.
      * @param options - The options for creating the base64 string, or the target to extract
      * @returns Promise that resolves with the base64 encoded string
-     * @example
+     * @example Basic usage with a sprite
      * ```ts
-     * // Basic usage with a sprite
      * const sprite = new Sprite(texture);
      * const base64 = await renderer.extract.base64(sprite);
      * console.log(base64); // data:image/png;base64,...
-     *
-     * // Advanced usage with options
+     * ```
+     * @example Advanced usage with options
+     * ```ts
      * const base64 = await renderer.extract.base64({
      *     target: container,
      *     format: 'webp',
@@ -616,31 +622,34 @@ export class ExtractSystem implements System
      * This method is useful for creating static images or when you need direct canvas access.
      * @param options - The options for creating the canvas, or the target to extract
      * @returns A Canvas element with the texture rendered on
-     * @example
+     * @example Basic canvas extraction from a sprite
      * ```ts
-     * // Basic canvas extraction from a sprite
      * const sprite = new Sprite(texture);
      * const canvas = renderer.extract.canvas(sprite);
      * document.body.appendChild(canvas);
-     *
-     * // Extract with custom region
+     * ```
+     * @example Extract with custom region
+     * ```ts
      * const canvas = renderer.extract.canvas({
      *     target: container,
      *     frame: new Rectangle(0, 0, 100, 100)
      * });
-     *
-     * // Extract with high resolution
+     * ```
+     * @example Extract with high resolution
+     * ```ts
      * const canvas = renderer.extract.canvas({
      *     target: sprite,
      *     resolution: 2,
      *     clearColor: '#ff0000'
      * });
-     *
-     * // Extract directly from a texture
+     * ```
+     * @example Extract directly from a texture
+     * ```ts
      * const texture = Texture.from('myTexture.png');
      * const canvas = renderer.extract.canvas(texture);
-     *
-     * // Extract with anti-aliasing
+     * ```
+     * @example Extract with anti-aliasing
+     * ```ts
      * const canvas = renderer.extract.canvas({
      *     target: graphics,
      *     antialias: true
@@ -676,23 +685,24 @@ export class ExtractSystem implements System
     /**
      * Returns a one-dimensional array containing the pixel data of the entire texture in RGBA order,
      * with integer values between 0 and 255 (inclusive).
-     * > [!NOE] The returned array is a flat Uint8Array where every 4 values represent RGBA
+     * > [!NOTE] The returned array is a flat Uint8Array where every 4 values represent RGBA
      * @param options - The options for extracting the image, or the target to extract
      * @returns One-dimensional Uint8Array containing the pixel data in RGBA format
-     * @example
+     * @example Basic pixel extraction
      * ```ts
-     * // Basic pixel extraction
      * const sprite = new Sprite(texture);
      * const pixels = renderer.extract.pixels(sprite);
      * console.log(pixels[0], pixels[1], pixels[2], pixels[3]); // R,G,B,A values
-     *
-     * // Extract with custom region
+     * ```
+     * @example Extract with custom region
+     * ```ts
      * const pixels = renderer.extract.pixels({
      *     target: sprite,
      *     frame: new Rectangle(0, 0, 100, 100)
      * });
-     *
-     * // Extract with high resolution
+     * ```
+     * @example Extract with high resolution
+     * ```ts
      * const pixels = renderer.extract.pixels({
      *     target: sprite,
      *     resolution: 2
@@ -733,34 +743,37 @@ export class ExtractSystem implements System
      * > [!NOTE] The returned texture should be destroyed when no longer needed
      * @param options - The options for creating the texture, or the target to extract
      * @returns A new texture containing the extracted content
-     * @example
+     * @example Basic texture extraction from a sprite
      * ```ts
-     * // Basic texture extraction from a sprite
      * const sprite = new Sprite(texture);
      * const extractedTexture = renderer.extract.texture(sprite);
-     *
-     * // Extract with custom region
+     * ```
+     * @example Extract with custom region
+     * ```ts
      * const regionTexture = renderer.extract.texture({
      *     target: container,
      *     frame: new Rectangle(0, 0, 100, 100)
      * });
-     *
-     * // Extract with high resolution
+     * ```
+     * @example Extract with high resolution
+     * ```ts
      * const hiResTexture = renderer.extract.texture({
      *     target: sprite,
      *     resolution: 2,
      *     clearColor: '#ff0000'
      * });
-     *
-     * // Create a new sprite from extracted texture
+     * ```
+     * @example Create a new sprite from extracted texture
+     * ```ts
      * const newSprite = new Sprite(
      *     renderer.extract.texture({
      *         target: graphics,
      *         antialias: true
      *     })
      * );
-     *
-     * // Clean up when done
+     * ```
+     * @example Clean up when done
+     * ```ts
      * extractedTexture.destroy(true);
      * ```
      * @see {@link ExtractOptions} For detailed options
@@ -782,34 +795,37 @@ export class ExtractSystem implements System
      * This is a convenient way to save screenshots or export rendered content.
      * > [!NOTE] The download will use PNG format regardless of the filename extension
      * @param options - The options for downloading and extracting the image, or the target to extract
-     * @example
+     * @example Basic download with default filename
      * ```ts
-     * // Basic download with default filename
      * const sprite = new Sprite(texture);
      * renderer.extract.download(sprite); // Downloads as 'image.png'
-     *
-     * // Download with custom filename
+     * ```
+     * @example Download with custom filename
+     * ```ts
      * renderer.extract.download({
      *     target: sprite,
      *     filename: 'screenshot.png'
      * });
-     *
-     * // Download with custom region
+     * ```
+     * @example Download with custom region
+     * ```ts
      * renderer.extract.download({
      *     target: container,
      *     filename: 'region.png',
      *     frame: new Rectangle(0, 0, 100, 100)
      * });
-     *
-     * // Download with high resolution and background
+     * ```
+     * @example Download with high resolution and background
+     * ```ts
      * renderer.extract.download({
      *     target: stage,
      *     filename: 'hd-screenshot.png',
      *     resolution: 2,
      *     clearColor: '#ff0000'
      * });
-     *
-     * // Download with anti-aliasing
+     * ```
+     * @example Download with anti-aliasing
+     * ```ts
      * renderer.extract.download({
      *     target: graphics,
      *     filename: 'smooth.png',
@@ -843,9 +859,8 @@ export class ExtractSystem implements System
      * The image will be displayed in the browser's console using CSS background images.
      * @param options - The options for logging the image, or the target to log
      * @param options.width - The width of the logged image preview in the console (in pixels)
-     * @example
+     * @example Basic usage
      * ```ts
-     * // Basic usage
      * const sprite = new Sprite(texture);
      * renderer.extract.log(sprite);
      * ```

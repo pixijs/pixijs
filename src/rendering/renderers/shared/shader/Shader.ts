@@ -173,7 +173,6 @@ export type ShaderFromResources = (GlShaderFromWith | GpuShaderFromWith)
  *  - TextureSource {@link TextureSource}
  *  - UniformsGroups {@link UniformGroup}
  * @example
- *
  * const shader = new Shader({
  *     glProgram: glProgram,
  *     gpuProgram: gpuProgram,

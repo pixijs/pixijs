@@ -76,18 +76,19 @@ export interface GCSystemOptions
  * A unified garbage collection system for managing GPU resources.
  * Resources register themselves with a cleanup callback and are automatically
  * cleaned up when they haven't been used for a specified amount of time.
- * @example
+ * @example Register a resource for GC
  * ```ts
- * // Register a resource for GC
  * gc.addResource(myResource, () => {
  *     // cleanup logic here
  *     myResource.unload();
  * });
- *
- * // Touch the resource when used (resets idle timer)
+ * ```
+ * @example Touch the resource when used (resets idle timer)
+ * ```ts
  * gc.touch(myResource);
- *
- * // Remove from GC tracking (e.g., on manual destroy)
+ * ```
+ * @example Remove from GC tracking (e.g., on manual destroy)
+ * ```ts
  * gc.removeResource(myResource);
  * ```
  * @category rendering

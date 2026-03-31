@@ -1,3 +1,5 @@
+import { type Size } from '../../../../maths/misc/Size';
+import { type PointData } from '../../../../maths/point/PointData';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { warn } from '../../../../utils/logging/warn';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
@@ -53,9 +55,9 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
     public copyToTexture(
         sourceRenderSurfaceTexture: RenderTarget,
         destinationTexture: Texture,
-        originSrc: { x: number; y: number; },
-        size: { width: number; height: number; },
-        originDest: { x: number; y: number; },
+        originSrc: PointData,
+        size: Size,
+        originDest: PointData,
     )
     {
         const renderTargetSystem = this._renderTargetSystem;

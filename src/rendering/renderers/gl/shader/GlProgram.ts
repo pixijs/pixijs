@@ -71,24 +71,20 @@ const programCache: Record<string, GlProgram> = Object.create(null);
  *
  * To get the most out of this class, you should be familiar with glsl shaders and how they work.
  * @see https://developer.mozilla.org/en-US/docs/Web/API/WebGLProgram
- * @example
- *
- * // Create a new program
+ * @example Create a new program
+ * ```typescript
  * const program = new GlProgram({
  *   vertex: '...',
  *   fragment: '...',
  * });
- *
+ * ```
  *
  * There are a few key things that pixi shader will do for you automatically:
- * <br>
  * - If no precision is provided in the shader, it will be injected into the program source for you.
  * This precision will be taken form the options provided, if none is provided,
  * then the program will default to the defaultOptions.
- * <br>
  * - It will inject the program name into the shader source if none is provided.
- * <br>
- *  - It will set the program version to 300 es.
+ * - It will set the program version to 300 es.
  *
  * For optimal usage and best performance, its best to reuse programs as much as possible.
  * You should use the {@link GlProgram.from} helper function to create programs.

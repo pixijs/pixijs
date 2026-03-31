@@ -90,18 +90,13 @@ export type FilterAntialias = 'on' | 'off' | 'inherit';
  * Its worth noting Performance-wise filters can be pretty expensive if used too much in a single scene.
  * The following happens under the hood when a filter is applied:
  *
- * .1. Break the current batch
- * <br>
- * .2. The target is measured using getGlobalBounds
- * (recursively go through all children and figure out how big the object is)
- * <br>
- * .3. Get the closest Po2 Textures from the texture pool
- * <br>
- * .4. Render the target to that texture
- * <br>
- * .5. Render that texture back to the main frame buffer as a quad using the filters program.
- * <br>
- * <br>
+ * 1. Break the current batch
+ * 2. The target is measured using getGlobalBounds
+ *    (recursively go through all children and figure out how big the object is)
+ * 3. Get the closest Po2 Textures from the texture pool
+ * 4. Render the target to that texture
+ * 5. Render that texture back to the main frame buffer as a quad using the filters program.
+ *
  * Some filters (such as blur) require multiple passes too which can result in an even bigger performance hit. So be careful!
  * Its not generally the complexity of the shader that is the bottle neck,
  * but all the framebuffer / shader switching that has to take place.
@@ -109,6 +104,7 @@ export type FilterAntialias = 'on' | 'off' | 'inherit';
  * @category filters
  * @advanced
  * @example
+ * ```ts
  * import { Filter } from 'pixi.js';
  *
  * const customFilter = new Filter({
@@ -130,6 +126,7 @@ export type FilterAntialias = 'on' | 'off' | 'inherit';
  * app.ticker.add((ticker) => {
  *     filter.resources.timeUniforms.uniforms.uTime += 0.04 * ticker.deltaTime;
  * });
+ * ```
  */
 export class Filter extends Shader
 {

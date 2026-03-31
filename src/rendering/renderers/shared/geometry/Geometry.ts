@@ -104,14 +104,14 @@ function ensureIsAttribute(attribute: AttributeOption): Attribute
  * Essentially, a Geometry object holds the data you'd send to a GPU buffer.
  *
  * A geometry is basically made of two components:
- * <br>
- * <b>Attributes</b>: These are essentially arrays that define properties of the vertices like position, color,
+ *
+ * '''Attributes''': These are essentially arrays that define properties of the vertices like position, color,
  * texture coordinates, etc. They map directly to attributes in your vertex shaders.
- * <br>
- * <b>Indices</b>: An optional array that describes how the vertices are connected.
+ *
+ * '''Indices''': An optional array that describes how the vertices are connected.
  * If not provided, vertices will be interpreted in the sequence they're given.
  * @example
- *
+ * ```typescript
  * const geometry = new Geometry({
  *   attributes: {
  *     aPosition: [ // add some positions
@@ -128,6 +128,7 @@ function ensureIsAttribute(attribute: AttributeOption): Attribute
  *     ]
  *   }
  * });
+ * ```
  * @category rendering
  * @advanced
  */

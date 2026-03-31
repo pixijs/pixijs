@@ -23,22 +23,23 @@ export type GenerateTextureSourceOptions = Omit<TextureSourceOptions, 'resource'
  * Options for generating a texture from a container.
  * Used to create reusable textures from display objects, which can improve performance
  * when the same content needs to be rendered multiple times.
- * @example
+ * @example Basic texture generation
  * ```ts
- * // Basic texture generation
  * const sprite = new Sprite(texture);
  * const generatedTexture = renderer.generateTexture({
  *     target: sprite
  * });
- *
- * // Generate with custom region and resolution
+ * ```
+ * @example Generate with custom region and resolution
+ * ```ts
  * const texture = renderer.generateTexture({
  *     target: container,
  *     frame: new Rectangle(0, 0, 100, 100),
  *     resolution: 2
  * });
- *
- * // Generate with background color and anti-aliasing
+ * ```
+ * @example Generate with background color and anti-aliasing
+ * ```ts
  * const highQualityTexture = renderer.generateTexture({
  *     target: graphics,
  *     clearColor: '#ff0000',
@@ -71,9 +72,8 @@ export type GenerateTextureOptions = {
     /**
      * The region of the container that should be rendered.
      * If not specified, defaults to the local bounds of the container.
-     * @example
+     * @example Extract only a portion of the container
      * ```ts
-     * // Extract only a portion of the container
      * const texture = renderer.generateTexture({
      *     target: container,
      *     frame: new Rectangle(10, 10, 100, 100)
@@ -86,9 +86,8 @@ export type GenerateTextureOptions = {
      * The resolution of the texture being generated.
      * Higher values create sharper textures at the cost of memory.
      * @default renderer.resolution
-     * @example
+     * @example Generate a high-resolution texture
      * ```ts
-     * // Generate a high-resolution texture
      * const hiResTexture = renderer.generateTexture({
      *     target: sprite,
      *     resolution: 2 // 2x resolution
@@ -100,15 +99,15 @@ export type GenerateTextureOptions = {
     /**
      * The color used to clear the texture before rendering.
      * Can be a hex number, string, or array of numbers.
-     * @example
+     * @example Clear with red background
      * ```ts
-     * // Clear with red background
      * const texture = renderer.generateTexture({
      *     target: sprite,
      *     clearColor: '#ff0000'
      * });
-     *
-     * // Clear with semi-transparent black
+     * ```
+     * @example Clear with semi-transparent black
+     * ```ts
      * const texture = renderer.generateTexture({
      *     target: sprite,
      *     clearColor: [0, 0, 0, 0.5]
@@ -120,9 +119,8 @@ export type GenerateTextureOptions = {
     /**
      * Whether to enable anti-aliasing. This may affect performance.
      * @default false
-     * @example
+     * @example Generate a smooth texture
      * ```ts
-     * // Generate a smooth texture
      * const texture = renderer.generateTexture({
      *     target: graphics,
      *     antialias: true
@@ -170,8 +168,7 @@ const noColor: ColorSource = [0, 0, 0, 0];
  *     .circle(0, 0, 50)
  *     .fill('red');
  *
- * const sprite = new Sprite(texture);
- * sprite.x = 100;
+ * const sprite = new Sprite({ texture, x: 100 });
  *
  * container.addChild(graphics, sprite);
  *
@@ -249,20 +246,23 @@ export class GenerateTextureSystem implements System
      * );
      *
      * const texture = renderer.textureGenerator.generateTexture(container);
-     *
-     * // Advanced usage with options
+     * ```
+     * @example Advanced usage with options
+     * ```ts
      * const texture = renderer.textureGenerator.generateTexture({
      *     target: container,
      *     frame: new Rectangle(0, 0, 100, 100), // Specific region
      *     resolution: 2,                        // High DPI
-     *     clearColor: '#ff0000',               // Red background
-     *     antialias: true                      // Smooth edges
+     *     clearColor: '#ff0000',              // Red background
+     *     antialias: true                       // Smooth edges
      * });
-     *
-     * // Create a sprite from the generated texture
+     * ```
+     * @example Create a sprite from the generated texture
+     * ```ts
      * const sprite = new Sprite(texture);
-     *
-     * // Clean up when done
+     * ```
+     * @example Clean up when done
+     * ```ts
      * texture.destroy(true);
      * ```
      * @see {@link GenerateTextureOptions} For detailed texture generation options

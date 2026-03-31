@@ -1,3 +1,5 @@
+import { type Size } from '../../../../maths/misc/Size';
+import { type PointData } from '../../../../maths/point/PointData';
 import { CLEAR } from '../../gl/const';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
 import { TextureSource } from '../../shared/texture/sources/TextureSource';
@@ -31,9 +33,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
     public copyToTexture(
         sourceRenderSurfaceTexture: RenderTarget,
         destinationTexture: Texture,
-        originSrc: { x: number; y: number; },
-        size: { width: number; height: number; },
-        originDest: { x: number; y: number; },
+        originSrc: PointData,
+        size: Size,
+        originDest: PointData,
     )
     {
         const renderer = this._renderer;

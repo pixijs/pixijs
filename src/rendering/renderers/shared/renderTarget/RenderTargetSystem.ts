@@ -1,4 +1,6 @@
 import { Matrix } from '../../../../maths/matrix/Matrix';
+import { type Size } from '../../../../maths/misc/Size';
+import { type PointData } from '../../../../maths/point/PointData';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { CLEAR } from '../../gl/const';
 import { calculateProjection } from '../../gpu/renderTarget/calculateProjection';
@@ -75,22 +77,16 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
      * A function copies the contents of a render surface to a texture
      * @param {RenderTarget} sourceRenderSurfaceTexture - the render surface to copy from
      * @param {Texture} destinationTexture - the texture to copy to
-     * @param {object} originSrc - the origin of the copy
-     * @param {number} originSrc.x - the x origin of the copy
-     * @param {number} originSrc.y - the y origin of the copy
-     * @param {object} size - the size of the copy
-     * @param {number} size.width - the width of the copy
-     * @param {number} size.height - the height of the copy
-     * @param {object} originDest - the destination origin (top left to paste from!)
-     * @param {number} originDest.x - the x destination origin of the copy
-     * @param {number} originDest.y - the y destination origin of the copy
+     * @param {PointData} originSrc - the origin of the copy
+     * @param {Size} size - the size of the copy
+     * @param {PointData} originDest - the destination origin (top left to paste from!)
      */
     copyToTexture(
         sourceRenderSurfaceTexture: RenderTarget,
         destinationTexture: Texture,
-        originSrc: { x: number; y: number },
-        size: { width: number; height: number },
-        originDest?: { x: number; y: number },
+        originSrc: PointData,
+        size: Size,
+        originDest?: PointData,
     ): Texture
 
     /**
@@ -182,9 +178,7 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
  * as it can have multiple textures attached to it.
  * It will also give ou fine grain control over the stencil buffer / depth texture.
  * @example
- *
  * ```js
- *
  * // create a render target
  * const renderTarget = new RenderTarget({
  *   colorTextures: [new TextureSource({ width: 100, height: 100 })],
@@ -541,11 +535,11 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
     /**
      * Copies a render surface to another texture.
      *
-     * NOTE:
-     * for sourceRenderSurfaceTexture, The render target must be something that is written too by the renderer
+     * > [!NOTE] For sourceRenderSurfaceTexture, The render target must be something that is written too by the renderer
      *
      * The following is not valid:
      * @example
+     * ```ts
      * const canvas = document.createElement('canvas')
      * canvas.width = 200;
      * canvas.height = 200;
@@ -561,28 +555,23 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      * const renderTarget = renderer.renderTarget.getRenderTarget(canvas2);
      *
      * renderer.renderTarget.copyToTexture(renderTarget,texture, {x:0,y:0},{width:200,height:200},{x:0,y:0});
+     * ```
      *
      * The best way to copy a canvas is to create a texture from it. Then render with that.
      *
      * Parsing in a RenderTarget canvas context (with a 2d context)
      * @param sourceRenderSurfaceTexture - the render surface to copy from
      * @param {Texture} destinationTexture - the texture to copy to
-     * @param {object} originSrc - the origin of the copy
-     * @param {number} originSrc.x - the x origin of the copy
-     * @param {number} originSrc.y - the y origin of the copy
-     * @param {object} size - the size of the copy
-     * @param {number} size.width - the width of the copy
-     * @param {number} size.height - the height of the copy
-     * @param {object} originDest - the destination origin (top left to paste from!)
-     * @param {number} originDest.x - the x origin of the paste
-     * @param {number} originDest.y - the y origin of the paste
+     * @param {PointData} originSrc - the origin of the copy
+     * @param {Size} size - the size of the copy
+     * @param {PointData} originDest - the destination origin (top left to paste from!)
      */
     public copyToTexture(
         sourceRenderSurfaceTexture: RenderTarget,
         destinationTexture: Texture,
-        originSrc: { x: number; y: number },
-        size: { width: number; height: number },
-        originDest: { x: number; y: number; },
+        originSrc: PointData,
+        size: Size,
+        originDest: PointData,
     )
     {
         // fit the size to the source we don't want to go out of bounds
