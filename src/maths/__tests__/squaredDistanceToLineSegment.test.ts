@@ -55,7 +55,10 @@ describe('squaredDistanceToLineSegment', () =>
 
     it('should handle negative coordinates', () =>
     {
+        // Point (0,0) is on the line from (-5,-5) to (5,5)
         expect(squaredDistanceToLineSegment(0, 0, -5, -5, 5, 5)).toBeCloseTo(0, 10);
-        expect(squaredDistanceToLineSegment(-10, 0, -5, -5, 5, 5)).toBeCloseTo(12.5, 5);
+        // Point (-10,0) is closest to the start of the segment (-5,-5)
+        // Distance: sqrt((-10-(-5))^2 + (0-(-5))^2) = sqrt(25+25) = sqrt(50), squared = 50
+        expect(squaredDistanceToLineSegment(-10, 0, -5, -5, 5, 5)).toBeCloseTo(50, 5);
     });
 });
