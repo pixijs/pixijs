@@ -307,7 +307,7 @@ describe('CanvasTextMetrics tagged text', () =>
             }
         });
 
-        it('should use wordWrapWidth for width when using right alignment', () =>
+        it('should use actual content width for right alignment, not wordWrapWidth', () =>
         {
             const style = new TextStyle({
                 fontSize: 24,
@@ -321,11 +321,10 @@ describe('CanvasTextMetrics tagged text', () =>
             });
             const measured = CanvasTextMetrics.measureText('<red>Hi</red>', style);
 
-            // Width should be at least wordWrapWidth for proper alignment
-            expect(measured.width).toBeGreaterThanOrEqual(300);
+            expect(measured.width).toBeLessThan(300);
         });
 
-        it('should use wordWrapWidth for width when using center alignment', () =>
+        it('should use actual content width for center alignment, not wordWrapWidth', () =>
         {
             const style = new TextStyle({
                 fontSize: 24,
@@ -339,8 +338,7 @@ describe('CanvasTextMetrics tagged text', () =>
             });
             const measured = CanvasTextMetrics.measureText('<red>Hi</red>', style);
 
-            // Width should be at least wordWrapWidth for proper alignment
-            expect(measured.width).toBeGreaterThanOrEqual(300);
+            expect(measured.width).toBeLessThan(300);
         });
 
         it('should use maxLineWidth for width when using left alignment', () =>
@@ -766,7 +764,7 @@ describe('CanvasTextMetrics tagged text', () =>
 
     describe('tagStyles with alignment', () =>
     {
-        it('should use wordWrapWidth for width with center alignment and tags', () =>
+        it('should use actual content width for center alignment with tags, not wordWrapWidth', () =>
         {
             const style = new TextStyle({
                 fontSize: 24,
@@ -781,7 +779,7 @@ describe('CanvasTextMetrics tagged text', () =>
 
             const measured = CanvasTextMetrics.measureText('<big>Hi</big>', style);
 
-            expect(measured.width).toBeGreaterThanOrEqual(300);
+            expect(measured.width).toBeLessThan(300);
         });
 
         it('should handle justify alignment with tagged text', () =>
