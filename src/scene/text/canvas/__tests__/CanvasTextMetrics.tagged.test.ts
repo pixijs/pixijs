@@ -795,9 +795,43 @@ describe('CanvasTextMetrics tagged text', () =>
                 }
             });
 
-            const measured = CanvasTextMetrics.measureText('<red>This is a longer text</red>', style);
+            const measured = CanvasTextMetrics.measureText('<red>This is a longer text that wraps</red>', style);
 
             expect(measured.runsByLine).toBeDefined();
+            expect(measured.lines.length).toBeGreaterThan(1);
+            expect(measured.width).toBeLessThanOrEqual(200 + 10);
+            expect(measured.width).toBeGreaterThan(0);
+        });
+
+        it('should use actual content width for justify alignment, not wordWrapWidth', () =>
+        {
+            const text = 'hello';
+            const justifyStyle = new TextStyle({
+                fontSize: 24,
+                fontFamily: 'Arial',
+                wordWrap: true,
+                wordWrapWidth: 800,
+                align: 'justify',
+                tagStyles: {
+                    red: { fill: 'red' }
+                }
+            });
+            const leftStyle = new TextStyle({
+                fontSize: 24,
+                fontFamily: 'Arial',
+                wordWrap: true,
+                wordWrapWidth: 800,
+                align: 'left',
+                tagStyles: {
+                    red: { fill: 'red' }
+                }
+            });
+
+            const justifyMetrics = CanvasTextMetrics.measureText(`<red>${text}</red>`, justifyStyle);
+            const leftMetrics = CanvasTextMetrics.measureText(`<red>${text}</red>`, leftStyle);
+
+            expect(justifyMetrics.width).toBeLessThan(800);
+            expect(justifyMetrics.width).toBeCloseTo(leftMetrics.width, 0);
         });
     });
 });

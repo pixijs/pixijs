@@ -385,6 +385,7 @@ describe('CanvasTextMetrics', () =>
 
         it('should return same width for center and left alignment', () =>
         {
+            const text = 'hello world';
             const centerStyle = new TextStyle({
                 fontSize: 36,
                 fontFamily: 'Arial',
@@ -399,12 +400,12 @@ describe('CanvasTextMetrics', () =>
                 wordWrapWidth: 800,
                 align: 'left'
             });
-            const centerMetrics = CanvasTextMetrics.measureText('text center', centerStyle);
-            const leftMetrics = CanvasTextMetrics.measureText('text left', leftStyle);
+            const centerMetrics = CanvasTextMetrics.measureText(text, centerStyle);
+            const leftMetrics = CanvasTextMetrics.measureText(text, leftStyle);
 
-            // Both should reflect actual content width, not wordWrapWidth
             expect(centerMetrics.width).toBeLessThan(800);
             expect(leftMetrics.width).toBeLessThan(800);
+            expect(centerMetrics.width).toBeCloseTo(leftMetrics.width, 0);
         });
 
         it('should not wrap text when wordWrapWidth equals measured width', () =>

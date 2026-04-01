@@ -480,17 +480,17 @@ describe('Text', () =>
         it('should return matching widths for center vs left alignment with same text', () =>
         {
             const centerText = new Text({
-                text: 'text center',
+                text: 'hello world',
                 style: { fontFamily: 'Arial', fontSize: 36, wordWrap: true, wordWrapWidth: 800, align: 'center' },
             });
             const leftText = new Text({
-                text: 'text left',
+                text: 'hello world',
                 style: { fontFamily: 'Arial', fontSize: 36, wordWrap: true, wordWrapWidth: 800, align: 'left' },
             });
 
-            // center-aligned text was returning 800 (wordWrapWidth) while left returned ~116
             expect(centerText.width).toBeLessThan(800);
             expect(leftText.width).toBeLessThan(800);
+            expect(centerText.width).toBeCloseTo(leftText.width, 0);
         });
 
         it('should return actual content width for center-aligned BitmapText', () =>
