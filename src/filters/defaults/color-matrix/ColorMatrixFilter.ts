@@ -5,6 +5,9 @@ import { Filter } from '../../Filter';
 import vertex from '../defaultFilter.vert';
 import fragment from './colorMatrixFilter.frag';
 import source from './colorMatrixFilter.wgsl';
+import { ColorTransformFilter } from './ColorTransformFilter';
+import { type ColorSource } from '~/color';
+import { deprecation } from '~/utils';
 
 import type { ArrayFixed } from '../../../utils/types';
 import type { FilterOptions } from '../../Filter';
@@ -288,5 +291,249 @@ export class ColorMatrixFilter extends Filter
     set alpha(value: number)
     {
         this.resources.colorMatrixUniforms.uniforms.uAlpha = value;
+    }
+
+    /**
+     * @param b
+     * @param multiply
+     * @deprecated
+     */
+    public brightness(b: number, multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.brightness has been moved to ColorTransformFilter.brightness');
+        ColorTransformFilter.prototype.brightness.call(this, b, multiply);
+
+        return this;
+    }
+    /**
+     * @param color
+     * @param multiply
+     * @deprecated
+     */
+    public tint(color: ColorSource, multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.tint has been moved to ColorTransformFilter.tint');
+        ColorTransformFilter.prototype.tint.call(this, color, multiply);
+
+        return this;
+    }
+    /**
+     * @param scale
+     * @param multiply
+     * @deprecated
+     */
+    public greyscale(scale: number, multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.greyscale has been moved to ColorTransformFilter.greyscale');
+        ColorTransformFilter.prototype.greyscale.call(this, scale, multiply);
+
+        return this;
+    }
+    /**
+     * @param scale
+     * @param multiply
+     * @deprecated
+     */
+    public grayscale(scale: number, multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.grayscale has been moved to ColorTransformFilter.grayscale');
+        ColorTransformFilter.prototype.grayscale.call(this, scale, multiply);
+
+        return this;
+    }
+    /**
+     * @param multiply
+     * @deprecated
+     */
+    public blackAndWhite(multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.blackAndWhite has been moved to ColorTransformFilter.blackAndWhite');
+        ColorTransformFilter.prototype.blackAndWhite.call(this, multiply);
+
+        return this;
+    }
+    /**
+     * @param rotation
+     * @param multiply
+     * @deprecated
+     */
+    public hue(rotation: number, multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.hue has been moved to ColorTransformFilter.hue');
+        ColorTransformFilter.prototype.hue.call(this, rotation, multiply);
+
+        return this;
+    }
+    /**
+     * @param amount
+     * @param multiply
+     * @deprecated
+     */
+    public contrast(amount: number, multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.contrast has been moved to ColorTransformFilter.contrast');
+        ColorTransformFilter.prototype.contrast.call(this, amount, multiply);
+
+        return this;
+    }
+    /**
+     * @param amount
+     * @param multiply
+     * @deprecated
+     */
+    public saturate(amount?: number, multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.saturate has been moved to ColorTransformFilter.saturate');
+        ColorTransformFilter.prototype.saturate.call(this, amount, multiply);
+
+        return this;
+    }
+    /**
+     * @param multiply
+     * @deprecated
+     */
+    public desaturate(multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.desaturate has been moved to ColorTransformFilter.desaturate');
+        ColorTransformFilter.prototype.desaturate.call(this, multiply);
+
+        return this;
+    }
+    /**
+     * @param multiply
+     * @deprecated
+     */
+    public negative(multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.negative has been moved to ColorTransformFilter.negative');
+        ColorTransformFilter.prototype.negative.call(this, multiply);
+
+        return this;
+    }
+    /**
+     * @param multiply
+     * @deprecated
+     */
+    public sepia(multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.sepia has been moved to ColorTransformFilter.sepia');
+        ColorTransformFilter.prototype.sepia.call(this, multiply);
+
+        return this;
+    }
+    /**
+     * @param multiply
+     * @deprecated
+     */
+    public technicolor(multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.technicolor has been moved to ColorTransformFilter.technicolor');
+        ColorTransformFilter.prototype.technicolor.call(this, multiply);
+
+        return this;
+    }
+    /**
+     * @param multiply
+     * @deprecated
+     */
+    public polaroid(multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.polaroid has been moved to ColorTransformFilter.polaroid');
+        ColorTransformFilter.prototype.polaroid.call(this, multiply);
+
+        return this;
+    }
+    /**
+     * @param multiply
+     * @deprecated
+     */
+    public toBGR(multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.toBGR has been moved to ColorTransformFilter.toBGR');
+        ColorTransformFilter.prototype.toBGR.call(this, multiply);
+
+        return this;
+    }
+    /**
+     * @param multiply
+     * @deprecated
+     */
+    public kodachrome(multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.kodachrome has been moved to ColorTransformFilter.kodachrome');
+        ColorTransformFilter.prototype.kodachrome.call(this, multiply);
+
+        return this;
+    }
+    /**
+     * @param multiply
+     * @deprecated
+     */
+    public browni(multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.browni has been moved to ColorTransformFilter.browni');
+        ColorTransformFilter.prototype.browni.call(this, multiply);
+
+        return this;
+    }
+    /**
+     * @param multiply
+     * @deprecated
+     */
+    public vintage(multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.vintage has been moved to ColorTransformFilter.vintage');
+        ColorTransformFilter.prototype.vintage.call(this, multiply);
+
+        return this;
+    }
+    /**
+     * @param desaturation
+     * @param toned
+     * @param lightColor
+     * @param darkColor
+     * @deprecated
+     */
+    public colorTone(desaturation?: number, toned?: number, lightColor?: ColorSource, darkColor?: ColorSource): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.colorTone has been moved to ColorTransformFilter.colorTone');
+        ColorTransformFilter.prototype.colorTone.call(this, desaturation, toned, lightColor, darkColor);
+
+        return this;
+    }
+    /**
+     * @param intensity
+     * @param multiply
+     * @deprecated
+     */
+    public night(intensity: number, multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.night has been moved to ColorTransformFilter.night');
+        ColorTransformFilter.prototype.night.call(this, intensity, multiply);
+
+        return this;
+    }
+    /**
+     * @param amount
+     * @param multiply
+     * @deprecated
+     */
+    public predator(amount: number, multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.predator has been moved to ColorTransformFilter.predator');
+        ColorTransformFilter.prototype.predator.call(this, amount, multiply);
+
+        return this;
+    }
+    /**
+     * @param multiply
+     * @deprecated
+     */
+    public lsd(multiply?: boolean): this
+    {
+        deprecation('8.18.0', 'Moved ColorMatrixFilter.lsd has been moved to ColorTransformFilter.lsd');
+        ColorTransformFilter.prototype.lsd.call(this, multiply);
+
+        return this;
     }
 }

@@ -61,7 +61,12 @@ export class ColorTransformFilter extends ColorMatrixFilter
     constructor(options?: ColorTransformFilterOptions)
     {
         super({
-            matrix: [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
+            matrix: [
+                1, 0, 0, 0, 0,
+                0, 1, 0, 0, 0,
+                0, 0, 1, 0, 0,
+                0, 0, 0, 1, 0,
+            ],
             ...options,
         });
     }
