@@ -45,7 +45,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
         {
             layout[group.group].push({
                 binding: group.binding,
-                visibility: ShaderStage.FRAGMENT,
+                visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
                 sampler: {
                     type: 'filtering'
                 }
@@ -55,7 +55,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
         {
             layout[group.group].push({
                 binding: group.binding,
-                visibility: ShaderStage.FRAGMENT,
+                visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
                 sampler: {
                     type: 'comparison'
                 }
@@ -65,7 +65,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
         {
             layout[group.group].push({
                 binding: group.binding,
-                visibility: ShaderStage.FRAGMENT,
+                visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
                 texture: {
                     sampleType: 'float',
                     viewDimension: '2d',
@@ -77,7 +77,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
         {
             layout[group.group].push({
                 binding: group.binding,
-                visibility: ShaderStage.FRAGMENT,
+                visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
                 texture: {
                     sampleType: 'depth',
                     viewDimension: '2d',
@@ -89,7 +89,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
         {
             layout[group.group].push({
                 binding: group.binding,
-                visibility: ShaderStage.FRAGMENT,
+                visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
                 texture: {
                     sampleType: 'depth',
                     viewDimension: '2d-array',
@@ -101,7 +101,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
         {
             layout[group.group].push({
                 binding: group.binding,
-                visibility: ShaderStage.FRAGMENT,
+                visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
                 texture: {
                     sampleType: 'float',
                     viewDimension: '2d-array',
@@ -113,7 +113,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
         {
             layout[group.group].push({
                 binding: group.binding,
-                visibility: ShaderStage.FRAGMENT,
+                visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
                 texture: {
                     sampleType: 'float',
                     viewDimension: 'cube',

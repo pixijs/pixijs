@@ -118,16 +118,14 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             throw new Error('[GpuRenderTargetAdaptor] cannot get gpu color texture from a depth-only render target');
         }
 
-        const gpuRenderTarget = this._renderTargetSystem.getGpuRenderTarget(renderTarget);
+        const colorTexture = renderTarget.colorAttachments[0].texture;
 
-        if (gpuRenderTarget.contexts[0])
+        if (colorTexture instanceof CanvasSource && colorTexture._gpuContext)
         {
-            return gpuRenderTarget.contexts[0].getCurrentTexture();
+            return colorTexture._gpuContext.getCurrentTexture();
         }
 
-        return this._renderer.texture.getGpuSource(
-            renderTarget.colorAttachments[0].texture
-        );
+        return this._renderer.texture.getGpuSource(colorTexture);
     }
 
     public getDescriptor(
@@ -150,7 +148,8 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         const colorAttachments = renderTarget.colorAttachments.map(
             (colorAttachment, i) =>
             {
-                const context = gpuRenderTarget.contexts[i];
+                const colorTexture = colorAttachment.texture;
+                const context = (colorTexture instanceof CanvasSource) ? colorTexture._gpuContext : null;
 
                 let view: GPUTextureView;
                 let resolveTarget: GPUTextureView;
@@ -365,30 +364,35 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
             if (colorTexture instanceof CanvasSource)
             {
-                const context = colorTexture.resource.getContext(
-                    'webgpu'
-                ) as unknown as GPUCanvasContext;
-
-                const alphaMode = (colorTexture as CanvasSource).transparent ? 'premultiplied' : 'opaque';
-
-                try
+                if (!colorTexture._gpuContext)
                 {
-                    context.configure({
-                        device: this._renderer.gpu.device,
-                        usage: GPUTextureUsage.TEXTURE_BINDING
-                            | GPUTextureUsage.COPY_DST
-                            | GPUTextureUsage.RENDER_ATTACHMENT
-                            | GPUTextureUsage.COPY_SRC,
-                        format: 'bgra8unorm',
-                        alphaMode,
-                    });
-                }
-                catch (e)
-                {
-                    console.error(e);
+                    const context = colorTexture.resource.getContext(
+                        'webgpu'
+                    ) as unknown as GPUCanvasContext;
+
+                    const alphaMode = colorTexture.transparent ? 'premultiplied' : 'opaque';
+
+                    try
+                    {
+                        context.configure({
+                            device: this._renderer.gpu.device,
+                            usage: GPUTextureUsage.TEXTURE_BINDING
+                                | GPUTextureUsage.COPY_DST
+                                | GPUTextureUsage.RENDER_ATTACHMENT
+                                | GPUTextureUsage.COPY_SRC,
+                            format: 'bgra8unorm',
+                            alphaMode,
+                        });
+                    }
+                    catch (e)
+                    {
+                        console.error(e);
+                    }
+
+                    colorTexture._gpuContext = context;
                 }
 
-                gpuRenderTarget.contexts[i] = context;
+                gpuRenderTarget.contexts[i] = colorTexture._gpuContext;
             }
 
             gpuRenderTarget.msaa = colorTexture.source.antialias;

@@ -17,7 +17,7 @@ export function generateGPULayout(maxTextures: number): GPUBindGroupLayoutEntry[
                 multisampled: false,
             },
             binding: bindIndex,
-            visibility: GPUShaderStage.FRAGMENT,
+            visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
         };
         bindIndex++;
 
@@ -26,7 +26,7 @@ export function generateGPULayout(maxTextures: number): GPUBindGroupLayoutEntry[
                 type: 'filtering',
             },
             binding: bindIndex,
-            visibility: GPUShaderStage.FRAGMENT,
+            visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
         };
 
         bindIndex++;

@@ -138,9 +138,13 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
             'indirect-first-instance',
         ].filter((feature) => adapter.features.has(feature)) as GPUFeatureName[];
 
-        // TODO and one of these!
+        // Request adapter limits so `device.limits` matches hardware (e.g. sampled textures per stage > 16).
+        // Without `requiredLimits`, implementations typically expose only the WebGPU default minimum.
         const device = await adapter.requestDevice({
-            requiredFeatures
+            requiredFeatures,
+            requiredLimits: {
+                maxSampledTexturesPerShaderStage: adapter.limits.maxSampledTexturesPerShaderStage,
+            },
         });
 
         return { adapter, device };
