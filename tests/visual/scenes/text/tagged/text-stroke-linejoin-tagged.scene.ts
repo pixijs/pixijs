@@ -14,41 +14,31 @@ export const scene: TestScene = {
     {
         await Assets.load('fonts/outfit.woff2');
 
-        const text = new Text({
-            text: '<miter>MWV</miter>\n<round>MWV</round>\n<bevel>MWV</bevel>',
-            style: {
-                fontFamily: 'Outfit',
-                fontSize: 64,
-                fill: 'white',
-                padding: 10,
-                tagStyles: {
-                    miter: {
-                        stroke: {
-                            color: 0x333333,
-                            width: 16,
-                            join: 'miter',
-                        },
-                    },
-                    round: {
-                        stroke: {
-                            color: 0x333333,
-                            width: 16,
-                            join: 'round',
-                        },
-                    },
-                    bevel: {
-                        stroke: {
-                            color: 0x333333,
-                            width: 16,
-                            join: 'bevel',
+        const lineJoins: Array<'miter' | 'round' | 'bevel'> = ['miter', 'round', 'bevel'];
+
+        lineJoins.forEach((join, index) =>
+        {
+            const text = new Text({
+                text: `<s>MWV</s>`,
+                style: {
+                    fontFamily: 'Outfit',
+                    fontSize: 64,
+                    fill: 'white',
+                    tagStyles: {
+                        s: {
+                            stroke: {
+                                color: 0x333333,
+                                width: 16,
+                                join,
+                            },
                         },
                     },
                 },
-            },
-        });
+            });
 
-        text.x = 20;
-        text.y = 20;
-        scene.addChild(text);
+            text.x = 20;
+            text.y = 20 + (index * 92);
+            scene.addChild(text);
+        });
     },
 };

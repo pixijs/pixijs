@@ -180,6 +180,7 @@ export function measureTaggedText(
 
     let lastFont = '';
     let hasDropShadow = !!style.dropShadow;
+    let maxRunStrokeWidth = style._stroke?.width || 0;
 
     for (const lineRuns of wrappedRunsByLine)
     {
@@ -205,6 +206,10 @@ export function measureTaggedText(
             lineAscent = Math.max(lineAscent, runFontProps.ascent);
             lineDescent = Math.max(lineDescent, runFontProps.descent);
             lineText += run.text;
+
+            const runStrokeWidth = run.style._stroke?.width || 0;
+
+            if (runStrokeWidth > maxRunStrokeWidth) maxRunStrokeWidth = runStrokeWidth;
 
             if (!hasDropShadow && run.style.dropShadow)
             {
@@ -232,10 +237,10 @@ export function measureTaggedText(
     }
 
     // Calculate total dimensions
-    const strokeWidth = style._stroke?.width || 0;
+    const strokeWidth = maxRunStrokeWidth;
 
     // Calculate base width - use wordWrapWidth for non-left alignment when wrapping
-    const useWrapWidth = wordWrap && style.align !== 'left' && style.align !== 'justify';
+    const useWrapWidth = wordWrap && style.align !== 'left';
     const alignWidth = useWrapWidth ? Math.max(maxLineWidth, style.wordWrapWidth) : maxLineWidth;
     const width = alignWidth + strokeWidth + (style.dropShadow ? style.dropShadow.distance : 0);
 

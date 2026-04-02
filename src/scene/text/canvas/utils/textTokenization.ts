@@ -43,6 +43,41 @@ export const BREAKING_SPACES: number[] = [
 export const BREAKING_SPACES_SET = new Set(BREAKING_SPACES);
 
 /**
+ * Cache of CSS-collapsible whitespace character codes.
+ * Per CSS Text Module Level 3, only regular spaces and tabs are collapsible.
+ * Unicode spaces (em space, en space, etc.) are NOT collapsible.
+ * @internal
+ */
+export const COLLAPSIBLE_SPACES: number[] = [
+    0x0009, // character tabulation (tab)
+    0x0020, // space
+];
+
+/**
+ * Set of collapsible space character codes for fast lookup.
+ * @internal
+ */
+export const COLLAPSIBLE_SPACES_SET = new Set(COLLAPSIBLE_SPACES);
+
+/**
+ * Characters that allow a line break AFTER them (they stay with the preceding word).
+ * @internal
+ */
+export const BREAK_AFTER_CHARS: number[] = [
+    0x002D, // hyphen-minus
+    0x2010, // unicode hyphen
+    0x2013, // en-dash
+    0x2014, // em-dash
+    0x00AD, // soft hyphen
+];
+
+/**
+ * Set of break-after character codes for fast lookup.
+ * @internal
+ */
+export const BREAK_AFTER_CHARS_SET = new Set(BREAK_AFTER_CHARS);
+
+/**
  * Regex to split text while capturing newline sequences.
  * @internal
  */
@@ -89,6 +124,41 @@ export function isBreakingSpace(char: string, _nextChar?: string): boolean
     }
 
     return BREAKING_SPACES_SET.has(char.charCodeAt(0));
+}
+
+/**
+ * Determines if char is a CSS-collapsible whitespace character.
+ * Only regular space (U+0020) and tab (U+0009) are collapsible per CSS spec.
+ * Unicode spaces like em space are NOT collapsible.
+ * @param char - The character
+ * @returns True if collapsible, False otherwise.
+ * @internal
+ */
+export function isCollapsibleSpace(char: string): boolean
+{
+    if (typeof char !== 'string')
+    {
+        return false;
+    }
+
+    return COLLAPSIBLE_SPACES_SET.has(char.charCodeAt(0));
+}
+
+/**
+ * Determines if char is a break-after character (line can break after it, but
+ * the character stays with the preceding word).
+ * @param char - The character
+ * @returns True if break-after, False otherwise.
+ * @internal
+ */
+export function isBreakAfterChar(char: string): boolean
+{
+    if (typeof char !== 'string')
+    {
+        return false;
+    }
+
+    return BREAK_AFTER_CHARS_SET.has(char.charCodeAt(0));
 }
 
 /**
@@ -181,6 +251,13 @@ export function tokenize(text: string): string[]
         }
 
         tokenChars.push(char);
+
+        // Break-after chars stay with the word, then emit the token
+        if (isBreakAfterChar(char) && nextChar && !isBreakingSpace(nextChar) && !isNewline(nextChar))
+        {
+            tokens.push(tokenChars.join(''));
+            tokenChars.length = 0;
+        }
     }
 
     if (tokenChars.length > 0)

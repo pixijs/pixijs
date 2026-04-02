@@ -15,6 +15,7 @@ export const scene: TestScene = {
             style: {
                 fontFamily: 'Herborn',
                 fontSize: 24,
+                fontWeight: '100',
                 fill: 'white',
             }
         });
@@ -23,7 +24,7 @@ export const scene: TestScene = {
             text: 'Herborn',
             style: {
                 fontFamily: 'Herborn',
-                fontWeight: 'bold',
+                fontWeight: '900',
                 fontSize: 24,
                 fill: 'blue',
             }
@@ -40,7 +41,7 @@ export const scene: TestScene = {
             }
         });
 
-        textWithBold.position.set(10, 20);
+        textWithBold.position.set(10, 55);
         text.position.set(10, 20);
         textWithBoldItatic.position.set(10, 90);
 

@@ -29,7 +29,7 @@ export function textStyleToCSS(style: HTMLTextStyle): string
         `white-space: ${(style.whiteSpace === 'pre' && style.wordWrap) ? 'pre-wrap' : style.whiteSpace}`,
         ...style.lineHeight ? [`line-height: ${style.lineHeight}px`] : [],
         ...style.wordWrap ? [
-            `word-break: ${style.breakWords ? 'break-all' : 'normal'}`,
+            `word-break: ${style.breakWords ? 'break-word' : 'normal'}`,
             `max-width: ${style.wordWrapWidth}px`
         ] : [],
         ...stroke ? [strokeToCSS(stroke)] : [],

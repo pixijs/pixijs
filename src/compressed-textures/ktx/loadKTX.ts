@@ -4,6 +4,7 @@ import { checkExtension } from '../../assets/utils/checkExtension';
 import { ExtensionType } from '../../extensions/Extensions';
 import { CompressedSource } from '../../rendering/renderers/shared/texture/sources/CompressedSource';
 import { getSupportedTextureFormats } from '../../rendering/renderers/shared/texture/utils/getSupportedTextureFormats';
+import { getResolutionOfUrl } from '../../utils/network/getResolutionOfUrl';
 import { parseKTX } from './parseKTX';
 
 import type { Loader } from '../../assets/loader/Loader';
@@ -33,7 +34,7 @@ export const loadKTX = {
         return checkExtension(url, '.ktx');
     },
 
-    async load(url: string, _asset: ResolvedAsset, loader: Loader): Promise<Texture | Texture[]>
+    async load(url: string, asset: ResolvedAsset, loader: Loader): Promise<Texture | Texture[]>
     {
         const supportedTextures = await getSupportedTextureFormats();
 
@@ -43,7 +44,10 @@ export const loadKTX = {
 
         const textureOptions = parseKTX(ktxArrayBuffer, supportedTextures);
 
-        const compressedTextureSource = new CompressedSource(textureOptions);
+        const compressedTextureSource = new CompressedSource({
+            ...textureOptions,
+            resolution: asset.data?.resolution || getResolutionOfUrl(url),
+        });
 
         return createTexture(compressedTextureSource, loader, url);
     },

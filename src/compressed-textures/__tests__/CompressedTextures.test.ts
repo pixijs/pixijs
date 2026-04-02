@@ -104,6 +104,14 @@ describe('Compressed Loader', () =>
         expect(asset).toEqual('my-image.bc3.dds');
     });
 
+    it('should resolve asset resolution from url', () =>
+    {
+        const parsed = resolveCompressedTextureUrl.parse('my-image@0.5x.bc3.ktx');
+
+        expect(parsed.src).toEqual('my-image@0.5x.bc3.ktx');
+        expect(parsed.resolution).toEqual(0.5);
+    });
+
     it('should add compressed texture formats', async () =>
     {
         Assets['_detections'].push(detectCompressed);

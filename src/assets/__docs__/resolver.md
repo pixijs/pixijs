@@ -92,6 +92,29 @@ PixiJS selects the best match based on runtime capabilities (e.g. chooses WebP i
 
 ---
 
+## Removing aliases
+
+Use `removeAlias` to unregister an alias from the resolver without destroying the underlying asset. This is useful when you need to remap an alias to a different asset, or when cleaning up aliases that are no longer needed.
+
+```ts
+import { Assets } from 'pixi.js';
+
+// Add an alias
+Assets.resolver.add({ alias: 'hero', src: 'hero-v1.png' });
+
+// Remove it
+Assets.resolver.removeAlias('hero');
+
+// Conditionally remove: only if the alias currently points to a specific asset
+const resolved = Assets.resolver.resolve('hero');
+Assets.resolver.removeAlias('hero', resolved);
+```
+
+> [!NOTE]
+> `removeAlias` only removes the alias mapping. It does **not** unload or destroy the asset itself. If the asset is already cached, it remains in memory until you call `Assets.unload`.
+
+---
+
 ## Related tools and features
 
 - **AssetPack**: For managing large asset sets, [AssetPack](https://pixijs.io/assetpack) can generate optimized manifests using glob patterns and output `UnresolvedAsset` structures automatically.

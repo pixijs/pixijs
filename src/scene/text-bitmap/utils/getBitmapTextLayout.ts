@@ -1,3 +1,11 @@
+import {
+    collapseNewlines,
+    collapseSpaces,
+    isBreakAfterChar,
+    isBreakingSpace,
+    isCollapsibleSpace,
+} from '../../text/canvas/utils/textTokenization';
+
 import type { TextStyle } from '../../text/TextStyle';
 import type { AbstractBitmapFont } from '../AbstractBitmapFont';
 
@@ -77,6 +85,57 @@ export function getBitmapTextLayout(
 
     const breakWords = style.wordWrap && style.breakWords;
 
+    const shouldCollapseSpaces = collapseSpaces(style.whiteSpace);
+    const shouldCollapseNewlines = collapseNewlines(style.whiteSpace);
+
+    if (shouldCollapseSpaces || shouldCollapseNewlines)
+    {
+        const processed: string[] = [];
+        let prevWasBreakingSpace = shouldCollapseSpaces;
+
+        for (let c = 0; c < chars.length; c++)
+        {
+            let char = chars[c];
+
+            if (char === '\r' || char === '\n')
+            {
+                if (shouldCollapseNewlines)
+                {
+                    if (char === '\r' && chars[c + 1] === '\n') c++;
+                    char = ' ';
+                }
+                else
+                {
+                    if (shouldCollapseSpaces) prevWasBreakingSpace = true;
+                    processed.push(char);
+                    continue;
+                }
+            }
+
+            if (isBreakingSpace(char))
+            {
+                if (shouldCollapseSpaces && isCollapsibleSpace(char))
+                {
+                    if (prevWasBreakingSpace) continue;
+                    prevWasBreakingSpace = true;
+                    processed.push(' ');
+                }
+                else
+                {
+                    prevWasBreakingSpace = false;
+                    processed.push(char);
+                }
+            }
+            else
+            {
+                prevWasBreakingSpace = false;
+                processed.push(char);
+            }
+        }
+
+        chars = processed;
+    }
+
     const nextWord = (word: typeof currentWord) =>
     {
         const start = currentLine.width;
@@ -91,7 +150,10 @@ export function getBitmapTextLayout(
 
         currentLine.width += word.width;
 
-        firstWord = false;
+        if (currentWord.index > 0 || !shouldCollapseSpaces)
+        {
+            firstWord = false;
+        }
 
         // reset the word..
         currentWord.width = 0;
@@ -109,9 +171,10 @@ export function getBitmapTextLayout(
         {
             let lastChar = currentLine.chars[index];
 
-            while (lastChar === ' ')
+            while (isCollapsibleSpace(lastChar))
             {
                 currentLine.width -= font.chars[lastChar].xAdvance;
+                currentLine.spacesIndex.pop();
                 lastChar = currentLine.chars[--index];
             }
         }
@@ -194,8 +257,6 @@ export function getBitmapTextLayout(
                 currentLine.spaceWidth = spaceWidth;
                 currentLine.spacesIndex.push(currentLine.charPositions.length);
                 currentLine.chars.push(char);
-
-                // spaceCount++;
             }
         }
         else if (charData)
@@ -204,10 +265,15 @@ export function getBitmapTextLayout(
 
             const nextCharWidth = charData.xAdvance + kerning + adjustedLetterSpacing;
 
-            const addWordToNextLine = breakWords && checkIsOverflow(currentLine.width + currentWord.width + nextCharWidth);
+            const wordExceedsWrapWidth = breakWords && checkIsOverflow(currentWord.width + nextCharWidth);
 
-            if (addWordToNextLine)
+            if (wordExceedsWrapWidth)
             {
+                if (!firstWord)
+                {
+                    nextLine();
+                }
+
                 nextWord(currentWord);
                 nextLine();
             }
@@ -216,6 +282,19 @@ export function getBitmapTextLayout(
             currentWord.chars.push(char);
 
             currentWord.width += nextCharWidth;
+
+            if (isBreakAfterChar(char))
+            {
+                const addWordToNextLine = !firstWord && style.wordWrap
+                    && checkIsOverflow(currentLine.width + currentWord.width);
+
+                if (addWordToNextLine)
+                {
+                    nextLine();
+                }
+
+                nextWord(currentWord);
+            }
         }
 
         previousChar = char;
@@ -223,6 +302,11 @@ export function getBitmapTextLayout(
     }
 
     nextLine();
+
+    if (style.wordWrap && style.align !== 'left')
+    {
+        layoutData.width = Math.max(layoutData.width, adjustedWordWrapWidth);
+    }
 
     if (style.align === 'center')
     {
@@ -272,7 +356,8 @@ function alignJustify(measurementData: BitmapTextLayoutData)
 {
     const width = measurementData.width;
 
-    for (let i = 0; i < measurementData.lines.length; i++)
+    // Skip last content line (CSS justify behavior); -2 accounts for trailing empty line
+    for (let i = 0; i < measurementData.lines.length - 2; i++)
     {
         const line = measurementData.lines[i];
 

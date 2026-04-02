@@ -33,6 +33,11 @@ import { autoDetectRenderer } from 'pixi.js';
 const renderer = await autoDetectRenderer({
     preference: 'webgpu', // or 'webgl' or 'canvas'
 });
+
+// Only allow specific renderers (acts as a blocklist for any type not listed)
+const renderer = await autoDetectRenderer({
+    preference: ['webgl', 'canvas'], // webgpu is excluded entirely
+});
 ```
 
 Or construct one directly when you need a specific renderer type (e.g., for testing or when you know the target environment):
@@ -130,6 +135,16 @@ function render() {
 
 requestAnimationFrame(render);
 ```
+
+## Destroying renderers
+
+Call `destroy()` to clean up all GPU resources, systems, event listeners, and internal state:
+
+```ts
+renderer.destroy();
+```
+
+This removes all `EventEmitter` listeners attached to the renderer and nullifies internal systems and pipes. A destroyed renderer cannot be used for further rendering.
 
 ---
 

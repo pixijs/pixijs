@@ -54,8 +54,9 @@ export class TexturePoolClass
      * @param pixelWidth - Width of texture in pixels.
      * @param pixelHeight - Height of texture in pixels.
      * @param antialias
+     * @param autoGenerateMipmaps - Whether to automatically generate mipmaps for this texture
      */
-    public createTexture(pixelWidth: number, pixelHeight: number, antialias: boolean): Texture
+    public createTexture(pixelWidth: number, pixelHeight: number, antialias: boolean, autoGenerateMipmaps: boolean): Texture
     {
         const textureSource = new TextureSource({
             ...this.textureOptions,
@@ -65,6 +66,7 @@ export class TexturePoolClass
             resolution: 1,
             antialias,
             autoGarbageCollect: false,
+            autoGenerateMipmaps,
         });
 
         return new Texture({
@@ -79,9 +81,16 @@ export class TexturePoolClass
      * @param frameHeight - The minimum height of the render texture.
      * @param resolution - The resolution of the render texture.
      * @param antialias
+     * @param autoGenerateMipmaps - Whether to automatically generate mipmaps. Defaults to false.
      * @returns The new render texture.
      */
-    public getOptimalTexture(frameWidth: number, frameHeight: number, resolution = 1, antialias: boolean): Texture
+    public getOptimalTexture(
+        frameWidth: number,
+        frameHeight: number,
+        resolution = 1,
+        antialias: boolean,
+        autoGenerateMipmaps = false
+    ): Texture
     {
         let po2Width = Math.ceil((frameWidth * resolution) - 1e-6);
         let po2Height = Math.ceil((frameHeight * resolution) - 1e-6);
@@ -89,7 +98,14 @@ export class TexturePoolClass
         po2Width = nextPow2(po2Width);
         po2Height = nextPow2(po2Height);
 
-        const key = (po2Width << 17) + (po2Height << 1) + (antialias ? 1 : 0);
+        // Pack flags in lower bits, then dimensions in higher bits to avoid collisions
+        // Bit 0: antialias flag
+        // Bit 1: mipmap flag
+        // Bits 2-16: height (15 bits, supports up to 32768)
+        // Bits 17-31: width (15 bits, supports up to 32768)
+        const antialiasFlag = antialias ? 1 : 0;
+        const mipmapFlag = autoGenerateMipmaps ? 1 : 0;
+        const key = (po2Width << 17) + (po2Height << 2) + (mipmapFlag << 1) + antialiasFlag;
 
         if (!this._texturePool[key])
         {
@@ -100,7 +116,7 @@ export class TexturePoolClass
 
         if (!texture)
         {
-            texture = this.createTexture(po2Width, po2Height, antialias);
+            texture = this.createTexture(po2Width, po2Height, antialias, autoGenerateMipmaps);
         }
 
         texture.source._resolution = resolution;
@@ -123,10 +139,14 @@ export class TexturePoolClass
     }
 
     /**
-     * Gets extra texture of the same size as input renderTexture
-     * @param texture - The texture to check what size it is.
-     * @param antialias - Whether to use antialias.
-     * @returns A texture that is a power of two
+     * Gets a pooled texture matching the dimensions and resolution of the given texture.
+     *
+     * This is a convenience wrapper around {@link TexturePoolClass#getOptimalTexture|getOptimalTexture}
+     * that copies width, height, and resolution from an existing texture. Useful when a filter needs
+     * a temporary texture the same size as its input (e.g., for multi-pass blur).
+     * @param texture - The texture whose dimensions to match.
+     * @param antialias - Whether to use antialias on the pooled texture. Defaults to `false`.
+     * @returns A pooled texture with power-of-two backing dimensions at the source resolution.
      */
     public getSameSizeTexture(texture: Texture, antialias = false)
     {
@@ -136,10 +156,15 @@ export class TexturePoolClass
     }
 
     /**
-     * Place a render texture back into the pool. Optionally reset the style of the texture to the default texture style.
-     * useful if you modified the style of the texture after getting it from the pool.
-     * @param renderTexture - The renderTexture to free
-     * @param resetStyle - Whether to reset the style of the texture to the default texture style
+     * Returns a texture to the pool so it can be reused by future
+     * {@link TexturePoolClass#getOptimalTexture|getOptimalTexture}
+     * or {@link TexturePoolClass#getSameSizeTexture|getSameSizeTexture} calls.
+     *
+     * If you modified the texture's style after obtaining it (e.g., changed filtering or wrapping),
+     * pass `resetStyle = true` to restore the pool's default {@link TexturePoolClass#textureStyle|textureStyle}.
+     * This prevents style changes from leaking into subsequent consumers of the same pooled texture.
+     * @param renderTexture - The texture to return to the pool.
+     * @param resetStyle - When `true`, replaces the texture source's style with the pool default. Defaults to `false`.
      */
     public returnTexture(renderTexture: Texture, resetStyle = false): void
     {

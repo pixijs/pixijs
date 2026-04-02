@@ -457,4 +457,100 @@ describe('Ticker', () =>
 
             ticker.start();
         }));
+
+    describe('minFPS / maxFPS', () =>
+    {
+        it('should set minFPS independently when maxFPS is unlimited (0)', () =>
+        {
+            const ticker = new Ticker();
+
+            expect(ticker.maxFPS).toBe(0);
+
+            ticker.minFPS = 30;
+
+            expect(ticker.minFPS).toBeCloseTo(30, 0);
+            expect(ticker.maxFPS).toBe(0);
+
+            ticker.destroy();
+        });
+
+        it('should push maxFPS up when minFPS exceeds it', () =>
+        {
+            const ticker = new Ticker();
+
+            ticker.maxFPS = 30;
+            ticker.minFPS = 60;
+
+            expect(ticker.minFPS).toBeCloseTo(60, 0);
+            expect(ticker.maxFPS).toBeCloseTo(60, 0);
+
+            ticker.destroy();
+        });
+
+        it('should not change maxFPS when minFPS is below it', () =>
+        {
+            const ticker = new Ticker();
+
+            ticker.maxFPS = 60;
+            ticker.minFPS = 30;
+
+            expect(ticker.minFPS).toBeCloseTo(30, 0);
+            expect(ticker.maxFPS).toBeCloseTo(60, 0);
+
+            ticker.destroy();
+        });
+
+        it('should pull minFPS down when maxFPS is set below it', () =>
+        {
+            const ticker = new Ticker();
+
+            ticker.minFPS = 60;
+            ticker.maxFPS = 30;
+
+            expect(ticker.maxFPS).toBeCloseTo(30, 0);
+            expect(ticker.minFPS).toBeCloseTo(30, 0);
+
+            ticker.destroy();
+        });
+
+        it('should not change minFPS when maxFPS is above it', () =>
+        {
+            const ticker = new Ticker();
+
+            ticker.minFPS = 30;
+            ticker.maxFPS = 60;
+
+            expect(ticker.maxFPS).toBeCloseTo(60, 0);
+            expect(ticker.minFPS).toBeCloseTo(30, 0);
+
+            ticker.destroy();
+        });
+
+        it('should allow maxFPS to be reset to 0 (unlimited)', () =>
+        {
+            const ticker = new Ticker();
+
+            ticker.minFPS = 30;
+            ticker.maxFPS = 60;
+            ticker.maxFPS = 0;
+
+            expect(ticker.maxFPS).toBe(0);
+            expect(ticker.minFPS).toBeCloseTo(30, 0);
+
+            ticker.destroy();
+        });
+
+        it('should keep minFPS and maxFPS equal when set to the same value', () =>
+        {
+            const ticker = new Ticker();
+
+            ticker.minFPS = 60;
+            ticker.maxFPS = 60;
+
+            expect(ticker.minFPS).toBeCloseTo(60, 0);
+            expect(ticker.maxFPS).toBeCloseTo(60, 0);
+
+            ticker.destroy();
+        });
+    });
 });

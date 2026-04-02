@@ -12,9 +12,11 @@ describe('ColorMatrixFilter', () =>
         filter.alpha = 0.5;
 
         expect(filter.alpha).toEqual(0.5);
-        expect(filter.matrix.toString()).toEqual(new Float32Array(
-            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0]
-        ).toString());
+        expect(filter.matrix.toString()).toEqual(
+            new Float32Array([
+                1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0,
+            ]).toString(),
+        );
 
         filter.destroy();
     });
@@ -87,7 +89,10 @@ describe('ColorMatrixFilter', () =>
         const filter1 = new ColorMatrixFilter();
         const filter2 = new ColorMatrixFilter();
 
-        expect(filter1.technicolor(true).matrix).toEqual(filter2.technicolor(false).matrix);
+        filter1.technicolor(true);
+        filter2.technicolor(false);
+
+        expect(filter1.matrix).toEqual(filter2.matrix);
         filter1.destroy();
         filter2.destroy();
     });

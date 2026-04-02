@@ -53,6 +53,9 @@ export interface MeshRopeOptions extends Omit<MeshOptions, 'geometry'>
      * @default 0
      */
     textureScale?: number;
+
+    /** The width (i.e., thickness) of the rope. If not specified, defaults back to texture's height. */
+    width?: number;
 }
 
 /**
@@ -168,8 +171,8 @@ export class MeshRope extends Mesh
      */
     constructor(options: MeshRopeOptions)
     {
-        const { texture, points, textureScale, ...rest } = { ...MeshRope.defaultOptions, ...options };
-        const ropeGeometry = new RopeGeometry(definedProps({ width: texture.height, points, textureScale }));
+        const { width, texture, points, textureScale, ...rest } = { ...MeshRope.defaultOptions, ...options };
+        const ropeGeometry = new RopeGeometry(definedProps({ width: width ?? texture.height, points, textureScale }));
 
         if (textureScale > 0)
         {

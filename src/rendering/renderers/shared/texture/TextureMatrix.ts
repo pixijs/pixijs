@@ -59,12 +59,6 @@ export class TextureMatrix
      */
     public _updateID: number;
 
-    /**
-     * Tracks Texture frame changes.
-     * @protected
-     */
-    protected _textureID: number;
-
     protected _texture: Texture;
 
     /**
@@ -83,7 +77,6 @@ export class TextureMatrix
         this.mapCoord = new Matrix();
         this.uClampFrame = new Float32Array(4);
         this.uClampOffset = new Float32Array(2);
-        this._textureID = -1;
         this._updateID = 0;
 
         this.clampOffset = 0;
@@ -110,12 +103,18 @@ export class TextureMatrix
 
     set texture(value: Texture)
     {
-        if (this.texture === value) return;
+        if (this._texture !== value)
+        {
+            this._texture?.removeListener('update', this.update, this);
+            this._texture = value;
+            this._texture.addListener('update', this.update, this);
+        }
 
-        this._texture?.removeListener('update', this.update, this);
-        this._texture = value;
-        this._texture.addListener('update', this.update, this);
-
+        // Always update in case the texture's UVs have changed (e.g. pooled textures
+        // reused with different frames). This setter is not called frequently enough
+        // to warrant caching the previous frame values for a dirty check.
+        // If this function starts being used multiple or hundreds of times per frame,
+        // then whoever is working on the code, please adjust.
         this.update();
     }
 

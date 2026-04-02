@@ -1,0 +1,47 @@
+import { SplitText, Text } from '~/scene';
+
+import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
+
+export const scene: TestScene = {
+    it: 'should render text stroke with anchor and tagged text correctly using split text',
+    create: async (scene: Container) =>
+    {
+        const text = new Text({
+            text: '<thick>Pixi</thick><thin>JS</thin>',
+            style: {
+                fontFamily: 'Arial',
+                fontWeight: 'bold',
+                fontSize: 36,
+                fill: 0xFFFFFF,
+                align: 'center',
+                wordWrap: true,
+                wordWrapWidth: 200,
+                breakWords: true,
+                tagStyles: {
+                    thick: {
+                        stroke: {
+                            color: 0x000000,
+                            width: 10,
+                        },
+                    },
+                    thin: {
+                        stroke: {
+                            color: 0xFF0000,
+                            width: 5,
+                        },
+                    },
+                },
+            },
+            anchor: 0.5,
+            x: 128 / 2,
+            y: 128 / 2,
+        });
+
+        const splitResult = SplitText.from(text);
+
+        splitResult.x = 128 / 2;
+        splitResult.y = 128 / 2;
+        scene.addChild(splitResult);
+    },
+};

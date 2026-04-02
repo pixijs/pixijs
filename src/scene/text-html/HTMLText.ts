@@ -1,3 +1,4 @@
+import { TextureSource } from '../../rendering/renderers/shared/texture/sources/TextureSource';
 import { TextureStyle, type TextureStyleOptions } from '../../rendering/renderers/shared/texture/TextureStyle';
 import { AbstractText, ensureTextOptions } from '../text/AbstractText';
 import { type BatchableHTMLText } from './BatchableHTMLText';
@@ -70,6 +71,12 @@ export interface HTMLTextOptions extends TextOptions<HTMLTextStyle, HTMLTextStyl
      * @advanced
      */
     textureStyle?: TextureStyle | TextureStyleOptions;
+    /**
+     * Whether to generate mipmaps for the text texture.
+     * Improves rendering quality when the text is scaled down.
+     * @default undefined - Falls back to TextureSource.defaultOptions.autoGenerateMipmaps
+     */
+    autoGenerateMipmaps?: boolean;
 }
 
 // eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
@@ -173,6 +180,15 @@ export class HTMLText extends AbstractText<
     public textureStyle?: TextureStyle;
 
     /**
+     * Whether to generate mipmaps for the text texture.
+     * Improves rendering quality when the text is scaled down.
+     * > [!NOTE] HTMLText is not updated when this property is updated,
+     * > you must update the text manually by calling `text.onViewUpdate()`
+     * @default undefined - Falls back to TextureSource.defaultOptions.autoGenerateMipmaps
+     */
+    public autoGenerateMipmaps?: boolean;
+
+    /**
      * @param {HTMLTextOptions} options - The options of the html text.
      */
     constructor(options?: HTMLTextOptions);
@@ -190,6 +206,8 @@ export class HTMLText extends AbstractText<
                 ? options.textureStyle
                 : new TextureStyle(options.textureStyle);
         }
+
+        this.autoGenerateMipmaps = options.autoGenerateMipmaps ?? TextureSource.defaultOptions.autoGenerateMipmaps;
     }
 
     /** @private */

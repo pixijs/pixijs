@@ -51,11 +51,51 @@ otherContainer.reparentChild(child);
 
 ### Events
 
-Containers emit events when children are added or removed:
+Containers emit lifecycle events you can listen to. There are two perspectives: events on the **parent** and events on the **child**.
+
+#### Parent-side events
+
+`childAdded` and `childRemoved` fire on the container whose children changed:
 
 ```ts
 group.on('childAdded', (child, parent, index) => { ... });
 group.on('childRemoved', (child, parent, index) => { ... });
+```
+
+#### Child-side events
+
+`added` and `removed` fire on the child itself when its parent changes:
+
+```ts
+const sprite = Sprite.from('bunny.png');
+
+sprite.on('added', (parent) => {
+    console.log('Added to:', parent.label);
+});
+sprite.on('removed', (oldParent) => {
+    console.log('Removed from:', oldParent.label);
+});
+```
+
+> [!NOTE]
+> When using `addChildAt` to reposition a child that is **already in the same container**, the child is moved silently. None of the add/remove events fire, since the parent-child relationship hasn't changed.
+
+#### Property and lifecycle events
+
+`visibleChanged` fires whenever a container's `visible` property changes:
+
+```ts
+container.on('visibleChanged', (visible) => {
+    console.log('Visibility:', visible);
+});
+```
+
+`destroyed` fires when `destroy()` is called, after internal cleanup but before listeners are removed:
+
+```ts
+container.on('destroyed', (container) => {
+    console.log('Destroyed:', container.label);
+});
 ```
 
 ### Finding children

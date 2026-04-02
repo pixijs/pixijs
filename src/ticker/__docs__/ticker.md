@@ -97,6 +97,8 @@ Caps how large `deltaTime` can get during slow frames. If the real frame rate dr
 ticker.minFPS = 30; // deltaTime won't exceed ~2.0, even if a frame takes 500ms
 ```
 
+The value is clamped between `0` and `Ticker.targetFPMS * 1000` (typically 60).
+
 ### `maxFPS`
 
 Limits how _fast_ the ticker runs. Useful for conserving CPU/GPU:
@@ -109,6 +111,21 @@ Set to `0` to allow unlimited frame rate:
 
 ```ts
 ticker.maxFPS = 0;
+```
+
+### Mutual clamping between `minFPS` and `maxFPS`
+
+The two properties stay consistent with each other automatically:
+
+- Setting `minFPS` above the current `maxFPS` raises `maxFPS` to match.
+- Setting `maxFPS` below the current `minFPS` lowers `minFPS` to match.
+
+```ts
+ticker.minFPS = 10;
+ticker.maxFPS = 30;
+
+ticker.minFPS = 50; // maxFPS is raised to 50
+ticker.maxFPS = 20; // minFPS is lowered to 20
 ```
 
 ## Speed control

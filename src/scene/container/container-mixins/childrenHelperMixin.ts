@@ -136,12 +136,16 @@ export interface ChildrenHelperMixin<C = ContainerChild>
     /**
      * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown.
      * If the child is already in this container, it will be moved to the specified index.
+     *
+     * When moving a child within the **same** container, `childAdded` and `added` events are
+     * **not** emitted because the parent-child relationship hasn't changed. Events only fire when
+     * a child is added from a different parent (or from no parent).
      * @example
      * ```ts
      * // Add at specific index
      * container.addChildAt(sprite, 0); // Add to front
      *
-     * // Move existing child
+     * // Move existing child (no events emitted)
      * const index = container.children.length - 1;
      * container.addChildAt(existingChild, index); // Move to back
      *
@@ -365,19 +369,26 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
         // TODO - check if child is already in the list?
         // we should be able to optimise this!
 
+        const sameParent = child.parent === this;
+
         if (child.parent)
         {
             const currentIndex = child.parent.children.indexOf(child);
 
-            // If this child is in the container and in the same position, do nothing
-            if (child.parent === this && currentIndex === index)
+            if (sameParent)
             {
-                return child;
-            }
-
-            if (currentIndex !== -1)
-            {
+                // Same parent, same position - do nothing
+                if (currentIndex === index)
+                {
+                    return child;
+                }
+                // Same parent, different position
                 child.parent.children.splice(currentIndex, 1);
+            }
+            else
+            // Different parent, full removal
+            {
+                child.removeFromParent();
             }
         }
 
@@ -402,6 +413,12 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
         }
 
         if (this.sortableChildren) this.sortDirty = true;
+
+        // If same parent, don't emit added events
+        if (sameParent)
+        {
+            return child;
+        }
 
         this.emit('childAdded', child, this, index);
         child.emit('added', this);

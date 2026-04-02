@@ -20,7 +20,7 @@ import type { BitmapFontInstallOptions } from './BitmapFontManager';
  *     data: {
  *         pages: [{ id: 0, file: 'font.png' }],
  *         chars: {
- *             '65': { // 'A'
+ *             'A': {
  *                 id: 65,
  *                 page: 0,
  *                 x: 0,
@@ -82,7 +82,7 @@ export interface BitmapFontOptions
  *     data: {
  *         pages: [{ id: 0, file: 'font.png' }],
  *         chars: {
- *             '65': { // 'A'
+ *             'A': {
  *                 id: 65,
  *                 page: 0,
  *                 x: 0,
