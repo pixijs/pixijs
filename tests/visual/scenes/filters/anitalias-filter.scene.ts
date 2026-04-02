@@ -1,4 +1,4 @@
-import { AlphaFilter, BlurFilter, ColorMatrixFilter } from '~/filters';
+import { AlphaFilter, BlurFilter, ColorTransformFilter } from '~/filters';
 import { Graphics } from '~/scene';
 
 import type { TestScene } from '../../types';
@@ -20,7 +20,7 @@ export const scene: TestScene = {
 
         const blurFilter = new BlurFilter({ antialias: true });
         const alphaFilter = new AlphaFilter({ alpha: 0.5, antialias: true });
-        const colorFilter = new ColorMatrixFilter({ antialias: true });
+        const colorFilter = new ColorTransformFilter({ antialias: true });
 
         colorFilter.greyscale(0.5, true);
         g.filters = [blurFilter, colorFilter, alphaFilter];

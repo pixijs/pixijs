@@ -11,7 +11,7 @@ export * from './defaults/blur/gl/generateBlurGlProgram';
 export * from './defaults/blur/gl/generateBlurVertSource';
 export * from './defaults/blur/gpu/generateBlurProgram';
 export * from './defaults/color-matrix/ColorMatrixFilter';
-export * from './defaults/color-matrix/MatrixFilter';
+export * from './defaults/color-matrix/ColorTransformFilter';
 export * from './defaults/displacement/DisplacementFilter';
 export * from './defaults/noise/NoiseFilter';
 export * from './defaults/passthrough/PassthroughFilter';

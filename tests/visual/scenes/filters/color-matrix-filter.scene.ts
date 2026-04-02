@@ -1,4 +1,4 @@
-import { ColorMatrixFilter } from '~/filters';
+import { ColorTransformFilter } from '~/filters';
 import { type Container, Graphics } from '~/scene';
 
 import type { TestScene } from '../../types';
@@ -8,10 +8,10 @@ export const scene: TestScene = {
     it: 'Color Matrix filter multiply flag should not affect matrix if it is the only matrix applied',
     create: async (scene: Container) =>
     {
-        const createRectangle = ({ x, y }: {x: number, y: number}): [Graphics, ColorMatrixFilter] =>
+        const createRectangle = ({ x, y }: {x: number, y: number}): [Graphics, ColorTransformFilter] =>
         {
             const rect = new Graphics().rect(x * 32, y * 32, 32, 32).fill('orange');
-            const filter = new ColorMatrixFilter();
+            const filter = new ColorTransformFilter();
 
             rect.filters = [filter];
 
