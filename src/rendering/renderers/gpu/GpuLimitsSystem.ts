@@ -54,7 +54,10 @@ export class GpuLimitsSystem implements System
     {
         const device = this._renderer.device.gpu.device;
 
-        this.maxTextures = device.limits.maxSampledTexturesPerShaderStage;
+        this.maxTextures = Math.min(
+            device.limits.maxSampledTexturesPerShaderStage,
+            device.limits.maxSamplersPerShaderStage,
+        );
         this.maxBatchableTextures = this.maxTextures;
 
         this._detectOverrideConstantsSupport(device);

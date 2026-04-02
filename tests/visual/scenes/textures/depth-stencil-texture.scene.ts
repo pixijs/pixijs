@@ -49,7 +49,7 @@ export const scene: TestScene = {
 
         const gpuShaderSrc = /* wgsl */`
             struct Uniforms {
-                uColor: vec4<f32>,
+                uTestColor: vec4<f32>,
                 uDepth: f32,
             }
 
@@ -68,7 +68,7 @@ export const scene: TestScene = {
 
             @fragment
             fn fsMain() -> @location(0) vec4<f32> {
-                return uniforms.uColor;
+                return uniforms.uTestColor;
             }
         `;
 
@@ -83,10 +83,10 @@ export const scene: TestScene = {
             `,
             fragment: `#version 300 es
                 precision highp float;
-                uniform vec4 uColor;
+                uniform vec4 uTestColor;
                 out vec4 fragColor;
                 void main() {
-                    fragColor = uColor;
+                    fragColor = uTestColor;
                 }
             `,
         };
@@ -122,7 +122,7 @@ export const scene: TestScene = {
                 },
                 resources: {
                     uniforms: {
-                        uColor: { value: [1, 0, 0, 1], type: 'vec4<f32>' },
+                        uTestColor: { value: [1, 0, 0, 1], type: 'vec4<f32>' },
                         uDepth: { value: 0.8, type: 'f32' },
                     },
                 },
@@ -141,7 +141,7 @@ export const scene: TestScene = {
                 },
                 resources: {
                     uniforms: {
-                        uColor: { value: [0, 1, 0, 1], type: 'vec4<f32>' },
+                        uTestColor: { value: [0, 1, 0, 1], type: 'vec4<f32>' },
                         uDepth: { value: 0.2, type: 'f32' },
                     },
                 },

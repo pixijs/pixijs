@@ -81,6 +81,33 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         return destinationTexture;
     }
 
+    public copyDepthTexture(source: RenderTarget, destination: RenderTarget): void
+    {
+        if (!source.depthStencilAttachment || !destination.depthStencilAttachment)
+        {
+            warn('[GlRenderTargetAdaptor] copyDepthTexture: source and destination must both have depth attachments');
+
+            return;
+        }
+
+        const renderTargetSystem = this._renderTargetSystem;
+        const gl = this._renderer.gl;
+
+        this.finishRenderPass(source);
+
+        const srcGl = renderTargetSystem.getGpuRenderTarget(source);
+        const dstGl = renderTargetSystem.getGpuRenderTarget(destination);
+
+        gl.bindFramebuffer(gl.READ_FRAMEBUFFER, srcGl.framebuffer);
+        gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, dstGl.framebuffer);
+
+        gl.blitFramebuffer(
+            0, 0, srcGl.width, srcGl.height,
+            0, 0, dstGl.width, dstGl.height,
+            gl.DEPTH_BUFFER_BIT, gl.NEAREST,
+        );
+    }
+
     public startRenderPass(
         renderTarget: RenderTarget,
         clear: CLEAR_OR_BOOL = true,

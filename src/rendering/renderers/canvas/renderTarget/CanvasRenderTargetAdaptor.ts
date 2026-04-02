@@ -1,5 +1,6 @@
 import { Color } from '../../../../color/Color';
 import { DOMAdapter } from '../../../../environment/adapter';
+import { warn } from '../../../../utils/logging/warn';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
@@ -199,6 +200,17 @@ export class CanvasRenderTargetAdaptor implements RenderTargetAdaptor<CanvasRend
         destSource.update();
 
         return destinationTexture;
+    }
+
+    /**
+     * Copies the depth attachment from one render target to another (not supported in canvas).
+     * @param _source - Source render target.
+     * @param _destination - Destination render target.
+     * @advanced
+     */
+    public copyDepthTexture(_source: RenderTarget, _destination: RenderTarget): void
+    {
+        warn('[CanvasRenderTargetAdaptor] copyDepthTexture is not supported in the canvas renderer');
     }
 
     /**

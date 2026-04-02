@@ -170,6 +170,33 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
      * @param {RendererRenderTarget} gpuRenderTarget - the gpu render target to destroy
      */
     destroyGpuRenderTarget(gpuRenderTarget: RENDER_TARGET): void
+
+    /**
+     * Copies the depth attachment from one render target to another.
+     * Both source and destination must have a depthStencilAttachment.
+     *
+     * **Important Note:** When using the copied depth buffer in a subsequent render pass,
+     * you must ensure you do not clear the depth buffer again. If you need to clear the color
+     * buffer of the destination render target, use `clear: CLEAR.COLOR` to preserve the copied depth data.
+     * @example
+     * ```js
+     * renderer.renderTarget.copyDepthTexture(sourceRT, destRT);
+     *
+     * // In the subsequent render pass, clear ONLY the color buffer!
+     * renderer.render({
+     *   target: destRT,
+     *   container: myMesh,
+     *   clear: CLEAR.COLOR, // Preserves the copied depth
+     *   clearColor: [0, 0, 0, 1]
+     * });
+     * ```
+     * @param {RenderTarget} source - the render target to copy depth from
+     * @param {RenderTarget} destination - the render target to copy depth to
+     */
+    copyDepthTexture(
+        source: RenderTarget,
+        destination: RenderTarget,
+    ): void
 }
 
 /**
@@ -634,6 +661,36 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
             size,
             originDest
         );
+    }
+
+    /**
+     * Copies the depth attachment from one render target to another.
+     * Both source and destination must have a depthStencilAttachment.
+     *
+     * **Important Note:** When using the copied depth buffer in a subsequent render pass,
+     * you must ensure you do not clear the depth buffer again. If you need to clear the color
+     * buffer of the destination render target, use `clear: CLEAR.COLOR` to preserve the copied depth data.
+     * @example
+     * ```js
+     * renderer.renderTarget.copyDepthTexture(sourceRT, destRT);
+     *
+     * // In the subsequent render pass, clear ONLY the color buffer!
+     * renderer.render({
+     *   target: destRT,
+     *   container: myMesh,
+     *   clear: CLEAR.COLOR, // Preserves the copied depth
+     *   clearColor: [0, 0, 0, 1]
+     * });
+     * ```
+     * @param source - the render target to copy depth from
+     * @param destination - the render target to copy depth to
+     */
+    public copyDepthTexture(
+        source: RenderTarget,
+        destination: RenderTarget,
+    ): void
+    {
+        this.adaptor.copyDepthTexture(source, destination);
     }
 
     /**

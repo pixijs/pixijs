@@ -1,3 +1,4 @@
+import { warn } from '../../../../utils/logging/warn';
 import { CLEAR } from '../../gl/const';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
 import { TextureSource } from '../../shared/texture/sources/TextureSource';
@@ -59,6 +60,40 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         );
 
         return destinationTexture;
+    }
+
+    public copyDepthTexture(source: RenderTarget, destination: RenderTarget): void
+    {
+        if (!source.depthStencilAttachment || !destination.depthStencilAttachment)
+        {
+            warn('[GpuRenderTargetAdaptor] copyDepthTexture: source and destination must both have depth attachments');
+
+            return;
+        }
+
+        const renderer = this._renderer;
+
+        const srcDepth = source.depthStencilAttachment.texture;
+        const dstDepth = destination.depthStencilAttachment.texture;
+
+        const srcGpu = renderer.texture.getGpuSource(srcDepth);
+        const dstGpu = renderer.texture.getGpuSource(dstDepth);
+
+        const standAlone = renderer.encoder.commandEncoder === null;
+        const commandEncoder = standAlone
+            ? renderer.gpu.device.createCommandEncoder()
+            : renderer.encoder.commandEncoder;
+
+        commandEncoder.copyTextureToTexture(
+            { texture: srcGpu },
+            { texture: dstGpu },
+            { width: source.pixelWidth, height: source.pixelHeight },
+        );
+
+        if (standAlone)
+        {
+            renderer.gpu.device.queue.submit([commandEncoder.finish()]);
+        }
     }
 
     public startRenderPass(
