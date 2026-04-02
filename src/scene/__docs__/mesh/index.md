@@ -32,9 +32,10 @@ const shader = Shader.from({
     fragment: `
             precision mediump float;
             in vec2 vUV;
+            out vec4 finalColor;
             uniform sampler2D uSampler;
             void main() {
-                gl_FragColor = texture2D(uSampler, vUV);
+                finalColor = texture(uSampler, vUV);
             }
         `,
   },
@@ -85,8 +86,10 @@ geometry.indices[0] = 1;
 A minimal wrapper over `Mesh` that accepts vertex, UV, and index arrays directly. Good for fast static or dynamic meshes.
 
 ```ts
+const texture = await Assets.load('image.png');
+
 const mesh = new MeshSimple({
-  texture: Texture.from('image.png'),
+  texture,
   vertices: new Float32Array([0, 0, 100, 0, 100, 100, 0, 100]),
   uvs: new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]),
   indices: new Uint32Array([0, 1, 2, 0, 2, 3]),
@@ -101,9 +104,11 @@ const mesh = new MeshSimple({
 Bends a texture along a series of control points. Often used for trails, snakes, and animated ribbons.
 
 ```ts
+const texture = await Assets.load('snake.png');
+
 const points = [new Point(0, 0), new Point(100, 0), new Point(200, 50)];
 const rope = new MeshRope({
-  texture: Texture.from('snake.png'),
+  texture,
   points,
   textureScale: 1, // optional
 });
@@ -117,8 +122,10 @@ const rope = new MeshRope({
 A flexible subdivided quad mesh, suitable for distortion or grid-based warping.
 
 ```ts
+const texture = await Assets.load('image.png');
+
 const plane = new MeshPlane({
-  texture: Texture.from('image.png'),
+  texture,
   verticesX: 10,
   verticesY: 10,
 });
@@ -128,11 +135,15 @@ const plane = new MeshPlane({
 
 ### PerspectiveMesh
 
-A subclass of `MeshPlane` that applies perspective correction by transforming the UVs.
+A subclass of `Mesh` that applies perspective correction by transforming the UVs.
 
 ```ts
+import { PerspectiveMesh } from 'pixi.js';
+
+const texture = await Assets.load('image.png');
+
 const mesh = new PerspectiveMesh({
-  texture: Texture.from('image.png'),
+  texture,
   verticesX: 20,
   verticesY: 20,
   x0: 0,

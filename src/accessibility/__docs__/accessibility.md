@@ -6,7 +6,7 @@ title: Overview
 
 # Accessibility
 
-Canvas elements are invisible to screen readers by default. PixiJS bridges this gap with a DOM-based overlay system: it places invisible `<div>` elements over your canvas, aligned to the bounds of accessible objects. These divs integrate with screen readers, keyboard navigation (`Tab` key), and other assistive technologies so that users who can't see the canvas can still interact with your application.
+Canvas elements are invisible to screen readers. PixiJS solves this with a DOM-based overlay system: it places invisible `<div>` elements over your canvas, aligned to the bounds of accessible objects. These divs integrate with screen readers, keyboard navigation (`Tab` key), and other assistive technologies so users who can't see the canvas can still interact with your application.
 
 These overlay elements:
 
@@ -19,13 +19,13 @@ These overlay elements:
 
 ## Enabling the system
 
-Accessibility is an opt-in module to keep the default bundle small. Import it before creating your renderer:
+The {@link AccessibilitySystem} is included in the default `pixi.js` bundle and installs automatically onto your renderer.
+
+If you use `manageImports: false` for a custom build, import it explicitly before creating your renderer:
 
 ```ts
 import 'pixi.js/accessibility';
 ```
-
-PixiJS automatically installs the {@link AccessibilitySystem} onto your renderer.
 
 ## Basic usage
 
@@ -56,6 +56,8 @@ app.stage.addChild(button);
 | `tabIndex`                | `0`          | Keyboard focus order.                                            |
 | `accessibleChildren`      | `true`       | Whether children of this container are accessible.               |
 
+A container with `accessible = true` but no `accessibleTitle` or `accessibleHint` gets a fallback title of `"container {tabIndex}"`. Always provide at least `accessibleTitle` so screen readers announce something meaningful.
+
 ## Configuration options
 
 Configure the accessibility system when creating your application:
@@ -64,12 +66,21 @@ Configure the accessibility system when creating your application:
 const app = new Application();
 await app.init({
   accessibilityOptions: {
-    enabledByDefault: true,      // Enable on startup instead of waiting for tab
-    activateOnTab: true,         // Allow tab key to activate accessibility
+    enabledByDefault: true,      // Enable on startup instead of waiting for Tab
+    activateOnTab: true,         // Allow Tab key to activate accessibility
     debug: false,                // Show accessibility divs for debugging
     deactivateOnMouseMove: true, // Disable when mouse is used
   },
 });
+```
+
+You can also set defaults before creating any Application:
+
+```ts
+import { AccessibilitySystem } from 'pixi.js';
+
+AccessibilitySystem.defaultOptions.enabledByDefault = true;
+AccessibilitySystem.defaultOptions.deactivateOnMouseMove = false;
 ```
 
 ## Custom tab order
@@ -95,6 +106,22 @@ menu.accessibleChildren = true;  // Allow children to be accessible (default)
 menu.accessibleChildren = false;
 ```
 
+## Handling interactions
+
+Set both `eventMode` and `accessible` for full keyboard and pointer support. When a user activates a shadow div (via Enter/Space or screen reader action), the system dispatches a `FederatedEvent` to the corresponding container:
+
+```ts
+const button = new Sprite();
+button.eventMode = 'static';
+button.accessible = true;
+button.accessibleTitle = 'Submit form';
+button.tabIndex = 0;
+
+button.on('pointertap', () => {
+    submitForm();
+});
+```
+
 ## Programmatic control
 
 Enable or disable the system at runtime:
@@ -105,6 +132,10 @@ app.renderer.accessibility.setAccessibilityEnabled(true);
 console.log(app.renderer.accessibility.isActive);
 console.log(app.renderer.accessibility.isMobileAccessibility);
 ```
+
+## Mobile behavior
+
+On mobile devices, the system creates a hidden touch hook button. When a screen reader user focuses this button, accessibility activates and stays active for the rest of the session (mouse movement won't deactivate it). This ensures assistive technology users don't lose their accessible overlay mid-interaction.
 
 ## Debugging
 
@@ -117,6 +148,12 @@ await app.init({
   },
 });
 ```
+
+## Common pitfalls
+
+**Overlay doesn't appear on load.** By default, the system waits for the user to press Tab before creating overlay divs. Set `enabledByDefault: true` or call `setAccessibilityEnabled(true)` if you need the overlay immediately (e.g., for automated accessibility testing tools).
+
+**Overlay disappears when moving the mouse.** `deactivateOnMouseMove` defaults to `true`. Any mouse movement after Tab-activation removes the overlay. Set `deactivateOnMouseMove: false` during development to keep the overlay visible while testing with a mouse.
 
 ## API reference
 

@@ -83,9 +83,11 @@ ticker.add(ui.update, ui, UPDATE_PRIORITY.LOW);              // runs last
 
 Available constants:
 
-- `UPDATE_PRIORITY.HIGH = 50`
+- `UPDATE_PRIORITY.INTERACTION = 50`
+- `UPDATE_PRIORITY.HIGH = 25`
 - `UPDATE_PRIORITY.NORMAL = 0`
-- `UPDATE_PRIORITY.LOW = -50`
+- `UPDATE_PRIORITY.LOW = -25`
+- `UPDATE_PRIORITY.UTILITY = -50`
 
 ## Configuring FPS
 
@@ -141,8 +143,8 @@ ticker.speed = 2.0; // double speed (fast forward)
 
 ```ts
 ticker.deltaTime; // Frame-rate-independent multiplier (1.0 at 60fps). Affected by `speed`.
-ticker.deltaMS;   // Actual milliseconds elapsed since the last frame. Not affected by `speed`.
-ticker.elapsedMS; // Milliseconds spent processing the last frame
+ticker.deltaMS;   // Milliseconds elapsed since the last frame. Capped by `minFPS`, scaled by `speed`.
+ticker.elapsedMS; // Raw milliseconds elapsed since the last frame. Not capped or scaled.
 ticker.lastTime;  // Timestamp of the last frame
 ticker.FPS;       // Current frames per second
 ```

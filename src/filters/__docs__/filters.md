@@ -303,6 +303,25 @@ sprite2.filters = [sharedBlur];
 
 ---
 
+## Community filters (pixi-filters)
+
+The [`pixi-filters`](https://github.com/pixijs/filters) package provides many additional filters beyond the built-ins, including glow, outline, adjustment, drop shadow, and more.
+
+```ts
+import { AdjustmentFilter } from 'pixi-filters/adjustment';
+import { GlowFilter } from 'pixi-filters/glow';
+
+sprite.filters = [
+    new AdjustmentFilter({ brightness: 1.2, contrast: 1.1 }),
+    new GlowFilter({ distance: 15, outerStrength: 2 }),
+];
+```
+
+> [!NOTE]
+> For v8, use `pixi-filters/{name}` imports. The old `@pixi/filter-*` packages are v7 only.
+
+---
+
 ## API reference
 
 - {@link Filter} - Base filter class

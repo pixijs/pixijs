@@ -18,6 +18,8 @@ PixiJS provides three text rendering systems, each with different tradeoffs:
 - **`BitmapText`**: Ultra-fast, GPU-optimized bitmap fonts
 - **`HTMLText`**: Richly formatted HTML inside the Pixi scene
 
+Additionally, **`SplitText`** and **`SplitBitmapText`** wrap Text and BitmapText respectively, decomposing text into per-character, per-word, and per-line containers for animation.
+
 Each approach has tradeoffs in fidelity, speed, and flexibility.
 
 ## `Text`: Rich dynamic text with styles

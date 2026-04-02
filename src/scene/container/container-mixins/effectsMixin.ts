@@ -214,9 +214,8 @@ export interface EffectsMixin extends Required<EffectsMixinConstructor>
      *
      * // Create a circular mask
      * const graphics = new Graphics()
-     *     .beginFill(0xFF3300)
-     *     .drawCircle(100, 100, 50)
-     *     .endFill();
+     *     .circle(100, 100, 50)
+     *     .fill(0xFF3300);
      *
      * // Apply mask with options
      * sprite.setMask({

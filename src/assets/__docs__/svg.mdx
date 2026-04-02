@@ -112,8 +112,9 @@ const graphics2 = new Graphics(context);
 Instead of passing an SVG string directly, load an SVG file using `Assets.load`. This returns a `GraphicsContext` object for creating multiple `Graphics` instances efficiently.
 
 ```ts
-const svgContext = await Assets.load('path/to.svg', {
-  parseAsGraphicsContext: true, // If false, returns a texture instead
+const svgContext = await Assets.load({
+  src: 'path/to.svg',
+  data: { parseAsGraphicsContext: true },
 });
 const myGraphics = new Graphics(svgContext);
 ```

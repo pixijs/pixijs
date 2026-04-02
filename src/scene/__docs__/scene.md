@@ -203,7 +203,7 @@ sprite.setMask({ mask: maskSprite, channel: 'alpha' });
 
 ### Notes on masking
 
-- The mask is **not rendered**; it only defines the visible area. It must be added to the display list.
+- The mask is not drawn visually, but must be part of the scene graph for coordinate calculations.
 - Only one mask can be assigned per object.
 - For advanced blending, use **alpha masks** or **filters** (covered in later guides).
 
@@ -264,6 +264,8 @@ Blend modes determine how colors of overlapping objects combine. PixiJS supports
 - `add`: Adds the colors of the source and destination pixels.
 - `multiply`: Multiplies the colors of the source and destination pixels.
 - `screen`: Inverts the colors, multiplies them, and inverts again.
+- `erase`: Erases pixels from the render target.
+- `none`: No blending, overwrites the destination.
 
 There are also advanced blend modes like `subtract`, `difference`, and `overlay`. See the full list in the [Blend Modes documentation](../../filters/__docs__/filters.md#advanced-blend-modes).
 

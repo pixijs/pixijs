@@ -68,6 +68,9 @@ const CustomAdapter = {
   createCanvas: (width, height) => {
     /* custom implementation */
   },
+  createImage: () => {
+    /* custom implementation */
+  },
   getCanvasRenderingContext2D: () => {
     /* custom implementation */
   },
@@ -76,6 +79,7 @@ const CustomAdapter = {
   },
   getNavigator: () => ({ userAgent: 'Custom', gpu: null }),
   getBaseUrl: () => 'custom://',
+  getFontFaceSet: () => null,
   fetch: async (url, options) => {
     /* custom fetch */
   },

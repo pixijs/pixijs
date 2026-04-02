@@ -15,8 +15,7 @@ const style = new TextStyle({
   fontFamily: 'Arial',
   fontSize: 30,
   fill: '#ffffff',
-  stroke: '#000000',
-  strokeThickness: 3,
+  stroke: { color: '#000000', width: 3 },
   dropShadow: {
     color: '#000000',
     blur: 5,
@@ -90,6 +89,31 @@ const style = new TextStyle({
 
 style.dropShadow.color = '#ff0000'; // Change shadow color
 ```
+
+## Tag styles
+
+`tagStyles` enables per-tag inline styling for both `Text` and `HTMLText`. When set, markup like `<red>text</red>` applies the matching style override to that span of text.
+
+```ts
+const style = new TextStyle({
+  fontSize: 24,
+  fill: '#ffffff',
+  tagStyles: {
+    red: { fill: 'red' },
+    blue: { fill: 'blue' },
+    big: { fontSize: 48 },
+  },
+});
+
+const text = new Text({
+  text: '<red>Warning:</red> normal <big>BIG</big>',
+  style,
+});
+```
+
+Tags are only parsed when `tagStyles` has entries. If `tagStyles` is empty or undefined, `<` characters are treated as literal text. Nested tags are supported; inner tags inherit from outer tags.
+
+For `HTMLText`, `tagStyles` uses `HTMLTextStyleOptions` (which includes CSS-specific properties). For canvas `Text`, it uses `TextStyleOptions`.
 
 ---
 

@@ -6,9 +6,9 @@ category: assets
 
 # Background loader
 
-The background loader queues asset downloads at low priority so they happen between frames while your application runs. Assets added to the background queue are **not** downloaded immediately – they are fetched one at a time (or up to the configured concurrency limit) while the main application continues. Only once each item has actually finished downloading is it placed into the regular cache.
+The background loader queues asset downloads at low priority so they happen between frames while your application runs. Assets added to the background queue are **not** downloaded immediately; they are fetched one at a time (or up to the configured concurrency limit) while the main application continues. Only once each item has finished downloading is it placed into the regular cache.
 
-> **Important:** a background‑queued asset is *not* instantly available just because you called `Assets.backgroundLoad`. If you call `Assets.load()` or `Assets.loadBundle()` for the same asset before the background fetch has completed, the loader will treat it as a high‑priority request and perform a fresh download (pausing the background process); the call only resolves instantly when the background load has already finished.
+> **Important:** a background-queued asset is *not* instantly available just because you called `Assets.backgroundLoad`. If you call `Assets.load()` or `Assets.loadBundle()` for the same asset before the background fetch has completed, the loader will treat it as a high-priority request and perform a fresh download (pausing the background process); the call only resolves instantly when the background load has already finished.
 
 
 ## Loading bundles

@@ -115,7 +115,7 @@ Asset loading can fail for many reasons (network issues, corrupt files, unsuppor
 Supported options:
 
 - `onProgress(progress: number)`: Called as each asset completes (0.0 to 1.0)
-- `onError(error: Error, asset)`: Called when an individual asset fails
+- `onError(error: Error, url: string | ResolvedAsset)`: Called when an individual asset fails
 - `strategy`: `'throw'` | `'skip'` | `'retry'`
 - `retryCount`: Number of retry attempts when strategy is `'retry'` (default 3)
 - `retryDelay`: Delay in ms between retries (default 250)
@@ -134,7 +134,7 @@ await Assets.init({
     strategy: 'retry',
     retryCount: 4,
     retryDelay: 400,
-    onError: (err, asset) => console.debug('Retrying:', asset.src),
+    onError: (err, url) => console.debug('Retrying:', url),
   },
 });
 
@@ -144,7 +144,7 @@ await Assets.load('critical.json');
 // Skip missing optional texture
 const tex = await Assets.load('optional.png', {
   strategy: 'skip',
-  onError: (err, asset) => console.warn('Skipped:', asset, err.message),
+  onError: (err, url) => console.warn('Skipped:', url, err.message),
 });
 ```
 
@@ -213,7 +213,8 @@ await Assets.init({
 | `basePath`            | `string`                      | Prefix applied to all relative asset paths (e.g. for CDNs) |
 | `defaultSearchParams` | `string \| Record<string, any>` | Default URL parameters to append to all asset requests   |
 | `skipDetections`      | `boolean`                     | Skip environment detection parsers for assets              |
-| `manifest`            | `AssetsManifest`              | A descriptor of named asset bundles and their contents     |
+| `texturePreference`   | `{ resolution?, format? }`    | Preferred texture resolution and format order              |
+| `manifest`            | `string \| AssetsManifest`    | URL to a manifest JSON file, or a manifest object          |
 | `preferences`         | `AssetsPreferences`           | Format and resolution preferences for loading              |
 | `bundleIdentifier`    | `BundleIdentifierOptions`     | Override how bundle IDs are generated                      |
 | `loadOptions`         | `LoadOptions`                 | Default load strategy, retry behavior, and error handling  |

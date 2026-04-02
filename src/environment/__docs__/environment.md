@@ -27,26 +27,35 @@ document.body.appendChild(app.canvas);
 
 ## Web Worker environment
 
-PixiJS can run in Web Workers using `WebWorkerAdapter`, which renders to an `OffscreenCanvas`. Set the adapter before creating any PixiJS objects.
+PixiJS can run in Web Workers using `WebWorkerAdapter`, which renders to an `OffscreenCanvas`. Transfer an `OffscreenCanvas` from the main thread to the worker, then set the adapter and initialize PixiJS:
 
 ```ts
-import { DOMAdapter, WebWorkerAdapter, Application } from 'pixi.js';
+// main.js
+const canvas = document.createElement('canvas');
+canvas.width = 800;
+canvas.height = 600;
+document.body.appendChild(canvas);
 
-// Set the adapter before creating any PixiJS objects
+const offscreen = canvas.transferControlToOffscreen();
+const worker = new Worker('worker.js', { type: 'module' });
+worker.postMessage({ canvas: offscreen }, [offscreen]);
+```
+
+```ts
+// worker.js
+import { Application, DOMAdapter, WebWorkerAdapter } from 'pixi.js';
+
+// Must be set before creating any PixiJS objects
 DOMAdapter.set(WebWorkerAdapter);
 
-const app = new Application();
-
-await app.init({
-    width: 800,
-    height: 600,
-});
-
-// Returns an OffscreenCanvas
-const canvas = app.canvas;
-
-// Post the canvas back to the main thread
-postMessage({ canvas }, [canvas]);
+self.onmessage = async (event) => {
+    const app = new Application();
+    await app.init({
+        canvas: event.data.canvas,
+        width: 800,
+        height: 600,
+    });
+};
 ```
 
 > [!WARNING]
@@ -78,14 +87,9 @@ const CustomAdapter: Adapter = {
 DOMAdapter.set(CustomAdapter);
 ```
 
-## Auto-detection
+## Adapter defaults
 
-PixiJS auto-detects the environment at startup using extension-based detection:
-
-1. If running inside a Web Worker (`WorkerGlobalScope` exists), `WebWorkerAdapter` is selected automatically.
-2. Otherwise, `BrowserAdapter` is used as the default.
-
-You only need to call `DOMAdapter.set()` when using a custom adapter. Browser and Web Worker environments are handled automatically.
+PixiJS uses `BrowserAdapter` by default. For Web Worker environments, you must call `DOMAdapter.set(WebWorkerAdapter)` before creating any PixiJS objects. The environment extension system detects `WorkerGlobalScope` and loads compatible rendering modules, but it does not set the adapter automatically.
 
 ## API reference
 

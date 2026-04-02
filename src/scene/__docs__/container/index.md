@@ -49,6 +49,12 @@ To move a child to another container while keeping its current position on scree
 otherContainer.reparentChild(child);
 ```
 
+To replace an existing child with a new one, copying the old child's local transform (position, rotation, scale) to the replacement:
+
+```ts
+container.replaceChild(oldChild, newChild);
+```
+
 ### Events
 
 Containers emit lifecycle events you can listen to. There are two perspectives: events on the **parent** and events on the **child**.

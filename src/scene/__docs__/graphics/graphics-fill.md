@@ -163,8 +163,8 @@ You can control the gradient direction with the following properties:
 - `end {x, y}`: Where the gradient ends, same coordinate space.
 
 Common patterns:
-- **Horizontal** (default): `start: {x: 0, y: 0}`, `end: {x: 1, y: 0}`
-- **Vertical**: `start: {x: 0, y: 0}`, `end: {x: 0, y: 1}`
+- **Vertical** (default): `start: {x: 0, y: 0}`, `end: {x: 0, y: 1}`
+- **Horizontal**: `start: {x: 0, y: 0}`, `end: {x: 1, y: 0}`
 - **Diagonal**: `start: {x: 0, y: 0}`, `end: {x: 1, y: 1}`
 
 ```ts
