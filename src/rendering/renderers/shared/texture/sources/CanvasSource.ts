@@ -40,6 +40,9 @@ export class CanvasSource extends TextureSource<ICanvas>
 
     private _context2D: CanvasRenderingContext2D;
 
+    /** @internal */
+    public _gpuContext: GPUCanvasContext;
+
     constructor(options: CanvasSourceOptions)
     {
         if (!options.resource)
