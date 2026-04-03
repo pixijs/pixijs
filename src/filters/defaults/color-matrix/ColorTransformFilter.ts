@@ -1,7 +1,5 @@
-import { Color } from '../../../color/Color';
+import { Color, type ColorSource } from '../../../color/Color';
 import { type ColorMatrix, ColorMatrixFilter, type ColorMatrixFilterOptions } from './ColorMatrixFilter';
-
-import type { ColorSource } from '../../../color/Color';
 
 /**
  * Options for ColorMatrixFilter

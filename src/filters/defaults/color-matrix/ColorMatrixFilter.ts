@@ -1,12 +1,12 @@
+import { Color, type ColorSource } from '../../../color';
 import { GlProgram } from '../../../rendering/renderers/gl/shader/GlProgram';
 import { GpuProgram } from '../../../rendering/renderers/gpu/shader/GpuProgram';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
+import { deprecation } from '../../../utils';
 import { Filter } from '../../Filter';
 import vertex from '../defaultFilter.vert';
 import fragment from './colorMatrixFilter.frag';
 import source from './colorMatrixFilter.wgsl';
-import { Color, type ColorSource } from '~/color';
-import { deprecation } from '~/utils';
 
 import type { ArrayFixed } from '../../../utils/types';
 import type { FilterOptions } from '../../Filter';
