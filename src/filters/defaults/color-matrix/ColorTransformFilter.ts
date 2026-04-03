@@ -1,20 +1,16 @@
 import { Color } from '../../../color/Color';
-import { type ColorMatrix, ColorMatrixFilter } from './ColorMatrixFilter';
+import { type ColorMatrix, ColorMatrixFilter, type ColorMatrixFilterOptions } from './ColorMatrixFilter';
 
 import type { ColorSource } from '../../../color/Color';
-import type { FilterOptions } from '../../Filter';
 
 /**
  * Options for ColorMatrixFilter
  * @category filters
  * @standard
  */
-export interface ColorTransformFilterOptions extends FilterOptions
+export interface ColorTransformFilterOptions extends ColorMatrixFilterOptions
 {
-    /**
-     * The opacity value used to blend between the original and transformed colors.
-     * @see {@link ColorMatrixFilter.alpha}
-     */
+    /** @inheritdoc */
     alpha?: number;
 }
 
@@ -24,7 +20,7 @@ export interface ColorTransformFilterOptions extends FilterOptions
  *
  * The class provides convenient methods for common color adjustments like brightness, contrast, saturation,
  * and various photo filter effects. If you only want an easy way to apply color transformations using a 5x4
- * matrix you can use {@link MatrixFilter} instead.
+ * matrix you can use {@link ColorMatrixFilter} instead.
  * @example
  * ```js
  * import { ColorTransformFilter } from 'pixi.js';
@@ -74,23 +70,18 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * Transforms current matrix and set the new one
      * @param {number[]} matrix - 5x4 matrix
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
-     *  just set the current matrix with matrix
+     *  just set the current matrix to matrix
      */
-    private _loadMatrix(matrix: ColorMatrix, multiply = false): void
+    protected override _loadMatrix(matrix: ColorMatrix, multiply: boolean): void
     {
         if (multiply)
         {
-            const newMatrix = [...matrix] as ColorMatrix;
-
-            this._multiply(newMatrix, this.matrix, matrix);
-            this.resources.colorMatrixUniforms.uniforms.uColorMatrix = newMatrix;
+            this.append(matrix);
         }
         else
         {
-            this.resources.colorMatrixUniforms.uniforms.uColorMatrix = matrix;
+            this.matrix = matrix;
         }
-
-        // set the new matrix
 
         this.resources.colorMatrixUniforms.update();
     }
@@ -109,7 +100,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @example
      * ```ts
      * // Create a new color matrix filter
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Darken the image to 50% brightness
      * colorMatrix.brightness(0.5);
@@ -146,7 +137,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Apply a red tint
      * colorMatrix.tint(0xff0000);
@@ -189,7 +180,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Convert to 50% grey
      * colorMatrix.greyscale(0.5);
@@ -235,7 +226,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Convert to black and white
      * colorMatrix.blackAndWhite();
@@ -276,7 +267,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Rotate hue by 90 degrees
      * colorMatrix.hue(90);
@@ -351,7 +342,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Increase contrast by 50%
      * colorMatrix.contrast(0.5);
@@ -395,7 +386,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Double the saturation
      * colorMatrix.saturate(1);
@@ -434,7 +425,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Convert image to grayscale
      * colorMatrix.desaturate();
@@ -460,7 +451,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Create negative effect
      * colorMatrix.negative();
@@ -496,7 +487,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Apply sepia effect
      * colorMatrix.sepia();
@@ -533,7 +524,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Apply Technicolor effect
      * colorMatrix.technicolor();
@@ -570,7 +561,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Apply Polaroid effect
      * colorMatrix.polaroid();
@@ -606,7 +597,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Swap red and blue channels
      * colorMatrix.toBGR();
@@ -643,7 +634,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Apply Kodachrome effect
      * colorMatrix.kodachrome();
@@ -679,7 +670,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Apply browni effect
      * colorMatrix.browni();
@@ -715,7 +706,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Apply vintage effect
      * colorMatrix.vintage();
@@ -752,7 +743,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Create sepia-like effect with custom colors
      * colorMatrix.colorTone(
@@ -807,7 +798,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Apply night vision effect
      * colorMatrix.night(0.3);
@@ -841,7 +832,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Apply thermal vision effect
      * colorMatrix.predator(0.5);
@@ -898,7 +889,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * @returns `this` for chaining.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Apply psychedelic effect
      * colorMatrix.lsd();
@@ -931,7 +922,7 @@ export class ColorTransformFilter extends ColorMatrixFilter
      * The identity matrix leaves colors unchanged, effectively removing all previously applied effects.
      * @example
      * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
+     * const colorMatrix = new ColorTransformFilter();
      *
      * // Apply some effects
      * colorMatrix
