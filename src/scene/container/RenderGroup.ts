@@ -333,7 +333,12 @@ export class RenderGroup implements Instruction
     public updateRenderable(renderable: ViewContainer)
     {
         if (renderable.globalDisplayStatus < 0b111) return;
-        this.instructionSet.renderPipes[renderable.renderPipeId].updateRenderable(renderable);
+
+        const pipe = this.instructionSet.renderPipes[renderable.renderPipeId];
+
+        if (!pipe) return;
+
+        pipe.updateRenderable(renderable);
         renderable.didViewUpdate = false;
     }
 

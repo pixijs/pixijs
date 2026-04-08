@@ -17,12 +17,18 @@ export function validateRenderables(renderGroup: RenderGroup, renderPipes: Rende
     {
         const container = list[i];
 
-        // note to self: there is no need to check if container.parentRenderGroup || !container.renderGroup
-        // exist here, as this function is only called if the structure did NOT change
-        // which means they have to be valid if this function is called
+        if (!container) continue;
 
         const renderable = container;
         const pipe = renderPipes[renderable.renderPipeId as keyof RenderPipes] as RenderPipe<any>;
+
+        if (!pipe)
+        {
+            // Missing pipe — force a full instruction rebuild to re-sync the
+            // render group instead of crashing.
+            rebuildRequired = true;
+            break;
+        }
 
         rebuildRequired = pipe.validateRenderable(container);
 
