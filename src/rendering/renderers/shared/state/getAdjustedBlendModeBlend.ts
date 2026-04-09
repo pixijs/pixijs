@@ -13,6 +13,8 @@ import type { TextureSource } from '../texture/sources/TextureSource';
  */
 export function getAdjustedBlendModeBlend(blendMode: BLEND_MODES, textureSource: TextureSource): BLEND_MODES
 {
+    if (!textureSource) return blendMode;
+
     if (textureSource.alphaMode === 'no-premultiply-alpha')
     {
         return (BLEND_TO_NPM[blendMode as keyof typeof BLEND_TO_NPM] || blendMode) as BLEND_MODES;
