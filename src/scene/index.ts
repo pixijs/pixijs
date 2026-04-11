@@ -36,6 +36,7 @@ export * from './container/utils/updateLocalTransform';
 export * from './container/utils/updateRenderGroupTransforms';
 export * from './container/utils/updateWorldTransform';
 export * from './container/utils/validateRenderables';
+export * from './graphics-smooth/canvas/CanvasSmoothGraphicsPipe';
 export * from './graphics-smooth/gl/GlSmoothGraphicsAdaptor';
 export * from './graphics-smooth/gpu/GpuSmoothGraphicsAdaptor';
 export * from './graphics-smooth/shared/BatchableSmoothGraphics';

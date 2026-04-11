@@ -1,4 +1,4 @@
-import { SmoothGraphics } from '~/scene/graphics-smooth';
+import { SmoothGraphics } from '~/scene';
 
 import type { TestScene } from '../../types';
 import type { Container } from '~/scene';

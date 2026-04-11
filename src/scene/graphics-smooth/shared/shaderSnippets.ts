@@ -406,18 +406,28 @@ uniform sampler2D uSamplers[${maxTextures}];
 ${extraUniforms}`;
 }
 
+// this is theoretically better, but on Circle with miter it fails
+// export function glPixelLineFunction(): string
+// {
+//     return `
+// float pixelLine(float x, float A, float B) {
+//     float y = abs(x), s = sign(x);
+//     if (y * 2.0 < A - B) {
+//         return 0.5 + s * y / A;
+//     }
+//     y -= (A - B) * 0.5;
+//     y = max(1.0 - y / B, 0.0);
+//     return (1.0 + s * (1.0 - y * y)) * 0.5;
+// }
+// `;
+// }
+
 /** @internal */
 export function glPixelLineFunction(): string
 {
     return `
 float pixelLine(float x, float A, float B) {
-    float y = abs(x), s = sign(x);
-    if (y * 2.0 < A - B) {
-        return 0.5 + s * y / A;
-    }
-    y -= (A - B) * 0.5;
-    y = max(1.0 - y / B, 0.0);
-    return (1.0 + s * (1.0 - y * y)) * 0.5;
+    return clamp(x + 0.5, 0.0, 1.0);
 }
 `;
 }
