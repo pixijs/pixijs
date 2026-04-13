@@ -1,0 +1,105 @@
+# PixiJS Skills — Index for AI Agents
+
+Use this file to discover which skill to load. Each skill lives in a directory of the same name under `skills/` and contains a `SKILL.md`. All skills are flat top-level entries — load the one that matches the user's task.
+
+## Skills
+
+pixijs-overview
+  Architectural overview of PixiJS v8 and a map to every `pixijs-*` topic skill. Load when the user asks "what is PixiJS", wants a high-level summary, or is unsure which topic skill to use.
+  Triggers: what is PixiJS, PixiJS architecture, PixiJS overview, list PixiJS skills, which skill, v8 architecture, systems and pipes.
+
+pixijs-getting-started
+  Create and configure a PixiJS v8 `Application` with async `app.init()`, canvas setup, responsive resize, and renderer preference. Covers custom bundles via `skipExtensionImports`.
+  Triggers: create PixiJS app, new Application, app.init, setup PixiJS, initialize renderer, responsive canvas, resizeTo, autoDensity, retina, high-DPI, WebGL vs WebGPU, preference, tree-shaking, skipExtensionImports, app.destroy.
+
+pixijs-core-concepts
+  Scene graph fundamentals: `Container` hierarchy, transforms, bounds, visibility, tint, `cacheAsTexture`, and destroy. The prerequisite for most rendering topics.
+  Triggers: scene graph, container hierarchy, addChild, removeChild, reparentChild, replaceChild, getChildByLabel, position, scale, rotation, pivot, origin, skew, visible, renderable, alpha, tint, cacheAsTexture, destroy, getBounds.
+
+pixijs-scene-management
+  Organize scenes with `RenderLayer`, render groups, culling, `zIndex`, and `sortableChildren` for GPU-level transforms and render order control.
+  Triggers: render order, z-index, sorting children, render layers, culling, off-screen optimization, render groups, GPU transforms, y-sorting, scene layers, RenderLayer, isRenderGroup, CullerPlugin, cullable, cullArea, boundsArea.
+
+pixijs-ticker
+  Control the render loop with `Ticker`: `deltaTime`, `UPDATE_PRIORITY`, FPS capping, `onRender` hooks, manual rendering.
+  Triggers: game loop, render loop, frame rate, animation timing, deltaTime, deltaMS, elapsedMS, maxFPS, minFPS, slow motion, speed control, onRender, UPDATE_PRIORITY, Ticker.shared, app.ticker, manual render.
+
+pixijs-environments
+  Run PixiJS in browsers, Web Workers, `OffscreenCanvas`, or custom environments via `DOMAdapter`. Includes `pixi.js/unsafe-eval` for CSP-restricted contexts.
+  Triggers: Web Worker, OffscreenCanvas, server-side rendering, Node.js, headless, Content Security Policy, CSP, unsafe-eval, custom environment, DOMAdapter, BrowserAdapter, WebWorkerAdapter.
+
+pixijs-math
+  Math primitives — `Point`, `Matrix`, `Rectangle`, `Circle`, `Ellipse`, `Polygon`, `RoundedRectangle`, `Triangle` — plus `toGlobal`/`toLocal`, hit testing, and `pixi.js/math-extras` for vector operations.
+  Triggers: Point, vector math, Matrix, coordinate conversion, toGlobal, toLocal, hit testing, shapes, collision detection, rectangle intersection, distance, angle math, DEG_TO_RAD, math-extras.
+
+pixijs-sprite
+  Display images: `Sprite`, `Sprite.from()`, `anchor` vs `pivot`, `AnimatedSprite`, `NineSliceSprite`, `TilingSprite`.
+  Triggers: display image, render texture, sprite anchor, center sprite, pixel-perfect, frame animation, AnimatedSprite, scrolling background, tiling texture, nine-slice UI, scalable panel, repeating pattern, roundPixels, tilePosition, tileScale.
+
+pixijs-graphics
+  Draw vector shapes with the v8 shape-then-fill `Graphics` API: `rect`/`circle`/`poly`/`roundRect`/`star`, paths, fills, strokes, gradients, patterns, SVG, `GraphicsContext` sharing.
+  Triggers: draw shapes, rectangle, circle, line, polygon, vector graphics, gradient, pattern, fill, stroke, holes, SVG, bezier, arc, rounded rectangle, star, GraphicsContext, beginPath, moveTo, lineTo, cut.
+
+pixijs-text
+  Render text with four engines: `Text` (canvas), `BitmapText` (MSDF/SDF), `HTMLText` (CSS via SVG), `SplitText`/`SplitBitmapText` (per-character).
+  Triggers: render text, labels, scores, timers, rich text, HTML text, bitmap font, MSDF, SDF, TextStyle, word wrap, text alignment, drop shadow text, tagStyles, inline markup, per-character animation, split text, custom font, font loading.
+
+pixijs-mesh
+  Custom geometry via `Mesh`, `MeshGeometry`, `MeshSimple`, `MeshPlane`, `MeshRope`, `PerspectiveMesh`. Configurable topology (triangle-list/strip, line-list/strip, point-list).
+  Triggers: custom geometry, vertex buffers, UV mapping, mesh deformation, rope effect, texture along path, perspective projection, subdivided plane, triangle mesh, custom vertex data, topology.
+
+pixijs-particle-container
+  Render massive counts via `ParticleContainer` with the lightweight `Particle` class and `dynamicProperties`. No children, filters, or masks.
+  Triggers: particle system, thousands of sprites, particle effects, bulk sprite rendering, snow, rain, fire particles, optimize large counts, ParticleContainer, IParticle, dynamicProperties.
+
+pixijs-gif
+  Load and play animated GIFs with `GifSprite` from `pixi.js/gif`. Controls: `play`/`stop`/`currentFrame`, `autoPlay`, `loop`, `animationSpeed`, callbacks.
+  Triggers: load GIF, animated GIF, GIF playback, GIF frame timing, GifSprite, GifSource, pixi.js/gif.
+
+pixijs-asset-loading
+  Load and cache resources with `Assets`: `Assets.init`, `Assets.load`, bundles, manifests, background loading, progress, unload, compressed textures, SVG, resolution detection.
+  Triggers: load images, load textures, preload assets, asset bundles, manifests, background loading, progress bar, load screen, cache resources, unload texture, free GPU memory, compressed textures, DDS, KTX, Basis, SVG loading, @2x resolution, retry failed load, LoadOptions.
+
+pixijs-spritesheet
+  Texture atlases and animations via `Spritesheet`, `SpritesheetData`, `sheet.parse`, `sheet.textures`, `sheet.animations`. Integrates with `AnimatedSprite`.
+  Triggers: texture atlas, sprite sheet, sprite animation, frame extraction, atlas packing, multi-pack spritesheet, JSON atlas, TexturePacker, cachePrefix, meta.scale.
+
+pixijs-filters
+  Apply visual filters: `AlphaFilter`, `BlurFilter`, `ColorMatrixFilter`, `DisplacementFilter`, `NoiseFilter`, and custom `Filter` with GLSL/WGSL.
+  Triggers: blur, glow, drop shadow, color matrix, brightness, contrast, grayscale, displacement map, noise, custom shader filter, GLSL filter, post-processing, pixi-filters, filter performance, filterArea, filter padding.
+
+pixijs-masking
+  Clip with `AlphaMask`, `StencilMask`, `ScissorMask`, `ColorMask`. Includes inverse masking and the mask performance hierarchy.
+  Triggers: clipping, masking sprites, circular mask, rounded rectangle mask, alpha mask, stencil mask, scissor mask, inverse mask, mask channels, hide part of sprite, mask performance, setMask.
+
+pixijs-blend-modes
+  Standard (`normal`/`add`/`multiply`/`screen`) and advanced blend modes (`color-burn`, `overlay`, etc.) via `pixi.js/advanced-blend-modes`. Batching implications.
+  Triggers: additive blending, multiply blend, screen blend, overlay, color burn, color dodge, glow effect, light effect, erase, blendMode, BLEND_MODES, advanced-blend-modes.
+
+pixijs-color
+  Manipulate colors with the `Color` class: hex, CSS names, RGB/HSL, normalized arrays, alpha, conversion helpers.
+  Triggers: color conversion, hex to RGB, tint color, color formats, HSL, color alpha, premultiplied alpha, Color.shared, ColorSource, string2hex replacement.
+
+pixijs-events
+  Handle input: `eventMode`, `FederatedEvent` types, capture phase, container lifecycle events, `hitArea`, `cursor`/`cursorStyles`, global move events.
+  Triggers: click, tap, drag and drop, pointer event, mouse event, touch input, hit testing, cursor style, event propagation, stopPropagation, interactive object, eventMode, FederatedPointerEvent, EventBoundary, hitArea.
+
+pixijs-accessibility
+  Screen reader and keyboard support via `AccessibilitySystem`: `accessible`, `accessibleTitle`, `accessibleHint`, `tabIndex`, tab activation.
+  Triggers: screen reader, keyboard navigation, ARIA, tab order, accessible canvas, a11y, assistive technology, focus management, accessible content, AccessibilitySystem.
+
+pixijs-dom-overlay
+  Overlay HTML elements on the canvas with `DOMContainer` from `pixi.js/dom`. Transforms sync with the scene graph; DOM elements bypass filters/masks/blend modes.
+  Triggers: HTML on canvas, text input in PixiJS, DOM over WebGL, overlay HTML, input box, form on canvas, video overlay, mix HTML with PixiJS, DOMContainer, DOMPipe.
+
+pixijs-custom-rendering
+  Write custom shaders (`GlProgram`/`GpuProgram`), uniforms (`UniformGroup`), resources, and custom batchers. Includes UBO constraints and `RenderPipe` patterns.
+  Triggers: custom shader, GLSL, WGSL, WebGPU shader, uniform buffer, UBO, shader resource, texture binding, custom batching, render pipe, custom renderable, Shader.from, BatchableMeshElement.
+
+pixijs-performance
+  Optimize FPS and GPU memory: destroy patterns, `cacheAsTexture`, `GCSystem`, `PrepareSystem`, object pooling, batching rules, culling, resolution tradeoffs.
+  Triggers: frame rate, FPS drops, memory leak, GPU memory, draw calls, batching, object pool, texture GC, cacheAsTexture, destroy patterns, PrepareSystem, culling, performance optimization, lag, jank, slow rendering.
+
+pixijs-migration
+  Migrate from PixiJS v7 to v8: async `app.init`, single `pixi.js` package, Graphics API overhaul, `BaseTexture` removal, shader rework, `ParticleContainer` changes, `DisplayObject` removal, constructor options objects.
+  Triggers: upgrade PixiJS, migrate v7, breaking changes v8, deprecated API, @pixi/ imports, DisplayObject error, beginFill replacement, old constructor syntax, v7 code not working, settings removed, utils removed.
