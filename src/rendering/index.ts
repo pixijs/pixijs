@@ -45,7 +45,6 @@ export * from './mask/utils/addMaskBounds';
 export * from './mask/utils/addMaskLocalBounds';
 export * from './renderers/autoDetectRenderer';
 export * from './renderers/canvas/CanvasContextSystem';
-export * from './renderers/canvas/CanvasFilterSystem';
 export * from './renderers/canvas/CanvasLimitsSystem';
 export * from './renderers/canvas/CanvasRenderer';
 export * from './renderers/canvas/renderTarget/CanvasRenderTargetAdaptor';
