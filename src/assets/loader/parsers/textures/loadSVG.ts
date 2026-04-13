@@ -43,7 +43,7 @@ const validSVGExtension = '.svg';
 const validSVGMIME = 'image/svg+xml';
 
 /**
- * A simple loader plugin for loading json data
+ * A loader plugin for loading SVG data as textures or graphics contexts.
  * @category assets
  * @advanced
  */

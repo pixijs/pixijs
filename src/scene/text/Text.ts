@@ -1,9 +1,11 @@
+import { TextureSource } from '../../rendering/renderers/shared/texture/sources/TextureSource';
 import { TextureStyle, type TextureStyleOptions } from '../../rendering/renderers/shared/texture/TextureStyle';
 import { AbstractText, ensureTextOptions } from './AbstractText';
 import { type BatchableText } from './canvas/BatchableText';
 import { CanvasTextGenerator } from './canvas/CanvasTextGenerator';
 import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
 import { TextStyle } from './TextStyle';
+import './init';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from './AbstractText';
@@ -70,6 +72,12 @@ export interface CanvasTextOptions extends TextOptions
      * @advanced
      */
     textureStyle?: TextureStyle | TextureStyleOptions;
+    /**
+     * Whether to generate mipmaps for the text texture.
+     * Improves rendering quality when the text is scaled down.
+     * @default undefined - Falls back to TextureSource.defaultOptions.autoGenerateMipmaps
+     */
+    autoGenerateMipmaps?: boolean;
 }
 
 /**
@@ -167,6 +175,15 @@ export class Text
     public textureStyle?: TextureStyle;
 
     /**
+     * Whether to generate mipmaps for the text texture.
+     * Improves rendering quality when the text is scaled down.
+     * > [!NOTE] Text is not updated when this property is updated,
+     * > you must update the text manually by calling `text.onViewUpdate()`
+     * @default undefined - Falls back to TextureSource.defaultOptions.autoGenerateMipmaps
+     */
+    public autoGenerateMipmaps?: boolean;
+
+    /**
      * @param {CanvasTextOptions} options - The options of the text.
      */
     constructor(options?: CanvasTextOptions);
@@ -184,6 +201,8 @@ export class Text
                 ? options.textureStyle
                 : new TextureStyle(options.textureStyle);
         }
+
+        this.autoGenerateMipmaps = options.autoGenerateMipmaps ?? TextureSource.defaultOptions.autoGenerateMipmaps;
     }
 
     /** @private */

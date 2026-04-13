@@ -8,6 +8,7 @@ import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { warn } from '../../../utils/logging/warn';
 
+import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRenderer';
 import type { Mesh } from '../shared/Mesh';
 import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
 
@@ -51,7 +52,7 @@ export class GlMeshAdaptor implements MeshAdaptor
 
     public execute(meshPipe: MeshPipe, mesh: Mesh): void
     {
-        const renderer = meshPipe.renderer;
+        const renderer = meshPipe.renderer as WebGLRenderer;
 
         let shader: Shader = mesh._shader;
 

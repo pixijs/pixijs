@@ -39,15 +39,31 @@ export function measureHtmlText(
     // Measure the contents using the shadow DOM
     document.body.appendChild(svgRoot);
 
-    const contentBounds = domElement.getBoundingClientRect();
+    // Use scrollWidth/scrollHeight instead of getBoundingClientRect
+    // This captures the full content size including any overflow
+    // (e.g., when wordWrap is true but long words can't break)
+    let contentWidth = domElement.scrollWidth;
+    let contentHeight = domElement.scrollHeight;
 
     svgRoot.remove();
 
-    // padding is included in the CSS calculation, so we need to remove it here
+    // Account for drop shadow which extends beyond the layout bounds
+    // text-shadow is a visual effect not captured by scrollWidth/scrollHeight
+    if (style.dropShadow)
+    {
+        const { distance, angle, blur } = style.dropShadow;
+        const shadowOffsetX = Math.abs(Math.round(Math.cos(angle) * distance));
+        const shadowOffsetY = Math.abs(Math.round(Math.sin(angle) * distance));
+
+        contentWidth += shadowOffsetX + blur;
+        contentHeight += shadowOffsetY + blur;
+    }
+
+    // padding is included in the scroll dimensions, so we need to remove it here
     const doublePadding = style.padding * 2;
 
     return {
-        width: contentBounds.width - doublePadding,
-        height: contentBounds.height - doublePadding,
+        width: contentWidth - doublePadding,
+        height: contentHeight - doublePadding,
     };
 }

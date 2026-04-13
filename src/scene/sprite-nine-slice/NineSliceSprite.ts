@@ -5,6 +5,7 @@ import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
 import { NineSliceGeometry } from './NineSliceGeometry';
 import { type NineSliceSpriteGpuData } from './NineSliceSpritePipe';
+import './init';
 
 import type { Size } from '../../maths/misc/Size';
 import type { View } from '../../rendering/renderers/shared/view/View';
@@ -645,6 +646,19 @@ export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> imple
     get originalHeight()
     {
         return this._texture.height;
+    }
+
+    /**
+     * The trim rectangle of the underlying texture, or `null` if the texture is not trimmed.
+     * This is forwarded to the {@link NineSliceGeometry} so that UV coordinates are clamped
+     * to the visible pixel region, preventing transparent atlas padding from bleeding into
+     * the rendered sprite corners.
+     * @readonly
+     * @internal
+     */
+    get trim()
+    {
+        return this._texture.trim ?? null;
     }
 
     /**

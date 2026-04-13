@@ -1,20 +1,31 @@
 /**
  * @packageDocumentation
- * @document accessibility/__docs__/accessibility-overview.md
- * @document app/__docs__/app-overview.md
- * @document assets/__docs__/assets-overview.md
- * @document color/__docs__/color-overview.md
- * @document environment/__docs__/environment-overview.md
- * @document events/__docs__/events-overview.md
- * @document extensions/__docs__/extensions-overview.md
- * @document filters/__docs__/filters-overview.md
- * @document maths/__docs__/maths-overview.md
- * @document rendering/__docs__/rendering-overview.md
- * @document scene/__docs__/scene-overview.md
- * @document gif/__docs__/scene-gif-overview.md
- * @document scene/__docs__/scene-text-overview.md
- * @document ticker/__docs__/ticker-overview.md
- * @document utils/__docs__/utils-overview.md
+ * @document __docs__/concepts/architecture.md
+ * @document __docs__/concepts/scene-graph.mdx
+ * @document __docs__/concepts/render-loop.md
+ * @document __docs__/concepts/render-groups.md
+ * @document __docs__/concepts/render-layers.mdx
+ * @document __docs__/concepts/environments.md
+ * @document __docs__/concepts/garbage-collection.md
+ * @document __docs__/concepts/performance-tips.md
+ * @document accessibility/__docs__/accessibility.md
+ * @document app/__docs__/app.md
+ * @document assets/__docs__/assets.md
+ * @document color/__docs__/color.md
+ * @document environment/__docs__/environment.md
+ * @document events/__docs__/events.md
+ * @document extensions/__docs__/extensions.md
+ * @document filters/__docs__/filters.md
+ * @document maths/__docs__/math.md
+ * @document rendering/__docs__/rendering.md
+ * @document scene/__docs__/scene.md
+ * @document gif/__docs__/scene-gif.md
+ * @document ticker/__docs__/ticker.md
+ * @document utils/__docs__/utils.md
+ * @document __docs__/migrations/v8.md
+ * @document __docs__/migrations/v7.md
+ * @document __docs__/migrations/v6.md
+ * @document __docs__/migrations/v5.md
  */
 
 export * from './accessibility';

@@ -69,7 +69,6 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
         type: [
             ExtensionType.WebGLPipes,
             ExtensionType.WebGPUPipes,
-            ExtensionType.CanvasPipes,
         ],
         name: 'mesh',
     } as const;

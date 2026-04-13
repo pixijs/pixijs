@@ -4,7 +4,7 @@ import type { TestScene } from '../../types';
 import type { Container } from '~/scene';
 
 export const scene: TestScene = {
-    it: 'should render text stroke if it has a width greater than one',
+    it: 'should render text stroke if it has a width of zero',
     create: async (scene: Container) =>
     {
         const style = new TextStyle({

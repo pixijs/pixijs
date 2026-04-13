@@ -28,6 +28,15 @@ export interface NineSliceGeometryOptions
 
     /** The anchor point of the NineSliceSprite. */
     anchor?: PointData
+
+    /**
+     * The trim rectangle of the texture, describing the offset and size of the visible
+     * pixel area within the original (unpadded) frame. When provided, UV coordinates are
+     * clamped to the trimmed region so that transparent padding in the atlas does not
+     * bleed into the rendered corners/edges.
+     * @default null
+     */
+    trim?: { x: number; y: number; width: number; height: number } | null
 }
 
 /**
@@ -69,6 +78,10 @@ export class NineSliceGeometry extends PlaneGeometry
 
     private _originalWidth: number;
     private _originalHeight: number;
+    private _trimX: number;
+    private _trimY: number;
+    private _trimWidth: number;
+    private _trimHeight: number;
     private _anchorX: any;
     private _anchorY: number;
 
@@ -82,6 +95,12 @@ export class NineSliceGeometry extends PlaneGeometry
             verticesX: 4,
             verticesY: 4,
         });
+
+        // Initialise trim fields before update() so updateUvs() has valid values
+        this._trimX = 0;
+        this._trimY = 0;
+        this._trimWidth = options.originalWidth ?? NineSliceGeometry.defaultOptions.originalWidth;
+        this._trimHeight = options.originalHeight ?? NineSliceGeometry.defaultOptions.originalHeight;
 
         this.update(options);
     }
@@ -103,6 +122,20 @@ export class NineSliceGeometry extends PlaneGeometry
 
         this._anchorX = options.anchor?.x;
         this._anchorY = options.anchor?.y;
+
+        // Update trim values whenever they are explicitly provided (including null to reset)
+        if (options.trim !== undefined)
+        {
+            this._trimX = options.trim?.x ?? 0;
+            this._trimY = options.trim?.y ?? 0;
+            this._trimWidth = options.trim?.width ?? this._originalWidth;
+            this._trimHeight = options.trim?.height ?? this._originalHeight;
+        }
+        else
+        {
+            this._trimWidth = this._originalWidth;
+            this._trimHeight = this._originalHeight;
+        }
 
         this.updateUvs();
         this.updatePositions();
@@ -152,20 +185,32 @@ export class NineSliceGeometry extends PlaneGeometry
     {
         const uvs = this.uvs;
 
-        uvs[0] = uvs[8] = uvs[16] = uvs[24] = 0;
-        uvs[1] = uvs[3] = uvs[5] = uvs[7] = 0;
+        const origW = this._originalWidth;
+        const origH = this._originalHeight;
 
-        uvs[6] = uvs[14] = uvs[22] = uvs[30] = 1;
-        uvs[25] = uvs[27] = uvs[29] = uvs[31] = 1;
+        // Compute the UV bounds for the trimmed region within the original texture space.
+        // When the texture has no trim, these default to [0, 1] (the full orig area).
+        // When the texture is trimmed, UV coordinates are offset so that only the visible
+        // pixel area is sampled, preventing transparent padding from bleeding into corners.
+        const u0 = this._trimX / origW;
+        const v0 = this._trimY / origH;
+        const u1 = (this._trimX + this._trimWidth) / origW;
+        const v1 = (this._trimY + this._trimHeight) / origH;
 
-        const _uvw = 1.0 / this._originalWidth;
-        const _uvh = 1.0 / this._originalHeight;
+        uvs[0] = uvs[8] = uvs[16] = uvs[24] = u0;
+        uvs[1] = uvs[3] = uvs[5] = uvs[7] = v0;
 
-        uvs[2] = uvs[10] = uvs[18] = uvs[26] = _uvw * this._leftWidth;
-        uvs[9] = uvs[11] = uvs[13] = uvs[15] = _uvh * this._topHeight;
+        uvs[6] = uvs[14] = uvs[22] = uvs[30] = u1;
+        uvs[25] = uvs[27] = uvs[29] = uvs[31] = v1;
 
-        uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - (_uvw * this._rightWidth);
-        uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - (_uvh * this._bottomHeight);
+        const _uvw = 1.0 / origW;
+        const _uvh = 1.0 / origH;
+
+        uvs[2] = uvs[10] = uvs[18] = uvs[26] = u0 + (_uvw * this._leftWidth);
+        uvs[9] = uvs[11] = uvs[13] = uvs[15] = v0 + (_uvh * this._topHeight);
+
+        uvs[4] = uvs[12] = uvs[20] = uvs[28] = u1 - (_uvw * this._rightWidth);
+        uvs[17] = uvs[19] = uvs[21] = uvs[23] = v1 - (_uvh * this._bottomHeight);
 
         this.getBuffer('aUV').update();
     }

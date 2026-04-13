@@ -54,5 +54,14 @@ dist/docs/pixi.api.json
 # A folder that will be uploaded with every release
 # This is useful for things like docs and bundled versions of the library
 .s3_uploads
+
+# Build status (for playground)
+.build-status.json
+
+# Playground
+playground/node_modules/
+playground/src/*.playground.ts
+!playground/src/default.playground.ts
+
 test-gradient-local.html
 test-original-issue.html

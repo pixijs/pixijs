@@ -4,7 +4,7 @@ import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { AbstractBitmapFont } from './AbstractBitmapFont';
 import { BitmapFontManager } from './BitmapFontManager';
 
-import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
+import type { FontMetrics } from '../text/canvas/utils/types';
 import type { BitmapFontData } from './AbstractBitmapFont';
 import type { BitmapFontInstallOptions } from './BitmapFontManager';
 
@@ -20,7 +20,7 @@ import type { BitmapFontInstallOptions } from './BitmapFontManager';
  *     data: {
  *         pages: [{ id: 0, file: 'font.png' }],
  *         chars: {
- *             '65': { // 'A'
+ *             'A': {
  *                 id: 65,
  *                 page: 0,
  *                 x: 0,
@@ -82,7 +82,7 @@ export interface BitmapFontOptions
  *     data: {
  *         pages: [{ id: 0, file: 'font.png' }],
  *         chars: {
- *             '65': { // 'A'
+ *             'A': {
  *                 id: 65,
  *                 page: 0,
  *                 x: 0,

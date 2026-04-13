@@ -2,6 +2,7 @@ import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../../view/ViewContainer';
 import { GraphicsContext } from './GraphicsContext';
 import { type GraphicsGpuData } from './GraphicsPipe';
+import '../init';
 
 import type { ColorSource } from '../../../color/Color';
 import type { Matrix } from '../../../maths/matrix/Matrix';

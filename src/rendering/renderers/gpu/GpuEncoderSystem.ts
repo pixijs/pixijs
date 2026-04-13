@@ -254,6 +254,8 @@ export class GpuEncoderSystem implements System
             this._renderer.renderTarget.renderTarget,
             false,
             [0, 0, 0, 1],
+            this._renderer.renderTarget.mipLevel,
+            this._renderer.renderTarget.layer,
         );
 
         this.renderPassEncoder = this.commandEncoder.beginRenderPass(descriptor);

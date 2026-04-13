@@ -471,4 +471,43 @@ describe('EventBoundary', () =>
         expect(eventSpy3).not.toHaveBeenCalled();
         expect(eventSpy4).not.toHaveBeenCalled();
     });
+
+    it('should preserve modifier keys (ctrlKey, shiftKey, altKey, metaKey) in events', () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const target = stage.addChild(graphicsWithRect(0, 0, 100, 100));
+
+        target.interactive = true;
+
+        const receivedEvents: FederatedPointerEvent[] = [];
+
+        target.addEventListener('pointerdown', (e) =>
+        {
+            receivedEvents.push(e as FederatedPointerEvent);
+        });
+
+        // Create event with modifier keys
+        const event = new FederatedPointerEvent(boundary);
+
+        event.target = target;
+        event.global.set(50, 50);
+        event.type = 'pointerdown';
+        event.ctrlKey = true;
+        event.shiftKey = true;
+        event.altKey = false;
+        event.metaKey = true;
+        event.button = 0;
+        event.buttons = 1;
+
+        boundary.dispatchEvent(event);
+
+        expect(receivedEvents).toHaveLength(1);
+        expect(receivedEvents[0].ctrlKey).toBe(true);
+        expect(receivedEvents[0].shiftKey).toBe(true);
+        expect(receivedEvents[0].altKey).toBe(false);
+        expect(receivedEvents[0].metaKey).toBe(true);
+        expect(receivedEvents[0].button).toBe(0);
+        expect(receivedEvents[0].buttons).toBe(1);
+    });
 });

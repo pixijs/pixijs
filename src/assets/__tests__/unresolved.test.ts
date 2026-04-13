@@ -53,7 +53,7 @@ describe('Assets Unresolved', () =>
     {
         const testParser = {
             test: jest.fn(() => true),
-            load: jest.fn(() => undefined),
+            load: jest.fn(),
         };
 
         Assets.loader['_parsers'].push(testParser as any);

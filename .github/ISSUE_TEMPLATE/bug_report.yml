@@ -61,11 +61,12 @@ body:
     validations:
       required: true
   - type: textarea
+    id: system-info
     attributes:
-      label: Environment
-      value: |
-        - **Browser & Version**: *e.g. Chrome 108*
-        - **OS & Version**: *e.g. Ubuntu 22.04*
+      label: System Info
+      description: Output of `npx envinfo --system --browsers`
+      render: Shell
+      placeholder: System, Browsers
     validations:
       required: true
   - type: textarea

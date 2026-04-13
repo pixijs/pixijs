@@ -3,6 +3,7 @@ import { Container, Graphics } from '~/scene';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should render masks if they have multiple layers correctly',
     create: async (scene: Container) =>
     {

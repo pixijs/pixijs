@@ -16,6 +16,7 @@ jobs:
   publish-prod:
     if: github.event_name == 'release'
     uses: ./.github/workflows/release.yml
+    secrets: inherit
     permissions:
       id-token: write
       contents: write

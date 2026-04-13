@@ -5,6 +5,7 @@ import type { TestScene } from '../../types';
 import type { Container } from '~/scene';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should render a custom triangle correctly',
     create: async (scene: Container) =>
     {

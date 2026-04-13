@@ -1,3 +1,4 @@
+import { warn } from '../../utils/logging/warn';
 import { type ContainerOptions } from '../container/Container';
 import { TextStyle } from '../text/TextStyle';
 import { type BitmapText } from '../text-bitmap/BitmapText';
@@ -170,6 +171,9 @@ export class SplitBitmapText extends AbstractSplitText<BitmapText>
             ...config,
         };
 
+        completeOptions.style ??= {};
+        completeOptions.style.fill ??= 0xffffff;
+
         super(completeOptions);
     }
 
@@ -208,9 +212,31 @@ export class SplitBitmapText extends AbstractSplitText<BitmapText>
             style: new TextStyle(text.style),
         };
 
-        return new SplitBitmapText({
+        // warn if tag styles are used
+        if (text.style.tagStyles)
+        {
+            // #if _DEBUG
+            warn('[SplitBitmapText] Tag styles are not supported for SplitBitmapText. They will be ignored.');
+            // #endif
+            text.style._tagStyles = undefined;
+        }
+
+        const splitText = new SplitBitmapText({
             ...completeOptions,
         });
+
+        // Transfer anchor behavior using pivot
+        const anchor = text.anchor;
+
+        if (anchor.x !== 0 || anchor.y !== 0)
+        {
+            splitText.pivot.set(
+                splitText.width * anchor.x,
+                splitText.height * anchor.y
+            );
+        }
+
+        return splitText;
     }
 
     protected splitFn(): TextSplitOutput<BitmapText>

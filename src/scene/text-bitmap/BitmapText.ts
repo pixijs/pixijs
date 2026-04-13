@@ -1,8 +1,9 @@
 import { warn } from '../../utils/logging/warn';
 import { AbstractText, ensureTextOptions } from '../text/AbstractText';
 import { TextStyle } from '../text/TextStyle';
+import { type BitmapTextGraphics } from './AbstractBitmapTextPipe';
 import { BitmapFontManager } from './BitmapFontManager';
-import { type BitmapTextGraphics } from './BitmapTextPipe';
+import './init';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from '../text/AbstractText';

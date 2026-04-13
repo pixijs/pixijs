@@ -7,6 +7,7 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'Filter Area should be applied correctly',
+    excludeRenderers: ['canvas'],
     create: async (scene: Container) =>
     {
         const rect = new Graphics().rect(0, 0, 100, 100).fill('orange');

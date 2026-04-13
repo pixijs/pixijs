@@ -1,7 +1,9 @@
 import { Text } from '../../text/Text';
+import { TextStyle } from '../../text/TextStyle';
 import { loadBitmapFont } from '../asset/loadBitmapFont';
 import { type BitmapFont } from '../BitmapFont';
 import { BitmapText } from '../BitmapText';
+import { getBitmapTextLayout } from '../utils/getBitmapTextLayout';
 import '../../text/init';
 import '../init';
 import '../../graphics/init';
@@ -40,7 +42,7 @@ describe('BitmapText', () =>
 
         renderer.render(text);
 
-        expect(Cache.get('arial-bitmap').pages).toHaveLength(1);
+        expect(Cache.get('arial-bitmap-normal-normal-normal').pages).toHaveLength(1);
     });
 
     it('should default to white fill', async () =>
@@ -266,5 +268,26 @@ describe('BitmapText', () =>
 
         expect(bmpText.width).toBe(refText.width);
         expect(bmpText.height).toBe(refText.height);
+    });
+
+    it('should not crash when text contains characters missing from the font', () =>
+    {
+        // Font that only has 'A' and 'B', no space character
+        const mockFont = {
+            chars: {
+                A: { id: 65, xOffset: 0, yOffset: 0, xAdvance: 20, kerning: {} },
+                B: { id: 66, xOffset: 0, yOffset: 0, xAdvance: 20, kerning: {} },
+            },
+            baseMeasurementFontSize: 32,
+            baseLineOffset: 0,
+            lineHeight: 40,
+        };
+
+        const style = new TextStyle({ fontSize: 32 });
+
+        // Text with missing characters (space and 'Z') — should not throw
+        expect(() =>
+            getBitmapTextLayout(['A', ' ', 'Z', 'B'], style, mockFont as any, false)
+        ).not.toThrow();
     });
 });

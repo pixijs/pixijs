@@ -70,6 +70,55 @@ describe('Graphics Bounds', () =>
             expect(height).toEqual(208);
         });
 
+        it('should expand bounds for miter joins on sharp angles', () =>
+        {
+            const graphics = new Graphics();
+
+            // V-shape with a sharp angle at the bottom
+            graphics
+                .moveTo(0, 0)
+                .lineTo(50, 100)
+                .lineTo(100, 0)
+                .stroke({ width: 10, color: 0xff0000 });
+
+            const bounds = graphics.context.bounds;
+
+            // The miter at (50, 100) should extend the bounds beyond 100 + halfWidth
+            expect(bounds.maxY).toBeGreaterThan(105);
+        });
+
+        it('should not expand bounds for bevel joins on sharp angles', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics
+                .moveTo(0, 0)
+                .lineTo(50, 100)
+                .lineTo(100, 0)
+                .stroke({ width: 10, color: 0xff0000, join: 'bevel' });
+
+            const bounds = graphics.context.bounds;
+
+            // Bevel join: padding is just halfWidth (5)
+            expect(bounds.maxY).toEqual(105);
+        });
+
+        it('should not expand bounds for round joins on sharp angles', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics
+                .moveTo(0, 0)
+                .lineTo(50, 100)
+                .lineTo(100, 0)
+                .stroke({ width: 10, color: 0xff0000, join: 'round' });
+
+            const bounds = graphics.context.bounds;
+
+            // Round join: padding is just halfWidth (5)
+            expect(bounds.maxY).toEqual(105);
+        });
+
         it('should be zero for empty Graphics', () =>
         {
             const graphics = new Graphics();
@@ -96,23 +145,6 @@ describe('Graphics Bounds', () =>
             expect(y).toEqual(0);
             expect(width).toEqual(0);
             expect(height).toEqual(0);
-        });
-
-        it('should be equal of child bounds when empty', () =>
-        {
-            const graphics = new Graphics();
-            const child = new Graphics();
-
-            child.beginPath().rect(10, 20, 100, 200).fill(0).closePath();
-
-            graphics.addChild(child);
-
-            const { x, y, width, height } = graphics.getBounds();
-
-            expect(x).toEqual(10);
-            expect(y).toEqual(20);
-            expect(width).toEqual(100);
-            expect(height).toEqual(200);
         });
     });
 

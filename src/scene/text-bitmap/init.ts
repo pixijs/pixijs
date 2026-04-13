@@ -1,4 +1,6 @@
 import { extensions } from '../../extensions/Extensions';
-import { BitmapTextPipe } from './BitmapTextPipe';
+import { CanvasBitmapTextPipe } from './CanvasBitmapTextPipe';
+import { BitmapTextPipe } from './GpuBitmapTextPipe';
 
+extensions.add(CanvasBitmapTextPipe);
 extensions.add(BitmapTextPipe);

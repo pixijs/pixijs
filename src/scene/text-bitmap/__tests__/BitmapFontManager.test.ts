@@ -51,4 +51,25 @@ describe('BitmapFontManager', () =>
         expect(layoutTrimmed.width).toEqual(layout.width);
         expect(layoutUntrimmed.width).toBeGreaterThan(layout.width);
     });
+    it('should not emit TextStyle update event when calling getFont', () =>
+    {
+        const style = new TextStyle({
+            fontFamily: 'Arial',
+            fontSize: 16,
+            stroke: { width: 1, color: 0xff0000 },
+        });
+
+        let updateCalled = false;
+
+        style.on('update', () =>
+        {
+            updateCalled = true;
+        });
+
+        BitmapFontManager.getFont('hello', style);
+
+        expect(updateCalled).toBe(false);
+
+        BitmapFontManager.uninstall('Arial');
+    });
 });

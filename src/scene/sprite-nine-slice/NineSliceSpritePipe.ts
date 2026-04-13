@@ -38,7 +38,6 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         type: [
             ExtensionType.WebGLPipes,
             ExtensionType.WebGPUPipes,
-            ExtensionType.CanvasPipes,
         ],
         name: 'nineSliceSprite',
     } as const;

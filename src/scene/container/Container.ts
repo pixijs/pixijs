@@ -161,6 +161,20 @@ export interface ContainerEvents<C extends ContainerChild> extends PixiMixins.Co
      * ```
      */
     destroyed: [container: Container];
+
+    /**
+     * Emitted when the visible property on the container is changed.
+     * Useful for tracking visibility changes and triggering related behaviors.
+     * @param visible - The new visibility state of the container
+     * @example
+     * ```ts
+     * const container = new Container();
+     * container.on('visibleChanged', (visible) => {
+     *     console.log('Container visibility changed:', visible);
+     * });
+     * ```
+     */
+    visibleChanged: [visible: boolean];
 }
 
 type AnyEvent = {
@@ -1979,6 +1993,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this.localDisplayStatus ^= 0b010;
 
         this._onUpdate();
+        this.emit('visibleChanged', value);
     }
 
     /** @ignore */

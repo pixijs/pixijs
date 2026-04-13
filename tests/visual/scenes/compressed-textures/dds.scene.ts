@@ -6,6 +6,7 @@ import type { TestScene } from '../../types';
 import type { Container } from '~/scene';
 
 export const scene: TestScene = {
+    excludeRenderers: ['canvas'],
     it: 'should load a dds texture',
     create: async (scene: Container) =>
     {

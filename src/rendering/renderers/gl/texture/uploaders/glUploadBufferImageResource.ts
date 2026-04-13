@@ -8,12 +8,21 @@ export const glUploadBufferImageResource = {
 
     id: 'buffer',
 
-    upload(source: TextureSource, glTexture: GlTexture, gl: GlRenderingContext)
+    upload(
+        source: TextureSource,
+        glTexture: GlTexture,
+        gl: GlRenderingContext,
+        _webGLVersion: number,
+        targetOverride?: number,
+        forceAllocation = false
+    )
     {
-        if (glTexture.width === source.width || glTexture.height === source.height)
+        const target = targetOverride || glTexture.target;
+
+        if (!forceAllocation && (glTexture.width === source.width && glTexture.height === source.height))
         {
             gl.texSubImage2D(
-                gl.TEXTURE_2D,
+                target,
                 0,
                 0,
                 0,
@@ -27,7 +36,7 @@ export const glUploadBufferImageResource = {
         else
         {
             gl.texImage2D(
-                glTexture.target,
+                target,
                 0,
                 glTexture.internalFormat,
                 source.width,

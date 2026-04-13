@@ -20,7 +20,7 @@ export const gpuUploadCompressedTextureResource = {
 
     type: 'compressed',
 
-    upload(source: CompressedSource, gpuTexture: GPUTexture, gpu: GPU)
+    upload(source: CompressedSource, gpuTexture: GPUTexture, gpu: GPU, originZOverride = 0)
     {
         let mipWidth = source.pixelWidth;
         let mipHeight = source.pixelHeight;
@@ -36,9 +36,10 @@ export const gpuUploadCompressedTextureResource = {
             gpu.device.queue.writeTexture(
                 {
                     texture: gpuTexture,
-                    mipLevel: i
+                    mipLevel: i,
+                    origin: { x: 0, y: 0, z: originZOverride },
                 },
-                levelBuffer,
+                levelBuffer as BufferSource,
                 {
                     offset: 0,
                     bytesPerRow,
@@ -55,4 +56,3 @@ export const gpuUploadCompressedTextureResource = {
         }
     }
 } as GpuTextureUploader<CompressedSource>;
-

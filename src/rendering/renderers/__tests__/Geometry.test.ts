@@ -1,3 +1,4 @@
+import { GlProgram } from '../gl/shader/GlProgram';
 import { Buffer } from '../shared/buffer/Buffer';
 import { BufferUsage } from '../shared/buffer/const';
 import { Geometry } from '../shared/geometry/Geometry';
@@ -177,5 +178,55 @@ describe('Geometry', () =>
         geometry.attributes.aPosition.buffer.data = new Float32Array([0, 1, 2, 3, 4, 5]);
 
         expect(geometry['_boundsDirty']).toEqual(true);
+    });
+
+    it('should preserve VAO cache when binding same geometry with multiple programs', async () =>
+    {
+        const geometry = getGeometry();
+
+        const program1 = getGlProgram();
+        const program2 = new GlProgram({
+            vertex: `
+                in vec2 aPosition;
+
+                void main(void)
+                {
+                    gl_Position = vec4(aPosition * 0.5, 0.0, 1.0);
+                }
+            `,
+            fragment: `
+                out vec4 finalColor;
+
+                void main(void)
+                {
+                    finalColor = vec4(0.0, 1.0, 0.0, 1.0);
+                }
+            `,
+        });
+
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
+
+        // Bind geometry with first program - creates gpuData and VAO
+        renderer.geometry.bind(geometry, program1);
+
+        const gpuData = geometry._gpuData[renderer.uid];
+
+        expect(gpuData).toBeDefined();
+        expect(gpuData.vaoCache[program1._key]).toBeDefined();
+
+        const vao1 = gpuData.vaoCache[program1._key];
+
+        // Bind geometry with second program - should preserve gpuData and add second VAO entry
+        renderer.geometry.bind(geometry, program2);
+
+        // gpuData should be the same object (not replaced) - this is the key assertion
+        // that verifies the VAO cache bug fix
+        expect(geometry._gpuData[renderer.uid]).toBe(gpuData);
+
+        // First program's VAO should still be accessible
+        expect(gpuData.vaoCache[program1._key]).toBe(vao1);
+
+        // Second program should also have a VAO entry
+        expect(gpuData.vaoCache[program2._key]).toBeDefined();
     });
 });
