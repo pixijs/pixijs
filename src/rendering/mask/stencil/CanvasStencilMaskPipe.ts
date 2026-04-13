@@ -1,11 +1,14 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { type Matrix } from '../../../maths/matrix/Matrix';
+import { buildLine } from '../../../scene/graphics/shared/buildCommands/buildLine';
 import { Graphics } from '../../../scene/graphics/shared/Graphics';
+import { shapeBuilders } from '../../../scene/graphics/shared/utils/buildContextBatches';
 import { warn } from '../../../utils/logging/warn';
 
 import type { ShapePrimitive } from '../../../maths/shapes/ShapePrimitive';
 import type { Container } from '../../../scene/container/Container';
 import type { Effect } from '../../../scene/container/Effect';
+import type { ConvertedStrokeStyle } from '../../../scene/graphics/shared/FillTypes';
 import type { ShapePrimitiveWithHoles } from '../../../scene/graphics/shared/path/ShapePath';
 import type { CrossPlatformCanvasRenderingContext2D } from '../../renderers/canvas/CanvasContextSystem';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
@@ -113,6 +116,38 @@ function buildShapePath(context: CrossPlatformCanvasRenderingContext2D, shape: S
             break;
         }
     }
+}
+
+function buildStrokeMaskPath(
+    context: CrossPlatformCanvasRenderingContext2D,
+    shape: ShapePrimitive,
+    strokeStyle: ConvertedStrokeStyle
+): boolean
+{
+    const points: number[] = [];
+    const vertices: number[] = [];
+    const indices: number[] = [];
+    const shapeBuilder = shapeBuilders[shape.type];
+
+    if (!shapeBuilder?.build(shape, points)) return false;
+
+    const close = (shape as { closePath?: boolean }).closePath ?? true;
+
+    buildLine(points, strokeStyle, false, close, vertices, indices);
+
+    for (let i = 0; i < indices.length; i += 3)
+    {
+        const i0 = indices[i] * 2;
+        const i1 = indices[i + 1] * 2;
+        const i2 = indices[i + 2] * 2;
+
+        context.moveTo(vertices[i0], vertices[i0 + 1]);
+        context.lineTo(vertices[i1], vertices[i1 + 1]);
+        context.lineTo(vertices[i2], vertices[i2 + 1]);
+        context.closePath();
+    }
+
+    return true;
 }
 
 function addHolePaths(
@@ -275,6 +310,7 @@ export class CanvasStencilMaskPipe implements InstructionPipe<StencilMaskInstruc
             if (action !== 'fill' && action !== 'stroke') continue;
 
             const data = instructionData.data as {
+                style?: ConvertedStrokeStyle;
                 path?: {
                     shapePath?: {
                         shapePrimitives?: ShapePrimitiveWithHoles[];
@@ -285,6 +321,7 @@ export class CanvasStencilMaskPipe implements InstructionPipe<StencilMaskInstruc
 
             if (!shapePath?.shapePrimitives?.length) continue;
 
+            const isStroke = action === 'stroke';
             const shapePrimitives = shapePath.shapePrimitives;
 
             for (let j = 0; j < shapePrimitives.length; j++)
@@ -302,9 +339,18 @@ export class CanvasStencilMaskPipe implements InstructionPipe<StencilMaskInstruc
                     context.transform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
                 }
 
-                buildShapePath(context, primitive.shape as ShapePrimitive);
-                hasHoles = addHolePaths(context, primitive.holes) || hasHoles;
-                drewPath = true;
+                if (isStroke && data.style)
+                {
+                    drewPath = buildStrokeMaskPath(
+                        context, primitive.shape as ShapePrimitive, data.style
+                    ) || drewPath;
+                }
+                else
+                {
+                    buildShapePath(context, primitive.shape as ShapePrimitive);
+                    hasHoles = addHolePaths(context, primitive.holes) || hasHoles;
+                    drewPath = true;
+                }
 
                 if (hasTransform)
                 {
