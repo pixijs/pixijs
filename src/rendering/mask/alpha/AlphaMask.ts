@@ -4,6 +4,7 @@ import { addMaskBounds } from '../utils/addMaskBounds';
 import { addMaskLocalBounds } from '../utils/addMaskLocalBounds';
 
 import type { ExtensionMetadata } from '../../../extensions/Extensions';
+import type { MaskChannel } from '../../../filters/mask/MaskFilter';
 import type { Point } from '../../../maths/point/Point';
 import type { Bounds } from '../../../scene/container/bounds/Bounds';
 import type { Container } from '../../../scene/container/Container';
@@ -11,9 +12,10 @@ import type { Effect } from '../../../scene/container/Effect';
 import type { PoolItem } from '../../../utils/pool/Pool';
 
 /**
- * AlphaMask is an effect that applies a mask to a container using the alpha channel of a sprite.
- * It can be used to create complex masking effects by using a sprite as the mask.
- * The mask can be inverted, and it can render the mask to a texture if the mask is not a sprite.
+ * AlphaMask is an effect that applies a mask to a container using a sprite texture.
+ * By default, the red channel of the mask texture controls visibility. Set `channel` to `'alpha'`
+ * to use the alpha channel instead, which is useful for masks defined by transparency.
+ * The mask can be inverted, and non-sprite masks are rendered to a texture automatically.
  * @category rendering
  * @advanced
  */
@@ -24,6 +26,7 @@ export class AlphaMask implements Effect, PoolItem
     public priority = 0;
     public mask: Container;
     public inverse: boolean = false;
+    public channel: MaskChannel = 'red';
     public pipe = 'alphaMask';
     public renderMaskToTexture: boolean;
 

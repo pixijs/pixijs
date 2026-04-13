@@ -101,7 +101,7 @@ The `.init()` method accepts a `Partial<ApplicationOptions>` object:
 | `autoStart`              | `boolean`                           | `true`      | Start rendering after initialization. Setting to `false` won't stop the shared ticker if it's running. |
 | `resizeTo`               | `Window \| HTMLElement`             | -           | Element to auto-resize the renderer to match.                                                                      |
 | `sharedTicker`           | `boolean`                           | `false`     | Use the shared ticker instance if `true`; otherwise a private ticker is created.                                   |
-| `preference`             | `'webgl' \| 'webgpu' \| 'canvas'` | `webgl`     | Preferred renderer type.                                                                                           |
+| `preference`             | `RendererPreference \| RendererPreference[]` | `webgl` | Preferred renderer type(s). Pass an array to restrict to specific renderers.                                        |
 | `useBackBuffer`          | `boolean`                           | `false`     | _(WebGL only)_ Use the back buffer when required.                                                                  |
 | `forceFallbackAdapter`   | `boolean`                           | `false`     | _(WebGPU only)_ Force usage of fallback adapter.                                                                   |
 | `canvasOptions`          | `Partial<CanvasOptions>`            | -           | Options passed only to the Canvas renderer.                                                                        |
