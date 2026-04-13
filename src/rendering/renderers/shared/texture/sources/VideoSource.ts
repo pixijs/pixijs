@@ -158,6 +158,7 @@ export class VideoSource extends TextureSource<VideoResource>
         this._onPlayStart = this._onPlayStart.bind(this);
         this._onPlayStop = this._onPlayStop.bind(this);
         this._onSeeked = this._onSeeked.bind(this);
+        this._onLoadedMetadata = this._onLoadedMetadata.bind(this);
 
         if (options.autoLoad !== false)
         {
@@ -261,6 +262,13 @@ export class VideoSource extends TextureSource<VideoResource>
             this._mediaReady();
         }
 
+        // play may fire before dimensions exist (e.g. MediaStream). canplay can also precede
+        // videoWidth/height; keep listening until we have a drawable size (#11133).
+        if (!this.isValid)
+        {
+            source.addEventListener('loadedmetadata', this._onLoadedMetadata);
+        }
+
         this.alphaMode = await detectVideoAlphaMode();
 
         // Create and return the loading promise
@@ -331,12 +339,10 @@ export class VideoSource extends TextureSource<VideoResource>
     /** Runs the update loop when the video is ready to play. */
     private _onPlayStart(): void
     {
-        // Handle edge case where video might not have received its "can play" event yet
-        if (!this.isValid)
-        {
-            this._mediaReady();
-        }
-
+        // Do not call _mediaReady() when !isValid: `play` can precede intrinsic size
+        // (MediaStream / srcObject), and `_mediaReady` calls back into `_onPlayStart` while
+        // still playing → stack overflow (#11133). Readiness stays on canplay / canplaythrough /
+        // loadedmetadata instead.
         this._configureAutoUpdate();
     }
 
@@ -357,6 +363,17 @@ export class VideoSource extends TextureSource<VideoResource>
         }
     }
 
+    /** When intrinsic size becomes known after play / canplay (common with MediaStream). */
+    private _onLoadedMetadata(): void
+    {
+        if (!this.isValid)
+        {
+            return;
+        }
+
+        this._mediaReady();
+    }
+
     private _onCanPlay(): void
     {
         const source = this.resource;
@@ -372,7 +389,7 @@ export class VideoSource extends TextureSource<VideoResource>
         const source = this.resource;
 
         // Remove event listeners
-        source.removeEventListener('canplaythrough', this._onCanPlay);
+        source.removeEventListener('canplaythrough', this._onCanPlayThrough);
 
         if (this._preloadTimeout)
         {
@@ -399,8 +416,8 @@ export class VideoSource extends TextureSource<VideoResource>
         this.updateFrame();
         this._msToNextUpdate = 0;
 
-        // Resolve the loading promise if it exists
-        if (this._resolve)
+        // Resolve the loading promise only once dimensions are known (avoid resolving at 0×0).
+        if (this._resolve && this.isValid)
         {
             this._resolve(this);
             this._resolve = null;
@@ -433,6 +450,7 @@ export class VideoSource extends TextureSource<VideoResource>
             source.removeEventListener('seeked', this._onSeeked);
             source.removeEventListener('canplay', this._onCanPlay);
             source.removeEventListener('canplaythrough', this._onCanPlayThrough);
+            source.removeEventListener('loadedmetadata', this._onLoadedMetadata);
             source.removeEventListener('error', this._onError, true);
 
             // Clear the video source and pause
