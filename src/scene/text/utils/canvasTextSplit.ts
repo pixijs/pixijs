@@ -368,8 +368,10 @@ function canvasTaggedTextSplitFromRuns(
             // Override lineHeight so that individual character Text objects don't apply
             // linePositionYShift internally. The line container's yOffset already accounts
             // for lineHeight from the tagged text measurement.
+            // Write to the private field directly to avoid triggering a style update tick.
             // This mirrors the approach used in BitmapFontManager for bitmap text.
-            baseRunStyle.lineHeight = 0;
+            // eslint-disable-next-line dot-notation
+            baseRunStyle['_lineHeight'] = 0;
 
             // Use remaining-width technique for kerning-aware character positioning
             const context = CanvasTextMetrics._context;

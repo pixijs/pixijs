@@ -8,7 +8,6 @@ export const scene: TestScene = {
     it: 'should render tagged text with lineHeight correctly using split text',
     options: {
         width: 400,
-        height: 120,
     },
     create: async (scene: Container) =>
     {
@@ -34,6 +33,8 @@ export const scene: TestScene = {
 
         const splitResult = SplitText.from(text);
 
-        scene.addChild(splitResult);
+        splitResult.x = text.width + 10;
+
+        scene.addChild(text, splitResult);
     },
 };
