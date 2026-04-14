@@ -52,7 +52,7 @@
     "@pixi/colord": "^2.9.6",
     "@types/earcut": "^3.0.0",
     "@webgpu/types": "^0.1.69",
-    "@xmldom/xmldom": "^0.8.11",
+    "@xmldom/xmldom": "^0.8.12",
     "earcut": "^3.0.2",
     "eventemitter3": "^5.0.1",
     "gifuct-js": "^2.1.2",
