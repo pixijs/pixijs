@@ -6,7 +6,7 @@ import '../init';
 import '../../mesh/init';
 import { getTexture, getWebGLRenderer } from '@test-utils';
 import { Point } from '~/maths';
-import { Texture } from '~/rendering';
+import { CanvasRenderer, ImageSource, Texture } from '~/rendering';
 
 import type { TextureSource } from '~/rendering';
 
@@ -223,6 +223,61 @@ describe('TilingSprite', () =>
             sprite.anchor.x = 0.5;
 
             expect(spy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('Canvas rendering', () =>
+    {
+        it('should respect tilePosition with resolution > 1', async () =>
+        {
+            const resolution = 2;
+            const textureCssSize = 10;
+            const texturePhysSize = textureCssSize * resolution;
+
+            // Create a 10×10 CSS-pixel texture (20×20 physical) with left half RED, right half BLUE
+            const texCanvas = document.createElement('canvas');
+
+            texCanvas.width = texturePhysSize;
+            texCanvas.height = texturePhysSize;
+
+            const texCtx = texCanvas.getContext('2d') as CanvasRenderingContext2D;
+
+            texCtx.fillStyle = '#ff0000';
+            texCtx.fillRect(0, 0, texturePhysSize / 2, texturePhysSize);
+            texCtx.fillStyle = '#0000ff';
+            texCtx.fillRect(texturePhysSize / 2, 0, texturePhysSize / 2, texturePhysSize);
+
+            const source = new ImageSource({ resource: texCanvas, resolution });
+            const texture = new Texture({ source });
+
+            const spriteSize = textureCssSize * 2;
+            const renderer = new CanvasRenderer();
+
+            await renderer.init({ width: spriteSize, height: spriteSize, resolution });
+
+            const container = new Container();
+            const sprite = new TilingSprite({
+                texture,
+                width: spriteSize,
+                height: spriteSize,
+                // Shift by half the texture width: the right (blue) half should now be first
+                tilePosition: { x: textureCssSize / 2, y: 0 },
+            });
+
+            container.addChild(sprite);
+            renderer.render({ container });
+
+            // Physical canvas pixel (0, 0) corresponds to CSS pixel (0, 0).
+            // After the half-period shift the leftmost pixel must be BLUE (right half of the texture).
+            const ctx = renderer.canvas.getContext('2d') as CanvasRenderingContext2D;
+            const pixelData = ctx.getImageData(0, 0, 1, 1).data;
+
+            // R channel should be 0 (not red)
+            expect(pixelData[0]).toBe(0);
+            // B channel should be 255 (blue)
+            expect(pixelData[2]).toBe(255);
+
+            renderer.destroy();
         });
     });
 });
