@@ -641,10 +641,14 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             const contextCanvas = this._renderer.context.canvas;
             const canvasSource = renderTarget.colorTexture as unknown as CanvasSource;
 
-            canvasSource.context2D.drawImage(
+            const ctx = canvasSource.context2D;
+
+            ctx.globalCompositeOperation = 'copy';
+            ctx.drawImage(
                 contextCanvas as CanvasImageSource,
                 0, canvasSource.pixelHeight - contextCanvas.height
             );
+            ctx.globalCompositeOperation = 'source-over';
         }
     }
 
