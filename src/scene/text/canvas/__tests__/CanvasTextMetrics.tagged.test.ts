@@ -307,7 +307,7 @@ describe('CanvasTextMetrics tagged text', () =>
             }
         });
 
-        it('should use wordWrapWidth for width when using right alignment', () =>
+        it('should use actual content width for right alignment, not wordWrapWidth', () =>
         {
             const style = new TextStyle({
                 fontSize: 24,
@@ -321,11 +321,10 @@ describe('CanvasTextMetrics tagged text', () =>
             });
             const measured = CanvasTextMetrics.measureText('<red>Hi</red>', style);
 
-            // Width should be at least wordWrapWidth for proper alignment
-            expect(measured.width).toBeGreaterThanOrEqual(300);
+            expect(measured.width).toBeLessThan(300);
         });
 
-        it('should use wordWrapWidth for width when using center alignment', () =>
+        it('should use actual content width for center alignment, not wordWrapWidth', () =>
         {
             const style = new TextStyle({
                 fontSize: 24,
@@ -339,8 +338,7 @@ describe('CanvasTextMetrics tagged text', () =>
             });
             const measured = CanvasTextMetrics.measureText('<red>Hi</red>', style);
 
-            // Width should be at least wordWrapWidth for proper alignment
-            expect(measured.width).toBeGreaterThanOrEqual(300);
+            expect(measured.width).toBeLessThan(300);
         });
 
         it('should use maxLineWidth for width when using left alignment', () =>
@@ -766,7 +764,7 @@ describe('CanvasTextMetrics tagged text', () =>
 
     describe('tagStyles with alignment', () =>
     {
-        it('should use wordWrapWidth for width with center alignment and tags', () =>
+        it('should use actual content width for center alignment with tags, not wordWrapWidth', () =>
         {
             const style = new TextStyle({
                 fontSize: 24,
@@ -781,7 +779,7 @@ describe('CanvasTextMetrics tagged text', () =>
 
             const measured = CanvasTextMetrics.measureText('<big>Hi</big>', style);
 
-            expect(measured.width).toBeGreaterThanOrEqual(300);
+            expect(measured.width).toBeLessThan(300);
         });
 
         it('should handle justify alignment with tagged text', () =>
@@ -797,9 +795,43 @@ describe('CanvasTextMetrics tagged text', () =>
                 }
             });
 
-            const measured = CanvasTextMetrics.measureText('<red>This is a longer text</red>', style);
+            const measured = CanvasTextMetrics.measureText('<red>This is a longer text that wraps</red>', style);
 
             expect(measured.runsByLine).toBeDefined();
+            expect(measured.lines.length).toBeGreaterThan(1);
+            expect(measured.width).toBeLessThanOrEqual(200 + 10);
+            expect(measured.width).toBeGreaterThan(0);
+        });
+
+        it('should use actual content width for justify alignment, not wordWrapWidth', () =>
+        {
+            const text = 'hello';
+            const justifyStyle = new TextStyle({
+                fontSize: 24,
+                fontFamily: 'Arial',
+                wordWrap: true,
+                wordWrapWidth: 800,
+                align: 'justify',
+                tagStyles: {
+                    red: { fill: 'red' }
+                }
+            });
+            const leftStyle = new TextStyle({
+                fontSize: 24,
+                fontFamily: 'Arial',
+                wordWrap: true,
+                wordWrapWidth: 800,
+                align: 'left',
+                tagStyles: {
+                    red: { fill: 'red' }
+                }
+            });
+
+            const justifyMetrics = CanvasTextMetrics.measureText(`<red>${text}</red>`, justifyStyle);
+            const leftMetrics = CanvasTextMetrics.measureText(`<red>${text}</red>`, leftStyle);
+
+            expect(justifyMetrics.width).toBeLessThan(800);
+            expect(justifyMetrics.width).toBeCloseTo(leftMetrics.width, 0);
         });
     });
 });

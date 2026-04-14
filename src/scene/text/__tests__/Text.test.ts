@@ -1,6 +1,7 @@
 import { Container } from '../../container/Container';
 import { Sprite } from '../../sprite/Sprite';
 import { BitmapText } from '../../text-bitmap/BitmapText';
+import { CanvasTextMetrics } from '../canvas/CanvasTextMetrics';
 import { Text } from '../Text';
 import { TextStyle } from '../TextStyle';
 import '../../graphics/init';
@@ -439,6 +440,118 @@ describe('Text', () =>
                 // Restore original value
                 TextureSource.defaultOptions.autoGenerateMipmaps = originalValue;
             }
+        });
+    });
+
+    describe('word wrap width should not inflate text.width', () =>
+    {
+        it('should return actual content width for center-aligned Text', () =>
+        {
+            const text = new Text({
+                text: 'text center',
+                style: { fontFamily: 'Arial', fontSize: 36, wordWrap: true, wordWrapWidth: 800, align: 'center' },
+            });
+
+            expect(text.width).toBeLessThan(800);
+        });
+
+        it('should return same content width regardless of alignment for Text', () =>
+        {
+            const center = new Text({
+                text: 'hello',
+                style: { fontFamily: 'Arial', fontSize: 36, wordWrap: true, wordWrapWidth: 800, align: 'center' },
+            });
+            const left = new Text({
+                text: 'hello',
+                style: { fontFamily: 'Arial', fontSize: 36, wordWrap: true, wordWrapWidth: 800, align: 'left' },
+            });
+            const right = new Text({
+                text: 'hello',
+                style: { fontFamily: 'Arial', fontSize: 36, wordWrap: true, wordWrapWidth: 800, align: 'right' },
+            });
+
+            expect(center.width).toBeLessThan(800);
+            expect(left.width).toBeLessThan(800);
+            expect(right.width).toBeLessThan(800);
+            expect(center.width).toBeCloseTo(left.width, 0);
+            expect(center.width).toBeCloseTo(right.width, 0);
+        });
+
+        it('should return matching widths for center vs left alignment with same text', () =>
+        {
+            const centerText = new Text({
+                text: 'hello world',
+                style: { fontFamily: 'Arial', fontSize: 36, wordWrap: true, wordWrapWidth: 800, align: 'center' },
+            });
+            const leftText = new Text({
+                text: 'hello world',
+                style: { fontFamily: 'Arial', fontSize: 36, wordWrap: true, wordWrapWidth: 800, align: 'left' },
+            });
+
+            expect(centerText.width).toBeLessThan(800);
+            expect(leftText.width).toBeLessThan(800);
+            expect(centerText.width).toBeCloseTo(leftText.width, 0);
+        });
+
+        it('should return actual content width for center-aligned BitmapText', () =>
+        {
+            const text = new BitmapText({
+                text: 'text center',
+                style: { fontFamily: 'Arial', fontSize: 36, wordWrap: true, wordWrapWidth: 800, align: 'center' },
+            });
+
+            expect(text.width).toBeLessThan(800);
+        });
+
+        it('should return same content width regardless of alignment for BitmapText', () =>
+        {
+            const center = new BitmapText({
+                text: 'hello',
+                style: { fontFamily: 'Arial', fontSize: 36, wordWrap: true, wordWrapWidth: 800, align: 'center' },
+            });
+            const left = new BitmapText({
+                text: 'hello',
+                style: { fontFamily: 'Arial', fontSize: 36, wordWrap: true, wordWrapWidth: 800, align: 'left' },
+            });
+            const right = new BitmapText({
+                text: 'hello',
+                style: { fontFamily: 'Arial', fontSize: 36, wordWrap: true, wordWrapWidth: 800, align: 'right' },
+            });
+
+            expect(center.width).toBeLessThan(800);
+            expect(left.width).toBeLessThan(800);
+            expect(right.width).toBeLessThan(800);
+            expect(center.width).toBeCloseTo(left.width, 0);
+            expect(center.width).toBeCloseTo(right.width, 0);
+        });
+    });
+
+    describe('word wrap should not break text that fits', () =>
+    {
+        it('should not wrap when wordWrapWidth matches measured width', () =>
+        {
+            const content = 'p jdk f svzmrq';
+
+            const metrics = CanvasTextMetrics.measureText(
+                content,
+                new TextStyle({
+                    fontFamily: 'Arial',
+                    fontSize: 8,
+                    wordWrap: false,
+                }),
+            );
+
+            const text = new Text({
+                text: content,
+                style: new TextStyle({
+                    fontFamily: 'Arial',
+                    fontSize: 8,
+                    wordWrap: true,
+                    wordWrapWidth: Math.ceil(metrics.width) + 1,
+                }),
+            });
+
+            expect(text.height).toBeCloseTo(metrics.height, 0);
         });
     });
 });
