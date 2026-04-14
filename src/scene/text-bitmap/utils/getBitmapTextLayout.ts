@@ -303,11 +303,6 @@ export function getBitmapTextLayout(
 
     nextLine();
 
-    if (style.wordWrap && style.align !== 'left')
-    {
-        layoutData.width = Math.max(layoutData.width, adjustedWordWrapWidth);
-    }
-
     if (style.align === 'center')
     {
         alignCenter(layoutData);

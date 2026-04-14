@@ -189,8 +189,6 @@ class CanvasTextGeneratorClass
         // text, but instead drawing text in the correct location, we'll draw it off screen (-paddingY), and then adjust the
         // drop shadow so only that appears on screen (+paddingY). Now we'll have the correct draw order of the shadow
         // beneath the text, whilst also having the proper text shadow styling.
-        // Calculate alignment width - use wordWrapWidth when wrapping with non-left align
-        const alignWidth = style.wordWrap ? style.wordWrapWidth : maxLineWidth;
         const strokeWidth = style._stroke?.width ?? 0;
         const halfStroke = strokeWidth / 2;
 
@@ -253,7 +251,7 @@ class CanvasTextGeneratorClass
                 linePositionX = halfStroke;
                 linePositionY = (halfStroke + (j * lineHeight)) + fontProperties.ascent + linePositionYShift;
 
-                linePositionX += this._getAlignmentOffset(lineWidths[j], alignWidth, style.align);
+                linePositionX += this._getAlignmentOffset(lineWidths[j], maxLineWidth, style.align);
 
                 let wordSpacing = 0;
 
@@ -263,7 +261,7 @@ class CanvasTextGeneratorClass
 
                     if (spaces > 0)
                     {
-                        wordSpacing = (alignWidth - lineWidths[j]) / spaces;
+                        wordSpacing = (maxLineWidth - lineWidths[j]) / spaces;
                     }
                 }
 
@@ -324,8 +322,6 @@ class CanvasTextGeneratorClass
         // require 2 passes if a shadow; the first to draw the drop shadow, the second to draw the text
         const passesCount = hasDropShadow ? 2 : 1;
 
-        // Calculate alignment width - use wordWrapWidth when wrapping with non-left align
-        const alignWidth = style.wordWrap ? style.wordWrapWidth : maxLineWidth;
         let maxStrokeWidth = style._stroke?.width ?? 0;
 
         for (const lineRuns of runsByLine)
@@ -385,7 +381,7 @@ class CanvasTextGeneratorClass
                 // Calculate line X position based on alignment
                 let linePositionX = halfStroke;
 
-                linePositionX += this._getAlignmentOffset(lineWidth, alignWidth, style.align);
+                linePositionX += this._getAlignmentOffset(lineWidth, maxLineWidth, style.align);
 
                 let wordSpacing = 0;
 
@@ -400,7 +396,7 @@ class CanvasTextGeneratorClass
 
                     if (totalSpaces > 0)
                     {
-                        wordSpacing = (alignWidth - lineWidth) / totalSpaces;
+                        wordSpacing = (maxLineWidth - lineWidth) / totalSpaces;
                     }
                 }
 
@@ -642,7 +638,7 @@ class CanvasTextGeneratorClass
     /**
      * Calculates the X offset for text alignment.
      * @param lineWidth - The width of the current line
-     * @param alignWidth - The width to align against (maxLineWidth or wordWrapWidth)
+     * @param alignWidth - The width to align against
      * @param align - The text alignment
      * @returns The X offset for this line
      */

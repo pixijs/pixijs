@@ -7,6 +7,7 @@ uniform sampler2D uMaskTexture;
 uniform float uAlpha;
 uniform vec4 uMaskClamp;
 uniform float uInverse;
+uniform float uChannel;
 
 out vec4 finalColor;
 
@@ -22,9 +23,14 @@ void main(void)
     float npmAlpha = uAlpha;
     vec4 original = texture(uTexture, vTextureCoord);
     vec4 masky = texture(uMaskTexture, vMaskCoord);
-    float alphaMul = 1.0 - npmAlpha * (1.0 - masky.a);
 
-    float a = alphaMul * masky.r * npmAlpha * clip;
+    float a;
+    if (uChannel == 1.0) {
+        a = masky.a * npmAlpha * clip;
+    } else {
+        float alphaMul = 1.0 - npmAlpha * (1.0 - masky.a);
+        a = alphaMul * masky.r * npmAlpha * clip;
+    }
 
     if (uInverse == 1.0) {
         a = 1.0 - a;

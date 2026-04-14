@@ -103,7 +103,7 @@ export interface ApplicationPlugin
  *    autoDensity: true,           // Adjust for device pixel ratio
  *
  *    // Advanced options
- *    preference: 'webgl',         // Renderer preference ('webgl' or 'webgpu')
+ *    preference: 'webgl',         // Renderer preference ('webgl', 'webgpu', 'canvas', or an array)
  *    powerPreference: 'high-performance' // GPU power preference
  * });
  * ```
@@ -355,6 +355,16 @@ export class Application<R extends Renderer = Renderer>
     get screen(): Rectangle
     {
         return this.renderer.screen;
+    }
+
+    /**
+     * Get the html div element that holds all DOM Container elements.
+     * @readonly
+     * @type {HTMLDivElement}
+     */
+    get domContainerRoot()
+    {
+        return this.renderer.renderPipes.dom._domElement;
     }
 
     /**

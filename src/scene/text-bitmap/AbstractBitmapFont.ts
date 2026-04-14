@@ -54,7 +54,7 @@ export interface BitmapFontData
 {
     /** The offset of the font face from the baseline. */
     baseLineOffset: number;
-    /** The map of characters by character code. */
+    /** The map of characters by character string. */
     chars: Record<string, RawCharData>;
     /** The map of base page textures (i.e., sheets of glyphs). */
     pages: {
@@ -92,7 +92,7 @@ export abstract class AbstractBitmapFont<FontType>
     extends EventEmitter<BitmapFontEvents<FontType>>
     implements Omit<BitmapFontData, 'chars' | 'pages' | 'fontSize'>
 {
-    /** The map of characters by character code. */
+    /** The map of characters by character string. */
     public readonly chars: Record<string, CharData> = Object.create(null);
 
     /**

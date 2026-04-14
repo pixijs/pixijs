@@ -118,11 +118,6 @@ export function canvasTextSplit(
 
     const alignment = textStyle.align;
     const maxLineWidth = measuredText.lineWidths.reduce((max, line) => Math.max(max, line), 0);
-    const isSingleLine = measuredText.lines.length === 1;
-    // For single-line text, alignment has no effect (nothing to align relative to)
-    // Multi-line text uses wordWrapWidth when word wrap is enabled
-    const useWordWrapWidth = !isSingleLine && textStyle.wordWrap;
-    const alignWidth = useWordWrapWidth ? textStyle.wordWrapWidth : maxLineWidth;
 
     // Check if fill or stroke contains a gradient that needs offset/bounds
     const fillGradient = textStyle._fill?.fill;
@@ -185,7 +180,7 @@ export function canvasTextSplit(
         lineContainers.push(lineContainer);
 
         const lineWidth = measuredText.lineWidths[lineIndex];
-        let xOffset = getAlignmentOffset(alignment, lineWidth, alignWidth);
+        let xOffset = getAlignmentOffset(alignment, lineWidth, maxLineWidth);
 
         let currentWordContainer = new Container({ label: 'word' });
 
@@ -287,7 +282,7 @@ export function canvasTextSplit(
 
             if (wordGaps > 0)
             {
-                const extraPerGap = (alignWidth - lineWidth) / wordGaps;
+                const extraPerGap = (maxLineWidth - lineWidth) / wordGaps;
 
                 for (let i = 1; i < lineWords.length; i++)
                 {
@@ -312,9 +307,6 @@ function canvasTaggedTextSplitFromRuns(
     const { runsByLine } = measuredText;
     const alignment = textStyle.align;
     const maxLineWidth = measuredText.lineWidths.reduce((max, line) => Math.max(max, line), 0);
-    const isSingleLine = measuredText.lines.length === 1;
-    const useWordWrapWidth = !isSingleLine && textStyle.wordWrap;
-    const alignWidth = useWordWrapWidth ? textStyle.wordWrapWidth : maxLineWidth;
 
     let trimOffsetX = 0;
     let trimOffsetY = 0;
@@ -346,7 +338,7 @@ function canvasTaggedTextSplitFromRuns(
         lineContainers.push(lineContainer);
 
         const lineWidth = measuredText.lineWidths[lineIndex];
-        let xOffset = getAlignmentOffset(alignment, lineWidth, alignWidth);
+        let xOffset = getAlignmentOffset(alignment, lineWidth, maxLineWidth);
 
         let currentWordContainer = new Container({ label: 'word' });
 
@@ -473,7 +465,7 @@ function canvasTaggedTextSplitFromRuns(
 
             if (wordGaps > 0)
             {
-                const extraPerGap = (alignWidth - lineWidth) / wordGaps;
+                const extraPerGap = (maxLineWidth - lineWidth) / wordGaps;
 
                 for (let i = 1; i < lineWords.length; i++)
                 {
