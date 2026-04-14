@@ -76,7 +76,6 @@
     "@types/pixelmatch": "^5.2.6",
     "@types/pngjs": "^6.0.5",
     "@types/semver": "^7.7.1",
-    "@xmldom/xmldom": "^0.8.11",
     "babel-jest": "^26.0.0",
     "copyfiles": "^2.4.1",
     "dts-bundle-generator": "^9.5.1",
