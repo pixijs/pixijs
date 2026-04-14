@@ -149,15 +149,14 @@ export class BindGroup
     {
         this._dirty = true;
 
-        // check if a resource has been destroyed, if it has then we need to destroy this bind group
-        // using this bind group with a destroyed resource will cause the renderer to explode :)
         if (resource.destroyed)
         {
-            this.destroy();
+            // Remove the listener from the destroyed resource, but don't destroy the bind group.
+            // The bind group's consumer (e.g. MaskFilter) may replace the resource before
+            // the next render, so self-destructing here would crash the render pipeline.
+            resource.off?.('change', this.onResourceChange, this);
         }
-        else
-        {
-            this._updateKey();
-        }
+
+        this._updateKey();
     }
 }

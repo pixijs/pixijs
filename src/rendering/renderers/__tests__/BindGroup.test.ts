@@ -142,7 +142,7 @@ describe('BindGroup', () =>
         expect(bindGroup3._key).toBe('2');
     });
 
-    it('should destroy bind group when resource is destroyed', () =>
+    it('should not destroy bind group when resource is destroyed', () =>
     {
         const buffer = new Buffer({
             data: new Float32Array(100),
@@ -161,6 +161,27 @@ describe('BindGroup', () =>
 
         bufferResource.destroy();
 
-        expect(bindGroup.resources).toBeNull();
+        expect(bindGroup.resources).not.toBeNull();
+    });
+
+    it('should allow replacing a destroyed resource without crashing', () =>
+    {
+        const textureSource = new TextureSource({ width: 100, height: 100, resolution: 1 });
+
+        const bindGroup = new BindGroup({
+            0: textureSource,
+        });
+
+        textureSource.destroy();
+
+        // The bind group should still be alive
+        expect(bindGroup.resources).not.toBeNull();
+
+        // Setting a new resource should work fine
+        const newSource = new TextureSource({ width: 200, height: 200, resolution: 1 });
+
+        bindGroup.setResource(newSource, 0);
+
+        expect(bindGroup.getResource(0)).toBe(newSource);
     });
 });
