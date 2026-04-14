@@ -27,7 +27,6 @@ export function graphicsContextToSvg(source: Graphics | GraphicsContext, precisi
     const defs = new SVGDefsCollector();
     const elements: string[] = [];
     const instructions = context.instructions;
-    let maxStrokeWidth = 0;
 
     let i = 0;
 
@@ -40,18 +39,17 @@ export function graphicsContextToSvg(source: Graphics | GraphicsContext, precisi
             case 'fill':
             {
                 const fillInst = inst as FillInstruction;
-                let pathD = buildSVGPath(fillInst.data.path, precision);
                 const hasHole = !!fillInst.data.hole;
-
-                if (hasHole)
-                {
-                    pathD += buildSVGPath(fillInst.data.hole, precision);
-                }
-
+                // Hole paths are flattened to polylines because the reimport side estimates
+                // subpath area from raw number extraction; arc flag values would otherwise
+                // inflate the bbox and scramble the fill/hole ordering.
+                const d = hasHole
+                    ? buildSVGPath(fillInst.data.path, precision) + buildSVGPath(fillInst.data.hole, precision, true)
+                    : buildSVGPath(fillInst.data.path, precision);
                 const fillAttrs = buildSVGFillAttributes(fillInst.data.style, defs);
-                const fillRule = hasHole ? ' fill-rule="evenodd"' : '';
+                const rule = hasHole ? ' fill-rule="evenodd"' : '';
 
-                elements.push(`<path d="${pathD}" ${fillAttrs}${fillRule}/>`);
+                elements.push(`<path d="${d}" ${fillAttrs}${rule}/>`);
                 break;
             }
 
@@ -62,32 +60,27 @@ export function graphicsContextToSvg(source: Graphics | GraphicsContext, precisi
 
                 if (strokeInst.data.hole)
                 {
-                    pathD += buildSVGPath(strokeInst.data.hole, precision);
+                    pathD += buildSVGPath(strokeInst.data.hole, precision, true);
                 }
 
                 const strokeAttrs = buildSVGStrokeAttributes(strokeInst.data.style, defs);
-
-                maxStrokeWidth = Math.max(maxStrokeWidth, strokeInst.data.style.width);
 
                 elements.push(`<path d="${pathD}" ${strokeAttrs}/>`);
                 break;
             }
 
             case 'texture':
-                // Textures have no SVG equivalent — skip silently
                 break;
         }
 
         i++;
     }
 
-    // Compute viewBox from context bounds
     const bounds = context.bounds;
-    const pad = maxStrokeWidth / 2;
-    const x = parseFloat((bounds.minX - pad).toFixed(precision));
-    const y = parseFloat((bounds.minY - pad).toFixed(precision));
-    const w = parseFloat((bounds.maxX - bounds.minX + (pad * 2)).toFixed(precision));
-    const h = parseFloat((bounds.maxY - bounds.minY + (pad * 2)).toFixed(precision));
+    const x = parseFloat(bounds.minX.toFixed(precision));
+    const y = parseFloat(bounds.minY.toFixed(precision));
+    const w = parseFloat((bounds.maxX - bounds.minX).toFixed(precision));
+    const h = parseFloat((bounds.maxY - bounds.minY).toFixed(precision));
 
     const defsBlock = defs.build();
     const body = elements.join('');

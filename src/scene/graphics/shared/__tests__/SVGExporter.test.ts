@@ -2,6 +2,7 @@
 import { FillGradient } from '../fill/FillGradient';
 import { GraphicsContext } from '../GraphicsContext';
 import { graphicsContextToSvg } from '../svg/SVGExporter';
+import { Matrix } from '~/maths';
 
 /**
  * Normalises an SVG string for reliable comparison:
@@ -90,7 +91,7 @@ describe('SVGExporter', () =>
         });
 
         expect(actual).toBe(normaliseSvg(
-            '<svg xmlns="http://www.w3.org/2000/svg" width="106" height="106" viewBox="-3 -3 106 106">'
+            '<svg xmlns="http://www.w3.org/2000/svg" width="103" height="103" viewBox="-1.5 -1.5 103 103">'
             + '<path d="M0 0L100 100" fill="none" stroke="#0000ff" stroke-width="3"/>'
             + '</svg>'
         ));
@@ -204,7 +205,7 @@ describe('SVGExporter', () =>
         });
 
         expect(actual).toBe(normaliseSvg(
-            '<svg xmlns="http://www.w3.org/2000/svg" width="104" height="4" viewBox="-2 -2 104 4">'
+            '<svg xmlns="http://www.w3.org/2000/svg" width="102" height="2" viewBox="-1 -1 102 2">'
             + '<path d="M0 0L100 0" fill="none" stroke="#000000"'
             + ' stroke-width="2" stroke-linecap="round" stroke-linejoin="bevel"/>'
             + '</svg>'
@@ -235,7 +236,7 @@ describe('SVGExporter', () =>
         });
 
         expect(actual).toBe(normaliseSvg(
-            '<svg xmlns="http://www.w3.org/2000/svg" width="88" height="88" viewBox="6 6 88 88">'
+            '<svg xmlns="http://www.w3.org/2000/svg" width="84" height="84" viewBox="8 8 84 84">'
             + '<path d="M10 10L90 10L90 90L10 90Z" fill="none" stroke="#000000" stroke-width="4"/>'
             + '</svg>'
         ));
@@ -271,5 +272,96 @@ describe('SVGExporter', () =>
             + '<path d="M0 0L100 0L100 100L0 100Z" fill="url(#pixi-grad-0)"/>'
             + '</svg>'
         ));
+    });
+
+    describe('regressions', () =>
+    {
+        it('should emit a rect exactly once when combined with a regularPoly in the same fill', () =>
+        {
+            const ctx = new GraphicsContext();
+
+            ctx.rect(0, 0, 10, 10);
+            ctx.regularPoly(50, 50, 20, 6);
+            ctx.fill({ color: 0x000000 });
+
+            const svg = graphicsContextToSvg(ctx);
+            const rectStarts = (svg.match(/M0 0L10 0/g) || []).length;
+
+            expect(rectStarts).toBe(1);
+        });
+
+        it('should emit exactly one moveTo per polygon when multiple complex shapes share a fill', () =>
+        {
+            const ctx = new GraphicsContext();
+
+            ctx.regularPoly(20, 20, 10, 5);
+            ctx.regularPoly(80, 80, 10, 5);
+            ctx.fill({ color: 0x000000 });
+
+            const svg = graphicsContextToSvg(ctx);
+            const d = svg.match(/d="([^"]+)"/)![1];
+            const moveCount = (d.match(/M/g) || []).length;
+
+            expect(moveCount).toBe(2);
+        });
+
+        it('should emit a valid SVG path when arc is the only instruction', () =>
+        {
+            const ctx = new GraphicsContext();
+
+            ctx.arc(50, 50, 25, 0, Math.PI);
+            ctx.fill({ color: 0x000000 });
+
+            const svg = graphicsContextToSvg(ctx);
+            const d = svg.match(/d="([^"]+)"/)![1];
+
+            expect(d.startsWith('M')).toBe(true);
+        });
+
+        it('should honour the active context transform on rect', () =>
+        {
+            const ctx = new GraphicsContext();
+
+            ctx.setTransform(new Matrix().translate(100, 200));
+            ctx.rect(0, 0, 10, 10);
+            ctx.fill({ color: 0x000000 });
+
+            const svg = graphicsContextToSvg(ctx);
+
+            expect(svg).toContain('M100 200');
+            expect(svg).not.toMatch(/d="M0 0L10 0L10 10L0 10Z"/);
+        });
+
+        it('should start a new subpath when arc follows a closed shape', () =>
+        {
+            const ctx = new GraphicsContext();
+
+            ctx.rect(0, 0, 10, 10);
+            ctx.arc(50, 50, 10, 0, Math.PI);
+            ctx.fill({ color: 0x000000 });
+
+            const svg = graphicsContextToSvg(ctx);
+            const d = svg.match(/d="([^"]+)"/)![1];
+
+            expect(d).not.toContain('ZL');
+        });
+
+        it('should derive the viewBox from context bounds without extra stroke padding', () =>
+        {
+            const ctx = new GraphicsContext();
+
+            ctx.rect(10, 10, 80, 80);
+            ctx.stroke({ color: 0x000000, width: 4 });
+
+            const bounds = ctx.bounds;
+            const svg = graphicsContextToSvg(ctx);
+            const viewBox = svg.match(/viewBox="([^"]+)"/)![1];
+            const [x, y, w, h] = viewBox.split(' ').map(parseFloat);
+
+            expect(x).toBeCloseTo(bounds.minX, 5);
+            expect(y).toBeCloseTo(bounds.minY, 5);
+            expect(w).toBeCloseTo(bounds.maxX - bounds.minX, 5);
+            expect(h).toBeCloseTo(bounds.maxY - bounds.minY, 5);
+        });
     });
 });
