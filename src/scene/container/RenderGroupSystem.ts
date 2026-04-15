@@ -227,6 +227,8 @@ export class RenderGroupSystem implements System
         {
             const container = list[i];
 
+            if (!container) continue;
+
             if (container.didViewUpdate)
             {
                 renderGroup.updateRenderable(container as ViewContainer);
