@@ -32,6 +32,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     {
         this._renderer = renderer;
         renderer.runners.resolutionChange.add(this);
+        renderer.runners.contextChange.add(this);
         this._managedTexts = new GCManagedHash({
             renderer,
             type: 'renderable',
@@ -48,6 +49,29 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
             if (text?._autoResolution)
             {
+                text.onViewUpdate();
+            }
+        }
+    }
+
+    protected contextChange()
+    {
+        this._renderer.htmlText.clearActiveTextures();
+
+        for (const key in this._managedTexts.items)
+        {
+            const text = this._managedTexts.items[key];
+
+            if (text)
+            {
+                const gpuText = text._gpuData[this._renderer.uid] as BatchableHTMLText;
+
+                if (gpuText)
+                {
+                    gpuText.currentKey = '--';
+                    gpuText.texture = Texture.EMPTY;
+                }
+
                 text.onViewUpdate();
             }
         }
@@ -130,9 +154,23 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         }
 
         batchableHTMLText.texturePromise = texturePromise;
-        batchableHTMLText.currentKey = htmlText.styleKey;
+        const expectedKey = htmlText.styleKey;
 
-        batchableHTMLText.texture = await texturePromise;
+        batchableHTMLText.currentKey = expectedKey;
+
+        const resolvedTexture = await texturePromise;
+
+        // If a WebGL context loss/restore occurred while we were awaiting the texture,
+        // contextChange() will have reset currentKey to '--' and texture to Texture.EMPTY.
+        // In that case, discard the now-stale texture to avoid overwriting the reset state.
+        if (batchableHTMLText.currentKey !== expectedKey)
+        {
+            batchableHTMLText.generatingTexture = false;
+
+            return;
+        }
+
+        batchableHTMLText.texture = resolvedTexture;
 
         // need a rerender...
         const renderGroup = htmlText.renderGroup || htmlText.parentRenderGroup;
