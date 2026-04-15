@@ -112,6 +112,67 @@ describe('EventBoundary', () =>
         expect(boundary.hitTest(50, 50)).toEqual(null);
     });
 
+    it(`should hit test an interactive container using bounds when interactiveChildren is false`, () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        // Plain Container with no containsPoint method
+        const container = stage.addChild(new Container());
+        // Add a child with visual content to give the container bounds
+        const child = container.addChild(graphicsWithRect(0, 0, 100, 100));
+
+        // Container is interactive but children should not receive events
+        container.eventMode = 'static';
+        container.interactiveChildren = false;
+        child.interactive = true;
+
+        // Should hit the container (using bounds), not the child
+        const hitTest = boundary.hitTest(50, 50);
+
+        expect(hitTest).toEqual(container);
+
+        // Child should not be hit even though it's interactive
+        // because parent has interactiveChildren = false
+    });
+
+    it(`should hit test an interactive container with interactiveChildren false even without interactive children`, () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const container = stage.addChild(new Container());
+        // Non-interactive child just for visual bounds
+        const child = container.addChild(graphicsWithRect(0, 0, 100, 100));
+
+        container.eventMode = 'static';
+        container.interactiveChildren = false;
+        // Child is NOT interactive
+        child.eventMode = 'passive';
+
+        // Should still hit the container using bounds
+        const hitTest = boundary.hitTest(50, 50);
+
+        expect(hitTest).toEqual(container);
+    });
+
+    it(`should not hit test outside bounds when using bounds fallback`, () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const container = stage.addChild(new Container());
+
+        // Add a child with visual content to give the container bounds
+        container.addChild(graphicsWithRect(0, 0, 100, 100));
+
+        container.eventMode = 'static';
+        container.interactiveChildren = false;
+
+        // Inside bounds - should hit
+        expect(boundary.hitTest(50, 50)).toEqual(container);
+
+        // Outside bounds - should not hit
+        expect(boundary.hitTest(150, 150)).toEqual(null);
+    });
+
     it(`should not block an interaction event if the display object is a mask`, () =>
     {
         const stage = new Container();
