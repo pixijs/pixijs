@@ -19,6 +19,23 @@ import type { WebGPURenderer } from '../WebGPURenderer';
  */
 export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarget>
 {
+    /**
+     * The pixel format used when configuring the WebGPU canvas context. Must
+     * match {@link GpuStateSystem.colorTargetFormat} and any render-target
+     * texture formats. Override before renderer initialization to enable HDR
+     * output (e.g. `'rgba16float'`).
+     * @default 'bgra8unorm'
+     */
+    public static canvasFormat: GPUTextureFormat = 'bgra8unorm';
+
+    /**
+     * Optional tone mapping applied when configuring the WebGPU canvas
+     * context. Set to `{ mode: 'extended' }` to enable HDR output on capable
+     * displays (Chrome 131+, Safari 18.x+). Non-HDR displays receive a
+     * clamped/tone-mapped SDR presentation.
+     */
+    public static canvasToneMapping: GPUCanvasToneMapping | undefined;
+
     private _renderTargetSystem: RenderTargetSystem<GpuRenderTarget>;
     private _renderer: WebGPURenderer<HTMLCanvasElement>;
 
@@ -295,15 +312,22 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
                 try
                 {
-                    context.configure({
+                    const contextConfig: GPUCanvasConfiguration = {
                         device: this._renderer.gpu.device,
                         usage: GPUTextureUsage.TEXTURE_BINDING
                             | GPUTextureUsage.COPY_DST
                             | GPUTextureUsage.RENDER_ATTACHMENT
                             | GPUTextureUsage.COPY_SRC,
-                        format: 'bgra8unorm',
+                        format: GpuRenderTargetAdaptor.canvasFormat,
                         alphaMode,
-                    });
+                    };
+
+                    if (GpuRenderTargetAdaptor.canvasToneMapping)
+                    {
+                        contextConfig.toneMapping = GpuRenderTargetAdaptor.canvasToneMapping;
+                    }
+
+                    context.configure(contextConfig);
                 }
                 catch (e)
                 {

@@ -20,6 +20,17 @@ export class GpuStateSystem implements System
         ],
         name: 'state',
     } as const;
+
+    /**
+     * The pixel format used for color targets on WebGPU pipelines. Must match
+     * the canvas format configured in {@link GpuRenderTargetAdaptor.canvasFormat}
+     * and any render-target texture formats, or WebGPU will throw a pipeline
+     * format mismatch. Override before renderer initialization to enable HDR
+     * output (e.g. `'rgba16float'`).
+     * @default 'bgra8unorm'
+     */
+    public static colorTargetFormat: GPUTextureFormat = 'bgra8unorm';
+
     /**
      * State ID
      * @readonly
@@ -77,7 +88,7 @@ export class GpuStateSystem implements System
 
         const targets: GPUColorTargetState[] = [];
         const target = {
-            format: 'bgra8unorm',
+            format: GpuStateSystem.colorTargetFormat,
             writeMask: 0,
             blend,
         } as GPUColorTargetState;
