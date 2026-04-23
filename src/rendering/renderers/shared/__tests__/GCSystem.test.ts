@@ -730,6 +730,37 @@ describe('GCSystem', () =>
             expect(context.myHash.key2).toBe(resource2);
         });
 
+        it('should call unload() before nulling the hash entry so listeners can still access the resource', () =>
+        {
+            const resource = createMockResource();
+
+            resource._gcData = {
+                type: 'resource',
+            };
+            resource._gcLastUsed = gcSystem.now - 2000;
+
+            const context = { myHash: { key1: resource } as Record<string, GCable | null> };
+
+            gcSystem.addResourceHash(context, 'myHash', 'resource');
+
+            // Track whether the hash entry is still non-null when unload() is called
+            let hashEntryDuringUnload: GCable | null = undefined as any;
+
+            resource.unload = jest.fn(() =>
+            {
+                hashEntryDuringUnload = context.myHash.key1;
+            }) as any;
+
+            gcSystem.run();
+
+            expect(resource.unload).toHaveBeenCalled();
+            // The hash entry must still reference the resource when unload() fires,
+            // so that listeners (e.g. GCManagedHash.remove → gl.deleteTexture) can find it.
+            expect(hashEntryDuringUnload).toBe(resource);
+            // After GC completes, the entry should be null
+            expect(context.myHash.key1).toBeNull();
+        });
+
         it('should not garbage collect resources with autoGarbageCollect disabled in hash', () =>
         {
             const resource = createMockResource({ autoGarbageCollect: false });
