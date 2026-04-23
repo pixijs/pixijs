@@ -486,6 +486,21 @@ export class GCSystem implements System<GCSystemOptions>
 
             if (!isRecentlyUsed && resource.autoGarbageCollect)
             {
+                if (type === 'renderable')
+                {
+                    const res = resource as Renderable;
+                    const renderGroup = res.renderGroup ?? res.parentRenderGroup;
+
+                    if (renderGroup) renderGroup.structureDidChange = true;
+                }
+
+                // Call the cleanup function before nulling the hash entry,
+                // so that listeners (e.g. GCManagedHash.remove) can still
+                // find the resource and release GPU data.
+                resource.unload();
+                resource._gcData = null;
+                resource._gcLastUsed = -1;
+
                 // Lazily create the clone only when we need to remove something
                 if (!hashClone)
                 {
@@ -501,19 +516,6 @@ export class GCSystem implements System<GCSystemOptions>
                         hashClone = this._createHashClone(hashValue, key);
                     }
                 }
-
-                if (type === 'renderable')
-                {
-                    const res = resource as Renderable;
-                    const renderGroup = res.renderGroup ?? res.parentRenderGroup;
-
-                    if (renderGroup) renderGroup.structureDidChange = true;
-                }
-
-                // Call the cleanup function
-                resource.unload();
-                resource._gcData = null;
-                resource._gcLastUsed = -1;
             }
             else if (hashClone)
             {
