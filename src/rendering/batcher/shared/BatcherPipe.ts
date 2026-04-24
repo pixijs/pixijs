@@ -7,7 +7,7 @@ import type { InstructionSet } from '../../renderers/shared/instructions/Instruc
 import type { BatchPipe, InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { Renderer } from '../../renderers/types';
-import type { Batch, BatchableElement, Batcher } from './Batcher';
+import type { Batch, BatchableElement, Batcher, BatcherOptions } from './Batcher';
 
 /** @internal */
 export interface BatcherAdaptor
@@ -51,11 +51,11 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
     /** The currently active batcher being used to batch elements */
     private _activeBatch: Batcher;
 
-    public static _availableBatchers: Record<string, new () => Batcher> = Object.create(null);
+    public static _availableBatchers: Record<string, new (options: BatcherOptions) => Batcher> = Object.create(null);
 
-    public static getBatcher(name: string): Batcher
+    public static getBatcher(name: string, maxTextures: number): Batcher
     {
-        return new this._availableBatchers[name as keyof typeof this._availableBatchers]();
+        return new this._availableBatchers[name as keyof typeof this._availableBatchers]({ maxTextures });
     }
 
     constructor(renderer: Renderer, adaptor: BatcherAdaptor)
@@ -99,7 +99,7 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
             if (!batch)
             {
                 batch = this._activeBatches[batchableObject.batcherName]
-                    = BatcherPipe.getBatcher(batchableObject.batcherName);
+                    = BatcherPipe.getBatcher(batchableObject.batcherName, this.renderer.limits.maxBatchableTextures);
                 batch.begin();
             }
 
