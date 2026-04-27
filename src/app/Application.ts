@@ -364,7 +364,7 @@ export class Application<R extends Renderer = Renderer>
      */
     get domContainerRoot()
     {
-        return this.renderer.renderPipes.dom._domElement;
+        return this.renderer.renderPipes.dom?._domElement;
     }
 
     /**
