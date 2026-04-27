@@ -380,6 +380,7 @@ export class RenderGroup implements Instruction
         (this.childrenToUpdate as any) = null;
         (this.renderGroupChildren as any) = null;
         (this._onRenderContainers as any) = null;
+        this.instructionSet?.destroy();
         this.instructionSet = null;
     }
 
