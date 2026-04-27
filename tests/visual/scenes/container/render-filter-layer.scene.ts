@@ -1,4 +1,4 @@
-import { ColorMatrixFilter } from '~/filters';
+import { ColorTransformFilter } from '~/filters';
 import { Graphics, RenderLayer } from '~/scene';
 
 import type { TestScene } from '../../types';
@@ -16,7 +16,7 @@ export const scene: TestScene = {
 
         const layer = new RenderLayer();
 
-        const filter = new ColorMatrixFilter();
+        const filter = new ColorTransformFilter();
 
         graphicsFront.filters = [filter];
         filter.tint('yellow');

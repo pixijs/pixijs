@@ -1,4 +1,4 @@
-import { ColorMatrixFilter } from '../ColorMatrixFilter';
+import { type ColorMatrix, ColorMatrixFilter } from '../ColorMatrixFilter';
 
 describe('ColorMatrixFilter', () =>
 {
@@ -12,86 +12,101 @@ describe('ColorMatrixFilter', () =>
         filter.alpha = 0.5;
 
         expect(filter.alpha).toEqual(0.5);
-        expect(filter.matrix.toString()).toEqual(new Float32Array(
-            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0]
-        ).toString());
+        expect(filter.matrix).toEqual([
+            1, 0, 0, 0, 0,
+            0, 1, 0, 0, 0,
+            0, 0, 1, 0, 0,
+            0, 0, 0, 1, 0,
+        ]);
 
         filter.destroy();
     });
 
-    it('should run all operations without multiply', () =>
+    it('should accept a 5x4 matrix in the constructor', () =>
+    {
+        const matrix: ColorMatrix = [
+            1, 0, 0, 0, 0,
+            0, 1, 0, 0, 0,
+            0, 0, 1, 0, 0,
+            0, 0, 0, 1, 0,
+        ];
+        const filter = new ColorMatrixFilter({ matrix });
+
+        expect(filter.matrix).toBe(matrix);
+
+        filter.destroy();
+    });
+
+    it('should have a helper function that can append 5x4 matrices', () =>
+    {
+        const filter = new ColorMatrixFilter({
+            matrix: [
+                2, 1, 0, 0, 0,
+                0, 2, 0, 0, 0,
+                0, 1, 2, 0, 0,
+                0, 0, 0, 2, 0
+            ],
+        });
+
+        filter.append([
+            0.5, 0, 1, 0, 0,
+            0, 0.5, 1, 0, 0,
+            0, 0, 0.5, 0, 0,
+            0, 0, 0, 0.5, 0,
+        ]);
+
+        expect(filter.matrix).toEqual([
+            1, 0.5, 3, 0, 0,
+            0, 1, 2, 0, 0,
+            0, 0.5, 2, 0, 0,
+            0, 0, 0, 1, 0,
+        ]);
+
+        filter.destroy();
+    });
+
+    it('should have a helper function that can prepend 5x4 matrices', () =>
+    {
+        const filter = new ColorMatrixFilter({
+            matrix: [
+                2, 1, 0, 0, 0,
+                0, 2, 0, 0, 0,
+                0, 1, 2, 0, 0,
+                0, 0, 0, 2, 0
+            ],
+        });
+
+        filter.prepend([
+            0.5, 0, 1, 0, 0,
+            0, 0.5, 1, 0, 0,
+            0, 0, 0.5, 0, 0,
+            0, 0, 0, 0.5, 0,
+        ]);
+
+        expect(filter.matrix).toEqual([
+            1, 1.5, 2, 0, 0,
+            0, 2, 2, 0, 0,
+            0, 0.5, 1, 0, 0,
+            0, 0, 0, 1, 0,
+        ]);
+
+        filter.destroy();
+    });
+});
+
+describe('ColorMatrixFilter deprecated functions', () =>
+{
+    it('should be able to call ColorMatrixFilter.brightness', () =>
     {
         const filter = new ColorMatrixFilter();
-        const multiplySpy = jest.spyOn(filter, '_multiply' as any);
 
-        filter.brightness(0.5, false);
-        filter.tint(0xff0000, false);
-        filter.greyscale(0.5, false);
-        filter.blackAndWhite(false);
-        filter.hue(120, false);
-        filter.contrast(0.5, false);
-        filter.saturate(1, false);
-        filter.desaturate();
-        filter.negative(false);
-        filter.sepia(false);
-        filter.technicolor(false);
-        filter.polaroid(false);
-        filter.toBGR(false);
-        filter.kodachrome(false);
-        filter.browni(false);
-        filter.vintage(false);
-        filter.colorTone(0.2, 0.14, 0xffffff, 0x0, false);
-        filter.night(1, false);
-        filter.predator(1, false);
-        filter.lsd(false);
-        filter.reset();
+        filter.brightness(0);
 
-        filter.destroy();
-
-        expect(multiplySpy).toHaveBeenCalledTimes(0);
-    });
-
-    it('should run all operations with multiply', () =>
-    {
-        const filter = new ColorMatrixFilter();
-        const multiplySpy = jest.spyOn(filter, '_multiply' as any);
-
-        filter.brightness(0.5, true);
-        filter.tint(0xff0000, true);
-        filter.greyscale(0.5, true);
-        filter.blackAndWhite(true);
-        filter.hue(120, true);
-        filter.contrast(0.5, true);
-        filter.saturate(1, true);
-        filter.desaturate();
-        filter.negative(true);
-        filter.sepia(true);
-        filter.technicolor(true);
-        filter.polaroid(true);
-        filter.toBGR(true);
-        filter.kodachrome(true);
-        filter.browni(true);
-        filter.vintage(true);
-        filter.colorTone(0.2, 0.14, 0xffffff, 0x0, true);
-        filter.night(1, true);
-        filter.predator(1, true);
-        filter.lsd(true);
-        filter.reset();
-
-        filter.destroy();
-        expect(multiplySpy).toHaveBeenCalledTimes(19);
-    });
-
-    it('should be able to apply technicolor matrix with multiply and get same values as without multiply', () =>
-    {
-        const filter1 = new ColorMatrixFilter();
-        const filter2 = new ColorMatrixFilter();
-
-        filter1.technicolor(true);
-        filter2.technicolor(false);
-
-        expect(filter1.matrix).toEqual(filter2.matrix);
-        filter1.destroy();
-        filter2.destroy();
+        expect(filter.matrix).toEqual([
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 1, 0,
+        ]);
     });
 });

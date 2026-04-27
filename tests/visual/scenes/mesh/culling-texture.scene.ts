@@ -1,4 +1,4 @@
-import { ColorMatrixFilter } from '~/filters';
+import { ColorTransformFilter } from '~/filters';
 import { State } from '~/rendering';
 import { Mesh, MeshGeometry } from '~/scene';
 
@@ -49,7 +49,7 @@ export const scene: TestScene = {
         mesh2.x = 10;
         mesh2.y = 10;
 
-        const filter = new ColorMatrixFilter();
+        const filter = new ColorTransformFilter();
 
         filter.brightness(0.5, true);
         mesh2.filters = [filter];
