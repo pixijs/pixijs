@@ -1,7 +1,18 @@
 import { TextureSource } from './sources/TextureSource';
-import { Texture } from './Texture';
+import { Texture, type TextureOptions } from './Texture';
 
 import type { TextureSourceOptions } from './sources/TextureSource';
+
+/**
+ * The options that can be passed to a new RenderTexture
+ * @category rendering
+ * @advanced
+ */
+export interface RenderTextureOptions extends TextureSourceOptions
+{
+    /** texture options {@link TextureOptions} */
+    textureOptions?: Omit<TextureOptions, 'source' | 'dynamic'>
+}
 
 /**
  * A render texture, extends `Texture`.
@@ -13,18 +24,20 @@ export class RenderTexture extends Texture
 {
     /**
      * Creates a RenderTexture. Pass `dynamic: true` in options to allow resizing after creation.
-     * @param options - Options for the RenderTexture, including width, height, and dynamic.
+     * @param options - Options for the RenderTexture, including width, height, textureOptions, and dynamic.
      * @returns A new RenderTexture instance.
      * @example
-     * const rt = RenderTexture.create({ width: 100, height: 100, dynamic: true });
+     * const textureOptions = { defaultAnchor: { x: 0.5, y: 0.5 } };
+     * const rt = RenderTexture.create({ width: 100, height: 100, dynamic: true, textureOptions });
      * rt.resize(500, 500);
      */
-    public static create(options: TextureSourceOptions): RenderTexture
+    public static create(options: RenderTextureOptions): RenderTexture
     {
         // Pass dynamic to the RenderTexture constructor if present in options
-        const { dynamic, ...rest } = options;
+        const { dynamic, textureOptions, ...rest } = options;
 
         return new RenderTexture({
+            ...textureOptions,
             source: new TextureSource(rest),
             dynamic: dynamic ?? false,
         });

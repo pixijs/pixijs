@@ -523,6 +523,10 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         if (this._renderer.context.webGLVersion !== 2) return;
 
+        // Skip for single-mip textures: setting MAX_LEVEL=0 triggers an ANGLE Metal bug
+        // on iOS 18.0–18.1 (https://github.com/pixijs/pixijs/issues/11984).
+        if (source.mipLevelCount <= 1) return;
+
         const gl = this._gl as WebGL2RenderingContext;
         const maxLevel = Math.max((source.mipLevelCount | 0) - 1, 0);
 

@@ -81,7 +81,8 @@ const NEWLINE_TO_SPACE_REGEX = /\r\n|\r|\n/g;
  * @param style - The base text style containing tagStyles
  * @param wordWrap - Whether to apply word wrapping
  * @param context - The canvas 2D context
- * @param measureTextFn - Function to measure text width
+ * @param measureTextFn - Function to measure text width (includes bounding box)
+ * @param wrapMeasureTextFn - Function to measure advance width only (for word wrap line-fitting)
  * @param measureFontFn - Function to measure font metrics
  * @param canBreakCharsFn - Function to check if characters can be broken
  * @param wordWrapSplitFn - Function to split words into characters
@@ -94,6 +95,7 @@ export function measureTaggedText(
     wordWrap: boolean,
     context: ICanvasRenderingContext2D,
     measureTextFn: MeasureTextFn,
+    wrapMeasureTextFn: MeasureTextFn,
     measureFontFn: MeasureFontFn,
     canBreakCharsFn: CanBreakCharsFn,
     wordWrapSplitFn: WordWrapSplitFn,
@@ -147,13 +149,13 @@ export function measureTaggedText(
         runsByLine.push(currentLineRuns);
     }
 
-    // Apply word wrap if enabled
+    // Apply word wrap if enabled (uses advance-only measurement for additive line-fitting)
     const wrappedRunsByLine = wordWrap
         ? wordWrapTaggedLines(
             runsByLine,
             style,
             context,
-            measureTextFn,
+            wrapMeasureTextFn,
             canBreakCharsFn,
             wordWrapSplitFn,
         )
@@ -239,10 +241,7 @@ export function measureTaggedText(
     // Calculate total dimensions
     const strokeWidth = maxRunStrokeWidth;
 
-    // Calculate base width - use wordWrapWidth for non-left alignment when wrapping
-    const useWrapWidth = wordWrap && style.align !== 'left';
-    const alignWidth = useWrapWidth ? Math.max(maxLineWidth, style.wordWrapWidth) : maxLineWidth;
-    const width = alignWidth + strokeWidth + (style.dropShadow ? style.dropShadow.distance : 0);
+    const width = maxLineWidth + strokeWidth + (style.dropShadow ? style.dropShadow.distance : 0);
 
     // Calculate total height from per-line heights
     let baseHeight = 0;

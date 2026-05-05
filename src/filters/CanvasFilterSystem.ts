@@ -1,16 +1,16 @@
-import { extensions, ExtensionType } from '../../../extensions/Extensions';
-import { Bounds } from '../../../scene/container/bounds/Bounds';
-import { getGlobalRenderableBounds } from '../../../scene/container/bounds/getRenderableBounds';
-import { getPo2TextureFromSource } from '../../../scene/text/utils/getPo2TextureFromSource';
-import { CanvasPool } from '../shared/texture/CanvasPool';
-import { canvasUtils } from './utils/canvasUtils';
+import { ExtensionType } from '../extensions/Extensions';
+import { canvasUtils } from '../rendering/renderers/canvas/utils/canvasUtils';
+import { CanvasPool } from '../rendering/renderers/shared/texture/CanvasPool';
+import { Bounds } from '../scene/container/bounds/Bounds';
+import { getGlobalRenderableBounds } from '../scene/container/bounds/getRenderableBounds';
+import { getPo2TextureFromSource } from '../scene/text/utils/getPo2TextureFromSource';
 
-import type { ICanvasRenderingContext2D } from '../../../environment/canvas/ICanvasRenderingContext2D';
-import type { Filter } from '../../../filters/Filter';
-import type { FilterInstruction } from '../../../filters/FilterSystem';
-import type { Container } from '../../../scene/container/Container';
-import type { System } from '../shared/system/System';
-import type { Texture } from '../shared/texture/Texture';
+import type { ICanvasRenderingContext2D } from '../environment/canvas/ICanvasRenderingContext2D';
+import type { System } from '../rendering/renderers/shared/system/System';
+import type { Texture } from '../rendering/renderers/shared/texture/Texture';
+import type { Container } from '../scene/container/Container';
+import type { Filter } from './Filter';
+import type { FilterInstruction } from './FilterSystem';
 
 /**
  * Interface for filters that can supply a CSS filter string for Canvas2D.
@@ -418,5 +418,3 @@ export class CanvasFilterSystem implements System
         this._alphaMultiplier = 1;
     }
 }
-
-extensions.add(CanvasFilterSystem);

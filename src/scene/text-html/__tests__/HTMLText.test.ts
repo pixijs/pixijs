@@ -195,4 +195,37 @@ describe('HTMLText', () =>
             }
         });
     });
+
+    describe('word wrap width should not inflate text.width', () =>
+    {
+        it('should return actual content width for center-aligned HTMLText', () =>
+        {
+            const text = new HTMLText({
+                text: 'hello',
+                style: { fontFamily: 'Arial', fontSize: 36, wordWrap: true, wordWrapWidth: 800, align: 'center' },
+            });
+
+            expect(text.width).toBeLessThan(800);
+            text.destroy();
+        });
+
+        it('should return same content width regardless of alignment for HTMLText', () =>
+        {
+            const center = new HTMLText({
+                text: 'hello',
+                style: { fontFamily: 'Arial', fontSize: 36, wordWrap: true, wordWrapWidth: 800, align: 'center' },
+            });
+            const left = new HTMLText({
+                text: 'hello',
+                style: { fontFamily: 'Arial', fontSize: 36, wordWrap: true, wordWrapWidth: 800, align: 'left' },
+            });
+
+            expect(center.width).toBeLessThan(800);
+            expect(left.width).toBeLessThan(800);
+            expect(center.width).toBeCloseTo(left.width, 0);
+
+            center.destroy();
+            left.destroy();
+        });
+    });
 });

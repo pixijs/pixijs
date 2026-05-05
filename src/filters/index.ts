@@ -2,6 +2,7 @@
 export * from './blend-modes/BlendModeFilter';
 export * from './blend-modes/hls/GLhls';
 export * from './blend-modes/hls/GPUhls';
+export * from './CanvasFilterSystem';
 export * from './defaults/alpha/AlphaFilter';
 export * from './defaults/blur/BlurFilter';
 export * from './defaults/blur/BlurFilterPass';

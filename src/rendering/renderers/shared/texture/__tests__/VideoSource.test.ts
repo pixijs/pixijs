@@ -137,5 +137,33 @@ describe('VideoSource', () =>
         expect(canPlaySpy).not.toHaveBeenCalled();
         expect(canPlayThroughSpy).not.toHaveBeenCalled();
     });
+
+    it('should not recurse between _onPlayStart and _mediaReady when playing before dimensions (11133)', () =>
+    {
+        const video = document.createElement('video');
+
+        Object.defineProperty(video, 'videoWidth', { value: 0, configurable: true });
+        Object.defineProperty(video, 'videoHeight', { value: 0, configurable: true });
+        Object.defineProperty(video, 'paused', { value: false, configurable: true });
+        Object.defineProperty(video, 'ended', { value: false, configurable: true });
+
+        const source = new VideoSource({
+            resource: video,
+            autoLoad: false,
+        });
+
+        const mediaReadySpy = jest.spyOn(source as any, '_mediaReady');
+        const configureSpy = jest.spyOn(source as any, '_configureAutoUpdate');
+
+        Reflect.apply(
+            (VideoSource.prototype as unknown as { _onPlayStart(): void })._onPlayStart,
+            source,
+            []
+        );
+
+        expect(source.isValid).toBe(false);
+        expect(configureSpy).toHaveBeenCalledTimes(1);
+        expect(mediaReadySpy).not.toHaveBeenCalled();
+    });
 });
 

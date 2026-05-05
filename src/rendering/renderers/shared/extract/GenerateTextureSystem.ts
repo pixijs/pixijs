@@ -132,6 +132,18 @@ export type GenerateTextureOptions = {
     antialias?: boolean;
 
     /**
+     * Default anchor point for the generated texture.
+     * @example
+     * ```ts
+     * const texture = renderer.generateTexture({
+     *     target: sprite,
+     *     defaultAnchor: { x: 0.5, y: 0.5 } // Center the anchor
+     * });
+     * ```
+     */
+    defaultAnchor?: { x: number; y: number };
+
+    /**
      * Advanced options for configuring the texture source.
      * Controls texture properties like scale mode and filtering.
      * @advanced
@@ -302,6 +314,10 @@ export class GenerateTextureSystem implements System
         const region = options.frame?.copyTo(tempRect)
             || getLocalBounds(container, tempBounds).rectangle;
 
+        const textureOptions = options.defaultAnchor && {
+            defaultAnchor: options.defaultAnchor
+        };
+
         region.width = Math.max(region.width, 1 / resolution) | 0;
         region.height = Math.max(region.height, 1 / resolution) | 0;
 
@@ -311,6 +327,7 @@ export class GenerateTextureSystem implements System
             height: region.height,
             resolution,
             antialias,
+            textureOptions
         });
 
         const transform = Matrix.shared.translate(-region.x, -region.y);

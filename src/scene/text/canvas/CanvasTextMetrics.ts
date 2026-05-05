@@ -311,6 +311,7 @@ export class CanvasTextMetrics
                 wordWrap,
                 CanvasTextMetrics._context,
                 CanvasTextMetrics._measureText,
+                CanvasTextMetrics._measureTextAdvance,
                 CanvasTextMetrics.measureFont,
                 CanvasTextMetrics.canBreakChars,
                 CanvasTextMetrics.wordWrapSplit,
@@ -373,9 +374,7 @@ export class CanvasTextMetrics
         const strokeWidth = style._stroke?.width ?? 0;
         const lineHeight = style.lineHeight || fontProperties.fontSize;
 
-        // Calculate base width - use wordWrapWidth for non-left alignment when wrapping
-        const baseWidth = CanvasTextMetrics._getAlignWidth(maxLineWidth, style, wordWrap);
-        const width = CanvasTextMetrics._adjustWidthForStyle(baseWidth, style);
+        const width = CanvasTextMetrics._adjustWidthForStyle(maxLineWidth, style);
 
         // Calculate height
         const baseHeight = Math.max(lineHeight, fontProperties.fontSize + strokeWidth)
@@ -438,22 +437,8 @@ export class CanvasTextMetrics
     }
 
     /**
-     * Calculates the base width for alignment purposes.
-     * When word wrap is enabled with center/right alignment, uses wordWrapWidth.
-     * @param maxLineWidth - The maximum line width
-     * @param style - The text style
-     * @param wordWrapEnabled - Whether word wrap is enabled
-     * @returns The width to use for alignment calculations
-     */
-    private static _getAlignWidth(maxLineWidth: number, style: TextStyle, wordWrapEnabled: boolean): number
-    {
-        const useWrapWidth = wordWrapEnabled && style.align !== 'left';
-
-        return useWrapWidth ? Math.max(maxLineWidth, style.wordWrapWidth) : maxLineWidth;
-    }
-
-    /**
      * Measures the rendered width of a string, accounting for letter spacing and using the provided context.
+     * Returns the larger of the advance width and the bounding box width.
      * @param text - The text to measure
      * @param letterSpacing - Letter spacing in pixels
      * @param context - Canvas 2D context
@@ -465,6 +450,52 @@ export class CanvasTextMetrics
         letterSpacing: number,
         context: ICanvasRenderingContext2D
     ): number
+    {
+        const { metricWidth, metrics, letterSpacingVal } = CanvasTextMetrics._measureTextCore(text, letterSpacing, context);
+
+        const actualBoundingBoxLeft = -(metrics.actualBoundingBoxLeft ?? 0);
+        const actualBoundingBoxRight = metrics.actualBoundingBoxRight ?? 0;
+        let boundsWidth = actualBoundingBoxRight - actualBoundingBoxLeft;
+
+        if (metrics.width > 0)
+        {
+            boundsWidth += letterSpacingVal;
+        }
+
+        return Math.max(metricWidth, boundsWidth);
+    }
+
+    /**
+     * Measures advance width only (no bounding box). Advance widths are additive,
+     * making this suitable for word wrap line-fitting where per-token widths must sum correctly.
+     * @param text - The text to measure
+     * @param letterSpacing - Letter spacing in pixels
+     * @param context - Canvas 2D context
+     * @returns The advance width of the text
+     * @internal
+     */
+    public static _measureTextAdvance(
+        text: string,
+        letterSpacing: number,
+        context: ICanvasRenderingContext2D
+    ): number
+    {
+        return CanvasTextMetrics._measureTextCore(text, letterSpacing, context).metricWidth;
+    }
+
+    /**
+     * Shared measurement core: sets up letter spacing on the context, calls
+     * context.measureText, and adjusts the advance width for letter spacing.
+     * @param text
+     * @param letterSpacing
+     * @param context
+     * @internal
+     */
+    private static _measureTextCore(
+        text: string,
+        letterSpacing: number,
+        context: ICanvasRenderingContext2D,
+    ): { metricWidth: number; metrics: TextMetrics; letterSpacingVal: number }
     {
         let useExperimentalLetterSpacing = false;
 
@@ -485,29 +516,22 @@ export class CanvasTextMetrics
 
         const metrics = context.measureText(text);
         let metricWidth = metrics.width;
-        const actualBoundingBoxLeft = -(metrics.actualBoundingBoxLeft ?? 0);
-        const actualBoundingBoxRight = metrics.actualBoundingBoxRight ?? 0;
-        let boundsWidth = actualBoundingBoxRight - actualBoundingBoxLeft;
+        let letterSpacingVal = 0;
 
         if (metricWidth > 0)
         {
             if (useExperimentalLetterSpacing)
             {
-                metricWidth -= letterSpacing;
-                boundsWidth -= letterSpacing;
+                letterSpacingVal = -letterSpacing;
             }
             else
             {
-                const val = (CanvasTextMetrics.graphemeSegmenter(text).length - 1) * letterSpacing;
-
-                metricWidth += val;
-                boundsWidth += val;
+                letterSpacingVal = (CanvasTextMetrics.graphemeSegmenter(text).length - 1) * letterSpacing;
             }
+            metricWidth += letterSpacingVal;
         }
 
-        // NOTE: this is a bit of a hack as metrics.width and the bounding box width do not measure the same thing
-        // We can't seem to exclusively use one or the other, so are taking the largest of the two
-        return Math.max(metricWidth, boundsWidth);
+        return { metricWidth, metrics, letterSpacingVal };
     }
 
     /**
@@ -528,7 +552,7 @@ export class CanvasTextMetrics
             text,
             style,
             canvas,
-            CanvasTextMetrics._measureText,
+            CanvasTextMetrics._measureTextAdvance,
             CanvasTextMetrics.canBreakWords,
             CanvasTextMetrics.canBreakChars,
             CanvasTextMetrics.wordWrapSplit,

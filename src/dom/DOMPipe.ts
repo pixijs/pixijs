@@ -32,7 +32,7 @@ export class DOMPipe implements RenderPipe<DOMContainer>
     /** Array to keep track of attached DOM elements */
     private readonly _attachedDomElements: DOMContainer[] = [];
     /** The main DOM element that acts as a container for other DOM elements */
-    private readonly _domElement: HTMLDivElement;
+    public readonly _domElement: HTMLDivElement;
     /** The CanvasTransformSync instance that keeps the DOM element in sync with the canvas */
     private _canvasObserver: CanvasObserver;
 
