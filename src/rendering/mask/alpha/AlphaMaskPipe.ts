@@ -9,6 +9,7 @@ import { Texture } from '../../renderers/shared/texture/Texture';
 import { TexturePool } from '../../renderers/shared/texture/TexturePool';
 import { RendererType } from '../../renderers/types';
 
+import type { MaskChannel } from '../../../filters/mask/MaskFilter';
 import type { Container } from '../../../scene/container/Container';
 import type { Effect } from '../../../scene/container/Effect';
 import type { PoolItem } from '../../../utils/pool/Pool';
@@ -56,6 +57,16 @@ class AlphaMaskEffect extends FilterEffect implements PoolItem
     set inverse(value: boolean)
     {
         (this.filters[0] as MaskFilter).inverse = value;
+    }
+
+    get channel(): MaskChannel
+    {
+        return (this.filters[0] as MaskFilter).channel;
+    }
+
+    set channel(value: MaskChannel)
+    {
+        (this.filters[0] as MaskFilter).channel = value;
     }
 
     public init: () => void;
@@ -118,6 +129,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
         } as AlphaMaskInstruction);
 
         (mask as AlphaMask).inverse = maskedContainer._maskOptions.inverse;
+        (mask as AlphaMask).channel = maskedContainer._maskOptions.channel ?? 'red';
 
         if ((mask as AlphaMask).renderMaskToTexture)
         {
@@ -171,6 +183,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
             const filterEffect = BigPool.get(AlphaMaskEffect);
 
             filterEffect.inverse = instruction.inverse;
+            filterEffect.channel = instruction.mask.channel;
 
             if (renderMask)
             {

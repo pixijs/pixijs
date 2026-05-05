@@ -13,11 +13,21 @@ import type { Sprite } from '../../scene/sprite/Sprite';
 import type { FilterOptions } from '../Filter';
 import type { FilterSystem } from '../FilterSystem';
 
+/**
+ * The channel to use for masking.
+ * - `'red'` - Uses the red channel of the mask texture (default). Suitable for grayscale mask textures.
+ * - `'alpha'` - Uses the alpha channel of the mask texture. Suitable for sprites with transparency.
+ * @category rendering
+ * @standard
+ */
+export type MaskChannel = 'red' | 'alpha';
+
 /** @internal */
 export interface MaskFilterOptions extends FilterOptions
 {
     sprite: Sprite,
     inverse?: boolean;
+    channel?: MaskChannel;
     scale?: number | { x: number, y: number },
 }
 
@@ -38,6 +48,7 @@ export class MaskFilter extends Filter
             uMaskClamp: { value: textureMatrix.uClampFrame, type: 'vec4<f32>' },
             uAlpha: { value: 1, type: 'f32' },
             uInverse: { value: options.inverse ? 1 : 0, type: 'f32' },
+            uChannel: { value: options.channel === 'alpha' ? 1 : 0, type: 'f32' },
         });
 
         const gpuProgram = GpuProgram.from({
@@ -81,6 +92,16 @@ export class MaskFilter extends Filter
     get inverse(): boolean
     {
         return this.resources.filterUniforms.uniforms.uInverse === 1;
+    }
+
+    set channel(value: MaskChannel)
+    {
+        this.resources.filterUniforms.uniforms.uChannel = value === 'alpha' ? 1 : 0;
+    }
+
+    get channel(): MaskChannel
+    {
+        return this.resources.filterUniforms.uniforms.uChannel === 1 ? 'alpha' : 'red';
     }
 
     public apply(

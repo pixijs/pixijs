@@ -2,6 +2,7 @@ import { FilterEffect } from '../../../filters/FilterEffect';
 import { MaskEffectManager } from '../../../rendering/mask/MaskEffectManager';
 
 import type { Filter } from '../../../filters/Filter';
+import type { MaskChannel } from '../../../filters/mask/MaskFilter';
 import type { Rectangle } from '../../../maths/shapes/Rectangle';
 import type { MaskEffect } from '../../../rendering/mask/MaskEffectManager';
 import type { Container } from '../Container';
@@ -90,6 +91,20 @@ export interface MaskOptions
      * ```
      */
     inverse: boolean;
+    /**
+     * Which channel of the mask texture to use for masking.
+     * - `'red'` uses the red channel (default). Suitable for grayscale mask textures.
+     * - `'alpha'` uses the alpha channel. Suitable for sprites with transparency.
+     * @default 'red'
+     * @example
+     * ```ts
+     * sprite.setMask({
+     *     mask: maskSprite,
+     *     channel: 'alpha',
+     * });
+     * ```
+     */
+    channel?: MaskChannel;
 }
 
 /**
@@ -209,12 +224,19 @@ export interface EffectsMixin extends Required<EffectsMixinConstructor>
      *     inverse: true, // Create a hole effect
      * });
      *
+     * // Use the alpha channel for masking (useful for sprites with transparency)
+     * sprite.setMask({
+     *     mask: maskSprite,
+     *     channel: 'alpha',
+     * });
+     *
      * // Clear existing mask
      * sprite.setMask({ mask: null });
      * ```
      * @param {Partial<MaskOptionsAndMask>} options - Configuration options for the mask
      * @see {@link Container#mask} For simple masking
      * @see {@link MaskOptionsAndMask} For full options API
+     * @see {@link MaskOptions#channel} For channel selection
      */
     setMask(options: Partial<MaskOptionsAndMask>): void;
     /**
@@ -222,11 +244,12 @@ export interface EffectsMixin extends Required<EffectsMixinConstructor>
      * object to the shape of the mask applied to it.
      *
      * > [!IMPORTANT] In PixiJS a regular mask must be a {@link Graphics} or a {@link Sprite} object.
-     * > This allows for much faster masking in canvas as it utilities shape clipping.
-     * > Furthermore, a mask of an object must be in the subtree of its parent.
+     * > This allows for much faster masking in canvas as it uses shape clipping.
+     * > A mask of an object must be in the subtree of its parent.
      * > Otherwise, `getLocalBounds` may calculate incorrect bounds, which makes the container's width and height wrong.
      *
-     * For sprite mask both alpha and red channel are used. Black mask is the same as transparent mask.
+     * Sprite masks read the red channel by default. Use {@link Container#setMask} with `channel: 'alpha'`
+     * to read the alpha channel instead. See {@link MaskOptions#channel} for details.
      * @example
      * ```ts
      * // Apply mask to sprite
@@ -238,7 +261,7 @@ export interface EffectsMixin extends Required<EffectsMixinConstructor>
      * ```
      * @see {@link Graphics} For creating mask shapes
      * @see {@link Sprite} For texture-based masks
-     * @see {@link Container#setMask} For advanced mask options
+     * @see {@link Container#setMask} For advanced mask options including channel selection
      */
     mask: Mask;
     /**
@@ -271,6 +294,7 @@ export const effectsMixin: Partial<Container> = {
     _maskEffect: null,
     _maskOptions: {
         inverse: false,
+        channel: 'red',
     },
     _filterEffect: null,
 

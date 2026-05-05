@@ -101,8 +101,16 @@ export class CanvasTilingSpritePipe implements RenderPipe<TilingSprite>
             patternMatrix.translate(-tilingSprite.anchor.x * width, -tilingSprite.anchor.y * height);
         }
 
-        // Apply resolution scaling
+        // Apply resolution scaling to scale/rotation only, not translation.
+        // tilePosition (tx, ty) is in CSS pixel space and must not be divided by
+        // the texture resolution – only the scale/rotation components need adjusting.
+        const savedTx = patternMatrix.tx;
+        const savedTy = patternMatrix.ty;
+
         patternMatrix.scale(1 / resolution, 1 / resolution);
+
+        patternMatrix.tx = savedTx;
+        patternMatrix.ty = savedTy;
 
         // Build worldMatrix = transform * patternMatrix (v7 used two prepends on identity)
         worldMatrix.identity();

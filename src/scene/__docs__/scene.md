@@ -180,6 +180,27 @@ stage.addChild(inverseMask);
 stage.addChild(maskedContainer);
 ```
 
+### Mask channel selection
+
+Sprite masks read the **red channel** of the mask texture by default. This works well for grayscale mask textures where the red component controls visibility.
+
+If your mask is defined by transparency (e.g., a PNG with an alpha gradient), set `channel: 'alpha'` to read the alpha channel instead:
+
+```ts
+const maskSprite = new Sprite(texture);
+maskedContainer.setMask({ mask: maskSprite, channel: 'alpha' });
+```
+
+This is useful when a single mask texture encodes different shapes in different channels. For example, a texture with a red star and a translucent blue circle produces two distinct masks depending on the channel:
+
+```ts
+// Red channel: reveals only where R > 0 (the star shape)
+sprite.setMask({ mask: maskSprite, channel: 'red' });
+
+// Alpha channel: reveals only where A > 0 (the full circle)
+sprite.setMask({ mask: maskSprite, channel: 'alpha' });
+```
+
 ### Notes on masking
 
 - The mask is **not rendered**; it only defines the visible area. It must be added to the display list.

@@ -12,6 +12,7 @@ struct MaskUniforms {
   uMaskClamp:vec4<f32>,
   uAlpha:f32,
   uInverse:f32,
+  uChannel:f32,
 };
 
 @group(0) @binding(0) var<uniform> gfu: GlobalFilterUniforms;
@@ -86,9 +87,14 @@ fn mainFragment(
 
     var mask = textureSample(uMaskTexture, uSampler, filterUv);
     var source = textureSample(uTexture, uSampler, uv);
-    var alphaMul = 1.0 - uAlpha * (1.0 - mask.a);
 
-    var a: f32 = alphaMul * mask.r * uAlpha * clip;
+    var a: f32;
+    if (filterUniforms.uChannel == 1.0) {
+        a = mask.a * uAlpha * clip;
+    } else {
+        var alphaMul = 1.0 - uAlpha * (1.0 - mask.a);
+        a = alphaMul * mask.r * uAlpha * clip;
+    }
 
     if (filterUniforms.uInverse == 1.0) {
         a = 1.0 - a;

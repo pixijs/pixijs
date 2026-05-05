@@ -96,6 +96,16 @@ export function parseTaggedText(text: string, style: TextStyle): TextStyleRun[]
                 continue;
             }
 
+            const nextOpenIndex = text.indexOf('<', i + 1);
+
+            if (nextOpenIndex !== -1 && nextOpenIndex < closeIndex)
+            {
+                // If there's another '<' before the closing '>', treat this as literal
+                currentText += char;
+                i++;
+                continue;
+            }
+
             const tagContent = text.slice(i + 1, closeIndex);
 
             // Check if it's a closing tag

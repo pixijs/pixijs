@@ -760,6 +760,12 @@ export class GraphicsPath
                 case 'poly':
                     data[2] = adjustTransform(data[2], matrix);
                     break;
+                case 'regularPoly':
+                case 'chamferRect':
+                    data[5] = adjustTransform(data[5], matrix);
+                    break;
+                case 'closePath':
+                    break;
                 default:
                     // #if _DEBUG
                     warn('unknown transform action', instruction.action);

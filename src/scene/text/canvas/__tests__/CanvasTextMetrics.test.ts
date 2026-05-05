@@ -341,60 +341,145 @@ describe('CanvasTextMetrics', () =>
             expect(metrics.lines.length).toBe(2);
         });
 
-        it('should use wordWrapWidth for width with center alignment', () =>
+        it('should use actual content width for center alignment, not wordWrapWidth', () =>
         {
             const style = new TextStyle({
                 fontSize: 24,
                 fontFamily: 'Arial',
                 wordWrap: true,
-                wordWrapWidth: 300,
+                wordWrapWidth: 800,
                 align: 'center'
             });
             const metrics = CanvasTextMetrics.measureText('Hi', style);
 
-            expect(metrics.width).toBeGreaterThanOrEqual(300);
+            expect(metrics.width).toBeLessThan(800);
         });
 
-        it('should use wordWrapWidth for width with right alignment', () =>
+        it('should use actual content width for right alignment, not wordWrapWidth', () =>
         {
             const style = new TextStyle({
                 fontSize: 24,
                 fontFamily: 'Arial',
                 wordWrap: true,
-                wordWrapWidth: 300,
+                wordWrapWidth: 800,
                 align: 'right'
             });
             const metrics = CanvasTextMetrics.measureText('Hi', style);
 
-            expect(metrics.width).toBeGreaterThanOrEqual(300);
+            expect(metrics.width).toBeLessThan(800);
         });
 
-        it('should use maxLineWidth for width with left alignment', () =>
+        it('should use actual content width for left alignment', () =>
         {
             const style = new TextStyle({
                 fontSize: 24,
                 fontFamily: 'Arial',
                 wordWrap: true,
-                wordWrapWidth: 300,
+                wordWrapWidth: 800,
                 align: 'left'
             });
             const metrics = CanvasTextMetrics.measureText('Hi', style);
 
-            expect(metrics.width).toBeLessThan(300);
+            expect(metrics.width).toBeLessThan(800);
         });
 
-        it('should use wordWrapWidth for width with justify alignment', () =>
+        it('should return same width for center and left alignment', () =>
         {
-            const style = new TextStyle({
+            const text = 'hello world';
+            const centerStyle = new TextStyle({
+                fontSize: 36,
+                fontFamily: 'Arial',
+                wordWrap: true,
+                wordWrapWidth: 800,
+                align: 'center'
+            });
+            const leftStyle = new TextStyle({
+                fontSize: 36,
+                fontFamily: 'Arial',
+                wordWrap: true,
+                wordWrapWidth: 800,
+                align: 'left'
+            });
+            const centerMetrics = CanvasTextMetrics.measureText(text, centerStyle);
+            const leftMetrics = CanvasTextMetrics.measureText(text, leftStyle);
+
+            expect(centerMetrics.width).toBeLessThan(800);
+            expect(leftMetrics.width).toBeLessThan(800);
+            expect(centerMetrics.width).toBeCloseTo(leftMetrics.width, 0);
+        });
+
+        it('should not wrap text when wordWrapWidth equals measured width', () =>
+        {
+            const text = 'hello world test string';
+            const baseStyle = new TextStyle({
+                fontSize: 24,
+                fontFamily: 'Arial',
+            });
+
+            // Measure without wrapping to get actual width
+            const unwrapped = CanvasTextMetrics.measureText(text, baseStyle, undefined, false);
+
+            // Use that width as wordWrapWidth; text should fit on one line
+            const wrapStyle = new TextStyle({
                 fontSize: 24,
                 fontFamily: 'Arial',
                 wordWrap: true,
-                wordWrapWidth: 300,
-                align: 'justify'
+                wordWrapWidth: unwrapped.width,
             });
-            const metrics = CanvasTextMetrics.measureText('Hello world test alignment', style);
+            const wrapped = CanvasTextMetrics.measureText(text, wrapStyle);
 
-            expect(metrics.width).toBeGreaterThanOrEqual(300);
+            expect(wrapped.lines.length).toBe(1);
+        });
+
+        it('should not wrap text when wordWrapWidth exceeds measured width by 1px', () =>
+        {
+            const content = 'p jdk f svzmrq';
+
+            const metrics = CanvasTextMetrics.measureText(
+                content,
+                new TextStyle({
+                    fontFamily: 'Arial',
+                    fontSize: 8,
+                    wordWrap: false,
+                }),
+            );
+
+            const wrapped = CanvasTextMetrics.measureText(
+                content,
+                new TextStyle({
+                    fontFamily: 'Arial',
+                    fontSize: 8,
+                    wordWrap: true,
+                    wordWrapWidth: Math.ceil(metrics.width) + 1,
+                }),
+            );
+
+            expect(wrapped.lines.length).toBe(1);
+        });
+        it('should wrap text when wordWrapWidth is less than measured width', () =>
+        {
+            const content = 'p jdk f svzmrq';
+
+            const metrics = CanvasTextMetrics.measureText(
+                content,
+                new TextStyle({
+                    fontFamily: 'Arial',
+                    fontSize: 8,
+                    wordWrap: false,
+                }),
+            );
+
+            const wrapped = CanvasTextMetrics.measureText(
+                content,
+                new TextStyle({
+                    fontFamily: 'Arial',
+                    fontSize: 8,
+                    wordWrap: true,
+                    wordWrapWidth: Math.ceil(metrics.width) - 1,
+                }),
+            );
+
+            expect(wrapped.lines.length).toBeGreaterThan(1);
         });
     });
 
