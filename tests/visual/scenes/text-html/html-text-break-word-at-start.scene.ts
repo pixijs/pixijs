@@ -31,6 +31,5 @@ export const scene: TestScene = {
         scene.addChild(text);
 
         renderer.render(scene);
-        await new Promise((resolve) => setTimeout(resolve, 350));
     },
 };

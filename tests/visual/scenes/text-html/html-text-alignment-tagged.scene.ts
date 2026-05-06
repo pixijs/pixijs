@@ -55,6 +55,5 @@ export const scene: TestScene = {
         });
 
         renderer.render(scene);
-        await new Promise((resolve) => setTimeout(resolve, 350));
     },
 };

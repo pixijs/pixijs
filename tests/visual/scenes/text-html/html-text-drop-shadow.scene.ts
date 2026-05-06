@@ -34,6 +34,5 @@ export const scene: TestScene = {
         text.style.dropShadow.color = 'red';
 
         renderer.render(scene);
-        await new Promise((resolve) => setTimeout(resolve, 350));
     },
 };

@@ -34,6 +34,5 @@ export const scene: TestScene = {
         text2.text = '1';
 
         renderer.render(scene);
-        await new Promise((resolve) => setTimeout(resolve, 350));
     },
 };

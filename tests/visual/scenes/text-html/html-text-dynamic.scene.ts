@@ -28,6 +28,5 @@ export const scene: TestScene = {
         text.resolution = 0.5;
 
         renderer.render(scene);
-        await new Promise((resolve) => setTimeout(resolve, 350));
     },
 };
