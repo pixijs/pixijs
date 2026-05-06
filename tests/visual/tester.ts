@@ -33,12 +33,12 @@ async function waitForPendingHTMLText(container: Container, renderer: Renderer):
             if (gpuData?.texturePromise) promises.push(gpuData.texturePromise.catch((): undefined => undefined));
         }
 
-        for (let i = 0; i < c.children.length; i++) visit(c.children[i]);
+        c.children.forEach(visit);
     };
 
     visit(container);
 
-    if (promises.length) await Promise.all(promises);
+    await Promise.all(promises);
 }
 
 function toArrayBuffer(buf: Buffer): ArrayBuffer
