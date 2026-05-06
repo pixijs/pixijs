@@ -42,6 +42,5 @@ export const scene: TestScene = {
         text.style.wordWrapWidth = 120;
 
         renderer.render(scene);
-        await new Promise((resolve) => setTimeout(resolve, 350));
     },
 };

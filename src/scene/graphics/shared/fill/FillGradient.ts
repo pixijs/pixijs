@@ -224,6 +224,7 @@ export class FillGradient implements CanvasGradient
         outerRadius: 0.5,
         colorStops: [],
         scale: 1,
+        rotation: 0,
         textureSpace: 'local',
         type: 'radial',
         textureSize: 256,
@@ -507,16 +508,18 @@ export class FillGradient implements CanvasGradient
             }),
         });
 
-        const m = new Matrix();
-
         // this matrix is inverted when used in the graphics
-        m.scale(1 / scale, 1 / scale);
-        m.translate(ox, oy);
+        const m = new Matrix();
 
         if (this.textureSpace === 'local')
         {
-            m.scale(defaultSize, defaultSize);
+            m.scale(2 * r1, 2 * r1);
         }
+        else
+        {
+            m.scale(1 / scale, 1 / scale);
+        }
+        m.translate(ox, oy);
 
         this.transform = m;
     }

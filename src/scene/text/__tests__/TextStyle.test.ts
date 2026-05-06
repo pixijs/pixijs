@@ -420,6 +420,7 @@ describe('TextStyle', () =>
             width: 5,
             texture: pattern.texture,
             matrix: pattern.transform,
+            textureSpace: 'global',
         });
     });
 

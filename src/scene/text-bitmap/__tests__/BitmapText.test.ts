@@ -290,4 +290,61 @@ describe('BitmapText', () =>
             getBitmapTextLayout(['A', ' ', 'Z', 'B'], style, mockFont as any, false)
         ).not.toThrow();
     });
+
+    it('should keep chars and charPositions in sync when a glyph-less word-break char is present', () =>
+    {
+        // Font has A/B/C/D plus regular space, but no NBSP (U+00A0) glyph
+        const mockFont = {
+            chars: {
+                A: { id: 65, xOffset: 0, yOffset: 0, xAdvance: 20, kerning: {} },
+                B: { id: 66, xOffset: 0, yOffset: 0, xAdvance: 20, kerning: {} },
+                C: { id: 67, xOffset: 0, yOffset: 0, xAdvance: 20, kerning: {} },
+                D: { id: 68, xOffset: 0, yOffset: 0, xAdvance: 20, kerning: {} },
+                ' ': { id: 32, xOffset: 0, yOffset: 0, xAdvance: 10, kerning: {} },
+            },
+            baseMeasurementFontSize: 32,
+            baseLineOffset: 0,
+            lineHeight: 40,
+        };
+
+        const layout = getBitmapTextLayout(
+            ['A', 'B', 'C', ' ', 'D'],
+            new TextStyle({ fontSize: 32 }),
+            mockFont as any,
+            false,
+        );
+
+        const line = layout.lines[0];
+
+        expect(line.chars).toEqual(['A', 'B', 'C', 'D']);
+        expect(line.chars.length).toBe(line.charPositions.length);
+    });
+
+    it('should render trailing glyph after a glyph-less word-break char to the right of the previous glyph', () =>
+    {
+        const mockFont = {
+            chars: {
+                A: { id: 65, xOffset: 0, yOffset: 0, xAdvance: 20, kerning: {} },
+                B: { id: 66, xOffset: 0, yOffset: 0, xAdvance: 20, kerning: {} },
+                C: { id: 67, xOffset: 0, yOffset: 0, xAdvance: 20, kerning: {} },
+                D: { id: 68, xOffset: 0, yOffset: 0, xAdvance: 20, kerning: {} },
+                ' ': { id: 32, xOffset: 0, yOffset: 0, xAdvance: 10, kerning: {} },
+            },
+            baseMeasurementFontSize: 32,
+            baseLineOffset: 0,
+            lineHeight: 40,
+        };
+
+        const layout = getBitmapTextLayout(
+            ['A', 'B', 'C', ' ', 'D'],
+            new TextStyle({ fontSize: 32 }),
+            mockFont as any,
+            false,
+        );
+
+        const positions = layout.lines[0].charPositions;
+
+        // trailing 'D' must sit beyond 'C', not snap back to x=0
+        expect(positions[3]).toBeGreaterThan(positions[2]);
+    });
 });

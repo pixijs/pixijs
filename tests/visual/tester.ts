@@ -8,6 +8,38 @@ import { Container, Graphics } from '~/scene';
 
 import type { RenderType } from './types';
 import type { Renderer, RendererOptions } from '~/rendering';
+import type { BatchableHTMLText } from '~/scene/text-html/BatchableHTMLText';
+
+/**
+ * After `renderer.render()`, HTMLText asynchronously generates its texture (font fetch,
+ * SVG image load). On slow CI runs this can outlast a fixed `setTimeout` in the scene,
+ * causing extract.canvas to read an empty texture and produce a flaky pixel diff. This
+ * walks the stage and awaits every in-flight HTMLText texture promise so extraction always
+ * sees the resolved texture.
+ * @param container
+ * @param renderer
+ */
+async function waitForPendingHTMLText(container: Container, renderer: Renderer): Promise<void>
+{
+    const promises: Promise<unknown>[] = [];
+
+    const visit = (c: Container): void =>
+    {
+        if (c.renderPipeId === 'htmlText')
+        {
+            const gpuData = (c as unknown as { _gpuData: Record<number, BatchableHTMLText> })
+                ._gpuData[renderer.uid];
+
+            if (gpuData?.texturePromise) promises.push(gpuData.texturePromise.catch((): undefined => undefined));
+        }
+
+        c.children.forEach(visit);
+    };
+
+    visit(container);
+
+    await Promise.all(promises);
+}
 
 function toArrayBuffer(buf: Buffer): ArrayBuffer
 {
@@ -102,6 +134,7 @@ export async function renderTest(
     stage.addChild(scene);
 
     await createFunction(scene, renderer);
+    await waitForPendingHTMLText(stage, renderer);
 
     const testId = `${id}-${rendererType}`;
 
