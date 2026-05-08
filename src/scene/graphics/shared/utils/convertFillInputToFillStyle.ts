@@ -90,6 +90,7 @@ function handleFillPattern(
     fill.color = 0xffffff;
     fill.texture = value.texture;
     fill.matrix = value.transform;
+    fill.textureSpace = value.textureSpace;
 
     return { ...defaultStyle, ...fill } as ConvertedFillStyle;
 }

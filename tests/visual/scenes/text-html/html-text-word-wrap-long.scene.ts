@@ -18,7 +18,6 @@ export const scene: TestScene = {
         addBlock(scene, 210, 'This has only short words.');
 
         renderer.render(scene);
-        await new Promise((resolve) => setTimeout(resolve, 350));
     },
 };
 

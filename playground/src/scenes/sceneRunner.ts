@@ -4,6 +4,29 @@ import type { Renderer, RendererOptions } from 'pixi.js';
 import type { TestScene } from '../../../tests/visual/types';
 import type { RenderType } from '../types';
 
+async function waitForPendingHTMLText(container: Container, renderer: Renderer): Promise<void>
+{
+    const promises: Promise<unknown>[] = [];
+
+    const visit = (c: Container): void =>
+    {
+        if (c.renderPipeId === 'htmlText')
+        {
+            const gpuData = (c as unknown as {
+                _gpuData: Record<number, { texturePromise?: Promise<unknown> }>,
+            })._gpuData[renderer.uid];
+
+            if (gpuData?.texturePromise) promises.push(gpuData.texturePromise.catch((): undefined => undefined));
+        }
+
+        c.children.forEach(visit);
+    };
+
+    visit(container);
+
+    await Promise.all(promises);
+}
+
 const defaultRendererOptions = {
     width: 128,
     height: 128,
@@ -58,6 +81,7 @@ export async function runScene(
     stage.addChild(sceneContainer);
 
     await scene.create(sceneContainer, renderer);
+    await waitForPendingHTMLText(stage, renderer);
 
     const canvas = renderer.extract.canvas({
         target: stage,

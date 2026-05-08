@@ -76,6 +76,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
             alpha: 1,
             texture: pattern.texture,
             matrix: pattern.transform,
+            textureSpace: 'global',
         });
     });
 
@@ -153,7 +154,8 @@ describe('convertStrokeInputToStrokeStyle', () =>
             color: 0xffffff,
             alpha: 0.5,
             texture: pattern.texture,
-            matrix: pattern.transform
+            matrix: pattern.transform,
+            textureSpace: 'global',
         });
     });
 
