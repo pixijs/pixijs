@@ -135,7 +135,7 @@ export class RenderGroup implements Instruction
     {
         this.root = root;
 
-        if (root._onRender) this.addOnRender(root);
+        if (root._onRenderCallback) this.addOnRender(root);
 
         root.didChange = true;
 
@@ -264,7 +264,7 @@ export class RenderGroup implements Instruction
             return;
         }
 
-        if (child._onRender) this.addOnRender(child);
+        if (child._onRenderCallback) this.addOnRender(child);
 
         const children = child.children;
 
@@ -279,7 +279,7 @@ export class RenderGroup implements Instruction
         // remove all the children...
         this.structureDidChange = true;
 
-        if (child._onRender)
+        if (child._onRenderCallback)
         {
             // Remove the child to the onRender list under the following conditions:
             // 1. If the child is not a render group.
@@ -366,7 +366,7 @@ export class RenderGroup implements Instruction
     {
         for (let i = 0; i < this._onRenderContainers.length; i++)
         {
-            this._onRenderContainers[i]._onRender(renderer);
+            this._onRenderContainers[i]._onRenderCallback(renderer);
         }
     }
 
