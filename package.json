@@ -23,7 +23,8 @@
   "files": [
     "lib",
     "dist",
-    "transcoders"
+    "transcoders",
+    "skills"
   ],
   "scripts": {
     "prepare": "husky install",

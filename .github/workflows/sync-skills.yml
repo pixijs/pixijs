@@ -1,0 +1,91 @@
+name: Sync Skills
+
+# One-way sync of `skills/` from this repo to pixijs/pixijs-skills.
+# The standalone repo retains its own README, plugin configs, assets, etc.;
+# only the `skills/` folder is overwritten.
+#
+# Requires repository secret SKILLS_SYNC_TOKEN: a PAT (or GitHub App token)
+# with `contents: write` on pixijs/pixijs-skills.
+
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - 'skills/**'
+      - '.github/workflows/sync-skills.yml'
+  workflow_dispatch:
+    inputs:
+      target_ref:
+        description: 'Branch in pixijs-skills to sync into'
+        required: false
+        default: 'main'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-skills
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-22.04
+    env:
+      TARGET_REPO: pixijs/pixijs-skills
+      TARGET_REF: ${{ github.event.inputs.target_ref || 'main' }}
+    steps:
+      - name: Validate target ref
+        run: |
+          if ! [[ "${TARGET_REF}" =~ ^[A-Za-z0-9._/-]+$ ]] || [[ "${TARGET_REF}" == -* ]]; then
+            echo "Invalid target_ref: ${TARGET_REF}"
+            exit 1
+          fi
+
+      - name: Checkout pixijs (source)
+        uses: actions/checkout@v4
+        with:
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout pixijs-skills (target)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.TARGET_REPO }}
+          ref: ${{ env.TARGET_REF }}
+          token: ${{ secrets.SKILLS_SYNC_TOKEN }}
+          path: target
+          fetch-depth: 1
+
+      - name: Replace skills folder
+        run: |
+          rm -rf target/skills
+          cp -R source/skills target/skills
+
+      - name: Detect changes
+        id: diff
+        working-directory: target
+        run: |
+          if [[ -z "$(git status --porcelain skills)" ]]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push
+        if: steps.diff.outputs.changed == 'true'
+        working-directory: target
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          SOURCE_REPO: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          ACTOR_ID: ${{ github.actor_id }}
+        run: |
+          git config user.name "${ACTOR}"
+          git config user.email "${ACTOR_ID}+${ACTOR}@users.noreply.github.com"
+          git add skills
+          git commit -m "chore: sync skills from ${SOURCE_REPO}@${SOURCE_SHA:0:7}
+
+          Source: https://github.com/${SOURCE_REPO}/commit/${SOURCE_SHA}"
+          git push origin "${TARGET_REF}"
