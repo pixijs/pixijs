@@ -1,34 +1,30 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/matrix/Matrix';
-import { compileHighShaderGpuProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
-import { colorBit } from '../../../rendering/high-shader/shader-bits/colorBit';
-import { generateTextureBatchBit } from '../../../rendering/high-shader/shader-bits/generateTextureBatchBit';
-import { localUniformBitGroup2 } from '../../../rendering/high-shader/shader-bits/localUniformBit';
-import { roundPixelsBit } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
-import { AbstractGpuGraphicsAdaptor } from './AbstractGpuGraphicsAdaptor';
+import { AbstractGpuGraphicsAdaptor } from '../../graphics/gpu/AbstractGpuGraphicsAdaptor';
+import { SmoothShader } from '../shared/batcher/SmoothShader';
 
 import type { Renderer } from '../../../rendering/renderers/types';
 
 /**
- * A GraphicsAdaptor that uses the GPU to render graphics.
+ * WebGPU adaptor for non-batchable smooth graphics rendering.
  * @category rendering
- * @ignore
+ * @internal
  */
-export class GpuGraphicsAdaptor extends AbstractGpuGraphicsAdaptor
+export class GpuSmoothGraphicsAdaptor extends AbstractGpuGraphicsAdaptor
 {
     /** @ignore */
     public static extension = {
         type: [
             ExtensionType.WebGPUPipesAdaptor,
         ],
-        name: 'graphics',
+        name: 'smoothGraphics',
     } as const;
 
     constructor()
     {
-        super('graphicsContext');
+        super('smoothGraphicsContext');
     }
 
     public contextChange(renderer: Renderer): void
@@ -41,19 +37,10 @@ export class GpuGraphicsAdaptor extends AbstractGpuGraphicsAdaptor
 
         this._maxTextures = renderer.limits.maxBatchableTextures;
 
-        const gpuProgram = compileHighShaderGpuProgram({
-            name: 'graphics',
-            bits: [
-                colorBit,
-                generateTextureBatchBit(this._maxTextures),
-
-                localUniformBitGroup2,
-                roundPixelsBit
-            ]
-        });
+        const smoothShader = new SmoothShader(this._maxTextures, true);
 
         this.shader = new Shader({
-            gpuProgram,
+            gpuProgram: smoothShader.gpuProgram,
             resources: {
                 localUniforms,
             },

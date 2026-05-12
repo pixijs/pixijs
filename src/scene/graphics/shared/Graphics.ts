@@ -99,8 +99,8 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
     /** @internal */
     public batched: boolean;
 
-    private _context: GraphicsContext;
-    private readonly _ownedContext: GraphicsContext;
+    protected _context: GraphicsContext;
+    protected readonly _ownedContext: GraphicsContext;
 
     /**
      * Creates a new Graphics object.

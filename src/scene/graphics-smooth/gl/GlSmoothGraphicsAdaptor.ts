@@ -1,35 +1,33 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/matrix/Matrix';
-import { compileHighShaderGlProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
-import { colorBitGl } from '../../../rendering/high-shader/shader-bits/colorBit';
-import { generateTextureBatchBitGl } from '../../../rendering/high-shader/shader-bits/generateTextureBatchBit';
-import { localUniformBitGl } from '../../../rendering/high-shader/shader-bits/localUniformBit';
-import { roundPixelsBitGl } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
 import { getBatchSamplersUniformGroup } from '../../../rendering/renderers/gl/shader/getBatchSamplersUniformGroup';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
-import { AbstractGlGraphicsAdaptor } from './AbstractGlGraphicsAdaptor';
+import { AbstractGlGraphicsAdaptor } from '../../graphics/gl/AbstractGlGraphicsAdaptor';
+import { SmoothShader } from '../shared/batcher/SmoothShader';
 
 import type { Renderer } from '../../../rendering/renderers/types';
 
 /**
- * A GraphicsAdaptor that uses WebGL to render graphics.
+ * WebGL adaptor for non-batchable smooth graphics rendering.
+ * Creates a shader with local uniforms (uTransformMatrix, uColor, uRound)
+ * and delegates to the SmoothShader's GLSL programs.
  * @category rendering
- * @ignore
+ * @internal
  */
-export class GlGraphicsAdaptor extends AbstractGlGraphicsAdaptor
+export class GlSmoothGraphicsAdaptor extends AbstractGlGraphicsAdaptor
 {
     /** @ignore */
     public static extension = {
         type: [
             ExtensionType.WebGLPipesAdaptor,
         ],
-        name: 'graphics',
+        name: 'smoothGraphics',
     } as const;
 
     constructor()
     {
-        super('graphicsContext');
+        super('smoothGraphicsContext');
     }
 
     public contextChange(renderer: Renderer): void
@@ -42,18 +40,10 @@ export class GlGraphicsAdaptor extends AbstractGlGraphicsAdaptor
 
         const maxTextures = renderer.limits.maxBatchableTextures;
 
-        const glProgram = compileHighShaderGlProgram({
-            name: 'graphics',
-            bits: [
-                colorBitGl,
-                generateTextureBatchBitGl(maxTextures),
-                localUniformBitGl,
-                roundPixelsBitGl,
-            ]
-        });
+        const smoothShader = new SmoothShader(maxTextures, true);
 
         this.shader = new Shader({
-            glProgram,
+            glProgram: smoothShader.glProgram,
             resources: {
                 localUniforms: uniforms,
                 batchSamplers: getBatchSamplersUniformGroup(maxTextures),
