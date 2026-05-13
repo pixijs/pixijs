@@ -23,8 +23,6 @@ export const scene: TestScene = {
             autoGenerateMipmaps: false,
         });
 
-        const _sharedColorTexture = new Texture({ source: sharedColorSource });
-
         // 2. Create a second color texture for the final output (pass 2 writes here).
         const outputColorSource = new TextureSource({
             width: 128,
