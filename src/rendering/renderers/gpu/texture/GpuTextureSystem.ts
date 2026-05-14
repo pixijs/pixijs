@@ -130,11 +130,14 @@ export class GpuTextureSystem implements System, CanvasGenerator
         if (source.sampleCount > 1)
         {
             // MSAA textures are only rendered into and resolved — never sampled, uploaded, or
-            // copied — so they need RENDER_ATTACHMENT alone. When the browser exposes
-            // TRANSIENT_ATTACHMENT (0x40), OR it in so TBDR drivers can keep contents tile-resident.
+            // copied — so they need RENDER_ATTACHMENT alone.
             usage = GPUTextureUsage.RENDER_ATTACHMENT;
 
-            if (this._renderer.device.extensions.transientAttachment)
+            // TRANSIENT_ATTACHMENT goes on top only when the source is marked transient AND the
+            // browser exposes the bit. Mixing transient with any later loadOp:'load' is a spec
+            // violation, so callers must opt in via `transient: true` (pixi sets this for the
+            // canvas-root MSAA buffer; not for RenderTexture MSAA, which can be rebound by filters).
+            if (source.transient && this._renderer.device.extensions.transientAttachment)
             {
                 usage |= (GPUTextureUsage as { TRANSIENT_ATTACHMENT: number }).TRANSIENT_ATTACHMENT;
             }

@@ -88,6 +88,22 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
     autoGarbageCollect?: boolean;
     /** Used by RenderTexture.create to allow resizing. Not used by TextureSource itself. */
     dynamic?: boolean;
+    /**
+     * Mark this texture as transient — its contents are scratch and do not need to persist
+     * beyond a single render pass. When the WebGPU backend sees this:
+     *
+     * - It uses `storeOp: 'discard'` on the attachment at end-of-pass, skipping the writeback to DRAM.
+     * - When the browser exposes `GPUTextureUsage.TRANSIENT_ATTACHMENT`, it adds that bit so the
+     *   driver can keep contents in tile memory on TBDR mobile GPUs and never allocate DRAM at all.
+     *
+     * Only safe when no later render pass needs to load the prior contents back
+     * (`loadOp: 'load'` on a transient attachment is a spec violation, and discarding makes
+     * loaded contents undefined even without the bit set). Pixi sets this internally for the
+     * MSAA buffer attached to the canvas root, which is rendered as a single pass per frame.
+     * Set it yourself only on textures you know follow the same single-pass-then-discard pattern.
+     * @default false
+     */
+    transient?: boolean;
 }
 
 /**
@@ -224,6 +240,13 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public antialias = false;
 
     /**
+     * Treat the underlying GPU texture as transient — see {@link TextureSourceOptions.transient}.
+     * Internal flag, populated from options.
+     * @internal
+     */
+    public transient = false;
+
+    /**
      * Has the source been destroyed?
      * @readonly
      */
@@ -300,6 +323,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.autoGenerateMipmaps = options.autoGenerateMipmaps;
         this.sampleCount = options.sampleCount;
         this.antialias = options.antialias;
+        this.transient = options.transient ?? false;
         this.alphaMode = options.alphaMode;
 
         this.style = new TextureStyle(definedProps(options));
