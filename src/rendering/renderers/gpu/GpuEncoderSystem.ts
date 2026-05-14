@@ -15,6 +15,13 @@ import type { BindGroup } from './shader/BindGroup';
 import type { GpuProgram } from './shader/GpuProgram';
 import type { WebGPURenderer } from './WebGPURenderer';
 
+interface BoundBindGroupSlot
+{
+    bindGroup: BindGroup;
+    program: GpuProgram;
+    key: string;
+}
+
 /**
  * The system that handles encoding commands for the GPU.
  * @category rendering
@@ -36,8 +43,13 @@ export class GpuEncoderSystem implements System
     private _resolveCommandFinished: (value: void) => void;
 
     private _gpu: GPU;
-    private _boundBindGroup: Record<number, BindGroup> = Object.create(null);
-    private _boundBindGroupKey: Record<number, string> = Object.create(null);
+    /**
+     * Per-slot cache of the last (bindGroup, program, resource-key) bound to that
+     * group index. All three prongs must match for the encoder to skip rebinding —
+     * see {@link setBindGroup}. Slots are allocated once in the constructor and
+     * mutated in place to avoid per-call allocation on the hot path.
+     */
+    private _boundBindGroup: Record<number, BoundBindGroupSlot> = Object.create(null);
     private _boundVertexBuffer: Record<number, Buffer> = Object.create(null);
     private _boundIndexBuffer: Buffer;
     private _boundPipeline: GPURenderPipeline;
@@ -49,6 +61,11 @@ export class GpuEncoderSystem implements System
     constructor(renderer: WebGPURenderer)
     {
         this._renderer = renderer;
+
+        for (let i = 0; i < 16; i++)
+        {
+            this._boundBindGroup[i] = { bindGroup: null, program: null, key: null };
+        }
     }
 
     public renderStart(): void
@@ -187,16 +204,28 @@ export class GpuEncoderSystem implements System
 
     public resetBindGroup(index: number)
     {
-        this._boundBindGroup[index] = null;
-        this._boundBindGroupKey[index] = null;
+        const slot = this._boundBindGroup[index];
+
+        slot.bindGroup = null;
+        slot.program = null;
+        slot.key = null;
     }
 
     public setBindGroup(index: number, bindGroup: BindGroup, program: GpuProgram)
     {
-        if (this._boundBindGroupKey[index] === bindGroup._key) return;
+        // The cached GPUBindGroup is only valid when the JS BindGroup, the program
+        // (its layout key), and the BindGroup's resource set (its _key) are all unchanged.
+        // BindGroupSystem interns one GPUBindGroup per (bindGroup, program, groupIndex),
+        // so if any prong differs we must re-resolve and rebind.
+        const slot = this._boundBindGroup[index];
 
-        this._boundBindGroup[index] = bindGroup;
-        this._boundBindGroupKey[index] = bindGroup._key;
+        if (slot.bindGroup === bindGroup
+            && slot.program === program
+            && slot.key === bindGroup._key) return;
+
+        slot.bindGroup = bindGroup;
+        slot.program = program;
+        slot.key = bindGroup._key;
 
         bindGroup._touch(this._renderer.gc.now, this._renderer.tick);
 
@@ -369,8 +398,11 @@ export class GpuEncoderSystem implements System
     {
         for (let i = 0; i < 16; i++)
         {
-            this._boundBindGroup[i] = null;
-            this._boundBindGroupKey[i] = null;
+            const slot = this._boundBindGroup[i];
+
+            slot.bindGroup = null;
+            slot.program = null;
+            slot.key = null;
             this._boundVertexBuffer[i] = null;
         }
 
@@ -383,7 +415,6 @@ export class GpuEncoderSystem implements System
         (this._renderer as null) = null;
         this._gpu = null;
         this._boundBindGroup = null;
-        this._boundBindGroupKey = null;
         this._boundVertexBuffer = null;
         this._boundIndexBuffer = null;
         this._boundPipeline = null;
