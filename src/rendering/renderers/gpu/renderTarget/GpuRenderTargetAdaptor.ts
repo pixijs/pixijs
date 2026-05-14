@@ -187,7 +187,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     view,
                     resolveTarget,
                     clearValue,
-                    storeOp: 'store',
+                    // When resolving MSAA into resolveTarget, the multisample view's contents are
+                    // never needed after the pass — discarding skips the writeback to DRAM.
+                    storeOp: resolveTarget ? 'discard' : 'store',
                     loadOp
                 };
             }
@@ -207,6 +209,8 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         {
             const stencilLoadOp = (clear & CLEAR.STENCIL ? 'clear' : 'load') as GPULoadOp;
             const depthLoadOp = (clear & CLEAR.DEPTH ? 'clear' : 'load') as GPULoadOp;
+            // pixi never reads depth/stencil back; discard on MSAA passes saves the writeback.
+            const dsStoreOp: GPUStoreOp = gpuRenderTarget.msaa ? 'discard' : 'store';
 
             depthStencilAttachment = {
                 view: this._renderer.texture
@@ -218,11 +222,11 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                         baseArrayLayer: layer,
                         arrayLayerCount: 1,
                     }),
-                stencilStoreOp: 'store',
+                stencilStoreOp: dsStoreOp,
                 stencilLoadOp,
                 depthClearValue: 1.0,
                 depthLoadOp,
-                depthStoreOp: 'store',
+                depthStoreOp: dsStoreOp,
             };
         }
 

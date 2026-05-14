@@ -125,12 +125,29 @@ export class GpuTextureSystem implements System, CanvasGenerator
             source.mipLevelCount = Math.floor(Math.log2(biggestDimension)) + 1;
         }
 
-        let usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST;
+        let usage: number;
 
-        if (source.uploadMethodId !== 'compressed')
+        if (source.sampleCount > 1)
         {
-            usage |= GPUTextureUsage.RENDER_ATTACHMENT;
-            usage |= GPUTextureUsage.COPY_SRC;
+            // MSAA textures are only rendered into and resolved — never sampled, uploaded, or
+            // copied — so they need RENDER_ATTACHMENT alone. When the browser exposes
+            // TRANSIENT_ATTACHMENT (0x40), OR it in so TBDR drivers can keep contents tile-resident.
+            usage = GPUTextureUsage.RENDER_ATTACHMENT;
+
+            if (this._renderer.device.extensions.transientAttachment)
+            {
+                usage |= (GPUTextureUsage as { TRANSIENT_ATTACHMENT: number }).TRANSIENT_ATTACHMENT;
+            }
+        }
+        else
+        {
+            usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST;
+
+            if (source.uploadMethodId !== 'compressed')
+            {
+                usage |= GPUTextureUsage.RENDER_ATTACHMENT;
+                usage |= GPUTextureUsage.COPY_SRC;
+            }
         }
 
         const blockData = blockDataMap[source.format] || { blockBytes: 4, blockWidth: 1, blockHeight: 1 };
