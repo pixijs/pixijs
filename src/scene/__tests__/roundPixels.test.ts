@@ -203,9 +203,6 @@ describe('Round Pixels', () =>
             roundPixels: true,
         });
 
-        // texture 7×7, anchor=(0.3, 0.3)
-        // → dx = -0.3 * 7 = -2.1 (fractional without fix)
-        // → dy = -0.3 * 7 = -2.1 (fractional without fix — same bug on y axis)
         const texture = getTexture({ width: 7, height: 7 });
         const sprite = new Sprite({ texture });
 
