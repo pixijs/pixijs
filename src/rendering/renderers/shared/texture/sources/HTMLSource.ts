@@ -1,0 +1,517 @@
+import { ExtensionType } from '../../../../../extensions/Extensions';
+import { TextureSource } from './TextureSource';
+
+import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
+import type { TextureSourceOptions } from './TextureSource';
+
+/**
+ * @experimental
+ * A snapshot produced by the experimental HTML-in-Canvas `captureElementImage()` API.
+ *
+ * A snapshot is a frozen, immutable copy of an element's rendered pixels at the moment
+ * it was captured. Unlike a live {@link Element} resource, it never repaints, so it is a
+ * good fit for effects that need a stable image (transitions, "shatter" effects, trails).
+ *
+ * Call {@link ElementImage.close} when you are done with it to release the underlying memory.
+ * @example
+ * ```ts
+ * import { HTMLSource, Sprite } from 'pixi.js';
+ * import type { HTMLSourceCanvas } from 'pixi.js';
+ *
+ * const canvas = app.canvas as HTMLSourceCanvas;
+ *
+ * // Freeze the current pixels of an element into an immutable snapshot.
+ * const snapshot = canvas.captureElementImage!(element);
+ *
+ * const source = new HTMLSource({ resource: snapshot });
+ * const sprite = Sprite.from(source);
+ *
+ * // Release the snapshot once the source no longer needs it.
+ * source.destroy();
+ * snapshot.close();
+ * ```
+ * @see {@link HTMLSource} For rendering a snapshot as a texture
+ * @see {@link HTMLSourceCanvas} For the canvas API that produces snapshots
+ * @category rendering
+ * @advanced
+ */
+export interface ElementImage
+{
+    /** The width of the captured snapshot, in pixels. */
+    readonly width: number;
+    /** The height of the captured snapshot, in pixels. */
+    readonly height: number;
+    /** Releases the memory backing this snapshot. The snapshot must not be used afterwards. */
+    close(): void;
+}
+
+/**
+ * The resource types that can be uploaded by an {@link HTMLSource}: either a live DOM
+ * {@link Element} or an immutable {@link ElementImage} snapshot.
+ * @category rendering
+ * @advanced
+ */
+export type HTMLSourceResource = Element | ElementImage;
+
+/**
+ * @experimental
+ * An {@link HTMLCanvasElement} extended with the experimental HTML-in-Canvas proposal APIs.
+ *
+ * These members only exist in browsers that have the HTML-in-Canvas feature enabled, so they
+ * are optional. {@link HTMLSource} feature-detects them and degrades to a one-shot static
+ * texture when they are missing.
+ * @example
+ * ```ts
+ * import type { HTMLSourceCanvas } from 'pixi.js';
+ *
+ * const canvas = app.canvas as HTMLSourceCanvas;
+ *
+ * // Feature-detect before relying on the experimental API.
+ * if (canvas.requestPaint)
+ * {
+ *     canvas.requestPaint();
+ * }
+ * ```
+ * @see {@link HTMLSource} For the texture source that drives these APIs
+ * @category rendering
+ * @advanced
+ */
+export interface HTMLSourceCanvas extends HTMLCanvasElement
+{
+    /** Requests a `paint` event so the canvas re-snapshots its `layoutsubtree` children. */
+    requestPaint?: () => void;
+    /** Captures the current rendered pixels of `element` into an immutable {@link ElementImage}. */
+    captureElementImage?: (element: Element) => ElementImage;
+}
+
+/**
+ * Options for creating an {@link HTMLSource}. Configures how the source binds to its owning
+ * canvas and when it repaints.
+ * @example
+ * ```ts
+ * import { HTMLSource } from 'pixi.js';
+ *
+ * // Minimal: a live element that auto-updates every time the browser repaints it.
+ * const source = new HTMLSource({ resource: domElement });
+ *
+ * // A continuously animated element you repaint yourself each frame.
+ * const animatedSource = new HTMLSource({
+ *     resource: domElement,
+ *     autoRequestPaint: false, // call source.requestPaint() in your own ticker instead
+ * });
+ *
+ * // A static one-shot capture that never listens for repaints.
+ * const staticSource = new HTMLSource({
+ *     resource: domElement,
+ *     autoUpdate: false,
+ * });
+ * ```
+ * @see {@link HTMLSource} For the texture source these options configure
+ * @extends TextureSourceOptions
+ * @category rendering
+ * @advanced
+ * @noInheritDoc
+ */
+export interface HTMLSourceOptions extends TextureSourceOptions<HTMLSourceResource>
+{
+    /**
+     * The canvas that owns this element's layout subtree. When omitted, this is inferred from
+     * `resource.parentElement` when the resource is a direct canvas child.
+     * @example
+     * ```ts
+     * // Inferred automatically — domElement is appended to the Pixi canvas.
+     * app.canvas.appendChild(domElement);
+     * const source = new HTMLSource({ resource: domElement });
+     *
+     * // Passed explicitly when inference is not possible.
+     * const explicit = new HTMLSource({
+     *     resource: domElement,
+     *     canvas: app.canvas as HTMLSourceCanvas,
+     * });
+     * ```
+     */
+    canvas?: HTMLSourceCanvas;
+    /**
+     * Automatically set the `layoutsubtree` attribute on the owning canvas. The browser only
+     * lays out and paints canvas children when this attribute is present.
+     * @default true
+     * @example
+     * ```ts
+     * // Opt out when you set `<canvas layoutsubtree>` yourself in markup.
+     * const source = new HTMLSource({ resource: domElement, autoLayout: false });
+     * ```
+     */
+    autoLayout?: boolean;
+    /**
+     * Listen for the owning canvas' `paint` event and update this source when the element is
+     * repainted. Disable for a static, captured-once texture.
+     * @default true
+     * @example
+     * ```ts
+     * // Capture once, never track DOM changes — cheaper for static content.
+     * const source = new HTMLSource({ resource: domElement, autoUpdate: false });
+     * ```
+     */
+    autoUpdate?: boolean;
+    /**
+     * Request an initial paint after construction. Set to `false` and call
+     * {@link HTMLSource.requestPaint} yourself each frame for continuous animations.
+     * @default true
+     * @example
+     * ```ts
+     * const source = new HTMLSource({ resource: domElement, autoRequestPaint: false });
+     *
+     * app.ticker.add(() => {
+     *     source.requestPaint(); // drive repaints on your own schedule
+     * });
+     * ```
+     */
+    autoRequestPaint?: boolean;
+}
+
+function isElement(resource: unknown): resource is Element
+{
+    return !!globalThis.Element && resource instanceof Element;
+}
+
+function isCanvas(resource: unknown): resource is HTMLCanvasElement
+{
+    return !!globalThis.HTMLCanvasElement && resource instanceof HTMLCanvasElement;
+}
+
+function isElementImage(resource: unknown): resource is ElementImage
+{
+    return !!resource
+        && typeof (resource as ElementImage).width === 'number'
+        && typeof (resource as ElementImage).height === 'number'
+        && typeof (resource as ElementImage).close === 'function'
+        && !isElement(resource);
+}
+
+function getResourceSize(resource: HTMLSourceResource): { width: number; height: number }
+{
+    if (isElement(resource))
+    {
+        const bounds = resource.getBoundingClientRect();
+        const htmlElement = resource as HTMLElement;
+
+        return {
+            width: bounds.width || htmlElement.offsetWidth || htmlElement.clientWidth || 1,
+            height: bounds.height || htmlElement.offsetHeight || htmlElement.clientHeight || 1,
+        };
+    }
+
+    return {
+        width: resource.width || 1,
+        height: resource.height || 1,
+    };
+}
+
+/**
+ * @experimental
+ * A texture source backed by the experimental HTML-in-Canvas browser APIs. It renders a live
+ * DOM {@link Element} (or an immutable {@link ElementImage} snapshot) into a texture you can
+ * use anywhere a normal texture works: on a {@link Sprite}, as a {@link Texture} frame, in a
+ * mesh, and so on.
+ *
+ * The element keeps its native browser behavior while it is rendered: forms stay editable,
+ * links stay clickable, and CSS animations keep running. PixiJS just mirrors its pixels into
+ * the GPU each time the browser repaints it.
+ *
+ * The source resource must be a direct child of the renderer's `<canvas layoutsubtree>`
+ * element, or an `ElementImage` produced by `captureElementImage()`.
+ *
+ * > [!NOTE]
+ * > This relies on an experimental browser proposal. In browsers without it, the source
+ * > degrades to a single static upload of the element's current pixels. A generic HTML element
+ * > passed to `Texture.from` resolves to an `HTMLSource` only as a last resort (it has the
+ * > lowest texture-source priority); construct it explicitly when you need options, snapshots,
+ * > or non-HTML elements such as SVG.
+ * @example
+ * ```ts
+ * import { Application, HTMLSource, Sprite } from 'pixi.js';
+ *
+ * const app = new Application();
+ *
+ * await app.init({ resizeTo: window });
+ * document.body.appendChild(app.canvas);
+ *
+ * // The element must be a direct child of the Pixi canvas.
+ * const form = document.createElement('form');
+ *
+ * form.innerHTML = '<input value="still editable" />';
+ * app.canvas.appendChild(form);
+ *
+ * // Render the live form as a sprite. It stays interactive in the browser.
+ * const source = new HTMLSource({ resource: form });
+ * const sprite = Sprite.from(source);
+ *
+ * sprite.anchor.set(0.5);
+ * sprite.position.set(app.screen.width / 2, app.screen.height / 2);
+ * app.stage.addChild(sprite);
+ * ```
+ * @example
+ * ```ts
+ * // Continuous animation: drive repaints yourself each frame.
+ * const source = new HTMLSource({ resource: animatedDiv, autoRequestPaint: false });
+ * const sprite = Sprite.from(source);
+ *
+ * app.ticker.add(() => {
+ *     sprite.rotation += 0.01;
+ *     source.requestPaint(); // re-snapshot the DOM this frame
+ * });
+ * ```
+ * @example
+ * ```ts
+ * // Slice the rendered element into sub-textures (e.g. a "shatter" effect).
+ * import { Rectangle, Texture } from 'pixi.js';
+ *
+ * const pageSource = new HTMLSource({ resource: page });
+ * const chunk = new Texture({
+ *     source: pageSource,
+ *     frame: new Rectangle(0, 0, 64, 64),
+ * });
+ * ```
+ * @example
+ * ```ts
+ * // Auto-detected: a generic HTML element passed to Texture.from resolves to an HTMLSource
+ * // when no other built-in source claims it. Prefer the explicit form for options.
+ * const sprite = Sprite.from(divAlreadyInTheCanvas);
+ * ```
+ * @see {@link HTMLSourceOptions} For configuration options
+ * @see {@link ElementImage} For immutable snapshot resources
+ * @see {@link Sprite} For displaying the source on screen
+ * @see {@link Texture} For framing or slicing the source
+ * @category rendering
+ * @advanced
+ */
+export class HTMLSource extends TextureSource<HTMLSourceResource>
+{
+    /**
+     * Registers the source with the {@link extensions} system at the lowest texture-source
+     * priority, so automatic detection only falls back to it when no other built-in source
+     * claims the resource.
+     */
+    public static extension: ExtensionMetadata = {
+        type: ExtensionType.TextureSource,
+        priority: -10,
+    };
+
+    /**
+     * The default options applied to every {@link HTMLSource}, merged with the options passed
+     * to the constructor.
+     * @example
+     * ```ts
+     * // Make every HTMLSource opt out of automatic repaint tracking by default.
+     * HTMLSource.defaultOptions.autoUpdate = false;
+     * ```
+     */
+    public static defaultOptions: Partial<HTMLSourceOptions> = {
+        autoLayout: true,
+        autoUpdate: true,
+        autoRequestPaint: true,
+    };
+
+    /**
+     * Tests whether a resource should be handled by `HTMLSource` during automatic source
+     * detection (`Texture.from`, `TextureSource.from`). Deliberately strict: only
+     * `captureElementImage()` snapshots and generic HTML elements pass. Image, video, and
+     * canvas elements are rejected because they have dedicated, faster sources.
+     * @param resource - The resource to test.
+     * @returns `true` if this source can handle the resource.
+     */
+    public static test(resource: any): resource is HTMLSourceResource
+    {
+        if (isElementImage(resource))
+        {
+            return true;
+        }
+
+        return !!globalThis.HTMLElement
+            && resource instanceof HTMLElement
+            && !(resource instanceof HTMLImageElement)
+            && !(resource instanceof HTMLVideoElement)
+            && !(resource instanceof HTMLCanvasElement);
+    }
+
+    /** The upload method for this texture. */
+    public uploadMethodId = 'html';
+
+    /**
+     * Owning canvas used for `paint` events and {@link HTMLSource.requestPaint}, or `null` when
+     * the canvas could not be inferred and none was passed.
+     */
+    public canvas: HTMLSourceCanvas | null;
+
+    private readonly _autoUpdate: boolean;
+    private _isReady: boolean;
+    private readonly _onPaintBound: (event: Event & { changedElements?: Element[] }) => void;
+
+    /**
+     * @param options - Options for creating the HTML source. `resource` is required.
+     * @example
+     * ```ts
+     * const source = new HTMLSource({
+     *     resource: domElement,   // a direct child of the Pixi canvas
+     *     autoUpdate: true,       // track browser repaints (default)
+     *     autoRequestPaint: true, // request one initial paint (default)
+     * });
+     * ```
+     */
+    constructor(options: HTMLSourceOptions)
+    {
+        options = { ...HTMLSource.defaultOptions, ...options };
+
+        if (!options.resource)
+        {
+            throw new Error('[HTMLSource] resource is required.');
+        }
+
+        super(options);
+
+        this.canvas = options.canvas ?? this._inferCanvas(options.resource);
+        this._autoUpdate = options.autoUpdate !== false;
+        this._onPaintBound = this._onPaint.bind(this);
+
+        // ElementImage snapshots are immediately ready, as are sources that don't auto-update
+        // or that target a browser without the experimental `requestPaint` API.
+        this._isReady = isElementImage(this.resource) || !this._autoUpdate || !this.canvas?.requestPaint;
+
+        if (this.canvas && options.autoLayout !== false)
+        {
+            this.canvas.setAttribute('layoutsubtree', '');
+        }
+
+        if (this.canvas && this._autoUpdate)
+        {
+            this.canvas.addEventListener('paint', this._onPaintBound);
+        }
+
+        if (options.autoRequestPaint !== false)
+        {
+            this.requestPaint();
+        }
+    }
+
+    /**
+     * `true` once the owning canvas has produced an initial paint snapshot, so the texture has
+     * real pixels. Snapshots and non-auto-updating sources are ready immediately.
+     * @example
+     * ```ts
+     * const source = new HTMLSource({ resource: domElement });
+     *
+     * if (!source.isReady)
+     * {
+     *     // The first paint has not landed yet — the texture is still blank.
+     * }
+     * ```
+     */
+    get isReady(): boolean
+    {
+        return this._isReady;
+    }
+
+    /**
+     * Request a `paint` event from the owning canvas. Call this every frame to keep an animated
+     * or frequently-changing element in sync with the rendered texture.
+     * @returns `true` if the request was made, `false` when the browser lacks the experimental
+     * `requestPaint` API or there is no owning canvas.
+     * @example
+     * ```ts
+     * const source = new HTMLSource({ resource: clock, autoRequestPaint: false });
+     *
+     * app.ticker.add(() => {
+     *     clock.textContent = new Date().toLocaleTimeString();
+     *     source.requestPaint();
+     * });
+     * ```
+     */
+    public requestPaint(): boolean
+    {
+        if (!this.canvas?.requestPaint)
+        {
+            return false;
+        }
+
+        this.canvas.requestPaint();
+
+        return true;
+    }
+
+    /**
+     * Detaches the `paint` listener from the owning canvas and destroys the underlying texture
+     * source. Does not call `close()` on an {@link ElementImage} resource; release snapshots
+     * yourself.
+     * @example
+     * ```ts
+     * const source = new HTMLSource({ resource: snapshot });
+     *
+     * // ...later
+     * source.destroy();
+     * snapshot.close(); // free the snapshot's memory separately
+     * ```
+     */
+    public destroy(): void
+    {
+        if (this.canvas && this._autoUpdate)
+        {
+            this.canvas.removeEventListener('paint', this._onPaintBound);
+        }
+        this.canvas = null;
+        super.destroy();
+    }
+
+    /**
+     * The measured width of the resource in CSS pixels, rounded up. For elements this is the
+     * laid-out box; for snapshots it is the captured width.
+     * @example
+     * ```ts
+     * const source = new HTMLSource({ resource: domElement });
+     *
+     * console.log(source.resourceWidth, source.resourceHeight);
+     * ```
+     */
+    public get resourceWidth(): number
+    {
+        return Math.ceil(getResourceSize(this.resource).width);
+    }
+
+    /**
+     * The measured height of the resource in CSS pixels, rounded up. For elements this is the
+     * laid-out box; for snapshots it is the captured height.
+     * @example
+     * ```ts
+     * const source = new HTMLSource({ resource: domElement });
+     *
+     * console.log(source.resourceWidth, source.resourceHeight);
+     * ```
+     */
+    public get resourceHeight(): number
+    {
+        return Math.ceil(getResourceSize(this.resource).height);
+    }
+
+    private _inferCanvas(resource: HTMLSourceResource): HTMLSourceCanvas | null
+    {
+        if (!isElement(resource))
+        {
+            return null;
+        }
+
+        return isCanvas(resource.parentElement) ? (resource.parentElement as HTMLSourceCanvas) : null;
+    }
+
+    private _onPaint(event: Event & { changedElements?: Element[] }): void
+    {
+        const changedElements = event.changedElements;
+
+        // If the browser reports which elements changed, skip updates when ours isn't in the list.
+        if (changedElements?.length && isElement(this.resource) && !changedElements.includes(this.resource))
+        {
+            return;
+        }
+
+        this._isReady = true;
+        this.update();
+    }
+}

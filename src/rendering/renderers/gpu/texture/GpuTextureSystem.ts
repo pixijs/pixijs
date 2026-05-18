@@ -8,6 +8,7 @@ import { BindGroup } from '../shader/BindGroup';
 import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageResource';
 import { blockDataMap, gpuUploadCompressedTextureResource } from './uploaders/gpuUploadCompressedTextureResource';
 import { createGpuUploadCubeTextureResource } from './uploaders/gpuUploadCubeTextureResource';
+import { gpuUploadHTMLResource } from './uploaders/gpuUploadHTMLSource';
 import { gpuUploadImageResource } from './uploaders/gpuUploadImageSource';
 import { gpuUploadVideoResource } from './uploaders/gpuUploadVideoSource';
 import { GpuMipmapGenerator } from './utils/GpuMipmapGenerator';
@@ -93,6 +94,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             buffer: gpuUploadBufferImageResource,
             video: gpuUploadVideoResource,
             compressed: gpuUploadCompressedTextureResource,
+            html: gpuUploadHTMLResource,
         };
 
         this._uploads = {

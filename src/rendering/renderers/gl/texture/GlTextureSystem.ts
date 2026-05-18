@@ -6,6 +6,7 @@ import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
 import { glUploadCompressedTextureResource } from './uploaders/glUploadCompressedTextureResource';
 import { createGlUploadCubeTextureResource } from './uploaders/glUploadCubeTextureResource';
+import { glUploadHTMLResource } from './uploaders/glUploadHTMLResource';
 import { glUploadImageResource } from './uploaders/glUploadImageResource';
 import { glUploadVideoResource } from './uploaders/glUploadVideoResource';
 import { applyStyleParams } from './utils/applyStyleParams';
@@ -86,6 +87,7 @@ export class GlTextureSystem implements System, CanvasGenerator
             buffer: glUploadBufferImageResource,
             video: glUploadVideoResource,
             compressed: glUploadCompressedTextureResource,
+            html: glUploadHTMLResource,
         };
 
         this._uploads = {
