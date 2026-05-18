@@ -210,6 +210,11 @@ export const spritesheetAsset = {
 
                     itemUrl = copySearchParams(itemUrl, options.src);
 
+                    if (loader.promiseCache[path.toAbsolute(itemUrl)])
+                    {
+                        continue;
+                    }
+
                     promises.push(loader.load<Spritesheet<SpriteSheetJson>>({
                         src: itemUrl,
                         data: {

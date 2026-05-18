@@ -104,6 +104,17 @@ describe('spritesheetAsset', () =>
         expect(pack1.height).toBe(229);
     });
 
+    it('should load related multi packs together without deadlocking', async () =>
+    {
+        const results = await loader.load<Spritesheet>([
+            `${basePath}spritesheet/multi-pack-0.json`,
+            `${basePath}spritesheet/multi-pack-1.json`,
+        ]);
+
+        expect(results[`${basePath}spritesheet/multi-pack-0.json`]).toBeInstanceOf(Spritesheet);
+        expect(results[`${basePath}spritesheet/multi-pack-1.json`]).toBeInstanceOf(Spritesheet);
+    });
+
     it('should not create multipack resources when related_multi_packs field is missing or the wrong type', async () =>
     {
         // clear the caches only to avoid cluttering the output
