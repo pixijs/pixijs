@@ -21,7 +21,6 @@ function logPrettyShaderError(gl: WebGLRenderingContext, shader: WebGLShader): v
         .split('\n')
         .map((line, index) => `${index}: ${line}`);
 
-    // getShaderInfoLog can also return null on GL errors; fall back to an empty string
     const shaderLog = gl.getShaderInfoLog(shader) ?? '';
     const splitShader = shaderLog.split('\n');
 
