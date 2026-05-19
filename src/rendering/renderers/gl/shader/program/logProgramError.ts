@@ -6,15 +6,13 @@
  */
 function logPrettyShaderError(gl: WebGLRenderingContext, shader: WebGLShader): void
 {
-    // getShaderSource and getShaderInfoLog return null on GL errors (e.g. lost context); see
+    // getShaderSource returns null on GL errors (e.g. lost context); see
     // https://registry.khronos.org/webgl/specs/latest/1.0/#5.14.9
     const rawSource = gl.getShaderSource(shader);
-    const shaderLog = gl.getShaderInfoLog(shader) ?? '';
 
     if (rawSource === null)
     {
         console.error('PixiJS Error: Could not retrieve shader source (WebGL context may be lost).');
-        if (shaderLog) console.error(shaderLog);
 
         return;
     }
@@ -22,6 +20,9 @@ function logPrettyShaderError(gl: WebGLRenderingContext, shader: WebGLShader): v
     const shaderSrc = rawSource
         .split('\n')
         .map((line, index) => `${index}: ${line}`);
+
+    // getShaderInfoLog can also return null on GL errors; fall back to an empty string
+    const shaderLog = gl.getShaderInfoLog(shader) ?? '';
     const splitShader = shaderLog.split('\n');
 
     const dedupe: Record<number, boolean> = {};
