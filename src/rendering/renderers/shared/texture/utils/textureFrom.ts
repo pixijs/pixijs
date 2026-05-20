@@ -7,6 +7,7 @@ import type { ICanvas } from '../../../../../environment/canvas/ICanvas';
 import type { TypedArray } from '../../buffer/Buffer';
 import type { BufferSourceOptions } from '../sources/BufferImageSource';
 import type { CanvasSourceOptions } from '../sources/CanvasSource';
+import type { HTMLSnapshotSourceOptions } from '../sources/HTMLSnapshotSource';
 import type { HTMLSourceOptions, HTMLSourceResource } from '../sources/HTMLSource';
 import type { ImageResource } from '../sources/ImageSource';
 import type { TextureSourceOptions } from '../sources/TextureSource';
@@ -33,6 +34,7 @@ export type TextureResourceOrOptions =
   | HTMLSourceResource
   | TextureSourceOptions<ImageResource>
   | HTMLSourceOptions
+  | HTMLSnapshotSourceOptions
   | BufferSourceOptions
   | CanvasSourceOptions;
 

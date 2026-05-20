@@ -1,4 +1,4 @@
-import type { HTMLSource, HTMLSourceResource } from '../../../shared/texture/sources/HTMLSource';
+import type { HTMLSourceResource, HTMLUploadableSource } from '../../../shared/texture/sources/HTMLSource';
 import type { GPU } from '../../GpuDeviceSystem';
 import type { GpuTextureUploader } from './GpuTextureUploader';
 
@@ -17,7 +17,7 @@ export const gpuUploadHTMLResource = {
 
     type: 'html',
 
-    upload(source: HTMLSource, gpuTexture: GPUTexture, gpu: GPU, originZOverride = 0)
+    upload(source: HTMLUploadableSource, gpuTexture: GPUTexture, gpu: GPU, originZOverride = 0)
     {
         const queue = gpu.device.queue as GpuCopyElementImageQueue;
         const copyElementImageToTexture = queue.copyElementImageToTexture;
@@ -32,7 +32,7 @@ export const gpuUploadHTMLResource = {
 
         if (!source.isReady)
         {
-            source.requestPaint();
+            source.requestPaint?.();
 
             return;
         }
@@ -61,4 +61,4 @@ export const gpuUploadHTMLResource = {
             copyElementImageToTexture.call(queue, source.resource, width, height, destination);
         }
     },
-} as GpuTextureUploader<HTMLSource>;
+} as GpuTextureUploader<HTMLUploadableSource>;

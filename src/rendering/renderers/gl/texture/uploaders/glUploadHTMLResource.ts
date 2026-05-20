@@ -1,4 +1,4 @@
-import type { HTMLSource } from '../../../shared/texture/sources/HTMLSource';
+import type { HTMLSourceResource, HTMLUploadableSource } from '../../../shared/texture/sources/HTMLSource';
 import type { GlRenderingContext } from '../../context/GlRenderingContext';
 import type { GlTexture } from '../GlTexture';
 import type { GLTextureUploader } from './GLTextureUploader';
@@ -11,9 +11,9 @@ interface GlTexElementImageContext extends GlRenderingContext
         internalFormat: number,
         widthOrFormat: number,
         heightOrType: number,
-        formatOrSource: number | Element,
+        formatOrSource: number | HTMLSourceResource,
         type?: number,
-        source?: Element,
+        source?: HTMLSourceResource,
     ) => void;
 }
 
@@ -51,7 +51,7 @@ export const glUploadHTMLResource = {
     id: 'html',
 
     upload(
-        source: HTMLSource,
+        source: HTMLUploadableSource,
         glTexture: GlTexture,
         gl: GlRenderingContext,
     )
@@ -73,7 +73,7 @@ export const glUploadHTMLResource = {
         {
             // Allocate empty storage so sampling doesn't error before the first paint arrives.
             ensureAllocated(gl, glTexture, textureWidth, textureHeight);
-            source.requestPaint();
+            source.requestPaint?.();
 
             return;
         }
@@ -91,7 +91,7 @@ export const glUploadHTMLResource = {
                 glTexture.internalFormat,
                 glTexture.format,
                 glTexture.type,
-                source.resource as Element,
+                source.resource,
             );
         }
         else
@@ -105,7 +105,7 @@ export const glUploadHTMLResource = {
                 textureHeight,
                 glTexture.format,
                 glTexture.type,
-                source.resource as Element,
+                source.resource,
             );
         }
 

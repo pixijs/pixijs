@@ -218,6 +218,7 @@ export * from './renderers/shared/texture/sources/CanvasSource';
 export * from './renderers/shared/texture/sources/CompressedSource';
 export * from './renderers/shared/texture/sources/CubeTextureSource';
 export * from './renderers/shared/texture/sources/ExternalSource';
+export * from './renderers/shared/texture/sources/HTMLSnapshotSource';
 export * from './renderers/shared/texture/sources/HTMLSource';
 export * from './renderers/shared/texture/sources/ImageSource';
 export * from './renderers/shared/texture/sources/TextureSource';
