@@ -1,4 +1,4 @@
-import type { HTMLSourceResource, HTMLUploadableSource } from '../../../shared/texture/sources/HTMLSource';
+import type { HTMLSourceResource, HTMLUploadableSource } from '../../../shared/texture/sources/HTMLSourceTypes';
 import type { GlRenderingContext } from '../../context/GlRenderingContext';
 import type { GlTexture } from '../GlTexture';
 import type { GLTextureUploader } from './GLTextureUploader';
@@ -78,36 +78,15 @@ export const glUploadHTMLResource = {
             return;
         }
 
-        const resourceWidth = source.resourceWidth;
-        const resourceHeight = source.resourceHeight;
-        const sameSize = resourceWidth === textureWidth && resourceHeight === textureHeight;
-
-        if (sameSize)
-        {
-            upload.call(
-                gl,
-                glTexture.target,
-                0,
-                glTexture.internalFormat,
-                glTexture.format,
-                glTexture.type,
-                source.resource,
-            );
-        }
-        else
-        {
-            upload.call(
-                gl,
-                glTexture.target,
-                0,
-                glTexture.internalFormat,
-                textureWidth,
-                textureHeight,
-                glTexture.format,
-                glTexture.type,
-                source.resource,
-            );
-        }
+        upload.call(
+            gl,
+            glTexture.target,
+            0,
+            glTexture.internalFormat,
+            glTexture.format,
+            glTexture.type,
+            source.resource,
+        );
 
         glTexture.width = textureWidth;
         glTexture.height = textureHeight;

@@ -2,68 +2,11 @@ import { ExtensionType } from '../../../../../extensions/Extensions';
 import { TextureSource } from './TextureSource';
 
 import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
-import type { ElementImage } from './HTMLSnapshotSource';
+import type { HTMLSourceCanvas } from './HTMLSourceTypes';
 import type { TextureSourceOptions } from './TextureSource';
 
 /**
- * The resource types the HTML texture uploaders can handle: a live DOM {@link Element}
- * (via {@link HTMLSource}) or an immutable {@link ElementImage} snapshot
- * (via {@link HTMLSnapshotSource}).
- * @category rendering
- * @advanced
- */
-export type HTMLSourceResource = Element | ElementImage;
-
-/**
  * @experimental
- * An {@link HTMLCanvasElement} extended with the experimental HTML-in-Canvas proposal APIs.
- *
- * These members only exist in browsers that have the HTML-in-Canvas feature enabled, so they
- * are optional. {@link HTMLSource} feature-detects them and degrades to a one-shot static
- * texture when they are missing.
- * @example
- * ```ts
- * import type { HTMLSourceCanvas } from 'pixi.js';
- *
- * const canvas = app.canvas as HTMLSourceCanvas;
- *
- * // Feature-detect before relying on the experimental API.
- * if (canvas.requestPaint)
- * {
- *     canvas.requestPaint();
- * }
- * ```
- * @see {@link HTMLSource} For the texture source that drives these APIs
- * @see {@link ElementImage} For the snapshot type `captureElementImage()` returns
- * @category rendering
- * @advanced
- */
-export interface HTMLSourceCanvas extends HTMLCanvasElement
-{
-    /** Requests a `paint` event so the canvas re-snapshots its `layoutsubtree` children. */
-    requestPaint?: () => void;
-    /** Captures the current rendered pixels of `element` into an immutable {@link ElementImage}. */
-    captureElementImage?: (element: Element) => ElementImage;
-}
-
-/**
- * The minimal source shape the HTML texture uploaders consume. Both {@link HTMLSource} and
- * {@link HTMLSnapshotSource} satisfy it, so a single set of `'html'` uploaders covers the
- * live-element and snapshot cases.
- * @category rendering
- * @internal
- */
-export interface HTMLUploadableSource extends TextureSource
-{
-    /** A live DOM element or an immutable snapshot. */
-    readonly resource: HTMLSourceResource;
-    /** Whether the source has pixels ready to upload. */
-    readonly isReady: boolean;
-    /** Present only on live {@link HTMLSource}; snapshots never repaint. */
-    requestPaint?(): boolean;
-}
-
-/**
  * Options for creating an {@link HTMLSource}. Configures how the source binds to its owning
  * canvas and when it repaints.
  * @example
@@ -153,17 +96,6 @@ function isCanvas(resource: unknown): resource is HTMLCanvasElement
     return !!globalThis.HTMLCanvasElement && resource instanceof HTMLCanvasElement;
 }
 
-function getResourceSize(resource: Element): { width: number; height: number }
-{
-    const bounds = resource.getBoundingClientRect();
-    const htmlElement = resource as HTMLElement;
-
-    return {
-        width: bounds.width || htmlElement.offsetWidth || htmlElement.clientWidth || 1,
-        height: bounds.height || htmlElement.offsetHeight || htmlElement.clientHeight || 1,
-    };
-}
-
 /**
  * @experimental
  * A texture source backed by the experimental HTML-in-Canvas browser APIs. It renders a live
@@ -176,7 +108,7 @@ function getResourceSize(resource: Element): { width: number; height: number }
  *
  * The source resource must be a direct child of the renderer's `<canvas layoutsubtree>`
  * element. For an immutable, transferable copy that never repaints, use
- * {@link HTMLSnapshotSource} instead.
+ * {@link ElementImageSource} instead.
  *
  * > [!NOTE]
  * > This relies on an experimental browser proposal. In browsers without it, the source
@@ -236,7 +168,7 @@ function getResourceSize(resource: Element): { width: number; height: number }
  * const sprite = Sprite.from(divAlreadyInTheCanvas);
  * ```
  * @see {@link HTMLSourceOptions} For configuration options
- * @see {@link HTMLSnapshotSource} For an immutable snapshot instead of a live element
+ * @see {@link ElementImageSource} For an immutable snapshot instead of a live element
  * @see {@link Sprite} For displaying the source on screen
  * @see {@link Texture} For framing or slicing the source
  * @category rendering
@@ -273,7 +205,7 @@ export class HTMLSource extends TextureSource<Element>
      * Tests whether a resource should be handled by `HTMLSource` during automatic source
      * detection (`Texture.from`, `TextureSource.from`). Deliberately strict: only generic HTML
      * elements pass. Image, video, and canvas elements are rejected because they have
-     * dedicated, faster sources; snapshots are handled by {@link HTMLSnapshotSource}.
+     * dedicated, faster sources; snapshots are handled by {@link ElementImageSource}.
      * @param resource - The resource to test.
      * @returns `true` if this source can handle the resource.
      */
@@ -290,8 +222,8 @@ export class HTMLSource extends TextureSource<Element>
     public uploadMethodId = 'html';
 
     /**
-     * Owning canvas used for `paint` events and {@link HTMLSource.requestPaint}, or `null` when
-     * the canvas could not be inferred and none was passed.
+     * Owning canvas used for `paint` events and {@link HTMLSource.requestPaint}. Set to `null`
+     * once the source is destroyed.
      */
     public canvas: HTMLSourceCanvas | null;
 
@@ -321,21 +253,31 @@ export class HTMLSource extends TextureSource<Element>
 
         super(options);
 
-        this.canvas = options.canvas ?? this._inferCanvas(options.resource);
+        const canvas = options.canvas ?? this._inferCanvas(options.resource);
+
+        if (!canvas)
+        {
+            throw new Error(
+                // eslint-disable-next-line max-len
+                '[HTMLSource] Could not determine the owning canvas. Append the element to the canvas before constructing this source, or pass the `canvas` option.',
+            );
+        }
+
+        this.canvas = canvas;
         this._autoUpdate = options.autoUpdate !== false;
         this._onPaintBound = this._onPaint.bind(this);
 
         // Without requestPaint (or with auto-update off) there is no first paint to wait for.
-        this._isReady = !this._autoUpdate || !this.canvas?.requestPaint;
+        this._isReady = !this._autoUpdate || !canvas.requestPaint;
 
-        if (this.canvas && options.autoLayout !== false)
+        if (options.autoLayout !== false)
         {
-            this.canvas.setAttribute('layoutsubtree', '');
+            canvas.setAttribute('layoutsubtree', '');
         }
 
-        if (this.canvas && this._autoUpdate)
+        if (this._autoUpdate)
         {
-            this.canvas.addEventListener('paint', this._onPaintBound);
+            canvas.addEventListener('paint', this._onPaintBound);
         }
 
         if (options.autoRequestPaint !== false)
@@ -410,7 +352,7 @@ export class HTMLSource extends TextureSource<Element>
     }
 
     /**
-     * The laid-out width of the element in CSS pixels, rounded up.
+     * The laid-out width of the element in CSS pixels (border box, transform-stable).
      * @example
      * ```ts
      * const source = new HTMLSource({ resource: domElement });
@@ -420,11 +362,11 @@ export class HTMLSource extends TextureSource<Element>
      */
     public get resourceWidth(): number
     {
-        return Math.ceil(getResourceSize(this.resource).width);
+        return (this.resource as HTMLElement).offsetWidth || 1;
     }
 
     /**
-     * The laid-out height of the element in CSS pixels, rounded up.
+     * The laid-out height of the element in CSS pixels (border box, transform-stable).
      * @example
      * ```ts
      * const source = new HTMLSource({ resource: domElement });
@@ -434,7 +376,7 @@ export class HTMLSource extends TextureSource<Element>
      */
     public get resourceHeight(): number
     {
-        return Math.ceil(getResourceSize(this.resource).height);
+        return (this.resource as HTMLElement).offsetHeight || 1;
     }
 
     private _inferCanvas(resource: Element): HTMLSourceCanvas | null

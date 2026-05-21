@@ -2,47 +2,8 @@ import { ExtensionType } from '../../../../../extensions/Extensions';
 import { TextureSource } from './TextureSource';
 
 import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
+import type { ElementImage } from './HTMLSourceTypes';
 import type { TextureSourceOptions } from './TextureSource';
-
-/**
- * @experimental
- * A snapshot produced by the experimental HTML-in-Canvas `captureElementImage()` API.
- *
- * A snapshot is a frozen, immutable copy of an element's rendered pixels at the moment it was
- * captured. Unlike a live {@link HTMLSource} element, it never repaints, so it is a good fit
- * for effects that need a stable image (transitions, "shatter" effects, trails). Snapshots are
- * transferable and cheap to keep around; rendering live elements is what most apps reach for.
- *
- * Call {@link ElementImage.close} (or set {@link HTMLSnapshotSourceOptions.autoClose}) to
- * release the underlying memory once you are done.
- * @example
- * ```ts
- * import { HTMLSnapshotSource, Sprite } from 'pixi.js';
- * import type { HTMLSourceCanvas } from 'pixi.js';
- *
- * const canvas = app.canvas as HTMLSourceCanvas;
- *
- * // Freeze the current pixels of an element into an immutable snapshot.
- * const snapshot = canvas.captureElementImage!(element);
- *
- * const source = new HTMLSnapshotSource({ resource: snapshot });
- * const sprite = Sprite.from(source);
- * ```
- * @see {@link HTMLSnapshotSource} For rendering a snapshot as a texture
- * @see {@link HTMLSourceCanvas} For the canvas API that produces snapshots
- * @see {@link HTMLSource} For rendering a live, repainting element instead
- * @category rendering
- * @advanced
- */
-export interface ElementImage
-{
-    /** The width of the captured snapshot, in pixels. */
-    readonly width: number;
-    /** The height of the captured snapshot, in pixels. */
-    readonly height: number;
-    /** Releases the memory backing this snapshot. The snapshot must not be used afterwards. */
-    close(): void;
-}
 
 function isElementImage(resource: unknown): resource is ElementImage
 {
@@ -56,24 +17,25 @@ function isElementImage(resource: unknown): resource is ElementImage
 }
 
 /**
- * Options for creating an {@link HTMLSnapshotSource}.
+ * @experimental
+ * Options for creating an {@link ElementImageSource}.
  * @example
  * ```ts
- * import { HTMLSnapshotSource } from 'pixi.js';
+ * import { ElementImageSource } from 'pixi.js';
  *
  * // Manual lifetime (default): you call snapshot.close() yourself.
- * const source = new HTMLSnapshotSource({ resource: snapshot });
+ * const source = new ElementImageSource({ resource: snapshot });
  *
  * // Let the source close the snapshot for you when it is destroyed.
- * const owned = new HTMLSnapshotSource({ resource: snapshot, autoClose: true });
+ * const owned = new ElementImageSource({ resource: snapshot, autoClose: true });
  * ```
- * @see {@link HTMLSnapshotSource} For the texture source these options configure
+ * @see {@link ElementImageSource} For the texture source these options configure
  * @extends TextureSourceOptions
  * @category rendering
  * @advanced
  * @noInheritDoc
  */
-export interface HTMLSnapshotSourceOptions extends TextureSourceOptions<ElementImage>
+export interface ElementImageSourceOptions extends TextureSourceOptions<ElementImage>
 {
     /**
      * Call {@link ElementImage.close} on the snapshot when this source is destroyed. Leave
@@ -82,7 +44,7 @@ export interface HTMLSnapshotSourceOptions extends TextureSourceOptions<ElementI
      * @default false
      * @example
      * ```ts
-     * const source = new HTMLSnapshotSource({ resource: snapshot, autoClose: true });
+     * const source = new ElementImageSource({ resource: snapshot, autoClose: true });
      *
      * source.destroy(); // snapshot.close() is called for you
      * ```
@@ -98,22 +60,22 @@ export interface HTMLSnapshotSourceOptions extends TextureSourceOptions<ElementI
  * This is the static counterpart to {@link HTMLSource}: there is no owning canvas, no `paint`
  * listener, and no repaint lifecycle. The snapshot's pixels never change, so the source is
  * ready the moment it is constructed. Most apps render live elements with {@link HTMLSource};
- * reach for `HTMLSnapshotSource` when you need a frozen copy that outlives its element or is
+ * reach for `ElementImageSource` when you need a frozen copy that outlives its element or is
  * transferred around.
  *
  * > [!NOTE]
  * > This relies on an experimental browser proposal. An `ElementImage` passed to `Texture.from`
- * > resolves to an `HTMLSnapshotSource` only as a last resort (lowest texture-source priority);
- * > construct it explicitly when you need {@link HTMLSnapshotSourceOptions}.
+ * > resolves to an `ElementImageSource` only as a last resort (lowest texture-source priority);
+ * > construct it explicitly when you need {@link ElementImageSourceOptions}.
  * @example
  * ```ts
- * import { HTMLSnapshotSource, Sprite } from 'pixi.js';
+ * import { ElementImageSource, Sprite } from 'pixi.js';
  * import type { HTMLSourceCanvas } from 'pixi.js';
  *
  * const canvas = app.canvas as HTMLSourceCanvas;
  * const snapshot = canvas.captureElementImage!(element);
  *
- * const source = new HTMLSnapshotSource({ resource: snapshot, autoClose: true });
+ * const source = new ElementImageSource({ resource: snapshot, autoClose: true });
  * const sprite = Sprite.from(source);
  *
  * app.stage.addChild(sprite);
@@ -124,20 +86,20 @@ export interface HTMLSnapshotSourceOptions extends TextureSourceOptions<ElementI
  * // shattering even after the original element is gone).
  * import { Rectangle, Texture } from 'pixi.js';
  *
- * const source = new HTMLSnapshotSource({ resource: snapshot });
+ * const source = new ElementImageSource({ resource: snapshot });
  * const chunk = new Texture({
  *     source,
  *     frame: new Rectangle(0, 0, 64, 64),
  * });
  * ```
- * @see {@link HTMLSnapshotSourceOptions} For configuration options
+ * @see {@link ElementImageSourceOptions} For configuration options
  * @see {@link ElementImage} For the snapshot resource
  * @see {@link HTMLSource} For rendering a live, repainting element
  * @see {@link Sprite} For displaying the source on screen
  * @category rendering
  * @advanced
  */
-export class HTMLSnapshotSource extends TextureSource<ElementImage>
+export class ElementImageSource extends TextureSource<ElementImage>
 {
     /**
      * Registers the source with the {@link extensions} system at the lowest texture-source
@@ -172,17 +134,17 @@ export class HTMLSnapshotSource extends TextureSource<ElementImage>
      * @param options - Options for creating the snapshot source. `resource` is required.
      * @example
      * ```ts
-     * const source = new HTMLSnapshotSource({
+     * const source = new ElementImageSource({
      *     resource: snapshot, // an ElementImage from captureElementImage()
      *     autoClose: true,    // close the snapshot when this source is destroyed
      * });
      * ```
      */
-    constructor(options: HTMLSnapshotSourceOptions)
+    constructor(options: ElementImageSourceOptions)
     {
         if (!options.resource)
         {
-            throw new Error('[HTMLSnapshotSource] resource is required.');
+            throw new Error('[ElementImageSource] resource is required.');
         }
 
         super(options);
@@ -194,7 +156,7 @@ export class HTMLSnapshotSource extends TextureSource<ElementImage>
      * The width of the snapshot in pixels, rounded up.
      * @example
      * ```ts
-     * const source = new HTMLSnapshotSource({ resource: snapshot });
+     * const source = new ElementImageSource({ resource: snapshot });
      *
      * console.log(source.resourceWidth, source.resourceHeight);
      * ```
@@ -208,7 +170,7 @@ export class HTMLSnapshotSource extends TextureSource<ElementImage>
      * The height of the snapshot in pixels, rounded up.
      * @example
      * ```ts
-     * const source = new HTMLSnapshotSource({ resource: snapshot });
+     * const source = new ElementImageSource({ resource: snapshot });
      *
      * console.log(source.resourceWidth, source.resourceHeight);
      * ```
@@ -219,11 +181,11 @@ export class HTMLSnapshotSource extends TextureSource<ElementImage>
     }
 
     /**
-     * Destroys the underlying texture source. When {@link HTMLSnapshotSourceOptions.autoClose}
+     * Destroys the underlying texture source. When {@link ElementImageSourceOptions.autoClose}
      * was set, also calls {@link ElementImage.close} on the snapshot.
      * @example
      * ```ts
-     * const source = new HTMLSnapshotSource({ resource: snapshot });
+     * const source = new ElementImageSource({ resource: snapshot });
      *
      * source.destroy();
      * snapshot.close(); // release the snapshot yourself unless autoClose was set

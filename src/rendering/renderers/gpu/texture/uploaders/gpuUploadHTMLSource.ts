@@ -1,4 +1,4 @@
-import type { HTMLSourceResource, HTMLUploadableSource } from '../../../shared/texture/sources/HTMLSource';
+import type { HTMLSourceResource, HTMLUploadableSource } from '../../../shared/texture/sources/HTMLSourceTypes';
 import type { GPU } from '../../GpuDeviceSystem';
 import type { GpuTextureUploader } from './GpuTextureUploader';
 
@@ -45,20 +45,9 @@ export const gpuUploadHTMLResource = {
             premultipliedAlpha,
         };
 
-        const resourceWidth = source.resourceWidth;
-        const resourceHeight = source.resourceHeight;
         const width = Math.min(gpuTexture.width, source.pixelWidth);
         const height = Math.min(gpuTexture.height, source.pixelHeight);
 
-        const sameSize = resourceWidth === width && resourceHeight === height;
-
-        if (sameSize)
-        {
-            copyElementImageToTexture.call(queue, source.resource, destination);
-        }
-        else
-        {
-            copyElementImageToTexture.call(queue, source.resource, width, height, destination);
-        }
+        copyElementImageToTexture.call(queue, source.resource, width, height, destination);
     },
 } as GpuTextureUploader<HTMLUploadableSource>;
