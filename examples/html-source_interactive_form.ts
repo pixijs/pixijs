@@ -47,11 +47,13 @@ import { Application, BlurFilter, HTMLSource, PerspectiveMesh, Texture } from 'p
 
   const formWidth = form.offsetWidth;
   const formHeight = form.offsetHeight;
+  const halfFormWidth = formWidth / 2;
+  const halfFormHeight = formHeight / 2;
 
   const mesh = app.stage.addChild(
     new PerspectiveMesh({
       texture,
-      pivot: { x: formWidth / 2, y: formHeight / 2 },
+      pivot: { x: halfFormWidth, y: halfFormHeight },
       x: app.screen.width / 2,
       y: app.screen.height / 2,
       width: formWidth,
@@ -107,8 +109,8 @@ import { Application, BlurFilter, HTMLSource, PerspectiveMesh, Texture } from 'p
     for (let i = 0; i < points.length; i++) {
       const src = points[i];
       const out = outPoints[i];
-      const x = src.x - (formWidth / 2);
-      const y = src.y - (formHeight / 2);
+      const x = src.x - halfFormWidth;
+      const y = src.y - halfFormHeight;
       let z = 0;
 
       const xY = (cosY * x) - (sinY * z);
@@ -121,8 +123,8 @@ import { Application, BlurFilter, HTMLSource, PerspectiveMesh, Texture } from 'p
 
       const scale = perspective / (perspective - z);
 
-      out.x = (xY * scale) + (formWidth / 2);
-      out.y = (yX * scale) + (formHeight / 2);
+      out.x = (xY * scale) + halfFormWidth;
+      out.y = (yX * scale) + halfFormHeight;
     }
   }
 
@@ -182,8 +184,8 @@ import { Application, BlurFilter, HTMLSource, PerspectiveMesh, Texture } from 'p
 
   function formMatrix3d(): string {
     // Mesh local point (lx, ly) renders at (mesh.x - pivot + l) with scale 1.
-    const offsetX = mesh.x - (formWidth / 2);
-    const offsetY = mesh.y - (formHeight / 2);
+    const offsetX = mesh.x - halfFormWidth;
+    const offsetY = mesh.y - halfFormHeight;
 
     // outPoints is TL, TR, BR, BL; reorder to TL, TR, BL, BR for the solver.
     const dstQuad = [

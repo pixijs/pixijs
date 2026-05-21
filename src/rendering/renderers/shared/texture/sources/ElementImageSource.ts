@@ -126,7 +126,7 @@ export class ElementImageSource extends TextureSource<ElementImage>
     public uploadMethodId = 'html';
 
     /** Snapshots are immutable, so the source is ready as soon as it is constructed. */
-    public readonly isReady: boolean = true;
+    public readonly isReady = true;
 
     private readonly _autoClose: boolean;
 

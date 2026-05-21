@@ -6,9 +6,9 @@ interface GpuCopyElementImageQueue extends GPUQueue
 {
     copyElementImageToTexture?: (
         source: HTMLSourceResource,
-        widthOrDestination: number | GPUImageCopyTextureTagged,
-        heightOrUnused?: number,
-        destination?: GPUImageCopyTextureTagged,
+        width: number,
+        height: number,
+        destination: GPUImageCopyTextureTagged,
     ) => void;
 }
 
@@ -32,6 +32,8 @@ export const gpuUploadHTMLResource = {
 
         if (!source.isReady)
         {
+            // Unlike WebGL, the GPUTexture is pre-allocated by GpuTextureSystem, so there is no
+            // placeholder storage to create here before the first paint — just request it.
             source.requestPaint?.();
 
             return;

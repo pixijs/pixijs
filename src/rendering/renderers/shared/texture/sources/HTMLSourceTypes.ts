@@ -18,8 +18,8 @@ export type HTMLSourceResource = Element | ElementImage;
  * An {@link HTMLCanvasElement} extended with the experimental HTML-in-Canvas proposal APIs.
  *
  * These members only exist in browsers that have the HTML-in-Canvas feature enabled, so they
- * are optional. {@link HTMLSource} feature-detects them and degrades to a one-shot static
- * texture when they are missing.
+ * are optional. {@link HTMLSource} feature-detects `requestPaint`; the HTML-in-Canvas API must
+ * be enabled for the texture to upload.
  * @example
  * ```ts
  * import type { HTMLSourceCanvas } from 'pixi.js';

@@ -111,8 +111,8 @@ function isCanvas(resource: unknown): resource is HTMLCanvasElement
  * {@link ElementImageSource} instead.
  *
  * > [!NOTE]
- * > This relies on an experimental browser proposal. In browsers without it, the source
- * > degrades to a single static upload of the element's current pixels. A generic HTML element
+ * > This relies on an experimental browser proposal and requires the HTML-in-Canvas API to be
+ * > enabled; without it the texture uploader throws on first render. A generic HTML element
  * > passed to `Texture.from` resolves to an `HTMLSource` only as a last resort (it has the
  * > lowest texture-source priority); construct it explicitly when you need options or
  * > non-HTML elements such as SVG.
@@ -352,7 +352,7 @@ export class HTMLSource extends TextureSource<Element>
     }
 
     /**
-     * The laid-out width of the element in CSS pixels (border box, transform-stable).
+     * The laid-out width of the element in CSS pixels (border box).
      * @example
      * ```ts
      * const source = new HTMLSource({ resource: domElement });

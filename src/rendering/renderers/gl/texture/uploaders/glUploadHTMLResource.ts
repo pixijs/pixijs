@@ -9,17 +9,16 @@ interface GlTexElementImageContext extends GlRenderingContext
         target: number,
         level: number,
         internalFormat: number,
-        widthOrFormat: number,
-        heightOrType: number,
-        formatOrSource: number | HTMLSourceResource,
-        type?: number,
-        source?: HTMLSourceResource,
+        format: number,
+        type: number,
+        source: HTMLSourceResource,
     ) => void;
 }
 
 function ensureAllocated(
     gl: GlRenderingContext,
     glTexture: GlTexture,
+    target: number,
     width: number,
     height: number,
 ): void
@@ -30,7 +29,7 @@ function ensureAllocated(
     }
 
     gl.texImage2D(
-        glTexture.target,
+        target,
         0,
         glTexture.internalFormat,
         width,
@@ -54,6 +53,8 @@ export const glUploadHTMLResource = {
         source: HTMLUploadableSource,
         glTexture: GlTexture,
         gl: GlRenderingContext,
+        _webGLVersion: number,
+        targetOverride?: number,
     )
     {
         const upload = (gl as GlTexElementImageContext).texElementImage2D;
@@ -66,13 +67,15 @@ export const glUploadHTMLResource = {
             );
         }
 
+        // targetOverride is the cube-face target when this uploader is driven by the cube uploader.
+        const target = targetOverride ?? glTexture.target;
         const textureWidth = source.pixelWidth;
         const textureHeight = source.pixelHeight;
 
         if (!source.isReady)
         {
             // Allocate empty storage so sampling doesn't error before the first paint arrives.
-            ensureAllocated(gl, glTexture, textureWidth, textureHeight);
+            ensureAllocated(gl, glTexture, target, textureWidth, textureHeight);
             source.requestPaint?.();
 
             return;
@@ -80,7 +83,7 @@ export const glUploadHTMLResource = {
 
         upload.call(
             gl,
-            glTexture.target,
+            target,
             0,
             glTexture.internalFormat,
             glTexture.format,
