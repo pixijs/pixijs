@@ -675,5 +675,68 @@ describe('RenderGroup', () =>
 
         expect(child._updateFlags).toEqual(0b1111);
     });
+
+    it('addOnRender should be idempotent for same-parent addChildAt reorder', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        BigPool.getPool(RenderGroup).clear();
+
+        const container = new Container({ isRenderGroup: true });
+
+        const sibling = new Container();
+        const child = new Container();
+
+        child.onRender = () => { /* noop */ };
+
+        container.addChild(sibling); // index 0
+        container.addChild(child); // index 1
+
+        renderer.render(container);
+
+        const onRenderContainers = container.renderGroup['_onRenderContainers'];
+        const count = (c: Container): number => onRenderContainers.filter((x: Container) => x === c).length;
+
+        expect(count(child)).toBe(1);
+
+        // Same-parent reorder via addChildAt (currentIndex=1, index=0)
+        container.addChildAt(child, 0);
+
+        expect(count(child)).toBe(1);
+
+        renderer.destroy();
+    });
+
+    it('removeOnRender should leave the list unchanged when the container is not registered', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        BigPool.getPool(RenderGroup).clear();
+
+        const container = new Container({ isRenderGroup: true });
+
+        const a = new Container();
+        const b = new Container();
+        const c = new Container();
+
+        a.onRender = () => { /* noop */ };
+        b.onRender = () => { /* noop */ };
+        c.onRender = () => { /* noop */ };
+
+        container.addChild(a);
+        container.addChild(b);
+        // `c` is intentionally never parented under `container`
+
+        renderer.render(container);
+
+        const before = [...container.renderGroup['_onRenderContainers']];
+
+        // `c` was never registered in this renderGroup; this should be a no-op
+        container.renderGroup.removeOnRender(c);
+
+        expect(container.renderGroup['_onRenderContainers']).toEqual(before);
+
+        renderer.destroy();
+    });
 });
 

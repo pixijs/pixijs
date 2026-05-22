@@ -354,12 +354,17 @@ export class RenderGroup implements Instruction
      */
     public addOnRender(container: Container)
     {
-        this._onRenderContainers.push(container);
+        if (this._onRenderContainers.indexOf(container) === -1)
+        {
+            this._onRenderContainers.push(container);
+        }
     }
 
     public removeOnRender(container: Container)
     {
-        this._onRenderContainers.splice(this._onRenderContainers.indexOf(container), 1);
+        const idx = this._onRenderContainers.indexOf(container);
+
+        if (idx !== -1) this._onRenderContainers.splice(idx, 1);
     }
 
     public runOnRender(renderer: Renderer)
