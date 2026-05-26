@@ -138,7 +138,7 @@ export const bitmapFontTextParser = {
 
         const map: Record<string, string> = {};
 
-        font.baseLineOffset = font.lineHeight - parseInt(common.base || "1", 10);
+        font.baseLineOffset = font.lineHeight - parseInt(common.base || "0", 10);
 
         const char = rawData.char;
 
