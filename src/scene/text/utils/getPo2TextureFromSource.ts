@@ -41,9 +41,9 @@ export function getPo2TextureFromSource(
         resolution,
         false,
         autoGenerateMipmaps,
-        // an image is uploaded into this texture (and mipmaps copied back), so it needs COPY_DST.
-        // it is only ever sampled, never rendered into, so RENDER_ATTACHMENT is omitted.
-        TextureUsage.TEXTURE_BINDING | TextureUsage.COPY_DST
+        // the image is uploaded via copyExternalImageToTexture, which the WebGPU spec requires to
+        // have both COPY_DST and RENDER_ATTACHMENT usage (in addition to TEXTURE_BINDING for sampling).
+        TextureUsage.TEXTURE_BINDING | TextureUsage.COPY_DST | TextureUsage.RENDER_ATTACHMENT
     );
 
     texture.source.uploadMethodId = 'image';
