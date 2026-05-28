@@ -124,10 +124,8 @@ describe('TexturePool', () =>
             const texture128 = pool.getOptimalTexture(128, 64, 1, false, false);
             const texture256 = pool.getOptimalTexture(256, 64, 1, false, false);
 
-            // Width should be encoded starting at bit 17
-            // 128 (po2) << 17 = 16777216
-            // 256 (po2) << 17 = 33554432
-            // Keys should differ by this amount
+            // Width is encoded as a log2 exponent in the key, so different widths must map
+            // to different keys (and therefore different pooled textures).
 
             // Return first texture and get it again to verify pooling
             pool.returnTexture(texture128);
@@ -144,7 +142,6 @@ describe('TexturePool', () =>
             const texture64 = pool.getOptimalTexture(64, 64, 1, false, false);
             const texture128 = pool.getOptimalTexture(64, 128, 1, false, false);
 
-            // Height should be encoded starting at bit 1
             // Different heights should result in different pool keys
             expect(texture64).not.toBe(texture128);
 

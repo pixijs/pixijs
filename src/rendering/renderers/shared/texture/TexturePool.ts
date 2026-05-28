@@ -45,9 +45,7 @@ export class TexturePoolClass
      */
     public enableFullScreen: boolean;
 
-    // textures are bucketed first by gpu usage, then by a size/flag key, so a texture
-    // created with narrow usage is never handed back out where wider usage is required.
-    private _texturePool: Record<number, {[x in string | number]: Texture[]}>;
+    private _texturePool: {[x in string | number]: Texture[]};
     private _poolKeyHash: Record<number, number> = Object.create(null);
 
     /**
@@ -123,25 +121,28 @@ export class TexturePoolClass
         po2Width = nextPow2(po2Width);
         po2Height = nextPow2(po2Height);
 
-        // Pack flags in lower bits, then dimensions in higher bits to avoid collisions
+        // po2Width/po2Height are always powers of two, so we only need their exponent (log2),
+        // not the full value. Encoding the exponent instead of the dimension frees enough bits to
+        // also pack the gpu usage into the key. Usage must be part of the key because it is baked
+        // into the GPU texture at creation: a texture created with narrow usage must never be
+        // reused where wider usage is required.
         // Bit 0: antialias flag
         // Bit 1: mipmap flag
-        // Bits 2-16: height (15 bits, supports up to 32768)
-        // Bits 17-31: width (15 bits, supports up to 32768)
+        // Bits 2-6: height exponent (5 bits)
+        // Bits 7-11: width exponent (5 bits)
+        // Bits 12-16: gpu usage (5 bits, max value 0x1F)
         const antialiasFlag = antialias ? 1 : 0;
         const mipmapFlag = autoGenerateMipmaps ? 1 : 0;
-        const key = (po2Width << 17) + (po2Height << 2) + (mipmapFlag << 1) + antialiasFlag;
+        const widthExp = 32 - Math.clz32(po2Width);
+        const heightExp = 32 - Math.clz32(po2Height);
+        const key = (usage << 12) + (widthExp << 7) + (heightExp << 2) + (mipmapFlag << 1) + antialiasFlag;
 
-        // bucket by usage first: usage is baked into the GPU texture at creation, so textures
-        // with different usage must never share a pool slot.
-        const usagePool = this._texturePool[usage] ||= {};
-
-        if (!usagePool[key])
+        if (!this._texturePool[key])
         {
-            usagePool[key] = [];
+            this._texturePool[key] = [];
         }
 
-        let texture = usagePool[key].pop();
+        let texture = this._texturePool[key].pop();
 
         if (!texture)
         {
@@ -206,8 +207,7 @@ export class TexturePoolClass
             renderTexture.source.style = this.textureStyle;
         }
 
-        // route back to the bucket matching the texture's usage (set when it was created)
-        this._texturePool[renderTexture.source.gpuUsage][key].push(renderTexture);
+        this._texturePool[key].push(renderTexture);
     }
 
     /**
@@ -219,20 +219,15 @@ export class TexturePoolClass
         destroyTextures = destroyTextures !== false;
         if (destroyTextures)
         {
-            for (const usage in this._texturePool)
+            for (const i in this._texturePool)
             {
-                const usagePool = this._texturePool[usage];
+                const textures = this._texturePool[i];
 
-                for (const i in usagePool)
+                if (textures)
                 {
-                    const textures = usagePool[i];
-
-                    if (textures)
+                    for (let j = 0; j < textures.length; j++)
                     {
-                        for (let j = 0; j < textures.length; j++)
-                        {
-                            textures[j].destroy(true);
-                        }
+                        textures[j].destroy(true);
                     }
                 }
             }
