@@ -125,14 +125,6 @@ export class GpuTextureSystem implements System, CanvasGenerator
             source.mipLevelCount = Math.floor(Math.log2(biggestDimension)) + 1;
         }
 
-        let usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST;
-
-        if (source.uploadMethodId !== 'compressed')
-        {
-            usage |= GPUTextureUsage.RENDER_ATTACHMENT;
-            usage |= GPUTextureUsage.COPY_SRC;
-        }
-
         const blockData = blockDataMap[source.format] || { blockBytes: 4, blockWidth: 1, blockHeight: 1 };
 
         const width = Math.ceil(source.pixelWidth / blockData.blockWidth) * blockData.blockWidth;
@@ -145,7 +137,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             sampleCount: source.sampleCount,
             mipLevelCount: source.mipLevelCount,
             dimension: source.dimension,
-            usage
+            usage: source.gpuUsage,
         };
 
         const gpuTexture = this._gpu.device.createTexture(textureDescriptor);
