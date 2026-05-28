@@ -5,6 +5,7 @@ import { type Rectangle } from '../maths/shapes/Rectangle';
 import { BindGroup } from '../rendering/renderers/gpu/shader/BindGroup';
 import { Geometry } from '../rendering/renderers/shared/geometry/Geometry';
 import { UniformGroup } from '../rendering/renderers/shared/shader/UniformGroup';
+import { TextureUsage } from '../rendering/renderers/shared/texture/const';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { TexturePool } from '../rendering/renderers/shared/texture/TexturePool';
 import { RendererType } from '../rendering/renderers/types';
@@ -426,6 +427,10 @@ export class FilterSystem implements System
             bounds.height,
             backgroundResolution,
             false,
+            false,
+            // the render surface is copied into this texture (copyTextureToTexture dest) and then
+            // sampled by the blend filter, so it needs COPY_DST but is never rendered into.
+            TextureUsage.TEXTURE_BINDING | TextureUsage.COPY_DST,
         );
 
         let x = bounds.minX;

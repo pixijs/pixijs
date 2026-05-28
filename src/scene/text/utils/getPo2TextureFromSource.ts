@@ -1,4 +1,5 @@
 import { type ImageLike } from '../../../environment/ImageLike';
+import { TextureUsage } from '../../../rendering/renderers/shared/texture/const';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { Bounds } from '../../container/bounds/Bounds';
 
@@ -39,7 +40,10 @@ export function getPo2TextureFromSource(
         bounds.height,
         resolution,
         false,
-        autoGenerateMipmaps
+        autoGenerateMipmaps,
+        // an image is uploaded into this texture (and mipmaps copied back), so it needs COPY_DST.
+        // it is only ever sampled, never rendered into, so RENDER_ATTACHMENT is omitted.
+        TextureUsage.TEXTURE_BINDING | TextureUsage.COPY_DST
     );
 
     texture.source.uploadMethodId = 'image';

@@ -1,5 +1,6 @@
 import { nextPow2 } from '../../../../maths/misc/pow2';
 import { GlobalResourceRegistry } from '../../../../utils/pool/GlobalResourceRegistry';
+import { TextureUsage } from './const';
 import { TextureSource } from './sources/TextureSource';
 import { Texture } from './Texture';
 import { TextureStyle } from './TextureStyle';
@@ -7,6 +8,16 @@ import { TextureStyle } from './TextureStyle';
 import type { TextureSourceOptions } from './sources/TextureSource';
 
 let count = 0;
+
+/**
+ * The default WebGPU usage for pooled textures: rendered into, then sampled.
+ * This is the narrowest set valid for transient filter/cache/mask render targets,
+ * which lets tile-based GPUs keep them resident in tile memory. Callers that copy
+ * into a pooled texture (e.g. text uploads, blend back-textures) must request the
+ * wider set themselves. Ignored on WebGL.
+ * @internal
+ */
+const defaultTexturePoolUsage = TextureUsage.RENDER_ATTACHMENT | TextureUsage.TEXTURE_BINDING;
 
 /**
  * Texture pool, used by FilterSystem and plugins.
@@ -34,7 +45,9 @@ export class TexturePoolClass
      */
     public enableFullScreen: boolean;
 
-    private _texturePool: {[x in string | number]: Texture[]};
+    // textures are bucketed first by gpu usage, then by a size/flag key, so a texture
+    // created with narrow usage is never handed back out where wider usage is required.
+    private _texturePool: Record<number, {[x in string | number]: Texture[]}>;
     private _poolKeyHash: Record<number, number> = Object.create(null);
 
     /**
@@ -55,8 +68,15 @@ export class TexturePoolClass
      * @param pixelHeight - Height of texture in pixels.
      * @param antialias
      * @param autoGenerateMipmaps - Whether to automatically generate mipmaps for this texture
+     * @param usage - WebGPU texture usage flags. Defaults to render-attachment + texture-binding.
      */
-    public createTexture(pixelWidth: number, pixelHeight: number, antialias: boolean, autoGenerateMipmaps: boolean): Texture
+    public createTexture(
+        pixelWidth: number,
+        pixelHeight: number,
+        antialias: boolean,
+        autoGenerateMipmaps: boolean,
+        usage: number = defaultTexturePoolUsage
+    ): Texture
     {
         const textureSource = new TextureSource({
             ...this.textureOptions,
@@ -67,6 +87,7 @@ export class TexturePoolClass
             antialias,
             autoGarbageCollect: false,
             autoGenerateMipmaps,
+            gpuUsage: usage,
         });
 
         return new Texture({
@@ -82,6 +103,9 @@ export class TexturePoolClass
      * @param resolution - The resolution of the render texture.
      * @param antialias
      * @param autoGenerateMipmaps - Whether to automatically generate mipmaps. Defaults to false.
+     * @param usage - WebGPU texture usage flags. Defaults to render-attachment + texture-binding,
+     * the narrowest set valid for transient render targets. Callers that copy into the texture
+     * (e.g. uploads or `copyTextureToTexture`) must include `TextureUsage.COPY_DST`. Ignored on WebGL.
      * @returns The new render texture.
      */
     public getOptimalTexture(
@@ -89,7 +113,8 @@ export class TexturePoolClass
         frameHeight: number,
         resolution = 1,
         antialias: boolean,
-        autoGenerateMipmaps = false
+        autoGenerateMipmaps = false,
+        usage: number = defaultTexturePoolUsage
     ): Texture
     {
         let po2Width = Math.ceil((frameWidth * resolution) - 1e-6);
@@ -107,16 +132,20 @@ export class TexturePoolClass
         const mipmapFlag = autoGenerateMipmaps ? 1 : 0;
         const key = (po2Width << 17) + (po2Height << 2) + (mipmapFlag << 1) + antialiasFlag;
 
-        if (!this._texturePool[key])
+        // bucket by usage first: usage is baked into the GPU texture at creation, so textures
+        // with different usage must never share a pool slot.
+        const usagePool = this._texturePool[usage] ||= {};
+
+        if (!usagePool[key])
         {
-            this._texturePool[key] = [];
+            usagePool[key] = [];
         }
 
-        let texture = this._texturePool[key].pop();
+        let texture = usagePool[key].pop();
 
         if (!texture)
         {
-            texture = this.createTexture(po2Width, po2Height, antialias, autoGenerateMipmaps);
+            texture = this.createTexture(po2Width, po2Height, antialias, autoGenerateMipmaps, usage);
         }
 
         texture.source._resolution = resolution;
@@ -146,13 +175,14 @@ export class TexturePoolClass
      * a temporary texture the same size as its input (e.g., for multi-pass blur).
      * @param texture - The texture whose dimensions to match.
      * @param antialias - Whether to use antialias on the pooled texture. Defaults to `false`.
+     * @param usage - WebGPU texture usage flags. Defaults to render-attachment + texture-binding.
      * @returns A pooled texture with power-of-two backing dimensions at the source resolution.
      */
-    public getSameSizeTexture(texture: Texture, antialias = false)
+    public getSameSizeTexture(texture: Texture, antialias = false, usage: number = defaultTexturePoolUsage)
     {
         const source = texture.source;
 
-        return this.getOptimalTexture(texture.width, texture.height, source._resolution, antialias);
+        return this.getOptimalTexture(texture.width, texture.height, source._resolution, antialias, false, usage);
     }
 
     /**
@@ -176,7 +206,8 @@ export class TexturePoolClass
             renderTexture.source.style = this.textureStyle;
         }
 
-        this._texturePool[key].push(renderTexture);
+        // route back to the bucket matching the texture's usage (set when it was created)
+        this._texturePool[renderTexture.source.gpuUsage][key].push(renderTexture);
     }
 
     /**
@@ -188,15 +219,20 @@ export class TexturePoolClass
         destroyTextures = destroyTextures !== false;
         if (destroyTextures)
         {
-            for (const i in this._texturePool)
+            for (const usage in this._texturePool)
             {
-                const textures = this._texturePool[i];
+                const usagePool = this._texturePool[usage];
 
-                if (textures)
+                for (const i in usagePool)
                 {
-                    for (let j = 0; j < textures.length; j++)
+                    const textures = usagePool[i];
+
+                    if (textures)
                     {
-                        textures[j].destroy(true);
+                        for (let j = 0; j < textures.length; j++)
+                        {
+                            textures[j].destroy(true);
+                        }
                     }
                 }
             }

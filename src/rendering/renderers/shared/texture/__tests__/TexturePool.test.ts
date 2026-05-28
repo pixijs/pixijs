@@ -1,4 +1,5 @@
 import '~/rendering/init';
+import { TextureUsage } from '../const';
 import { TextureSource } from '../sources/TextureSource';
 import { TexturePoolClass } from '../TexturePool';
 
@@ -378,6 +379,51 @@ describe('TexturePool', () =>
             expect(texture1).not.toBe(texture2);
             expect(texture1.source.autoGenerateMipmaps).toBe(false);
             expect(texture2.source.autoGenerateMipmaps).toBe(true);
+        });
+    });
+
+    describe('Usage Bucketing', () =>
+    {
+        const renderUsage = TextureUsage.RENDER_ATTACHMENT | TextureUsage.TEXTURE_BINDING;
+        const copyDstUsage = TextureUsage.TEXTURE_BINDING | TextureUsage.COPY_DST;
+
+        it('should default to render-attachment + texture-binding usage', () =>
+        {
+            const texture = pool.getOptimalTexture(128, 128, 1, false);
+
+            expect(texture.source.gpuUsage).toBe(renderUsage);
+        });
+
+        it('should set the requested usage on the created texture', () =>
+        {
+            const texture = pool.getOptimalTexture(128, 128, 1, false, false, copyDstUsage);
+
+            expect(texture.source.gpuUsage).toBe(copyDstUsage);
+        });
+
+        it('should not reuse a texture across different usage buckets', () =>
+        {
+            const renderTexture = pool.getOptimalTexture(128, 128, 1, false, false, renderUsage);
+
+            pool.returnTexture(renderTexture);
+
+            // same size/flags but different usage -> must be a fresh texture
+            const copyTexture = pool.getOptimalTexture(128, 128, 1, false, false, copyDstUsage);
+
+            expect(copyTexture).not.toBe(renderTexture);
+            expect(copyTexture.source.gpuUsage).toBe(copyDstUsage);
+        });
+
+        it('should return a texture to the bucket matching its usage', () =>
+        {
+            const texture1 = pool.getOptimalTexture(128, 128, 1, false, false, copyDstUsage);
+
+            pool.returnTexture(texture1);
+
+            // same usage -> reused
+            const texture2 = pool.getOptimalTexture(128, 128, 1, false, false, copyDstUsage);
+
+            expect(texture2).toBe(texture1);
         });
     });
 });
