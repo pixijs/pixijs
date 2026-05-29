@@ -263,6 +263,14 @@ export class HTMLSource extends TextureSource<Element>
             );
         }
 
+        if (options.resource.parentElement !== canvas)
+        {
+            throw new Error(
+                // eslint-disable-next-line max-len
+                '[HTMLSource] resource must be a direct child of the owning canvas. Append the element to the canvas before constructing this source.',
+            );
+        }
+
         this.canvas = canvas;
         this._autoUpdate = options.autoUpdate !== false;
         this._onPaintBound = this._onPaint.bind(this);
@@ -351,29 +359,13 @@ export class HTMLSource extends TextureSource<Element>
         super.destroy();
     }
 
-    /**
-     * The laid-out width of the element in CSS pixels (border box).
-     * @example
-     * ```ts
-     * const source = new HTMLSource({ resource: domElement });
-     *
-     * console.log(source.resourceWidth, source.resourceHeight);
-     * ```
-     */
+    /** Width in real pixels (`offsetWidth`). Use {@link width} for CSS pixels. */
     public get resourceWidth(): number
     {
         return (this.resource as HTMLElement).offsetWidth || 1;
     }
 
-    /**
-     * The laid-out height of the element in CSS pixels (border box, transform-stable).
-     * @example
-     * ```ts
-     * const source = new HTMLSource({ resource: domElement });
-     *
-     * console.log(source.resourceWidth, source.resourceHeight);
-     * ```
-     */
+    /** Height in real pixels (`offsetHeight`). Use {@link height} for CSS pixels. */
     public get resourceHeight(): number
     {
         return (this.resource as HTMLElement).offsetHeight || 1;
