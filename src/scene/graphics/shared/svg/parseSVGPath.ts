@@ -1,12 +1,91 @@
-import parse from 'parse-svg-path';
 import { warn } from '../../../../utils/logging/warn';
 
 import type { GraphicsPath } from '../path/GraphicsPath';
+
+type SVGPathCommand = [string, ...number[]];
+
+const commandParamLengths: Record<string, number> = {
+    a: 7,
+    c: 6,
+    h: 1,
+    l: 2,
+    m: 2,
+    q: 4,
+    s: 4,
+    t: 2,
+    v: 1,
+    z: 0,
+};
+
+const commandSegmentPattern = /([astvzqmhlc])([^astvzqmhlc]*)/ig;
+const numberPattern = /[+-]?(?:\d*\.\d+|\d+\.?)(?:e[+-]?\d+)?/ig;
 
 interface SubPath
 {
     startX: number;
     startY: number;
+}
+
+function parseValues(args: string): number[]
+{
+    const numbers = args.match(numberPattern);
+
+    return numbers ? numbers.map(Number) : [];
+}
+
+function parsePathCommands(svgPath: string): SVGPathCommand[]
+{
+    const commands: SVGPathCommand[] = [];
+
+    svgPath.replace(commandSegmentPattern, (_, rawCommand: string, rawArgs: string) =>
+    {
+        let command = rawCommand;
+        let type = command.toLowerCase();
+        const args = parseValues(rawArgs);
+        const expectedLength = commandParamLengths[type];
+
+        if (expectedLength === 0)
+        {
+            if (args.length > 0)
+            {
+                throw new Error('malformed path data');
+            }
+
+            commands.push([command]);
+
+            return '';
+        }
+
+        // SVG paths allow multiple coordinate pairs after moveto.
+        // The first pair is moveto, the remaining pairs are implicit lineto commands.
+        if (type === 'm' && args.length > 2)
+        {
+            commands.push([command, ...args.splice(0, 2)]);
+            type = 'l';
+            command = command === 'm' ? 'l' : 'L';
+        }
+
+        while (true)
+        {
+            if (args.length === expectedLength)
+            {
+                commands.push([command, ...args]);
+
+                break;
+            }
+
+            if (args.length < expectedLength)
+            {
+                throw new Error('malformed path data');
+            }
+
+            commands.push([command, ...args.splice(0, expectedLength)]);
+        }
+
+        return '';
+    });
+
+    return commands;
 }
 
 /**
@@ -34,7 +113,7 @@ interface SubPath
 export function parseSVGPath(svgPath: string, path: GraphicsPath): GraphicsPath
 {
     // Parse the SVG path string into an array of commands
-    const commands = parse(svgPath);
+    const commands = parsePathCommands(svgPath);
 
     // Track subpaths for proper path closure handling
     const subpaths: SubPath[] = [];
