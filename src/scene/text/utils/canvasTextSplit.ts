@@ -60,7 +60,11 @@ function groupTextSegments(
         const isNewline = isNewlineCharacter(segment);
         const isSpaceAtStart = matchedLine.length === 0 && isWhitespace;
 
-        if (isWhitespace && !isNewline && isSpaceAtStart)
+        // Skip leading whitespace only when the measured line itself doesn't start
+        // with it (e.g. wordWrap stripped spaces at a wrap boundary). When the line
+        // legitimately begins with whitespace, keep it so matchedLine can reach the
+        // measured line length.
+        if (isWhitespace && !isNewline && isSpaceAtStart && (!currentLine || !currentLine.startsWith(segment)))
         {
             return;
         }

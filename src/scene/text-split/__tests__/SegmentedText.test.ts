@@ -113,6 +113,30 @@ describe('SegmentedText', () =>
             expect(text.chars.length).toBe(12); // 'Right' + 'Aligned'
         });
 
+        it('should handle text beginning with whitespace', () =>
+        {
+            const text = new SplitText({
+                text: '  Hello, world!',
+                style: { fontSize: 24 },
+            });
+
+            expect(text.lines.length).toBe(1);
+            expect(text.words.length).toBe(2);
+            expect(text.chars.length).toBe(12); // 'Hello,' (6) + 'world!' (6); spaces are word breaks
+        });
+
+        it('should handle a non-first line beginning with whitespace', () =>
+        {
+            const text = new SplitText({
+                text: 'Foo\n  Bar',
+                style: { fontSize: 24 },
+            });
+
+            expect(text.lines.length).toBe(2);
+            expect(text.words.length).toBe(2); // 'Foo' on line 1, 'Bar' on line 2
+            expect(text.chars.length).toBe(6); // 'Foo' (3) + 'Bar' (3)
+        });
+
         it('should respect autoSegment option', () =>
         {
             const text = new SplitText({

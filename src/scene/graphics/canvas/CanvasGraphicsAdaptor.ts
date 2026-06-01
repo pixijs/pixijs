@@ -225,7 +225,7 @@ function getCanvasStyle(
     {
         const pattern = canvasUtils.getTintedPattern(fill.texture, tint);
 
-        canvasUtils.applyPatternTransform(pattern, fill.transform);
+        canvasUtils.applyPatternTransform(pattern, fill.transform, false);
 
         return pattern;
     }

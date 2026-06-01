@@ -649,6 +649,32 @@ describe('GCSystem', () =>
             expect(context.myHash.key1).toBeNull();
         });
 
+        it('should call unload() before nulling the hash entry so listeners can still access the resource', () =>
+        {
+            const resource = createMockResource();
+
+            resource._gcData = {
+                type: 'resource',
+            };
+            resource._gcLastUsed = gcSystem.now - 2000;
+
+            const context = { myHash: { key1: resource } as Record<string, GCable | null> };
+            let hashEntryDuringUnload: GCable | null = null;
+
+            resource.unload = jest.fn(() =>
+            {
+                hashEntryDuringUnload = context.myHash.key1;
+            }) as any;
+
+            gcSystem.addResourceHash(context, 'myHash', 'resource');
+
+            gcSystem.run();
+
+            expect(resource.unload).toHaveBeenCalled();
+            expect(hashEntryDuringUnload).toBe(resource);
+            expect(context.myHash.key1).toBeNull();
+        });
+
         it('should keep recently used resources in hash', () =>
         {
             const resource = createMockResource();

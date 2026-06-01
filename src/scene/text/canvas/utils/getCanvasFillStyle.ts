@@ -1,5 +1,6 @@
 import { Color } from '../../../../color/Color';
 import { Matrix } from '../../../../maths/matrix/Matrix';
+import { canvasUtils } from '../../../../rendering/renderers/canvas/utils/canvasUtils';
 import { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
 import { warn } from '../../../../utils/logging/warn';
 import { FillGradient } from '../../../graphics/shared/fill/FillGradient';
@@ -54,14 +55,8 @@ export function getCanvasFillStyle(
     {
         const fillPattern = fillStyle.fill;
         const pattern = context.createPattern(fillPattern.texture.source.resource, 'repeat');
-        const tempMatrix = fillPattern.transform.copyTo(Matrix.shared);
 
-        tempMatrix.scale(
-            fillPattern.texture.source.pixelWidth,
-            fillPattern.texture.source.pixelHeight
-        );
-
-        pattern.setTransform(tempMatrix);
+        canvasUtils.applyPatternTransform(pattern, fillPattern.transform, false);
 
         return pattern;
     }

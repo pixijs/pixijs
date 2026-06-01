@@ -2,6 +2,7 @@ import { Bounds } from '../../container/bounds/Bounds';
 import { getGlobalBounds } from '../../container/bounds/getGlobalBounds';
 import { Container } from '../../container/Container';
 import { TilingSprite } from '../TilingSprite';
+import { setUvs } from '../utils/setUvs';
 import '../init';
 import '../../mesh/init';
 import { getTexture, getWebGLRenderer } from '@test-utils';
@@ -223,6 +224,75 @@ describe('TilingSprite', () =>
             sprite.anchor.x = 0.5;
 
             expect(spy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('tileRotation uvs', () =>
+    {
+        // For a TilingSprite with tile transform M, sprite size (sw, sh) and texture size
+        // (tw, th), the UV applied to the [0..1] quad corners should be:
+        //   T = D_texInv * M^-1 * D_sprite
+        // so that sampling at sprite-local pos p yields texCoord = M^-1 * p / texSize.
+        // Bug #12058: the previous implementation conflated sw/sh on the cross-terms,
+        // shearing the pattern when the sprite was non-square.
+
+        it('rotates the pattern cleanly on a non-square sprite', () =>
+        {
+            const texture = getTexture({ width: 26, height: 37 });
+            const sprite = new TilingSprite({ texture, width: 200, height: 100 });
+
+            sprite.tileRotation = Math.PI / 4;
+
+            const uvs = new Float32Array(8);
+
+            // Initial uvs are the [0..1] quad corners (anchor = 0)
+            uvs.set([0, 0, 1, 0, 1, 1, 0, 1]);
+
+            setUvs(sprite, uvs);
+
+            const cos45 = Math.cos(Math.PI / 4);
+            const sin45 = Math.sin(Math.PI / 4);
+            const w = 200;
+            const h = 100;
+            const tw = 26;
+            const th = 37;
+
+            // top-left (0, 0)
+            expect(uvs[0]).toBeCloseTo(0, 5);
+            expect(uvs[1]).toBeCloseTo(0, 5);
+            // top-right (1, 0) -> M^-1 * (w, 0) / (tw, th)
+            expect(uvs[2]).toBeCloseTo((cos45 * w) / tw, 5);
+            expect(uvs[3]).toBeCloseTo((-sin45 * w) / th, 5);
+            // bottom-right (1, 1) -> M^-1 * (w, h) / (tw, th)
+            expect(uvs[4]).toBeCloseTo(((cos45 * w) + (sin45 * h)) / tw, 5);
+            expect(uvs[5]).toBeCloseTo(((-sin45 * w) + (cos45 * h)) / th, 5);
+            // bottom-left (0, 1) -> M^-1 * (0, h) / (tw, th)
+            expect(uvs[6]).toBeCloseTo((sin45 * h) / tw, 5);
+            expect(uvs[7]).toBeCloseTo((cos45 * h) / th, 5);
+        });
+
+        it('produces a non-sheared rotation matrix for non-square sprites', () =>
+        {
+            const texture = getTexture({ width: 64, height: 64 });
+            const sprite = new TilingSprite({ texture, width: 200, height: 100 });
+
+            sprite.tileRotation = Math.PI / 4;
+
+            const uvs = new Float32Array(8);
+
+            uvs.set([0, 0, 1, 0, 1, 1, 0, 1]);
+            setUvs(sprite, uvs);
+
+            // Edge from top-left -> top-right is the +x basis of T (in texture-uv units).
+            // Edge from top-left -> bottom-left is the +y basis. For a pure rotation in
+            // tile space these basis vectors must be perpendicular regardless of sprite
+            // aspect; a sheared matrix would lose that orthogonality.
+            const ex = [uvs[2] - uvs[0], uvs[3] - uvs[1]];
+            const ey = [uvs[6] - uvs[0], uvs[7] - uvs[1]];
+
+            const dot = (ex[0] * ey[0]) + (ex[1] * ey[1]);
+
+            expect(dot).toBeCloseTo(0, 5);
         });
     });
 
