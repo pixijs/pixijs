@@ -3,6 +3,7 @@ import { getWebGLRenderer } from '@test-utils';
 import { Rectangle } from '~/maths';
 import { Texture } from '~/rendering';
 import { Container, Particle } from '~/scene';
+import { updateRenderGroupTransforms } from '~/scene/container/utils/updateRenderGroupTransforms';
 
 describe('ParticleContainer', () =>
 {
@@ -59,6 +60,29 @@ describe('ParticleContainer', () =>
             particleContainer.destroy();
 
             expect(particleContainer._gpuData).toBeEmptyObject();
+        });
+    });
+
+    describe('blendMode', () =>
+    {
+        it('should inherit blendMode from parent container', () =>
+        {
+            const root = new Container({ isRenderGroup: true });
+
+            const parent = new Container();
+
+            parent.blendMode = 'add';
+
+            const particleContainer = new ParticleContainer();
+
+            root.addChild(parent);
+            parent.addChild(particleContainer);
+
+            updateRenderGroupTransforms(root.renderGroup, true);
+
+            expect(particleContainer.groupBlendMode).toEqual('add');
+
+            root.destroy({ children: true });
         });
     });
 
