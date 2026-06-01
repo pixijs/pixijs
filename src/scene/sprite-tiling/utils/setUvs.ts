@@ -29,16 +29,22 @@ export function setUvs(tilingSprite: TilingSprite, uvs: Float32Array)
     uvs[1] = uvs[3] = -anchorY;
     uvs[5] = uvs[7] = 1 - anchorY;
 
+    // Build the forward transform that maps the [0..1] sprite quad to texture-uv space,
+    // then invert it. Matches the formula used in TilingSpriteShader so square and
+    // non-square sprites render the same pattern orientation under tileRotation.
+    const tileMatrix = tilingSprite._tileTransform.matrix;
     const textureMatrix = Matrix.shared;
 
-    textureMatrix.copyFrom(tilingSprite._tileTransform.matrix);
-
-    textureMatrix.tx /= tilingSprite.width;
-    textureMatrix.ty /= tilingSprite.height;
+    textureMatrix.set(
+        (tileMatrix.a * width) / tilingSprite.width,
+        (tileMatrix.b * width) / tilingSprite.height,
+        (tileMatrix.c * height) / tilingSprite.width,
+        (tileMatrix.d * height) / tilingSprite.height,
+        tileMatrix.tx / tilingSprite.width,
+        tileMatrix.ty / tilingSprite.height,
+    );
 
     textureMatrix.invert();
-
-    textureMatrix.scale(tilingSprite.width / width, tilingSprite.height / height);
 
     applyMatrix(uvs, 2, 0, textureMatrix);
 }

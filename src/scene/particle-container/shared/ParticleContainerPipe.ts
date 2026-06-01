@@ -124,7 +124,7 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
         buffer.update(children, container._childrenDirty);
         container._childrenDirty = false;
 
-        state.blendMode = getAdjustedBlendModeBlend(container.blendMode, container.texture._source);
+        state.blendMode = getAdjustedBlendModeBlend(container.groupBlendMode, container.texture._source);
 
         const uniforms = this.localUniforms.uniforms;
 
