@@ -10,16 +10,152 @@ on:
       - edited
       - synchronize
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   prTitle:
     name: Check
+    if: github.repository == 'pixijs/pixijs'
     runs-on: ubuntu-22.04
+    permissions:
+      issues: write
+      pull-requests: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
       - name: Check PR Title
-        uses: clowdhaus/actions/pr-title@v0.5.0
+        uses: actions/github-script@v8
         with:
-          on-fail-message: "Your PR title doesn't match the required format. The title should be in this format: \n\n```\nchore: update Text docs\nfix: text not rendering\nfeat: add new feature to Text\nbreaking: remove Text#resolution \n```"
-          title-regex: '^(chore|feat|fix|breaking)?(!)?\:\s.*$'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = '<!-- pr-title-check -->';
+            const title = context.payload.pull_request?.title ?? '';
+            const titleRegex = /^(chore|feat|fix|breaking)(!)?:\s.+$/;
+            const isValid = titleRegex.test(title);
+
+            const warningBody = [
+                marker,
+                ':warning: Your PR title doesn\'t match the required format.',
+                '',
+                'The title should be in this format:',
+                '',
+                '```',
+                'chore: update Text docs',
+                'fix: text not rendering',
+                'feat: add new feature to Text',
+                'breaking: remove Text#resolution',
+                '```',
+            ].join('\n');
+
+            const isFork = !!context.payload.pull_request?.head?.repo?.fork;
+
+            if (!isFork)
+            {
+                const owner = context.repo.owner;
+                const repo = context.repo.repo;
+                const issue_number = context.issue.number;
+
+                const comments = await github.paginate(github.rest.issues.listComments, {
+                    owner,
+                    repo,
+                    issue_number,
+                    per_page: 100,
+                });
+
+                const botComments = comments.filter((comment) =>
+                    comment.user?.login === 'github-actions[bot]'
+                    && comment.body?.includes(marker));
+
+                const primaryComment = botComments[0];
+                const duplicateComments = botComments.slice(1);
+
+                const getErrorMessage = (error) =>
+                    error instanceof Error ? error.message : String(error);
+
+                async function minimizeComment(nodeId)
+                {
+                    try
+                    {
+                        await github.graphql(
+                            `mutation($id: ID!) {
+                              minimizeComment(input: { subjectId: $id, classifier: OUTDATED }) {
+                                minimizedComment { isMinimized }
+                              }
+                            }`,
+                            { id: nodeId },
+                        );
+                    }
+                    catch (error)
+                    {
+                        core.info(`Could not minimize comment ${nodeId}; ${getErrorMessage(error)}`);
+                    }
+                }
+
+                async function unminimizeComment(nodeId)
+                {
+                    try
+                    {
+                        await github.graphql(
+                            `mutation($id: ID!) {
+                              unminimizeComment(input: { subjectId: $id }) {
+                                unminimizedComment { isMinimized }
+                              }
+                            }`,
+                            { id: nodeId },
+                        );
+                    }
+                    catch (error)
+                    {
+                        core.info(`Could not unminimize comment ${nodeId}; ${getErrorMessage(error)}`);
+                    }
+                }
+
+                for (const duplicateComment of duplicateComments)
+                {
+                    if (duplicateComment.node_id)
+                    {
+                        await minimizeComment(duplicateComment.node_id);
+                    }
+                }
+
+                if (!isValid)
+                {
+                    let activeComment;
+
+                    if (primaryComment)
+                    {
+                        const updatedComment = await github.rest.issues.updateComment({
+                            owner,
+                            repo,
+                            comment_id: primaryComment.id,
+                            body: warningBody,
+                        });
+
+                        activeComment = updatedComment.data;
+                    }
+                    else
+                    {
+                        const createdComment = await github.rest.issues.createComment({
+                            owner,
+                            repo,
+                            issue_number,
+                            body: warningBody,
+                        });
+
+                        activeComment = createdComment.data;
+                    }
+
+                    if (activeComment?.node_id)
+                    {
+                        await unminimizeComment(activeComment.node_id);
+                    }
+                }
+                else if (primaryComment?.node_id)
+                {
+                    await minimizeComment(primaryComment.node_id);
+                }
+            }
+
+            if (!isValid)
+            {
+                core.setFailed('PR title must start with one of: chore, feat, fix, breaking.');
+            }
