@@ -6,6 +6,7 @@ import { type GPUDataOwner } from '../../../../renderers/types';
 import { type GlTexture } from '../../../gl/texture/GlTexture';
 import { type GPUTextureGpuData } from '../../../gpu/texture/GpuTextureSystem';
 import { type GCable, type GCData } from '../../GCSystem';
+import { TextureUsage } from '../const';
 import { TextureStyle } from '../TextureStyle';
 
 import type { BindResource } from '../../../gpu/shader/BindResource';
@@ -88,6 +89,19 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
     autoGarbageCollect?: boolean;
     /** Used by RenderTexture.create to allow resizing. Not used by TextureSource itself. */
     dynamic?: boolean;
+    /**
+     * Optional WebGPU texture usage flags. Combine values from the `TextureUsage` enum
+     * (or raw `GPUTextureUsage.*` flags) with the bitwise OR operator, e.g.
+     * `TextureUsage.RENDER_ATTACHMENT | TextureUsage.TEXTURE_BINDING`.
+     *
+     * If omitted, defaults to a broad-compatible set so the texture works as both a
+     * bind resource and a render attachment. Narrowing this can let tile-based GPUs
+     * keep transient render targets in tile memory and skip unnecessary writeback.
+     *
+     * Ignored on WebGL.
+     * @advanced
+     */
+    gpuUsage?: number;
 }
 
 /**
@@ -124,6 +138,10 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         sampleCount: 1,
         antialias: false,
         autoGarbageCollect: false,
+        gpuUsage: TextureUsage.TEXTURE_BINDING
+            | TextureUsage.COPY_DST
+            | TextureUsage.RENDER_ATTACHMENT
+            | TextureUsage.COPY_SRC,
     };
 
     /** @internal */
@@ -252,6 +270,13 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public autoGarbageCollect: boolean;
 
     /**
+     * WebGPU texture usage flags. See {@link TextureSourceOptions.gpuUsage}.
+     * Defaults to a broad-compatible set when not specified. Ignored on WebGL.
+     * @advanced
+     */
+    public gpuUsage: number;
+
+    /**
      * used internally to know where a texture came from. Usually assigned by the asset loader!
      * @ignore
      */
@@ -301,6 +326,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.sampleCount = options.sampleCount;
         this.antialias = options.antialias;
         this.alphaMode = options.alphaMode;
+        this.gpuUsage = options.gpuUsage;
 
         this.style = new TextureStyle(definedProps(options));
 

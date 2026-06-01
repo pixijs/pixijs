@@ -1,4 +1,5 @@
 import { type ImageLike } from '../../../environment/ImageLike';
+import { TextureUsage } from '../../../rendering/renderers/shared/texture/const';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { Bounds } from '../../container/bounds/Bounds';
 
@@ -39,7 +40,10 @@ export function getPo2TextureFromSource(
         bounds.height,
         resolution,
         false,
-        autoGenerateMipmaps
+        autoGenerateMipmaps,
+        // the image is uploaded via copyExternalImageToTexture, which the WebGPU spec requires to
+        // have both COPY_DST and RENDER_ATTACHMENT usage (in addition to TEXTURE_BINDING for sampling).
+        TextureUsage.TEXTURE_BINDING | TextureUsage.COPY_DST | TextureUsage.RENDER_ATTACHMENT
     );
 
     texture.source.uploadMethodId = 'image';

@@ -260,3 +260,26 @@ export type COMPARE_FUNCTION =
     | 'not-equal'
     | 'greater-equal'
     | 'always';
+
+/**
+ * WebGPU texture usage flags. They can be combined using the bitwise OR operator,
+ * e.g. `TextureUsage.RENDER_ATTACHMENT | TextureUsage.TEXTURE_BINDING`.
+ *
+ * These mirror `GPUTextureUsage` from the WebGPU spec and are passed through
+ * via {@link TextureSourceOptions.gpuUsage}. WebGL ignores this hint.
+ * @category rendering
+ * @advanced
+ */
+export enum TextureUsage
+{
+    /** The texture can be used as the source of a copy operation. */
+    COPY_SRC = 0x01,
+    /** The texture can be used as the destination of a copy or write operation. */
+    COPY_DST = 0x02,
+    /** The texture can be bound for use as a sampled texture in a shader. */
+    TEXTURE_BINDING = 0x04,
+    /** The texture can be bound for use as a storage texture in a shader. */
+    STORAGE_BINDING = 0x08,
+    /** The texture can be used as a color or depth/stencil attachment in a render pass. */
+    RENDER_ATTACHMENT = 0x10,
+}

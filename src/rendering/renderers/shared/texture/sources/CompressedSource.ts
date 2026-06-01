@@ -1,3 +1,4 @@
+import { TextureUsage } from '../const';
 import { TextureSource } from './TextureSource';
 
 import type { TextureSourceOptions } from './TextureSource';
@@ -17,6 +18,8 @@ export class CompressedSource extends TextureSource<Uint8Array[]>
         super({
             ...options,
             mipLevelCount: options.resource.length,
+            // compressed formats can't be render attachments or copy sources
+            gpuUsage: options.gpuUsage || (TextureUsage.TEXTURE_BINDING | TextureUsage.COPY_DST),
         });
     }
 }

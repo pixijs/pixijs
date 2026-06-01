@@ -1,5 +1,6 @@
 import { nextPow2 } from '../../../../maths/misc/pow2';
 import { GlobalResourceRegistry } from '../../../../utils/pool/GlobalResourceRegistry';
+import { TextureUsage } from './const';
 import { TextureSource } from './sources/TextureSource';
 import { Texture } from './Texture';
 import { TextureStyle } from './TextureStyle';
@@ -7,6 +8,16 @@ import { TextureStyle } from './TextureStyle';
 import type { TextureSourceOptions } from './sources/TextureSource';
 
 let count = 0;
+
+/**
+ * The default WebGPU usage for pooled textures: rendered into, then sampled.
+ * This is the narrowest set valid for transient filter/cache/mask render targets,
+ * which lets tile-based GPUs keep them resident in tile memory. Callers that copy
+ * into a pooled texture (e.g. text uploads, blend back-textures) must request the
+ * wider set themselves. Ignored on WebGL.
+ * @internal
+ */
+const defaultTexturePoolUsage = TextureUsage.RENDER_ATTACHMENT | TextureUsage.TEXTURE_BINDING;
 
 /**
  * Texture pool, used by FilterSystem and plugins.
@@ -55,8 +66,15 @@ export class TexturePoolClass
      * @param pixelHeight - Height of texture in pixels.
      * @param antialias
      * @param autoGenerateMipmaps - Whether to automatically generate mipmaps for this texture
+     * @param usage - WebGPU texture usage flags. Defaults to render-attachment + texture-binding.
      */
-    public createTexture(pixelWidth: number, pixelHeight: number, antialias: boolean, autoGenerateMipmaps: boolean): Texture
+    public createTexture(
+        pixelWidth: number,
+        pixelHeight: number,
+        antialias: boolean,
+        autoGenerateMipmaps: boolean,
+        usage: number = defaultTexturePoolUsage
+    ): Texture
     {
         const textureSource = new TextureSource({
             ...this.textureOptions,
@@ -67,6 +85,7 @@ export class TexturePoolClass
             antialias,
             autoGarbageCollect: false,
             autoGenerateMipmaps,
+            gpuUsage: usage,
         });
 
         return new Texture({
@@ -82,6 +101,9 @@ export class TexturePoolClass
      * @param resolution - The resolution of the render texture.
      * @param antialias
      * @param autoGenerateMipmaps - Whether to automatically generate mipmaps. Defaults to false.
+     * @param usage - WebGPU texture usage flags. Defaults to render-attachment + texture-binding,
+     * the narrowest set valid for transient render targets. Callers that copy into the texture
+     * (e.g. uploads or `copyTextureToTexture`) must include `TextureUsage.COPY_DST`. Ignored on WebGL.
      * @returns The new render texture.
      */
     public getOptimalTexture(
@@ -89,7 +111,8 @@ export class TexturePoolClass
         frameHeight: number,
         resolution = 1,
         antialias: boolean,
-        autoGenerateMipmaps = false
+        autoGenerateMipmaps = false,
+        usage: number = defaultTexturePoolUsage
     ): Texture
     {
         let po2Width = Math.ceil((frameWidth * resolution) - 1e-6);
@@ -98,14 +121,21 @@ export class TexturePoolClass
         po2Width = nextPow2(po2Width);
         po2Height = nextPow2(po2Height);
 
-        // Pack flags in lower bits, then dimensions in higher bits to avoid collisions
+        // po2Width/po2Height are always powers of two, so we only need their exponent (log2),
+        // not the full value. Encoding the exponent instead of the dimension frees enough bits to
+        // also pack the gpu usage into the key. Usage must be part of the key because it is baked
+        // into the GPU texture at creation: a texture created with narrow usage must never be
+        // reused where wider usage is required.
         // Bit 0: antialias flag
         // Bit 1: mipmap flag
-        // Bits 2-16: height (15 bits, supports up to 32768)
-        // Bits 17-31: width (15 bits, supports up to 32768)
+        // Bits 2-6: height exponent (5 bits)
+        // Bits 7-11: width exponent (5 bits)
+        // Bits 12-16: gpu usage (5 bits, max value 0x1F)
         const antialiasFlag = antialias ? 1 : 0;
         const mipmapFlag = autoGenerateMipmaps ? 1 : 0;
-        const key = (po2Width << 17) + (po2Height << 2) + (mipmapFlag << 1) + antialiasFlag;
+        const widthExp = 32 - Math.clz32(po2Width);
+        const heightExp = 32 - Math.clz32(po2Height);
+        const key = (usage << 12) + (widthExp << 7) + (heightExp << 2) + (mipmapFlag << 1) + antialiasFlag;
 
         if (!this._texturePool[key])
         {
@@ -116,7 +146,7 @@ export class TexturePoolClass
 
         if (!texture)
         {
-            texture = this.createTexture(po2Width, po2Height, antialias, autoGenerateMipmaps);
+            texture = this.createTexture(po2Width, po2Height, antialias, autoGenerateMipmaps, usage);
         }
 
         texture.source._resolution = resolution;
@@ -146,13 +176,14 @@ export class TexturePoolClass
      * a temporary texture the same size as its input (e.g., for multi-pass blur).
      * @param texture - The texture whose dimensions to match.
      * @param antialias - Whether to use antialias on the pooled texture. Defaults to `false`.
+     * @param usage - WebGPU texture usage flags. Defaults to render-attachment + texture-binding.
      * @returns A pooled texture with power-of-two backing dimensions at the source resolution.
      */
-    public getSameSizeTexture(texture: Texture, antialias = false)
+    public getSameSizeTexture(texture: Texture, antialias = false, usage: number = defaultTexturePoolUsage)
     {
         const source = texture.source;
 
-        return this.getOptimalTexture(texture.width, texture.height, source._resolution, antialias);
+        return this.getOptimalTexture(texture.width, texture.height, source._resolution, antialias, false, usage);
     }
 
     /**
