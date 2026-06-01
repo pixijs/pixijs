@@ -4,16 +4,17 @@ inputs:
   node-version:
     description: "Node.js version"
     required: true
-    default: "24"
+    # Pinned: Node >=24.16 breaks Electron install (extract-zip). electron/electron#51619
+    default: "24.15.0"
   npm-version:
     description: "npm version"
     required: true
-    default: "8"
+    default: "11"
 runs:
   using: "composite"
   steps:
     - name: Use Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         node-version: ${{ inputs.node-version }}
         registry-url: "https://registry.npmjs.org"
@@ -22,7 +23,7 @@ runs:
       run: npm install -g npm@${{ inputs.npm-version }}
     - name: Cache Dependencies
       id: node-modules-cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: node_modules
         key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
