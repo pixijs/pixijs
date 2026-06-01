@@ -1,7 +1,25 @@
 /* eslint-disable no-restricted-globals */
 import { type Adapter } from '../environment/adapter';
 import { type ImageLike } from '../environment/ImageLike';
-import { DOMParser } from '@xmldom/xmldom';
+
+type DOMParserConstructor = new () => DOMParser;
+
+function getDOMParser(): DOMParserConstructor
+{
+    if (typeof DOMParser !== 'undefined')
+    {
+        return DOMParser;
+    }
+
+    const requireFn = typeof require === 'function' ? require : null;
+
+    if (requireFn)
+    {
+        return requireFn('@xmldom/xmldom').DOMParser;
+    }
+
+    throw new Error('WebWorkerAdapter.parseXML requires DOMParser support.');
+}
 
 /**
  * This is an implementation of the {@link Adapter} interface.
@@ -29,7 +47,8 @@ export const WebWorkerAdapter = {
     fetch: (url: RequestInfo, options?: RequestInit) => fetch(url, options),
     parseXML: (xml: string) =>
     {
-        const parser = new DOMParser();
+        const Parser = getDOMParser();
+        const parser = new Parser();
 
         return parser.parseFromString(xml, 'text/xml');
     },
