@@ -57,7 +57,7 @@
     "eventemitter3": "^5.0.1",
     "gifuct-js": "^2.1.2",
     "ismobilejs": "^1.1.1",
-    "parse-svg-path": "^0.1.2",
+    "parse-svg-path": "^0.2.0",
     "tiny-lru": "^11.4.7"
   },
   "devDependencies": {
