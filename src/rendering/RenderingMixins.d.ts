@@ -81,6 +81,17 @@ declare global
         {
 
         }
+
+        /**
+         * Map of resource shapes accepted by `Texture.from` / `TextureSource.from`. Augment from
+         * an opt-in subpath (e.g. `pixi.js/html-source`) to add new branches without coupling
+         * the core to those packages at the runtime level.
+         */
+        // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+        interface TextureSourceResources
+        {
+
+        }
     }
 }
 
