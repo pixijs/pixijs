@@ -1,5 +1,5 @@
 import { DOMAdapter } from '../../../../environment/adapter';
-import { ExtensionType } from '../../../../extensions/Extensions';
+import { extensions, ExtensionType } from '../../../../extensions/Extensions';
 import { type GPUData } from '../../../../scene/view/ViewContainer';
 import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
 import { UniformGroup } from '../../shared/shader/UniformGroup';
@@ -8,7 +8,6 @@ import { BindGroup } from '../shader/BindGroup';
 import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageResource';
 import { blockDataMap, gpuUploadCompressedTextureResource } from './uploaders/gpuUploadCompressedTextureResource';
 import { createGpuUploadCubeTextureResource } from './uploaders/gpuUploadCubeTextureResource';
-import { gpuUploadHTMLResource } from './uploaders/gpuUploadHTMLSource';
 import { gpuUploadImageResource } from './uploaders/gpuUploadImageSource';
 import { gpuUploadVideoResource } from './uploaders/gpuUploadVideoSource';
 import { GpuMipmapGenerator } from './utils/GpuMipmapGenerator';
@@ -61,6 +60,14 @@ export class GpuTextureSystem implements System, CanvasGenerator
         name: 'texture',
     } as const;
 
+    /**
+     * Optional uploaders registered via {@link ExtensionType.TextureUploaderWebGPU}. Each entry is
+     * merged into {@link _uploads} at construction time, so import order matters: register the
+     * extension before creating the renderer.
+     * @internal
+     */
+    public static readonly uploadExtensions: Record<string, GpuTextureUploader> = Object.create(null);
+
     protected CONTEXT_UID: number;
     private _gpuSamplers: Record<string, GPUSampler> = Object.create(null);
     private _bindGroupHash: Record<string, BindGroup> = Object.create(null);
@@ -94,7 +101,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             buffer: gpuUploadBufferImageResource,
             video: gpuUploadVideoResource,
             compressed: gpuUploadCompressedTextureResource,
-            html: gpuUploadHTMLResource,
+            ...GpuTextureSystem.uploadExtensions,
         };
 
         this._uploads = {
@@ -370,3 +377,5 @@ export class GpuTextureSystem implements System, CanvasGenerator
         this._bindGroupHash = null;
     }
 }
+
+extensions.handleByMap(ExtensionType.TextureUploaderWebGPU, GpuTextureSystem.uploadExtensions);

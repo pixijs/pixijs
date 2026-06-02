@@ -1,19 +1,18 @@
-import { ExtensionType } from '../../../../../extensions/Extensions';
-import { TextureSource } from './TextureSource';
+import { ExtensionType } from '../extensions/Extensions';
+import { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
 
-import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
+import type { ExtensionMetadata } from '../extensions/Extensions';
+import type { TextureSourceOptions } from '../rendering/renderers/shared/texture/sources/TextureSource';
 import type { ElementImage } from './HTMLSourceTypes';
-import type { TextureSourceOptions } from './TextureSource';
 
 function isElementImage(resource: unknown): resource is ElementImage
 {
-    const isElement = !!globalThis.Element && resource instanceof Element;
+    // `ElementImage` is an experimental browser global; rely on `instanceof` against the real
+    // constructor when present. Duck-typing on `{ width, height, close }` would also accept
+    // `ImageBitmap`, which has its own dedicated uploader path.
+    const ElementImageCtor = (globalThis as { ElementImage?: new (...args: unknown[]) => ElementImage }).ElementImage;
 
-    return !!resource
-        && typeof (resource as ElementImage).width === 'number'
-        && typeof (resource as ElementImage).height === 'number'
-        && typeof (resource as ElementImage).close === 'function'
-        && !isElement;
+    return !!ElementImageCtor && resource instanceof ElementImageCtor;
 }
 
 /**
@@ -21,7 +20,7 @@ function isElementImage(resource: unknown): resource is ElementImage
  * Options for creating an {@link ElementImageSource}.
  * @example
  * ```ts
- * import { ElementImageSource } from 'pixi.js';
+ * import { ElementImageSource } from 'pixi.js/html-source';
  *
  * // Manual lifetime (default): you call snapshot.close() yourself.
  * const source = new ElementImageSource({ resource: snapshot });
@@ -69,8 +68,9 @@ export interface ElementImageSourceOptions extends TextureSourceOptions<ElementI
  * > construct it explicitly when you need {@link ElementImageSourceOptions}.
  * @example
  * ```ts
- * import { ElementImageSource, Sprite } from 'pixi.js';
- * import type { HTMLSourceCanvas } from 'pixi.js';
+ * import { Sprite } from 'pixi.js';
+ * import { ElementImageSource } from 'pixi.js/html-source';
+ * import type { HTMLSourceCanvas } from 'pixi.js/html-source';
  *
  * const canvas = app.canvas as HTMLSourceCanvas;
  * const snapshot = canvas.captureElementImage!(element);

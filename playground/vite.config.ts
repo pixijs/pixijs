@@ -59,11 +59,12 @@ const staticRoutes: Record<string, string> = {
 
 export default defineConfig({
     resolve: {
-        alias: {
-            'pixi.js': resolve(root, 'lib/index.mjs'),
-            '~': resolve(root, 'lib'),
-            '@test-utils': resolve(__dirname, 'src/scenes/testUtilsShim.ts'),
-        }
+        alias: [
+            { find: /^pixi\.js\/(.+)$/, replacement: `${resolve(root, 'lib')}/$1/init.mjs` },
+            { find: 'pixi.js', replacement: resolve(root, 'lib/index.mjs') },
+            { find: '~', replacement: resolve(root, 'lib') },
+            { find: '@test-utils', replacement: resolve(__dirname, 'src/scenes/testUtilsShim.ts') },
+        ]
     },
     plugins: [
         preact(),

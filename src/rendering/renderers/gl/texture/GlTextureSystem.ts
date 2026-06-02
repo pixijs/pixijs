@@ -1,12 +1,11 @@
 import { DOMAdapter } from '../../../../environment/adapter';
-import { ExtensionType } from '../../../../extensions/Extensions';
+import { extensions, ExtensionType } from '../../../../extensions/Extensions';
 import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
 import { Texture } from '../../shared/texture/Texture';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
 import { glUploadCompressedTextureResource } from './uploaders/glUploadCompressedTextureResource';
 import { createGlUploadCubeTextureResource } from './uploaders/glUploadCubeTextureResource';
-import { glUploadHTMLResource } from './uploaders/glUploadHTMLResource';
 import { glUploadImageResource } from './uploaders/glUploadImageResource';
 import { glUploadVideoResource } from './uploaders/glUploadVideoResource';
 import { applyStyleParams } from './utils/applyStyleParams';
@@ -42,6 +41,14 @@ export class GlTextureSystem implements System, CanvasGenerator
         ],
         name: 'texture',
     } as const;
+
+    /**
+     * Optional uploaders registered via {@link ExtensionType.TextureUploaderWebGL}. Each entry is
+     * merged into {@link _uploads} at construction time, so import order matters: register the
+     * extension before creating the renderer.
+     * @internal
+     */
+    public static readonly uploadExtensions: Record<string, GLTextureUploader> = Object.create(null);
 
     private readonly _renderer: WebGLRenderer;
     private readonly _managedTextures: GCManagedHash<TextureSource>;
@@ -87,7 +94,7 @@ export class GlTextureSystem implements System, CanvasGenerator
             buffer: glUploadBufferImageResource,
             video: glUploadVideoResource,
             compressed: glUploadCompressedTextureResource,
-            html: glUploadHTMLResource,
+            ...GlTextureSystem.uploadExtensions,
         };
 
         this._uploads = {
@@ -659,4 +666,6 @@ export class GlTextureSystem implements System, CanvasGenerator
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._premultiplyAlpha);
     }
 }
+
+extensions.handleByMap(ExtensionType.TextureUploaderWebGL, GlTextureSystem.uploadExtensions);
 

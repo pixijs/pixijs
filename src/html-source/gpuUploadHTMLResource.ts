@@ -1,6 +1,8 @@
-import type { HTMLSourceResource, HTMLUploadableSource } from '../../../shared/texture/sources/HTMLSourceTypes';
-import type { GPU } from '../../GpuDeviceSystem';
-import type { GpuTextureUploader } from './GpuTextureUploader';
+import { ExtensionType } from '../extensions/Extensions';
+
+import type { GPU } from '../rendering/renderers/gpu/GpuDeviceSystem';
+import type { GpuTextureUploader } from '../rendering/renderers/gpu/texture/uploaders/GpuTextureUploader';
+import type { HTMLSourceResource, HTMLUploadableSource } from './HTMLSourceTypes';
 
 interface GpuCopyElementImageQueue extends GPUQueue
 {
@@ -13,7 +15,14 @@ interface GpuCopyElementImageQueue extends GPUQueue
 }
 
 /** @internal */
-export const gpuUploadHTMLResource = {
+export const gpuUploadHTMLResource: GpuTextureUploader<HTMLUploadableSource> & {
+    extension: { type: ExtensionType; name: string };
+} = {
+
+    extension: {
+        type: ExtensionType.TextureUploaderWebGPU,
+        name: 'html',
+    },
 
     type: 'html',
 
@@ -52,4 +61,4 @@ export const gpuUploadHTMLResource = {
 
         copyElementImageToTexture.call(queue, source.resource, width, height, destination);
     },
-} as GpuTextureUploader<HTMLUploadableSource>;
+};

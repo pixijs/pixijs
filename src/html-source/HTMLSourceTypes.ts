@@ -1,4 +1,4 @@
-import type { TextureSource } from './TextureSource';
+import type { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
 
 // `HTMLSourceResource`, `HTMLSourceCanvas`, and `ElementImage` are stand-ins for browser types
 // from the experimental HTML-in-Canvas proposal; delete them once browsers ship the real ones.
@@ -22,7 +22,7 @@ export type HTMLSourceResource = Element | ElementImage;
  * be enabled for the texture to upload.
  * @example
  * ```ts
- * import type { HTMLSourceCanvas } from 'pixi.js';
+ * import type { HTMLSourceCanvas } from 'pixi.js/html-source';
  *
  * const canvas = app.canvas as HTMLSourceCanvas;
  *
@@ -58,8 +58,8 @@ export interface HTMLSourceCanvas extends HTMLCanvasElement
  * release the underlying memory once you are done.
  * @example
  * ```ts
- * import { ElementImageSource, Sprite } from 'pixi.js';
- * import type { HTMLSourceCanvas } from 'pixi.js';
+ * import { ElementImageSource, Sprite } from 'pixi.js/html-source';
+ * import type { HTMLSourceCanvas } from 'pixi.js/html-source';
  *
  * const canvas = app.canvas as HTMLSourceCanvas;
  *

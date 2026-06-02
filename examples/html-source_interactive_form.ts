@@ -1,5 +1,6 @@
 // description: An interactive HTML form rendered via HTMLSource onto a cursor-tilted PerspectiveMesh (rotation clamped); a per-frame CSS matrix3d homography keeps the real inputs aligned and usable under the 3D warp, and the slider drives a BlurFilter
-import { Application, BlurFilter, HTMLSource, PerspectiveMesh, Texture } from 'pixi.js';
+import { Application, BlurFilter, PerspectiveMesh, Texture } from 'pixi.js';
+import { HTMLSource } from 'pixi.js/html-source';
 
 (async () => {
   const app = new Application();
@@ -222,8 +223,6 @@ import { Application, BlurFilter, HTMLSource, PerspectiveMesh, Texture } from 'p
     );
 
     form.style.transform = formMatrix3d();
-
-    source.requestPaint();
   });
 
   app.stage.hitArea = app.screen;

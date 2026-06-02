@@ -1,9 +1,9 @@
-import { ExtensionType } from '../../../../../extensions/Extensions';
-import { TextureSource } from './TextureSource';
+import { ExtensionType } from '../extensions/Extensions';
+import { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
 
-import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
+import type { ExtensionMetadata } from '../extensions/Extensions';
+import type { TextureSourceOptions } from '../rendering/renderers/shared/texture/sources/TextureSource';
 import type { HTMLSourceCanvas } from './HTMLSourceTypes';
-import type { TextureSourceOptions } from './TextureSource';
 
 /**
  * @experimental
@@ -11,7 +11,7 @@ import type { TextureSourceOptions } from './TextureSource';
  * canvas and when it repaints.
  * @example
  * ```ts
- * import { HTMLSource } from 'pixi.js';
+ * import { HTMLSource } from 'pixi.js/html-source';
  *
  * // Minimal: a live element that auto-updates every time the browser repaints it.
  * const source = new HTMLSource({ resource: domElement });
@@ -118,7 +118,8 @@ function isCanvas(resource: unknown): resource is HTMLCanvasElement
  * > non-HTML elements such as SVG.
  * @example
  * ```ts
- * import { Application, HTMLSource, Sprite } from 'pixi.js';
+ * import { Application, Sprite } from 'pixi.js';
+ * import { HTMLSource } from 'pixi.js/html-source';
  *
  * const app = new Application();
  *

@@ -1,7 +1,9 @@
-import type { HTMLSourceResource, HTMLUploadableSource } from '../../../shared/texture/sources/HTMLSourceTypes';
-import type { GlRenderingContext } from '../../context/GlRenderingContext';
-import type { GlTexture } from '../GlTexture';
-import type { GLTextureUploader } from './GLTextureUploader';
+import { ExtensionType } from '../extensions/Extensions';
+
+import type { GlRenderingContext } from '../rendering/renderers/gl/context/GlRenderingContext';
+import type { GlTexture } from '../rendering/renderers/gl/texture/GlTexture';
+import type { GLTextureUploader } from '../rendering/renderers/gl/texture/uploaders/GLTextureUploader';
+import type { HTMLSourceResource, HTMLUploadableSource } from './HTMLSourceTypes';
 
 interface GlTexElementImageContext extends GlRenderingContext
 {
@@ -45,7 +47,12 @@ function ensureAllocated(
 }
 
 /** @internal */
-export const glUploadHTMLResource = {
+export const glUploadHTMLResource: GLTextureUploader & { extension: { type: ExtensionType; name: string } } = {
+
+    extension: {
+        type: ExtensionType.TextureUploaderWebGL,
+        name: 'html',
+    },
 
     id: 'html',
 
@@ -94,4 +101,4 @@ export const glUploadHTMLResource = {
         glTexture.width = textureWidth;
         glTexture.height = textureHeight;
     },
-} as GLTextureUploader;
+};
