@@ -127,6 +127,7 @@ export * from './renderers/gpu/buffer/UboBatch';
 export * from './renderers/gpu/GpuColorMaskSystem';
 export * from './renderers/gpu/GpuDeviceSystem';
 export * from './renderers/gpu/GpuEncoderSystem';
+export * from './renderers/gpu/GpuExtensions';
 export * from './renderers/gpu/GpuLimitsSystem';
 export * from './renderers/gpu/GpuStencilSystem';
 export * from './renderers/gpu/GpuUboSystem';

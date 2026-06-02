@@ -49,6 +49,12 @@ enum ExtensionType
     /** A type of extension that will be used to auto detect a resource type */
     TextureSource = 'texture-source',
 
+    /** A type of extension that registers a WebGL texture uploader by name. */
+    TextureUploaderWebGL = 'texture-uploader-webgl',
+
+    /** A type of extension that registers a WebGPU texture uploader by name. */
+    TextureUploaderWebGPU = 'texture-uploader-webgpu',
+
     /** A type of extension that will be used to auto detect an environment */
     Environment = 'environment',
 

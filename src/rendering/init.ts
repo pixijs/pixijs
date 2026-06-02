@@ -9,5 +9,13 @@ import { VideoSource } from './renderers/shared/texture/sources/VideoSource';
 import './renderers/shared/texture/utils/textureFrom';
 import './mask/MaskEffectManager';
 
-extensions.add(AlphaMask, ColorMask, StencilMask, VideoSource, ImageSource, CanvasSource, BufferImageSource);
+extensions.add(
+    AlphaMask,
+    ColorMask,
+    StencilMask,
+    VideoSource,
+    ImageSource,
+    CanvasSource,
+    BufferImageSource,
+);
 

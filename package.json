@@ -58,7 +58,7 @@
     "eventemitter3": "^5.0.1",
     "gifuct-js": "^2.1.2",
     "ismobilejs": "^1.1.1",
-    "parse-svg-path": "^0.1.2",
+    "parse-svg-path": "^0.2.0",
     "tiny-lru": "^11.4.7"
   },
   "devDependencies": {
@@ -167,6 +167,15 @@
       ]
     },
     {
+      "src": "src/bundle.html-source.ts",
+      "target": "dist/packages/html-source.js",
+      "module": "dist/packages/html-source.mjs",
+      "plugin": [
+        "/rendering/",
+        "/extensions/"
+      ]
+    },
+    {
       "src": "src/bundle.webworker.ts",
       "target": "dist/webworker.js",
       "module": "dist/webworker.mjs",
@@ -181,6 +190,7 @@
     "./lib/spritesheet/init.*",
     "./lib/rendering/renderers/shared/texture/utils/textureFrom.*",
     "./lib/gif/init.*",
+    "./lib/html-source/init.*",
     "./lib/accessibility/init.*",
     "./lib/advanced-blend-modes/init.*",
     "./lib/app/init.*",
@@ -238,6 +248,16 @@
       "require": {
         "types": "./lib/gif/init.d.ts",
         "default": "./lib/gif/init.js"
+      }
+    },
+    "./html-source": {
+      "import": {
+        "types": "./lib/html-source/init.d.ts",
+        "default": "./lib/html-source/init.mjs"
+      },
+      "require": {
+        "types": "./lib/html-source/init.d.ts",
+        "default": "./lib/html-source/init.js"
       }
     },
     "./accessibility": {

@@ -141,6 +141,30 @@ Available blend modes after importing:
 | `'subtract'` | {@link SubtractBlend} |
 | `'vivid-light'` | {@link VividLightBlend} |
 
+### Resolution on high-DPI renderers
+
+Advanced blend modes sample the existing render target to combine source and
+destination pixels. Like other filters, they use `Filter.defaultOptions` when
+created, whose default `resolution` is `1` for performance.
+
+If your renderer uses a non-`1` resolution, such as on high-DPI displays, and an
+advanced blend mode appears clipped, scaled, or only partially applied, opt in to
+render-target resolution inheritance before creating filters or display objects
+that use advanced blend modes:
+
+```ts
+import { Filter } from 'pixi.js';
+import 'pixi.js/advanced-blend-modes';
+
+Filter.defaultOptions.resolution = 'inherit';
+
+sprite.blendMode = 'overlay';
+```
+
+`'inherit'` makes filters render at the current render target's resolution. This
+improves fidelity for resolution-sensitive effects, but can increase memory use
+and runtime cost compared with the default `1`.
+
 ---
 
 ## Custom filters
