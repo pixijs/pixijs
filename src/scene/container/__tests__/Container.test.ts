@@ -51,7 +51,7 @@ describe('Container', () =>
             expect(object.origin.y).toEqual(9);
         });
 
-        it('should convert zero scale to one', () =>
+        it('should apply zero scale exactly', () =>
         {
             const object = new Container();
 
@@ -60,8 +60,8 @@ describe('Container', () =>
                 scaleY: 0,
             });
 
-            expect(object.scale.x).toEqual(1);
-            expect(object.scale.y).toEqual(1);
+            expect(object.scale.x).toEqual(0);
+            expect(object.scale.y).toEqual(0);
         });
     });
 

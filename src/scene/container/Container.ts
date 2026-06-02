@@ -1749,8 +1749,8 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             typeof opts.y === 'number' ? opts.y : this.position.y
         );
         this.scale.set(
-            typeof opts.scaleX === 'number' ? opts.scaleX || 1 : this.scale.x,
-            typeof opts.scaleY === 'number' ? opts.scaleY || 1 : this.scale.y
+            typeof opts.scaleX === 'number' ? opts.scaleX : this.scale.x,
+            typeof opts.scaleY === 'number' ? opts.scaleY : this.scale.y
         );
         this.rotation = typeof opts.rotation === 'number' ? opts.rotation : this.rotation;
         this.skew.set(
