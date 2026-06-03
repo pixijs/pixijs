@@ -171,12 +171,15 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     });
                 }
 
+                let attachmentIsTransient = false;
+
                 if (gpuRenderTarget.msaaTextures[i])
                 {
                     resolveTarget = view;
                     view = this._renderer.texture.getTextureView(
                         gpuRenderTarget.msaaTextures[i]
                     );
+                    attachmentIsTransient = gpuRenderTarget.msaaTextures[i].transient;
                 }
 
                 const loadOp = ((clear as CLEAR) & CLEAR.COLOR ? 'clear' : 'load') as GPULoadOp;
@@ -187,7 +190,10 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     view,
                     resolveTarget,
                     clearValue,
-                    storeOp: 'store',
+                    // Only discard the MSAA buffer when it was created as transient — i.e. we know
+                    // no later pass will try to load it. Non-transient MSAA targets keep storeOp:'store'
+                    // so flows like filter pop-back (loadOp:'load' on the parent RT) keep working.
+                    storeOp: attachmentIsTransient ? 'discard' : 'store',
                     loadOp
                 };
             }
@@ -201,12 +207,20 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         {
             renderTarget.ensureDepthStencilTexture();
             renderTarget.depthStencilTexture.source.sampleCount = gpuRenderTarget.msaa ? 4 : 1;
+            renderTarget.depthStencilTexture.source.transient
+                = !!gpuRenderTarget.msaaTextures[0]?.transient;
         }
 
         if (renderTarget.depthStencilTexture)
         {
             const stencilLoadOp = (clear & CLEAR.STENCIL ? 'clear' : 'load') as GPULoadOp;
             const depthLoadOp = (clear & CLEAR.DEPTH ? 'clear' : 'load') as GPULoadOp;
+            // Only discard depth/stencil when the attachment is transient — same single-pass
+            // constraint as the color attachment. Non-transient MSAA RTs keep 'store' so any
+            // pop-back path that loadOp:'load's the buffer sees defined contents.
+            const dsStoreOp: GPUStoreOp = renderTarget.depthStencilTexture.source.transient
+                ? 'discard'
+                : 'store';
 
             depthStencilAttachment = {
                 view: this._renderer.texture
@@ -218,11 +232,11 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                         baseArrayLayer: layer,
                         arrayLayerCount: 1,
                     }),
-                stencilStoreOp: 'store',
+                stencilStoreOp: dsStoreOp,
                 stencilLoadOp,
                 depthClearValue: 1.0,
                 depthLoadOp,
-                depthStoreOp: 'store',
+                depthStoreOp: dsStoreOp,
             };
         }
 
@@ -317,10 +331,19 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
             if (colorTexture.source.antialias)
             {
+                // The MSAA buffer inherits the colour TextureSource's `transient` flag.
+                // Pixi never auto-sets transient: filter pop-back, additive layering, and
+                // any flow that rebinds the parent target mid-frame would issue
+                // loadOp:'load' on the MSAA attachment, which is invalid when the texture
+                // is transient (and undefined-behaviour when its prior contents were
+                // discarded). The user opts in by passing `transient: true` on the
+                // RenderTexture's TextureSource only when they know their flow is
+                // single-pass.
                 const msaaTexture = new TextureSource({
                     width: 0,
                     height: 0,
                     sampleCount: 4,
+                    transient: colorTexture.source.transient,
                     arrayLayerCount: colorTexture.source.arrayLayerCount,
                 });
 
@@ -335,6 +358,8 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             if (renderTarget.depthStencilTexture)
             {
                 renderTarget.depthStencilTexture.source.sampleCount = 4;
+                renderTarget.depthStencilTexture.source.transient
+                    = !!gpuRenderTarget.msaaTextures[0]?.transient;
             }
         }
 

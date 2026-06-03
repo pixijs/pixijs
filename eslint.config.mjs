@@ -13,6 +13,7 @@ export default tseslint.config(
     {
         ignores: [
             '.s3_uploads',
+            '.context',
             'out',
             'docs',
             'dist',

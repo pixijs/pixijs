@@ -3,6 +3,7 @@ import { ExtensionType } from '../../../extensions/Extensions';
 
 import type { System } from '../shared/system/System';
 import type { GpuPowerPreference } from '../types';
+import type { GpuExtensions } from './GpuExtensions';
 import type { WebGPURenderer } from './WebGPURenderer';
 
 /**
@@ -81,6 +82,9 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
     /** The GPU device */
     public gpu: GPU;
 
+    /** Optional WebGPU capabilities probed at init. Mirrors `renderer.context.extensions` on the WebGL side. */
+    public extensions: GpuExtensions;
+
     private _renderer: WebGPURenderer;
     private _initPromise: Promise<void>;
 
@@ -100,6 +104,11 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
             .then((gpu) =>
             {
                 this.gpu = gpu;
+
+                this.extensions = {
+                    transientAttachment:
+                        typeof (GPUTextureUsage as { TRANSIENT_ATTACHMENT?: number }).TRANSIENT_ATTACHMENT === 'number',
+                };
 
                 this._renderer.runners.contextChange.emit(this.gpu);
             });
@@ -148,6 +157,7 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
     public destroy(): void
     {
         this.gpu = null;
+        this.extensions = null;
         this._renderer = null;
     }
 }

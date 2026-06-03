@@ -78,6 +78,16 @@ const exportFields: Record<string, ExportField> = {
             default: './lib/gif/init.js',
         },
     },
+    './html-source': {
+        import: {
+            types: './lib/html-source/init.d.ts',
+            default: './lib/html-source/init.mjs',
+        },
+        require: {
+            types: './lib/html-source/init.d.ts',
+            default: './lib/html-source/init.js',
+        },
+    },
 };
 const sideEffects = [
     './lib/environment-browser/browserAll.*',
@@ -87,6 +97,7 @@ const sideEffects = [
     './lib/spritesheet/init.*',
     './lib/rendering/renderers/shared/texture/utils/textureFrom.*',
     './lib/gif/init.*',
+    './lib/html-source/init.*',
 ];
 
 for (const [name, path] of subImports)

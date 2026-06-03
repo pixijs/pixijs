@@ -1,5 +1,5 @@
 import { DOMAdapter } from '../../../../environment/adapter';
-import { ExtensionType } from '../../../../extensions/Extensions';
+import { extensions, ExtensionType } from '../../../../extensions/Extensions';
 import { type GPUData } from '../../../../scene/view/ViewContainer';
 import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
 import { UniformGroup } from '../../shared/shader/UniformGroup';
@@ -60,6 +60,14 @@ export class GpuTextureSystem implements System, CanvasGenerator
         name: 'texture',
     } as const;
 
+    /**
+     * Optional uploaders registered via {@link ExtensionType.TextureUploaderWebGPU}. Each entry is
+     * merged into {@link _uploads} at construction time, so import order matters: register the
+     * extension before creating the renderer.
+     * @internal
+     */
+    public static readonly uploadExtensions: Record<string, GpuTextureUploader> = Object.create(null);
+
     protected CONTEXT_UID: number;
     private _gpuSamplers: Record<string, GPUSampler> = Object.create(null);
     private _bindGroupHash: Record<string, BindGroup> = Object.create(null);
@@ -93,6 +101,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             buffer: gpuUploadBufferImageResource,
             video: gpuUploadVideoResource,
             compressed: gpuUploadCompressedTextureResource,
+            ...GpuTextureSystem.uploadExtensions,
         };
 
         this._uploads = {
@@ -125,12 +134,32 @@ export class GpuTextureSystem implements System, CanvasGenerator
             source.mipLevelCount = Math.floor(Math.log2(biggestDimension)) + 1;
         }
 
-        let usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST;
+        let usage: number;
 
-        if (source.uploadMethodId !== 'compressed')
+        if (source.sampleCount > 1)
         {
-            usage |= GPUTextureUsage.RENDER_ATTACHMENT;
-            usage |= GPUTextureUsage.COPY_SRC;
+            // MSAA textures are only rendered into and resolved — never sampled, uploaded, or
+            // copied — so they need RENDER_ATTACHMENT alone.
+            usage = GPUTextureUsage.RENDER_ATTACHMENT;
+
+            // TRANSIENT_ATTACHMENT goes on top only when the source is marked transient AND the
+            // browser exposes the bit. Mixing transient with any later loadOp:'load' is a spec
+            // violation, so callers must opt in via `transient: true` (pixi sets this for the
+            // canvas-root MSAA buffer; not for RenderTexture MSAA, which can be rebound by filters).
+            if (source.transient && this._renderer.device.extensions.transientAttachment)
+            {
+                usage |= (GPUTextureUsage as { TRANSIENT_ATTACHMENT: number }).TRANSIENT_ATTACHMENT;
+            }
+        }
+        else
+        {
+            usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST;
+
+            if (source.uploadMethodId !== 'compressed')
+            {
+                usage |= GPUTextureUsage.RENDER_ATTACHMENT;
+                usage |= GPUTextureUsage.COPY_SRC;
+            }
         }
 
         const blockData = blockDataMap[source.format] || { blockBytes: 4, blockWidth: 1, blockHeight: 1 };
@@ -368,3 +397,5 @@ export class GpuTextureSystem implements System, CanvasGenerator
         this._bindGroupHash = null;
     }
 }
+
+extensions.handleByMap(ExtensionType.TextureUploaderWebGPU, GpuTextureSystem.uploadExtensions);

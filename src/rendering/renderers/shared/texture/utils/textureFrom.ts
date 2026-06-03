@@ -23,7 +23,10 @@ extensions.handleByList(ExtensionType.TextureSource, sources);
 
 /**
  * The type of resource or options that can be used to create a texture source.
- * This includes ImageResource, TextureSourceOptions, BufferSourceOptions, and CanvasSourceOptions.
+ *
+ * Opt-in packages widen this union by augmenting `PixiMixins.TextureSourceResources` (see
+ * `RenderingMixins.d.ts`). For example, importing `pixi.js/html-source` adds support for live
+ * `Element`s and `ElementImage` snapshots.
  * @category rendering
  * @advanced
  */
@@ -31,7 +34,8 @@ export type TextureResourceOrOptions =
   ImageResource
   | TextureSourceOptions<ImageResource>
   | BufferSourceOptions
-  | CanvasSourceOptions;
+  | CanvasSourceOptions
+  | PixiMixins.TextureSourceResources[keyof PixiMixins.TextureSourceResources];
 
 /**
  * @param options
