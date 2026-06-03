@@ -205,7 +205,7 @@ const container = new ParticleContainer({ texture, shader: myCustomShader });
 
 `ParticleContainer` intentionally sacrifices features for speed:
 
-- No filters, masks, or blend modes on individual particles.
+- No filters, masks, or per-particle blend modes. Blend modes apply at the container level: set `blendMode` on the `ParticleContainer` or let it inherit from a parent `Container` (the default `"inherit"` resolves to the ancestor's blend mode, like `Sprite` and `Mesh`). The whole particle batch shares one blend mode.
 - No nested children on particles.
 - No automatic bounds calculation.
 - All particles must share the same base texture source (atlases work; multiple unrelated textures do not).

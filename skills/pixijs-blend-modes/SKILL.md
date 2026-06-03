@@ -178,6 +178,32 @@ sprite.blendMode = "color-burn";
 Advanced modes read from the back buffer. On WebGL, the blend silently falls back if the back buffer is not enabled. WebGPU enables the back buffer unconditionally.
 
 
+### [MEDIUM] Advanced blend modes clipped or scaled on high-DPI renderers
+
+Advanced blend modes are filter-based and use `Filter.defaultOptions`, whose resolution defaults to `1`. On a high-DPI render target the blended object can look clipped, scaled, or only partially applied.
+
+Wrong:
+
+```ts
+import "pixi.js/advanced-blend-modes";
+
+sprite.blendMode = "overlay"; // renders at resolution 1, can clip on retina
+```
+
+Correct:
+
+```ts
+import { Filter } from "pixi.js";
+import "pixi.js/advanced-blend-modes";
+
+Filter.defaultOptions.resolution = "inherit"; // set before creating affected objects
+
+sprite.blendMode = "overlay";
+```
+
+Setting `Filter.defaultOptions.resolution = "inherit"` makes advanced blend modes render at the render target's resolution. This costs more memory and runtime, so apply it where fidelity matters.
+
+
 ## API Reference
 
 - [Container.blendMode](https://pixijs.download/release/docs/scene.Container.html.md)

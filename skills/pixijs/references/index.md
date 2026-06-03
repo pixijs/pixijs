@@ -51,6 +51,11 @@ Display animated GIFs. Covers the `pixi.js/gif` side-effect import, `Assets.load
 
 **Triggers:** GifSprite, GifSource, pixi.js/gif, animationSpeed, currentFrame, autoPlay, onComplete, onFrameChange.
 
+### pixijs-html-source
+Render live HTML/DOM elements or frozen snapshots as PixiJS v8 textures via the HTML-in-Canvas browser APIs. Experimental: requires a browser that supports the HTML-in-Canvas spec (the API must be enabled, or the texture uploader throws on first render). Covers the `pixi.js/html-source` side-effect import, feature detection with `canvas.requestPaint`, `HTMLSource` for a live repainting element (`autoLayout`/`autoUpdate`/`autoRequestPaint`, `requestPaint`, `isReady`, the direct-child-of-canvas + `layoutsubtree` rule), `ElementImageSource` for an immutable `captureElementImage()` snapshot (`autoClose`, ready immediately), using the source on a `Sprite`/`Texture`/`Mesh`, and fallback-only auto-detection via `Texture.from`.
+
+**Triggers:** HTMLSource, ElementImageSource, pixi.js/html-source, requestPaint, captureElementImage, ElementImage, layoutsubtree, autoRequestPaint, autoClose, HTML in canvas, render DOM to texture, HTMLSourceCanvas, experimental.
+
 ### pixijs-scene-graphics
 Draw vector shapes and paths. Covers the `Graphics` shape-then-fill API (`rect`/`circle`/`ellipse`/`poly`/`roundRect`/`star`), path methods (`moveTo`/`lineTo`/`bezierCurveTo`/`arc`), `fill`/`stroke`/`cut`, `FillGradient`, `FillPattern`, `GraphicsContext` sharing, SVG markup.
 

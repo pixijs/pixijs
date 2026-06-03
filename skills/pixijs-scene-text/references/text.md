@@ -204,6 +204,24 @@ const title = new Text({
 });
 ```
 
+For a texture fill, pass a `FillPattern`. Its constructor takes an options object; the legacy positional form `new FillPattern(texture, repetition)` is also accepted.
+
+```ts
+import { Assets, FillPattern } from "pixi.js";
+
+const pattern = new FillPattern({
+  texture: await Assets.load("bricks.png"),
+  repetition: "repeat",
+});
+
+const label = new Text({
+  text: "PixiJS",
+  style: { fontSize: 64, fill: pattern },
+});
+```
+
+`textureSpace` controls tiling and defaults to `'global'`: tiles repeat continuously so adjacent shapes share one grid. Pass `textureSpace: 'local'` to fit a single tile to each shape's bounds. A `FillPattern` works for `stroke` too, e.g. `style: { stroke: { fill: pattern, width: 10 } }`.
+
 `fill` accepts any `FillInput` that `Graphics` accepts; gradients, patterns, solid colors, and arrays of stops.
 
 ## Common Mistakes

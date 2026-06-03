@@ -147,7 +147,7 @@ import { Filter, GlProgram, Rectangle } from "pixi.js";
 const filter = new Filter({
   glProgram: GlProgram.from({ fragment }),
   resources: {},
-  resolution: 0.5, // default 1. Lower = faster, blurrier
+  resolution: 0.5, // default 1. Lower = faster, blurrier. 'inherit' matches the render target resolution
   padding: 10, // default 0. Extra pixels for effects that extend bounds
   antialias: "off", // default 'off'. 'on' | 'off' | 'inherit'
   blendMode: "normal", // default 'normal'
@@ -189,6 +189,16 @@ import "pixi.js/advanced-blend-modes";
 
 await app.init({ useBackBuffer: true });
 sprite.blendMode = "color-burn";
+```
+
+Advanced blend modes are filter-based, so they inherit `Filter.defaultOptions`, whose `resolution` defaults to `1`. On high-DPI render targets this can make a blend mode look clipped, scaled, or only partially applied. Set `Filter.defaultOptions.resolution = 'inherit'` before creating the affected objects to render at the render target resolution, at higher memory and runtime cost:
+
+```ts
+import { Filter } from "pixi.js";
+import "pixi.js/advanced-blend-modes";
+
+Filter.defaultOptions.resolution = "inherit";
+sprite.blendMode = "overlay";
 ```
 
 ## Common Mistakes

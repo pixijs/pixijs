@@ -39,6 +39,7 @@ For the long-form description and trigger keywords of every skill, see [referenc
 | [pixijs-scene-particle-container](../pixijs-scene-particle-container/SKILL.md) | Rendering thousands of lightweight sprites: `ParticleContainer`, `Particle`, `dynamicProperties`. |
 | [pixijs-scene-dom-container](../pixijs-scene-dom-container/SKILL.md) | Overlaying HTML elements on the canvas: `DOMContainer`, `pixi.js/dom`. |
 | [pixijs-scene-gif](../pixijs-scene-gif/SKILL.md) | Displaying animated GIFs: `GifSprite`, `GifSource`, `pixi.js/gif`. |
+| [pixijs-html-source](../pixijs-html-source/SKILL.md) | Rendering live HTML/DOM elements or snapshots as textures (experimental, needs a browser that supports the HTML-in-Canvas spec): `HTMLSource`, `ElementImageSource`, `pixi.js/html-source`, `requestPaint`. |
 
 ### Utilities
 

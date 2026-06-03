@@ -214,11 +214,30 @@ const radial = new FillGradient({
 g.circle(100, 100, 100).fill(radial);
 
 const brick = await Assets.load("brick.png");
-const pattern = new FillPattern(brick, "repeat"); // 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat'
+
+// Options-object form (preferred)
+const pattern = new FillPattern({
+  texture: brick,
+  repetition: "repeat", // 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat'
+  textureSpace: "global", // 'global' (default) | 'local'
+});
+
+// Legacy positional form is still supported
+const pattern2 = new FillPattern(brick, "repeat");
+
 g.rect(0, 120, 200, 100).fill(pattern);
 ```
 
-`FillGradient`'s default `type` is `'linear'` with `start {0,0}` to `end {0,1}`. Set `type: 'radial'` with `center`/`innerRadius` and `outerCenter`/`outerRadius` for radial gradients. `FillPattern`'s second argument selects a repetition mode and exposes `setTransform(matrix)` to scale, rotate, or offset the texture inside the pattern.
+`FillGradient`'s default `type` is `'linear'` with `start {0,0}` to `end {0,1}`. Set `type: 'radial'` with `center`/`innerRadius` and `outerCenter`/`outerRadius` for radial gradients.
+
+`FillPattern` takes an options object (`{ texture, repetition?, textureSpace? }`) or the legacy positional form (`new FillPattern(texture, repetition?)`). `repetition` selects the tiling mode. `textureSpace` controls how tiles map to shapes:
+
+- `'global'` (default): tiles repeat continuously across the `Graphics` coordinate system, so adjacent shapes share one tiling grid. Best for backgrounds and seamless textures.
+- `'local'`: a single tile fits each shape's bounds. Combine with `setTransform` to subdivide a shape into a tile grid.
+
+Note `FillPattern` defaults `textureSpace` to `'global'`, unlike the `'local'` default for texture fills shown above.
+
+`setTransform(matrix)` copies the given matrix directly onto the pattern transform to scale, rotate, or offset the tiling; call `setTransform()` with no argument to reset to identity.
 
 ### Drawing a texture directly
 
