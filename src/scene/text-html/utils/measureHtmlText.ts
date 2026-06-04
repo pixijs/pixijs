@@ -27,7 +27,13 @@ export function measureHtmlText(
 
     const { domElement, styleElement, svgRoot } = htmlTextRenderData;
 
-    domElement.innerHTML = `<style>${style.cssStyle};</style><div style='padding:0'>${text}</div>`;
+    // Set CSS separately via textContent to prevent style tag injection/escape
+    // If text contains '</style>', setting it via innerHTML would break out of the style context
+    const inlineStyleEl = domElement.querySelector('style') || document.createElement('style');
+
+    inlineStyleEl.textContent = style.cssStyle;
+    domElement.innerHTML = `<div style='padding:0'>${text}</div>`;
+    domElement.insertBefore(inlineStyleEl, domElement.firstChild);
 
     domElement.setAttribute('style', 'transform-origin: top left; display: inline-block');
 

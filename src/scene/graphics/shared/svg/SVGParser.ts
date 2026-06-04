@@ -42,11 +42,12 @@ export function SVGParser(
     // Convert string input to SVG element
     if (typeof svg === 'string')
     {
+        // Use DOMParser instead of innerHTML to avoid executing inline event handlers
+        // (e.g. onerror on <image> elements) during parsing
         // eslint-disable-next-line no-restricted-globals
-        const div = document.createElement('div');
+        const doc = new DOMParser().parseFromString(svg.trim(), 'image/svg+xml');
 
-        div.innerHTML = svg.trim();
-        svg = div.querySelector('svg') as SVGElement;
+        svg = doc.querySelector('svg') as SVGElement;
     }
 
     // Initialize parsing session

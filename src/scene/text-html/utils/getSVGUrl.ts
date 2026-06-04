@@ -21,7 +21,13 @@ export function getSVGUrl(
 {
     const { domElement, styleElement, svgRoot } = htmlTextData;
 
-    domElement.innerHTML = `<style>${style.cssStyle}</style><div style='padding:0;'>${text}</div>`;
+    // Set CSS via textContent to prevent style tag injection/escape
+    const inlineStyleEl = domElement.querySelector('style') || document.createElement('style');
+
+    inlineStyleEl.textContent = style.cssStyle;
+    domElement.innerHTML = `<div style='padding:0;'>${text}</div>`;
+    domElement.insertBefore(inlineStyleEl, domElement.firstChild);
+
     domElement.setAttribute('style', `transform: scale(${resolution});transform-origin: top left; display: inline-block`);
     styleElement.textContent = fontCSS;
 
