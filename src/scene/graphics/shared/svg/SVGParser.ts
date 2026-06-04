@@ -43,9 +43,12 @@ export function SVGParser(
     if (typeof svg === 'string')
     {
         // Use DOMParser instead of innerHTML to avoid executing inline event handlers
-        // (e.g. onerror on <image> elements) during parsing
-        // eslint-disable-next-line no-restricted-globals
-        const doc = new DOMParser().parseFromString(svg.trim(), 'image/svg+xml');
+        // (e.g. onerror on <image> elements) during parsing.
+        // We use 'text/html' rather than 'image/svg+xml' because the HTML parser
+        // tolerates quirks (e.g. <-- comments) that the strict XML parser rejects,
+        // matching the original innerHTML behavior while remaining safe — DOMParser
+        // never executes scripts or event handlers regardless of content type.
+        const doc = new DOMParser().parseFromString(svg.trim(), 'text/html');
 
         svg = doc.querySelector('svg') as SVGElement;
     }

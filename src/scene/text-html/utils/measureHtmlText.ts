@@ -4,6 +4,9 @@ import { HTMLTextRenderData } from '../HTMLTextRenderData';
 import type { Size } from '../../../maths/misc/Size';
 import type { HTMLTextStyle } from '../HTMLTextStyle';
 
+/** @internal */
+const nsxhtml = 'http://www.w3.org/1999/xhtml';
+
 let tempHTMLTextRenderData: HTMLTextRenderData;
 
 /**
@@ -29,7 +32,7 @@ export function measureHtmlText(
 
     // Set CSS separately via textContent to prevent style tag injection/escape
     // If text contains '</style>', setting it via innerHTML would break out of the style context
-    const inlineStyleEl = domElement.querySelector('style') || document.createElement('style');
+    const inlineStyleEl = domElement.querySelector('style') || document.createElementNS(nsxhtml, 'style');
 
     inlineStyleEl.textContent = style.cssStyle;
     domElement.innerHTML = `<div style='padding:0'>${text}</div>`;
