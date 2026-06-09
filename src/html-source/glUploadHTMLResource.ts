@@ -5,16 +5,28 @@ import type { GlTexture } from '../rendering/renderers/gl/texture/GlTexture';
 import type { GLTextureUploader } from '../rendering/renderers/gl/texture/uploaders/GLTextureUploader';
 import type { HTMLSourceResource, HTMLUploadableSource } from './HTMLSourceTypes';
 
+// Chromium 150+ collapsed the upload signature to (target, internalFormat, source).
+// See https://github.com/WICG/html-in-canvas/pull/128/changes and
+// https://github.com/KhronosGroup/WebGL/pull/3752.
+type TexElementImage2DModern = (
+    target: number,
+    internalFormat: number,
+    source: HTMLSourceResource,
+) => void;
+
+// Pre-Chromium 150 signature, kept for backwards compatibility.
+type TexElementImage2DLegacy = (
+    target: number,
+    level: number,
+    internalFormat: number,
+    format: number,
+    type: number,
+    source: HTMLSourceResource,
+) => void;
+
 interface GlTexElementImageContext extends GlRenderingContext
 {
-    texElementImage2D?: (
-        target: number,
-        level: number,
-        internalFormat: number,
-        format: number,
-        type: number,
-        source: HTMLSourceResource,
-    ) => void;
+    texElementImage2D?: TexElementImage2DModern | TexElementImage2DLegacy;
 }
 
 function ensureAllocated(
@@ -88,15 +100,24 @@ export const glUploadHTMLResource: GLTextureUploader & { extension: { type: Exte
             return;
         }
 
-        upload.call(
-            gl,
-            target,
-            0,
-            glTexture.internalFormat,
-            glTexture.format,
-            glTexture.type,
-            source.resource,
-        );
+        // Detect the Chromium 150+ three-argument form by its arity; older builds still expect
+        // the full (target, level, internalFormat, format, type, source) signature.
+        if (upload.length === 3)
+        {
+            (upload as TexElementImage2DModern).call(gl, target, glTexture.internalFormat, source.resource);
+        }
+        else
+        {
+            (upload as TexElementImage2DLegacy).call(
+                gl,
+                target,
+                0,
+                glTexture.internalFormat,
+                glTexture.format,
+                glTexture.type,
+                source.resource,
+            );
+        }
 
         glTexture.width = textureWidth;
         glTexture.height = textureHeight;
