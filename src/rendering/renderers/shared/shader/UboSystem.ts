@@ -54,10 +54,18 @@ export class UboSystem implements System
     {
         const uniformData = this.getUniformGroupData(uniformGroup);
 
-        uniformGroup.buffer ||= new Buffer({
-            data: new Float32Array(uniformData.layout.size / 4),
-            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
-        });
+        if (!uniformGroup.buffer)
+        {
+            uniformGroup.buffer = new Buffer({
+                data: new Float32Array(uniformData.layout.size / 4),
+                usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
+            });
+
+            // bind group keys are derived from the UniformGroup's _resourceId, which never
+            // changes, so a GC'd uniform buffer would leave cached bind groups pointing at
+            // a destroyed GPUBuffer. These buffers are tiny; never auto-collect them.
+            uniformGroup.buffer.autoGarbageCollect = false;
+        }
     }
 
     public getUniformGroupData(uniformGroup: UniformGroup)
@@ -99,10 +107,16 @@ export class UboSystem implements System
     {
         const uniformGroupData = this.getUniformGroupData(uniformGroup);
 
-        uniformGroup.buffer ||= new Buffer({
-            data: new Float32Array(uniformGroupData.layout.size / 4),
-            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
-        });
+        if (!uniformGroup.buffer)
+        {
+            uniformGroup.buffer = new Buffer({
+                data: new Float32Array(uniformGroupData.layout.size / 4),
+                usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
+            });
+
+            // never auto-collect uniform buffers, see ensureUniformGroup
+            uniformGroup.buffer.autoGarbageCollect = false;
+        }
 
         let dataInt32: Int32Array = null;
 

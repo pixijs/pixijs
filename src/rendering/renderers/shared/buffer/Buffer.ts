@@ -314,8 +314,18 @@ export class Buffer extends EventEmitter<{
     /** Unloads the buffer from the GPU */
     public unload()
     {
+        // the GPU buffer is about to be destroyed, so any cached bind group keyed on the
+        // old _resourceId would keep referencing it. Bump the id and emit 'change'
+        // (after 'unload' so the buffer systems have already detached their listeners)
+        // so BufferResources and bind groups re-key and rebuild on next use.
+        // Mirrors TextureSource.unload().
+        this._resourceId = uid('resource');
+
         /** Unloads the GPU data from the view container. */
         this.emit('unload', this);
+
+        if (!this.destroyed) this.emit('change', this);
+
         for (const key in this._gpuData)
         {
             this._gpuData[key]?.destroy();

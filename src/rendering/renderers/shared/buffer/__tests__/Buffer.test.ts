@@ -216,6 +216,42 @@ describe('Buffer', () =>
         expect(buffer._updateSize).toBe(2 * 4);
     });
 
+    it('should increment the resourceId and emit change on unload so cached bind groups re-key', () =>
+    {
+        const buffer = new Buffer({
+            data: new Float32Array([1, 2, 3]),
+            usage: 1,
+        });
+
+        const changeObserver = jest.fn();
+
+        buffer.on('change', changeObserver);
+
+        const startingId = buffer._resourceId;
+
+        buffer.unload();
+
+        expect(buffer._resourceId).not.toBe(startingId);
+        expect(changeObserver).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not emit change from unload during destroy', () =>
+    {
+        const buffer = new Buffer({
+            data: new Float32Array([1, 2, 3]),
+            usage: 1,
+        });
+
+        const changeObserver = jest.fn();
+
+        buffer.on('change', changeObserver);
+
+        buffer.destroy();
+
+        // only the change emitted by destroy itself
+        expect(changeObserver).toHaveBeenCalledTimes(1);
+    });
+
     itLocalOnly('should only add add listeners to buffer on first gpu init', async () =>
     {
         const renderer = (await getWebGPURenderer()) as WebGPURenderer;
