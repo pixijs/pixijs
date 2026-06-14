@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { uid } from '../../../../utils/data/uid';
+import { warn } from '../../../../utils/logging/warn';
 import { GlProgram } from '../../gl/shader/GlProgram';
 import { BindGroup } from '../../gpu/shader/BindGroup';
 import { GpuProgram } from '../../gpu/shader/GpuProgram';
@@ -346,6 +347,16 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
             for (const i in resources)
             {
                 if (nameHash[i]) continue;
+
+                // with no GL program to belong to, an unmatched resource is a genuine
+                // mistake (typo, or a leftover after editing the WGSL) — say so now,
+                // at construction, rather than silently skipping it at draw time
+                if (gpuProgram && !glProgram)
+                {
+                    // #if _DEBUG
+                    warn(`[Shader] the resource '${i}' matches no binding in the WGSL source — is the name correct?`);
+                    // #endif
+                }
 
                 // build out a dummy bind group..
                 if (!groups[99])

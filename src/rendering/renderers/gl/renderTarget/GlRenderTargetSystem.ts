@@ -26,4 +26,10 @@ export class GlRenderTargetSystem extends RenderTargetSystem<GlRenderTarget>
 
         this.adaptor.init(renderer, this);
     }
+
+    /** Called via the renderer's `resetState` runner when mixing Pixi with external GL code. */
+    public resetState(): void
+    {
+        this.adaptor.resetState();
+    }
 }
