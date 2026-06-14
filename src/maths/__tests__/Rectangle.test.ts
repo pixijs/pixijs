@@ -488,7 +488,7 @@ describe('Rectangle', () =>
             const rect1 = new Rectangle(0, 0, 100, 100);
             const rect2 = new Rectangle(0, 0, 100, 100);
 
-            expect(rect1.containsRect(rect2)).toBe(false);
+            expect(rect1.containsRect(rect2)).toBe(true);
         });
     });
 });

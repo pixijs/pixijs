@@ -803,8 +803,8 @@ export class Rectangle implements ShapePrimitive
 
         return x1 >= this.x && x1 < this.x + this.width
             && y1 >= this.y && y1 < this.y + this.height
-            && x2 >= this.x && x2 < this.x + this.width
-            && y2 >= this.y && y2 < this.y + this.height;
+            && x2 >= this.x && x2 <= this.x + this.width
+            && y2 >= this.y && y2 <= this.y + this.height;
     }
 
     /**
