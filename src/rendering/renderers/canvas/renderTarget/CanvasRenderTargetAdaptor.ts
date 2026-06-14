@@ -206,9 +206,24 @@ export class CanvasRenderTargetAdaptor implements RenderTargetAdaptor<CanvasRend
      * Copies the depth attachment from one render target to another (not supported in canvas).
      * @param _source - Source render target.
      * @param _destination - Destination render target.
+     * @param _originSrc - Source origin of the copy.
+     * @param _originSrc.x
+     * @param _originSrc.y
+     * @param _size - Size of the copy.
+     * @param _size.width
+     * @param _size.height
+     * @param _originDest - Destination origin of the copy.
+     * @param _originDest.x
+     * @param _originDest.y
      * @advanced
      */
-    public copyDepthTexture(_source: RenderTarget, _destination: RenderTarget): void
+    public copyDepthTexture(
+        _source: RenderTarget,
+        _destination: RenderTarget,
+        _originSrc?: { x: number; y: number; },
+        _size?: { width: number; height: number; },
+        _originDest?: { x: number; y: number; },
+    ): void
     {
         warn('[CanvasRenderTargetAdaptor] copyDepthTexture is not supported in the canvas renderer');
     }

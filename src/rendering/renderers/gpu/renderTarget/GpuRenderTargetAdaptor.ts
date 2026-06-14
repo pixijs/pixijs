@@ -98,7 +98,13 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         return destinationTexture;
     }
 
-    public copyDepthTexture(source: RenderTarget, destination: RenderTarget): void
+    public copyDepthTexture(
+        source: RenderTarget,
+        destination: RenderTarget,
+        originSrc: { x: number; y: number; },
+        size: { width: number; height: number; },
+        originDest: { x: number; y: number; },
+    ): void
     {
         if (!source.depthStencilAttachment || !destination.depthStencilAttachment)
         {
@@ -108,6 +114,10 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         }
 
         const renderer = this._renderer;
+
+        // a copy cannot be recorded while a render pass holds the shared command encoder —
+        // close the pass first (no-op when none is open), matching the GL adaptor
+        this.finishRenderPass();
 
         const srcDepth = source.depthStencilAttachment.texture;
         const dstDepth = destination.depthStencilAttachment.texture;
@@ -121,9 +131,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             : renderer.encoder.commandEncoder;
 
         commandEncoder.copyTextureToTexture(
-            { texture: srcGpu },
-            { texture: dstGpu },
-            { width: source.pixelWidth, height: source.pixelHeight },
+            { texture: srcGpu, origin: originSrc },
+            { texture: dstGpu, origin: originDest },
+            { width: size.width, height: size.height },
         );
 
         if (standAlone)

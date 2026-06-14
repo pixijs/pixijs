@@ -90,7 +90,13 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         return destinationTexture;
     }
 
-    public copyDepthTexture(source: RenderTarget, destination: RenderTarget): void
+    public copyDepthTexture(
+        source: RenderTarget,
+        destination: RenderTarget,
+        originSrc: { x: number; y: number; },
+        size: { width: number; height: number; },
+        originDest: { x: number; y: number; },
+    ): void
     {
         if (!source.depthStencilAttachment || !destination.depthStencilAttachment)
         {
@@ -109,10 +115,14 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         gl.bindFramebuffer(gl.READ_FRAMEBUFFER, srcGl.framebuffer);
         gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, dstGl.framebuffer);
+        // READ/DRAW were bound independently, leaving the unified FRAMEBUFFER state ambiguous
+        this._boundFramebuffer = undefined;
 
+        // Depth blits must use NEAREST, so the source sub-rect must match the destination
+        // sub-rect in size (no scaling). We copy `size` pixels from originSrc to originDest.
         gl.blitFramebuffer(
-            0, 0, srcGl.width, srcGl.height,
-            0, 0, dstGl.width, dstGl.height,
+            originSrc.x, originSrc.y, originSrc.x + size.width, originSrc.y + size.height,
+            originDest.x, originDest.y, originDest.x + size.width, originDest.y + size.height,
             gl.DEPTH_BUFFER_BIT, gl.NEAREST,
         );
     }
