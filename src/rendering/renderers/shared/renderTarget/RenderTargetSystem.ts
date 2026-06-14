@@ -181,7 +181,9 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
      * buffer of the destination render target, use `clear: CLEAR.COLOR` to preserve the copied depth data.
      * @example
      * ```js
-     * renderer.renderTarget.copyDepthTexture(sourceRT, destRT);
+     * renderer.renderTarget.copyDepthTexture(
+     *   sourceRT, destRT, { x: 0, y: 0 }, { width: 200, height: 200 }, { x: 0, y: 0 }
+     * );
      *
      * // In the subsequent render pass, clear ONLY the color buffer!
      * renderer.render({
@@ -193,10 +195,22 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
      * ```
      * @param {RenderTarget} source - the render target to copy depth from
      * @param {RenderTarget} destination - the render target to copy depth to
+     * @param {object} originSrc - the origin of the copy
+     * @param {number} originSrc.x - the x origin of the copy
+     * @param {number} originSrc.y - the y origin of the copy
+     * @param {object} size - the size of the copy
+     * @param {number} size.width - the width of the copy
+     * @param {number} size.height - the height of the copy
+     * @param {object} originDest - the destination origin (top left to paste from!)
+     * @param {number} originDest.x - the x destination origin of the copy
+     * @param {number} originDest.y - the y destination origin of the copy
      */
     copyDepthTexture(
         source: RenderTarget,
         destination: RenderTarget,
+        originSrc: { x: number; y: number },
+        size: { width: number; height: number },
+        originDest?: { x: number; y: number },
     ): void
 }
 
@@ -683,7 +697,9 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      * buffer of the destination render target, use `clear: CLEAR.COLOR` to preserve the copied depth data.
      * @example
      * ```js
-     * renderer.renderTarget.copyDepthTexture(sourceRT, destRT);
+     * renderer.renderTarget.copyDepthTexture(
+     *   sourceRT, destRT, { x: 0, y: 0 }, { width: 200, height: 200 }, { x: 0, y: 0 }
+     * );
      *
      * // In the subsequent render pass, clear ONLY the color buffer!
      * renderer.render({
@@ -695,13 +711,64 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      * ```
      * @param source - the render target to copy depth from
      * @param destination - the render target to copy depth to
+     * @param {object} originSrc - the origin of the copy
+     * @param {number} originSrc.x - the x origin of the copy
+     * @param {number} originSrc.y - the y origin of the copy
+     * @param {object} size - the size of the copy
+     * @param {number} size.width - the width of the copy
+     * @param {number} size.height - the height of the copy
+     * @param {object} originDest - the destination origin (top left to paste from!)
+     * @param {number} originDest.x - the x origin of the paste
+     * @param {number} originDest.y - the y origin of the paste
      */
     public copyDepthTexture(
         source: RenderTarget,
         destination: RenderTarget,
+        originSrc: { x: number; y: number },
+        size: { width: number; height: number },
+        originDest: { x: number; y: number; } = { x: 0, y: 0 },
     ): void
     {
-        this.adaptor.copyDepthTexture(source, destination);
+        // clamp into locals — callers often reuse their rect objects across frames,
+        // so the arguments must never be mutated
+        let srcX = originSrc.x;
+        let srcY = originSrc.y;
+        let destX = originDest.x;
+        let destY = originDest.y;
+        let width = size.width;
+        let height = size.height;
+
+        // fit to the source bounds
+        if (srcX < 0)
+        {
+            width += srcX;
+            destX -= srcX;
+            srcX = 0;
+        }
+
+        if (srcY < 0)
+        {
+            height += srcY;
+            destY -= srcY;
+            srcY = 0;
+        }
+
+        width = Math.min(width, source.pixelWidth - srcX);
+        height = Math.min(height, source.pixelHeight - srcY);
+
+        // fit to the destination bounds too — WebGPU validates the copy against them
+        // (GL silently clips), and an oversized copy would discard the whole frame
+        width = Math.min(width, destination.pixelWidth - destX);
+        height = Math.min(height, destination.pixelHeight - destY);
+
+        if (width <= 0 || height <= 0) return;
+
+        this.adaptor.copyDepthTexture(
+            source, destination,
+            { x: srcX, y: srcY },
+            { width, height },
+            { x: destX, y: destY },
+        );
     }
 
     /**
