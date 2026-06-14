@@ -194,7 +194,7 @@ export * from './renderers/shared/shader/ShaderSystem';
 export * from './renderers/shared/shader/types';
 export * from './renderers/shared/shader/UboSystem';
 export * from './renderers/shared/shader/UniformGroup';
-export * from './renderers/shared/shader/utils/createUboSyncFunction';
+export * from './renderers/shared/shader/utils/compileBufferSync';
 export * from './renderers/shared/shader/utils/getDefaultUniformValue';
 export * from './renderers/shared/shader/utils/uboSyncFunctions';
 export * from './renderers/shared/shader/utils/uniformParsers';

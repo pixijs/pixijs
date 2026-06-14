@@ -215,6 +215,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     /** the alpha mode of the texture */
     public alphaMode: ALPHA_MODES;
     private _style: TextureStyle;
+    private _ownsStyle = false;
 
     /**
      * Only really affects RenderTextures.
@@ -303,6 +304,9 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.alphaMode = options.alphaMode;
 
         this.style = new TextureStyle(definedProps(options));
+        // the source constructed this style itself, so it may destroy it; styles assigned
+        // from outside (e.g. TexturePool's shared default) are shared and must survive us
+        this._ownsStyle = true;
 
         this.destroyed = false;
 
@@ -325,6 +329,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     {
         if (this.style === value) return;
 
+        // an assigned style instance is shared with its provider — we no longer own it
+        this._ownsStyle = false;
         this._style?.off('change', this._onStyleChange, this);
         this._style = value;
         this._style?.on('change', this._onStyleChange, this);
@@ -452,7 +458,9 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         if (this._style)
         {
-            this._style.destroy();
+            // only destroy a style we created — a shared style (e.g. TexturePool's
+            // default) is still in use by other sources
+            if (this._ownsStyle) this._style.destroy();
             this._style = null;
         }
 

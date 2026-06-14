@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { type RenderTarget } from '../../shared/renderTarget/RenderTarget';
-import { State } from '../../shared/state/State';
+import { State, STATE_BITS } from '../../shared/state/State';
 import { type WebGLRenderer } from '../WebGLRenderer';
 import { mapWebGLBlendModesToPixi } from './mapWebGLBlendModesToPixi';
 
@@ -8,12 +8,7 @@ import type { BLEND_MODES } from '../../shared/state/const';
 import type { System } from '../../shared/system/System';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 
-const BLEND = 0;
-const OFFSET = 1;
-const CULLING = 2;
-const DEPTH_TEST = 3;
-const WINDING = 4;
-const DEPTH_MASK = 5;
+const { BLEND, OFFSET, CULLING, DEPTH_TEST, WINDING, DEPTH_MASK } = STATE_BITS;
 
 /**
  * System plugin to the renderer to manage WebGL state machines
@@ -242,6 +237,16 @@ export class GlStateSystem implements System
     public setDepthMask(value: boolean): void
     {
         this.gl.depthMask(value);
+    }
+
+    /**
+     * Whether depth writes are currently enabled on the GL context, as last applied by this
+     * system. `gl.clear` is masked by this state, so depth clears must consult it.
+     * @internal
+     */
+    public get depthMaskEnabled(): boolean
+    {
+        return !!(this.stateId & (1 << DEPTH_MASK));
     }
 
     /**

@@ -1,7 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import { uid } from '../../../../utils/data/uid';
 
-import type { BindResource } from '../../../gpu/shader/BindResource';
+import type { BindResource } from '../../gpu/shader/BindResource';
 import type { TextureSource } from './sources/TextureSource';
 
 /**

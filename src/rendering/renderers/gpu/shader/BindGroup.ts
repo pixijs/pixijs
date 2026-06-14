@@ -1,3 +1,4 @@
+import { warn } from '../../../../utils/logging/warn';
 import { type GCable } from '../../shared/GCSystem';
 
 import type { BindResource } from './BindResource';
@@ -50,7 +51,8 @@ export class BindGroup
 
             for (const i in this.resources)
             {
-                keyParts[index++] = this.resources[i]._resourceId;
+                // -1 marks a destroyed buffer-like resource's null slot
+                keyParts[index++] = this.resources[i] ? this.resources[i]._resourceId : -1;
             }
 
             this._keyValue = keyParts.join('|');
@@ -125,8 +127,12 @@ export class BindGroup
 
         for (const i in resources)
         {
-            (resources[i] as BindResource & GCable)._gcLastUsed = now;
-            resources[i]._touched = tick;
+            const resource = resources[i] as BindResource & GCable;
+
+            if (!resource) continue;
+
+            resource._gcLastUsed = now;
+            resource._touched = tick;
         }
     }
 
@@ -149,8 +155,8 @@ export class BindGroup
     {
         this._dirty = true;
 
-        // If a resource has been destroyed, null it out to avoid
-        // using a destroyed resource which would cause the renderer to explode.
+        // A destroyed resource must not stay bound — null the slot. Consumers tolerate the
+        // null; actually rendering with it raises a clear error in BindGroupSystem.
         if (resource.destroyed)
         {
             const resources = this.resources;
@@ -162,6 +168,11 @@ export class BindGroup
                     resources[i] = null;
                 }
             }
+
+            // #if _DEBUG
+            warn(`[BindGroup] a '${resource._resourceType}' was destroyed while still bound to a shader. `
+                + 'Remove it from the shader before destroying it.');
+            // #endif
         }
     }
 }

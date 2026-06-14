@@ -185,7 +185,13 @@ export const scene: TestScene = {
 
         // -- COPY: Copy the depth buffer from sourceRT to destRT --
 
-        renderer.renderTarget.copyDepthTexture(sourceRT, destRT);
+        renderer.renderTarget.copyDepthTexture(
+            sourceRT,
+            destRT,
+            { x: 0, y: 0 },
+            { width: sourceRT.pixelWidth, height: sourceRT.pixelHeight },
+            { x: 0, y: 0 },
+        );
 
         // -- PASS 2: Render a full-screen red quad at depth 0.5 into destRT --
         // The left half should be blocked by the copied depth (0.3 < 0.5),

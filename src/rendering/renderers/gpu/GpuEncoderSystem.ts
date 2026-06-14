@@ -257,8 +257,15 @@ export class GpuEncoderSystem implements System
 
     private _setShaderBindGroups(shader: Shader, skipSync?: boolean)
     {
+        const program = shader.gpuProgram;
+
         for (const i in shader.groups)
         {
+            // resources that only exist for the other backend (e.g. GL-fallback uniforms,
+            // parked in group 99 by Shader.from) have no entry in this program's layout —
+            // there is nothing to sync or bind for them
+            if (!program.layout[i as unknown as number]) continue;
+
             const bindGroup = shader.groups[i] as BindGroup;
 
             // update any uniforms?
@@ -267,7 +274,7 @@ export class GpuEncoderSystem implements System
                 this._syncBindGroup(bindGroup);
             }
 
-            this.setBindGroup(i as unknown as number, bindGroup, shader.gpuProgram);
+            this.setBindGroup(i as unknown as number, bindGroup, program);
         }
     }
 
@@ -276,6 +283,9 @@ export class GpuEncoderSystem implements System
         for (const j in bindGroup.resources)
         {
             const resource = bindGroup.resources[j];
+
+            // a destroyed buffer-like resource leaves a null slot (see BindGroup.onResourceChange)
+            if (!resource) continue;
 
             if ((resource as UniformGroup).isUniformGroup)
             {

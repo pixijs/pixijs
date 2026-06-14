@@ -46,20 +46,19 @@ export class GPUTextureGpuData implements GPUData
     }
 }
 
-const viewAspectMap: Record<string, number> = {
-    all: 0,
-    'depth-only': 1,
-    'stencil-only': 2,
-};
-
-const viewDimensionMap: Record<string, number> = {
-    '1d': 1,
-    '2d': 2,
-    '2d-array': 3,
-    cube: 4,
-    'cube-array': 5,
-    '3d': 6,
-};
+/**
+ * Builds a cache key covering every view-affecting field of a GPUTextureViewDescriptor —
+ * two descriptors selecting different subresources (mips, layers, aspects, formats) must
+ * never share a cached GPUTextureView. Only runs when bind groups / pass descriptors are
+ * (re)built, never per draw.
+ * @param viewDescriptor
+ */
+function getViewDescriptorKey(viewDescriptor: GPUTextureViewDescriptor): string
+{
+    return `${viewDescriptor.format || ''}.${viewDescriptor.dimension || ''}.${viewDescriptor.aspect || ''}.`
+        + `${viewDescriptor.baseMipLevel || 0}.${viewDescriptor.mipLevelCount || ''}.`
+        + `${viewDescriptor.baseArrayLayer || 0}.${viewDescriptor.arrayLayerCount || ''}`;
+}
 
 /**
  * The system that handles textures for the GPU.
@@ -300,17 +299,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
         }
 
-        let descriptorKey = 0;
-
-        if (viewDescriptor)
-        {
-            let overrideBits = 0;
-
-            if (viewDescriptor.aspect) overrideBits |= (viewAspectMap[viewDescriptor.aspect] || 0);
-            if (viewDescriptor.dimension) overrideBits |= ((viewDimensionMap[viewDescriptor.dimension] || 0) << 3);
-
-            descriptorKey |= (overrideBits << 16);
-        }
+        const descriptorKey = viewDescriptor ? getViewDescriptorKey(viewDescriptor) : 0;
 
         gpuData.textureViews[descriptorKey] ||= gpuData.gpuTexture.createView({
             dimension: source.viewDimension,
@@ -338,16 +327,13 @@ export class GpuTextureSystem implements System, CanvasGenerator
             gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
         }
 
-        let descriptorKey = (layer * (source.mipLevelCount || 1)) + mipLevel + 1;
+        // numeric fast path for the common case; explicit descriptors get the full string key.
+        // (+1 keeps mip 0 / layer 0 distinct from the default bind view at key 0)
+        let descriptorKey: string | number = (layer * (source.mipLevelCount || 1)) + mipLevel + 1;
 
         if (viewDescriptor)
         {
-            let overrideBits = 0;
-
-            if (viewDescriptor.aspect) overrideBits |= (viewAspectMap[viewDescriptor.aspect] || 0);
-            if (viewDescriptor.dimension) overrideBits |= ((viewDimensionMap[viewDescriptor.dimension] || 0) << 3);
-
-            descriptorKey |= (overrideBits << 16);
+            descriptorKey = `${descriptorKey}.${getViewDescriptorKey(viewDescriptor)}`;
         }
 
         gpuData.textureViews[descriptorKey] ||= gpuData.gpuTexture.createView({
