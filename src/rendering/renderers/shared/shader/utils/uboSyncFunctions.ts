@@ -17,6 +17,8 @@ export const uboSyncFunctionsSTD40: Record<UNIFORM_TYPES_SINGLE, string> = {
         data[offset] = v;`,
     i32: `
         dataInt32[offset] = v;`,
+    u32: `
+        dataInt32[offset] = v;`,
     'vec2<f32>': `
         data[offset] = v[0];
         data[offset + 1] = v[1];`,
@@ -37,6 +39,18 @@ export const uboSyncFunctionsSTD40: Record<UNIFORM_TYPES_SINGLE, string> = {
         dataInt32[offset + 1] = v[1];
         dataInt32[offset + 2] = v[2];`,
     'vec4<i32>': `
+        dataInt32[offset] = v[0];
+        dataInt32[offset + 1] = v[1];
+        dataInt32[offset + 2] = v[2];
+        dataInt32[offset + 3] = v[3];`,
+    'vec2<u32>': `
+        dataInt32[offset] = v[0];
+        dataInt32[offset + 1] = v[1];`,
+    'vec3<u32>': `
+        dataInt32[offset] = v[0];
+        dataInt32[offset + 1] = v[1];
+        dataInt32[offset + 2] = v[2];`,
+    'vec4<u32>': `
         dataInt32[offset] = v[0];
         dataInt32[offset + 1] = v[1];
         dataInt32[offset + 2] = v[2];

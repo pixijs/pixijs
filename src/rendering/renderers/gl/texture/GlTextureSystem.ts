@@ -609,7 +609,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         const gl = renderer.gl;
 
-        gl.bindFramebuffer(gl.FRAMEBUFFER, glRenterTarget.resolveTargetFramebuffer);
+        renderer.renderTarget.adaptor.bindFramebuffer(glRenterTarget.resolveTargetFramebuffer);
 
         gl.readPixels(
             Math.round(frame.x * resolution),

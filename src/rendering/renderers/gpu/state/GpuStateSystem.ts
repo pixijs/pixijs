@@ -70,8 +70,9 @@ export class GpuStateSystem implements System
      * Gets the blend mode data for the current state
      * @param state - The state to get the blend mode from
      * @param count - The number of color targets to create
+     * @param format - The texture format of the color attachments (assumed uniform across attachments)
      */
-    public getColorTargets(state: State, count: number): GPUColorTargetState[]
+    public getColorTargets(state: State, count: number, format: GPUTextureFormat): GPUColorTargetState[]
     {
         // WebGPU blending is enabled/disabled by the presence of `GPUColorTargetState.blend`.
         // A boolean flag alone doesn't exist at the API level.
@@ -81,15 +82,16 @@ export class GpuStateSystem implements System
             : undefined;
 
         const targets: GPUColorTargetState[] = [];
-        const target = {
-            format: 'bgra8unorm',
-            writeMask: 0,
-            blend,
-        } as GPUColorTargetState;
 
+        // Emit one fresh object per attachment so the caller can mutate per-target fields
+        // (e.g. writeMask) without aliasing across slots.
         for (let i = 0; i < count; i++)
         {
-            targets[i] = target;
+            targets[i] = {
+                format,
+                writeMask: 0,
+                blend,
+            };
         }
 
         return targets;

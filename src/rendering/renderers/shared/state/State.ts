@@ -13,12 +13,22 @@ const blendModeIds = {
     min: 9,
     max: 10,
 };
-const BLEND = 0;
-const OFFSET = 1;
-const CULLING = 2;
-const DEPTH_TEST = 3;
-const WINDING = 4;
-const DEPTH_MASK = 5;
+
+/**
+ * Bit indices into {@link State#data} — the single source of truth for the packed
+ * state layout, shared with systems that cache the packed number (e.g. `GlStateSystem`).
+ * @internal
+ */
+export const STATE_BITS = {
+    BLEND: 0,
+    OFFSET: 1,
+    CULLING: 2,
+    DEPTH_TEST: 3,
+    WINDING: 4,
+    DEPTH_MASK: 5,
+} as const;
+
+const { BLEND, OFFSET, CULLING, DEPTH_TEST, WINDING, DEPTH_MASK } = STATE_BITS;
 
 /**
  * This is a WebGL state, and is is passed to {@link GlStateSystem}.
@@ -232,6 +242,7 @@ export class State
         const state = new State();
 
         state.depthTest = false;
+        state.depthMask = false;
         state.blend = true;
 
         return state;

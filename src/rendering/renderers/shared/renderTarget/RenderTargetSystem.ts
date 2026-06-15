@@ -1,5 +1,6 @@
 import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
+import { warn } from '../../../../utils/logging/warn';
 import { CLEAR } from '../../gl/const';
 import { calculateProjection } from '../../gpu/renderTarget/calculateProjection';
 import { SystemRunner } from '../system/SystemRunner';
@@ -313,6 +314,16 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      * Once bound all draw calls will be rendered to the render surface.
      *
      * If a frame is not provided and the render surface is a {@link Texture}, the frame of the texture will be used.
+     *
+     * IDEMPOTENT BIND:
+     * Binding is "smart" — the viewport/projection math is always recomputed, but the underlying render pass is
+     * only torn down and re-begun when something that actually requires it changes. If you bind the render target
+     * that the currently open pass is already on (same `mipLevel`/`layer`) and request **no clear**
+     * (`clear` is `false` / `CLEAR.NONE`), the live pass is reused and only the viewport is updated. This makes
+     * drawing N things into one target at N viewports a single pass with N `setViewport` calls, and makes a
+     * redundant same-target `bind`/`pop` essentially free. Any clear (even a partial one like `CLEAR.DEPTH`), a
+     * different target, or a different `mipLevel`/`layer` forces a real begin. The MSAA resolve is never skipped:
+     * it is deferred to the genuine pass end, which still happens before any target switch or read-back.
      *
      * IMPORTANT:
      * - `frame` is treated as **base mip (mip 0) pixel space**.
@@ -644,7 +655,18 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
     {
         if (!this.renderTarget.stencil)
         {
-            this.renderTarget.ensureDepthStencilTexture();
+            if (this.renderTarget.depthStencilTexture)
+            {
+                // an explicit depth-only texture (e.g. 'depth24plus') cannot gain a stencil aspect
+                warn('[RenderTargetSystem] a stencil mask is being used, but the render target\'s '
+                    + `depthStencilTexture format '${this.renderTarget.depthStencilTexture.format}' has no `
+                    + 'stencil aspect, so masking cannot work here. Use a \'depth24plus-stencil8\' texture instead.');
+
+                return;
+            }
+
+            this.renderTarget._depth = true;
+            this.renderTarget._stencil = true;
 
             this.adaptor.startRenderPass(this.renderTarget, false, null, this.viewport, 0, this.layer);
         }

@@ -1,3 +1,4 @@
+import { warn } from '../../../../utils/logging/warn';
 import { CLEAR } from '../../gl/const';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
 import { TextureSource } from '../../shared/texture/sources/TextureSource';
@@ -11,6 +12,26 @@ import type { RenderTargetAdaptor, RenderTargetSystem } from '../../shared/rende
 import type { Texture } from '../../shared/texture/Texture';
 import type { WebGPURenderer } from '../WebGPURenderer';
 
+// WebGPU's `GPUCanvasContext.configure` only accepts these formats. Anything else on a
+// CanvasSource falls back to the platform-preferred format with a warning.
+const canvasAllowedFormats: Record<string, true> = {
+    bgra8unorm: true,
+    rgba8unorm: true,
+    rgba16float: true,
+};
+
+function getCanvasContextFormat(format: GPUTextureFormat): GPUTextureFormat
+{
+    if (canvasAllowedFormats[format]) return format;
+
+    const preferred = navigator.gpu.getPreferredCanvasFormat();
+
+    warn(`[WebGPU] CanvasSource format '${format}' is not a valid GPUCanvasContext format. `
+        + `Falling back to '${preferred}'. Allowed formats are: bgra8unorm, rgba8unorm, rgba16float.`);
+
+    return preferred;
+}
+
 /**
  * The WebGPU adaptor for the render target system. Allows the Render Target System to
  * be used with the WebGPU renderer
@@ -21,6 +42,18 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 {
     private _renderTargetSystem: RenderTargetSystem<GpuRenderTarget>;
     private _renderer: WebGPURenderer<HTMLCanvasElement>;
+    /**
+     * The render target the currently open render pass is rendering to (plus the subresource it is
+     * bound to). Used to make {@link startRenderPass} idempotent: binding the same target/mip/layer
+     * again with no clear reuses the open pass instead of tearing it down and beginning a new one.
+     * Reset to `null` whenever the pass is closed ({@link finishRenderPass}).
+     */
+    private _activePass: {
+        renderTarget: RenderTarget;
+        mipLevel: number;
+        layer: number;
+        depthStencil: boolean;
+    } | null = null;
 
     public init(renderer: WebGPURenderer, renderTargetSystem: RenderTargetSystem<GpuRenderTarget>): void
     {
@@ -37,6 +70,10 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
     )
     {
         const renderer = this._renderer;
+
+        // a copy cannot be recorded while a render pass holds the shared command encoder —
+        // close the pass first (no-op when none is open), matching the GL adaptor
+        this.finishRenderPass();
 
         const baseGpuTexture = this._getGpuColorTexture(
             sourceRenderSurfaceTexture
@@ -84,25 +121,64 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             throw new Error('[RenderTargetSystem] Rendering to mip levels is not supported with MSAA render targets.');
         }
 
+        // Idempotent ("smart") bind: if we are asked to bind the exact target/subresource the open
+        // pass is already on, and no clear is requested, reuse the live pass. We only move the
+        // viewport. This avoids a redundant pass teardown + state-cache flush (and re-binding every
+        // pipeline / bind group / vertex buffer on the next draw). A *partial* clear still forces a
+        // real begin because you cannot flip a loadOp to 'clear' mid-pass.
+        let clearBits: CLEAR_OR_BOOL = clear;
+
+        if (typeof clearBits === 'boolean')
+        {
+            clearBits = clearBits ? CLEAR.ALL : CLEAR.NONE;
+        }
+
+        // depth/stencil requested without an explicit texture — WebGPU always backs
+        // depth/stencil with a texture, so create the internal one lazily
+        if ((renderTarget.stencil || renderTarget.depth) && !renderTarget.depthStencilAttachment)
+        {
+            renderTarget.ensureDepthStencilTexture();
+        }
+
+        const hasDepthStencil = !!renderTarget.depthStencilAttachment;
+
+        const activePass = this._activePass;
+
+        const reuse = activePass !== null
+            && activePass.renderTarget === renderTarget
+            && activePass.mipLevel === mipLevel
+            && activePass.layer === layer
+            // a depth/stencil attachment added mid-pass (e.g. mask system's ensureDepthStencil)
+            // changes the attachment set, so the pass must genuinely reopen
+            && activePass.depthStencil === hasDepthStencil
+            && this._renderer.encoder.renderPassEncoder !== null
+            && clearBits === CLEAR.NONE;
+
+        if (reuse)
+        {
+            this._renderer.encoder.setViewport(viewport);
+
+            return;
+        }
+
         const descriptor = this.getDescriptor(renderTarget, clear, clearColor, mipLevel, layer);
 
         gpuRenderTarget.descriptor = descriptor;
 
-        if (renderTarget.depthStencilAttachment)
-        {
-            gpuRenderTarget.depthStencilFormat = renderTarget.depthStencilAttachment.texture.format;
-        }
-
-        // TODO we should not finish a render pass each time we bind
-        // for example filters - we would want to push / pop render targets
-        this._renderer.pipeline.setRenderTarget(gpuRenderTarget);
+        this._renderer.pipeline.setRenderTarget(renderTarget);
         this._renderer.encoder.beginRenderPass(gpuRenderTarget);
         this._renderer.encoder.setViewport(viewport);
+
+        this._activePass = { renderTarget, mipLevel, layer, depthStencil: hasDepthStencil };
     }
 
     public finishRenderPass()
     {
         this._renderer.encoder.endRenderPass();
+
+        // The pass is now closed; a subsequent bind to the same target must genuinely reopen it
+        // (e.g. the copyToTexture / copyColor case, which reads the resolved contents).
+        this._activePass = null;
     }
 
     /**
@@ -318,6 +394,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         const descriptor: GPURenderPassDescriptor = {
             colorAttachments,
             depthStencilAttachment,
+            label: renderTarget.label,
         };
 
         return descriptor;
@@ -368,8 +445,6 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
         const gpuRenderTarget = new GpuRenderTarget();
 
-        gpuRenderTarget.colorTargetCount = renderTarget.colorAttachments.length;
-
         // create a context...
         // is a canvas...
         renderTarget.colorAttachments.forEach((colorAttachment, i) =>
@@ -385,6 +460,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     ) as unknown as GPUCanvasContext;
 
                     const alphaMode = colorTexture.transparent ? 'premultiplied' : 'opaque';
+                    const canvasFormat = getCanvasContextFormat(colorTexture.format);
 
                     try
                     {
@@ -394,8 +470,11 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                                 | GPUTextureUsage.COPY_DST
                                 | GPUTextureUsage.RENDER_ATTACHMENT
                                 | GPUTextureUsage.COPY_SRC,
-                            format: 'bgra8unorm',
+                            format: canvasFormat,
                             alphaMode,
+                            ...(canvasFormat === 'rgba16float'
+                                ? { toneMapping: { mode: 'extended' } }
+                                : {}),
                         });
                     }
                     catch (e)
@@ -427,6 +506,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     sampleCount: 4,
                     transient: colorTexture.transient,
                     arrayLayerCount: colorTexture.arrayLayerCount,
+                    format: colorTexture.format,
                 });
 
                 gpuRenderTarget.msaaTextures[i] = msaaTexture;

@@ -233,7 +233,7 @@ describe('Depth-only RenderTarget', () =>
         });
 
         expect(() => renderTarget.destroy()).not.toThrow();
-        expect(renderTarget.depthStencilTexture).toBeUndefined();
+        expect(renderTarget.depthStencilTexture).toBeNull();
     });
 
     it('should still create a normal target with colorTextures: 1 (default)', () =>
