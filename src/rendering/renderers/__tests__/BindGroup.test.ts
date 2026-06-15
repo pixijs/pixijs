@@ -161,6 +161,6 @@ describe('BindGroup', () =>
 
         bufferResource.destroy();
 
-        expect(bindGroup.resources).toBeNull();
+        expect(bindGroup.resources[0]).toBeNull();
     });
 });

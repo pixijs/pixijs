@@ -1,3 +1,4 @@
+import { uid } from '../../../../../utils/data/uid';
 import { GlTexture } from '../../../gl/texture/GlTexture';
 import { GPUTextureGpuData } from '../../../gpu/texture/GpuTextureSystem';
 import { type Renderer, RendererType } from '../../../types';
@@ -214,15 +215,16 @@ export class ExternalSource extends TextureSource<GPUTexture | WebGLTexture>
             if (data.gpuTexture !== gpuTexture)
             {
                 data.gpuTexture = gpuTexture as GPUTexture;
+
+                // every cached view points at the old GPUTexture
                 data.textureView = null;
+                data.textureViews = Object.create(null);
 
-                // Invalidate bind group hash
-                const textureSystem = (renderer as any).texture;
-
-                if (textureSystem?._bindGroupHash)
-                {
-                    textureSystem._bindGroupHash[this.uid] = null;
-                }
+                // a new GPU object invalidates every bind group referencing this source —
+                // the resource id bump + 'change' event is the established signal that
+                // makes them re-resolve (see TextureSource)
+                this._resourceId = uid('resource');
+                this.emit('change', this);
             }
 
             // Update dimensions from GPUTexture (or use provided values)
