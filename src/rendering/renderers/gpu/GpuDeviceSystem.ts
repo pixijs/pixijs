@@ -136,6 +136,9 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
             'texture-compression-astc',
             'texture-compression-etc2',
             'indirect-first-instance',
+            // Lets rg11b10ufloat be used as a render target; optional, so only
+            // requested when the adapter advertises it.
+            'rg11b10ufloat-renderable',
         ].filter((feature) => adapter.features.has(feature)) as GPUFeatureName[];
 
         const device = await adapter.requestDevice({
