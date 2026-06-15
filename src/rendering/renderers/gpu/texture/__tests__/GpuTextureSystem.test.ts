@@ -1,13 +1,21 @@
-import { Texture } from '../../../../shared/texture/Texture';
-import { getWebGPURenderer } from '@test-utils';
+import { Texture } from '../../../shared/texture/Texture';
+import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
 
-import type { WebGPURenderer } from '../../../WebGPURenderer';
+import type { WebGPURenderer } from '../../WebGPURenderer';
 
-describe('GpuTextureSystem', () =>
+let renderer: WebGPURenderer;
+
+afterEach(() =>
+{
+    renderer?.destroy();
+    renderer = null;
+});
+
+describeLocalOnly('GpuTextureSystem', () =>
 {
     it('should cache texture views correctly', async () =>
     {
-        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
         const texture = Texture.WHITE;
 
         // Ensure source is initialized
@@ -29,7 +37,7 @@ describe('GpuTextureSystem', () =>
 
     it('should generate different keys for different layers', async () =>
     {
-        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
 
         // Create a texture that pretends to have layers (e.g. 2D array or Cube)
         // For testing key generation, we just need to pass the params.
