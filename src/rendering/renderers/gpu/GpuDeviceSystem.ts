@@ -140,6 +140,11 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
             forceFallbackAdapter: options.forceFallbackAdapter,
         });
 
+        if (!adapter)
+        {
+            throw new Error('WebGPU not supported. No GPU adapter was returned by navigator.gpu.requestAdapter().');
+        }
+
         const requiredFeatures = [
             'texture-compression-bc',
             'texture-compression-astc',

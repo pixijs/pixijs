@@ -1,7 +1,7 @@
 import { CLEAR } from '../gl/const';
 import { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
-import { getWebGLRenderer, getWebGPURenderer } from '@test-utils';
+import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
 
 import type { WebGLRenderer } from '../gl/WebGLRenderer';
 import type { WebGPURenderer } from '../gpu/WebGPURenderer';
@@ -13,11 +13,19 @@ function createTarget(options: Partial<ConstructorParameters<typeof TextureSourc
     });
 }
 
+let renderer: WebGLRenderer | WebGPURenderer;
+
+afterEach(() =>
+{
+    renderer?.destroy();
+    renderer = null;
+});
+
 describe('RenderTargetSystem', () =>
 {
     it('should return a render target for canvas elements', async () =>
     {
-        const renderer = await getWebGLRenderer({}) as WebGLRenderer;
+        renderer = await getWebGLRenderer({}) as WebGLRenderer;
         const canvas = document.createElement('canvas');
 
         const target = renderer.renderTarget.getRenderTarget(canvas);
@@ -26,11 +34,11 @@ describe('RenderTargetSystem', () =>
     });
 });
 
-describe('RenderTargetSystem idempotent bind (WebGPU)', () =>
+describeLocalOnly('RenderTargetSystem idempotent bind (WebGPU)', () =>
 {
     it('reuses the open pass when binding the same target with no clear', async () =>
     {
-        const renderer = await getWebGPURenderer() as WebGPURenderer;
+        renderer = await getWebGPURenderer() as WebGPURenderer;
 
         renderer.encoder.renderStart();
 
@@ -49,7 +57,7 @@ describe('RenderTargetSystem idempotent bind (WebGPU)', () =>
 
     it('forces a real begin when a clear is requested', async () =>
     {
-        const renderer = await getWebGPURenderer() as WebGPURenderer;
+        renderer = await getWebGPURenderer() as WebGPURenderer;
 
         renderer.encoder.renderStart();
 
@@ -66,7 +74,7 @@ describe('RenderTargetSystem idempotent bind (WebGPU)', () =>
 
     it('forces a real begin for a partial clear (cannot flip loadOp mid-pass)', async () =>
     {
-        const renderer = await getWebGPURenderer() as WebGPURenderer;
+        renderer = await getWebGPURenderer() as WebGPURenderer;
 
         renderer.encoder.renderStart();
 
@@ -83,7 +91,7 @@ describe('RenderTargetSystem idempotent bind (WebGPU)', () =>
 
     it('forces a real begin when the mip level changes', async () =>
     {
-        const renderer = await getWebGPURenderer() as WebGPURenderer;
+        renderer = await getWebGPURenderer() as WebGPURenderer;
 
         renderer.encoder.renderStart();
 
@@ -100,7 +108,7 @@ describe('RenderTargetSystem idempotent bind (WebGPU)', () =>
 
     it('forces a real begin when the array layer changes', async () =>
     {
-        const renderer = await getWebGPURenderer() as WebGPURenderer;
+        renderer = await getWebGPURenderer() as WebGPURenderer;
 
         renderer.encoder.renderStart();
 
@@ -117,7 +125,7 @@ describe('RenderTargetSystem idempotent bind (WebGPU)', () =>
 
     it('reopens the pass after it has been finished (copy case)', async () =>
     {
-        const renderer = await getWebGPURenderer() as WebGPURenderer;
+        renderer = await getWebGPURenderer() as WebGPURenderer;
 
         renderer.encoder.renderStart();
 
@@ -135,7 +143,7 @@ describe('RenderTargetSystem idempotent bind (WebGPU)', () =>
 
     it('does not flush the encoder state cache on a reused bind', async () =>
     {
-        const renderer = await getWebGPURenderer() as WebGPURenderer;
+        renderer = await getWebGPURenderer() as WebGPURenderer;
 
         renderer.encoder.renderStart();
 
@@ -160,7 +168,7 @@ describe('RenderTargetSystem idempotent bind (WebGPU)', () =>
 
     it('minimises begins across push(T); push(T); pop()', async () =>
     {
-        const renderer = await getWebGPURenderer() as WebGPURenderer;
+        renderer = await getWebGPURenderer() as WebGPURenderer;
 
         renderer.encoder.renderStart();
 
@@ -185,7 +193,7 @@ describe('RenderTargetSystem idempotent bind (WebGL)', () =>
 {
     it('skips a redundant glBindFramebuffer when re-binding the same target', async () =>
     {
-        const renderer = await getWebGLRenderer() as WebGLRenderer;
+        renderer = await getWebGLRenderer() as WebGLRenderer;
 
         const target = createTarget();
 
@@ -201,7 +209,7 @@ describe('RenderTargetSystem idempotent bind (WebGL)', () =>
 
     it('binds the framebuffer when switching to a different target', async () =>
     {
-        const renderer = await getWebGLRenderer() as WebGLRenderer;
+        renderer = await getWebGLRenderer() as WebGLRenderer;
 
         const targetA = createTarget();
         const targetB = createTarget();
@@ -220,7 +228,7 @@ describe('copyDepthTexture argument safety', () =>
 {
     it('should not mutate the caller-supplied rect objects when clamping', async () =>
     {
-        const renderer = await getWebGLRenderer({ width: 64, height: 64 });
+        renderer = await getWebGLRenderer({ width: 64, height: 64 });
 
         const makeTarget = () => new RenderTarget({
             colorTextures: [new TextureSource({ width: 32, height: 32 })],
@@ -241,7 +249,5 @@ describe('copyDepthTexture argument safety', () =>
         expect(originSrc).toEqual({ x: -4, y: -4 });
         expect(size).toEqual({ width: 64, height: 64 });
         expect(originDest).toEqual({ x: 0, y: 0 });
-
-        renderer.destroy();
     });
 });
