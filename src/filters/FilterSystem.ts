@@ -365,7 +365,8 @@ export class FilterSystem implements System
 
         const renderer = this.renderer;
 
-        // TODO required? check with AA
+        // required: resolves the bound target's MSAA content (GL blits to the resolve
+        // framebuffer; WebGPU ends the pass) so the filter can sample what was just rendered
         renderer.renderTarget.finishRenderPass();
 
         // get a BufferResource from the uniformBatch.

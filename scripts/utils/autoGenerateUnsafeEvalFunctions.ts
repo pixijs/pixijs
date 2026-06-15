@@ -105,7 +105,7 @@ function autoGenerateUboUnsafeEvalFunctions()
     out.push('export const uboParserFunctions:UboUploadFunction[] = [');
     for (const i in uniformParsers)
     {
-        const fn = uniformParsers[i].uboWgsl ?? uniformParsers[i].ubo;
+        const fn = uniformParsers[i].ubo;
 
         out.push(`${convertToFunction(fn)},`);
     }

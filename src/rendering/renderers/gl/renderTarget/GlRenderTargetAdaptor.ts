@@ -25,6 +25,13 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
     private _viewPortCache: Rectangle = new Rectangle();
     /** Pre-computed draw buffers arrays for MRT, indexed by color attachment count */
     private _drawBuffersCache: number[][];
+    /**
+     * The framebuffer currently bound to `gl.FRAMEBUFFER`, used to skip a redundant `bindFramebuffer`
+     * when re-binding the same target. `undefined` means "unknown" (force a real bind). All framebuffer
+     * binding must go through {@link bindFramebuffer} to keep this coherent; {@link resetState} marks
+     * it unknown when external GL code may have changed the binding.
+     */
+    private _boundFramebuffer: WebGLFramebuffer | null | undefined = undefined;
 
     public init(renderer: WebGLRenderer, renderTargetSystem: RenderTargetSystem<GlRenderTarget>): void
     {
@@ -38,6 +45,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
     {
         this._clearColorCache = [0, 0, 0, 0];
         this._viewPortCache = new Rectangle();
+        this._boundFramebuffer = undefined;
 
         // Pre-compute draw buffers arrays for all possible MRT configurations
         const gl = this._renderer.gl;
@@ -67,6 +75,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         this.finishRenderPass(sourceRenderSurfaceTexture);
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, glRenderTarget.resolveTargetFramebuffer);
+        this._boundFramebuffer = glRenderTarget.resolveTargetFramebuffer;
 
         renderer.texture.bind(destinationTexture, 0);
 
@@ -115,13 +124,6 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         // do the work..
 
-        let viewPortY = viewport.y;
-
-        if (renderTarget.isRoot)
-        {
-            viewPortY = renderTarget.pixelHeight - viewport.height - viewport.y;
-        }
-
         renderTarget.colorAttachments.forEach((attachment) =>
         {
             this._renderer.texture.unbind(attachment.texture);
@@ -129,7 +131,9 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         const gl = this._renderer.gl;
 
-        gl.bindFramebuffer(gl.FRAMEBUFFER, gpuRenderTarget.framebuffer);
+        // Skip a redundant glBindFramebuffer when this FBO is already bound (idempotent bind).
+        // The attachment (mip/layer) and viewport caches below still re-run their own "math".
+        this.bindFramebuffer(gpuRenderTarget.framebuffer);
 
         if (
             !renderTarget.isRoot
@@ -198,20 +202,32 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             gpuRenderTarget._attachedLayer = layer;
         }
 
-        if (renderTarget.depthStencilAttachment)
+        // the root target renders to the canvas, whose context owns its depth/stencil buffers
+        if (gpuRenderTarget.framebuffer)
         {
-            this._attachDepthStencilTexture(renderTarget, mipLevel, layer);
-        }
-        // if the stencil buffer has been requested, we need to create a stencil buffer
-        else if (!gpuRenderTarget.depthStencilRenderBuffer && (renderTarget.stencil || renderTarget.depth))
-        {
-            this._initStencil(gpuRenderTarget);
+            if (renderTarget.depthStencilAttachment)
+            {
+                this._attachDepthStencilTexture(renderTarget, mipLevel, layer);
+            }
+            // depth/stencil requested without an explicit texture — a renderbuffer is cheaper
+            // and (unlike a texture) can be multisampled to match an MSAA color attachment
+            else if (!gpuRenderTarget.depthStencilRenderBuffer && (renderTarget.stencil || renderTarget.depth))
+            {
+                this._initStencil(gpuRenderTarget);
+            }
         }
 
         // Set draw buffers for multiple render targets (MRT)
         if (renderTarget.colorAttachments.length > 1)
         {
             this._setDrawBuffers(renderTarget, gl);
+        }
+
+        let viewPortY = viewport.y;
+
+        if (renderTarget.isRoot)
+        {
+            viewPortY = renderTarget.pixelHeight - viewport.height - viewport.y;
         }
 
         const viewPortCache = this._viewPortCache;
@@ -258,6 +274,8 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         );
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, glRenderTarget.framebuffer);
+        // we explicitly drove FRAMEBUFFER (both read+draw) back to the multisample framebuffer
+        this._boundFramebuffer = glRenderTarget.framebuffer;
     }
 
     public initGpuRenderTarget(renderTarget: RenderTarget): GlRenderTarget
@@ -300,6 +318,8 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         }
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        // init drove the binding through several raw framebuffers and ended on the default one
+        this._boundFramebuffer = null;
 
         return glRenderTarget;
     }
@@ -368,6 +388,10 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         const gl = this._renderer.gl;
 
+        // gl.clear's depth write is masked by gl.depthMask, which 2D rendering
+        // (State.for2d) leaves disabled — force it on for the clear, then restore
+        const forceDepthMask = !!(clear & CLEAR.DEPTH) && !this._renderer.state.depthMaskEnabled;
+
         if (clear & CLEAR.COLOR)
         {
             clearColor ??= renderTargetSystem.defaultClearColor;
@@ -389,7 +413,11 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             }
         }
 
+        if (forceDepthMask) gl.depthMask(true);
+
         gl.clear(clear);
+
+        if (forceDepthMask) gl.depthMask(false);
     }
 
     public resizeGpuRenderTarget(renderTarget: RenderTarget)
@@ -406,10 +434,13 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             this._resizeColor(renderTarget, glRenderTarget);
         }
 
-        if (renderTarget.stencil || renderTarget.depth)
+        if (glRenderTarget.depthStencilRenderBuffer)
         {
             this._resizeStencil(glRenderTarget);
         }
+
+        // _resizeColor (MSAA) rebinds framebuffers; force the next startRenderPass to bind explicitly
+        this._boundFramebuffer = undefined;
     }
 
     private _initColor(renderTarget: RenderTarget, glRenderTarget: GlRenderTarget)
@@ -609,11 +640,20 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         const glTexture = glSource.texture;
         const format = source.format;
 
-        let attachment: number = gl.DEPTH_ATTACHMENT;
+        // the attachment point must match the texture's aspects, or the framebuffer is incomplete
+        let attachment: number;
 
-        if (format === 'depth24plus-stencil8' || format === 'depth24plus' || format === 'stencil8')
+        if (format === 'depth24plus-stencil8' || format === 'depth32float-stencil8')
         {
             attachment = gl.DEPTH_STENCIL_ATTACHMENT;
+        }
+        else if (format === 'stencil8')
+        {
+            attachment = gl.STENCIL_ATTACHMENT;
+        }
+        else
+        {
+            attachment = gl.DEPTH_ATTACHMENT;
         }
 
         if (glSource.target === gl.TEXTURE_2D)
@@ -760,5 +800,32 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             // WebGL2 has built in support
             gl.drawBuffers(bufferArray);
         }
+    }
+
+    /**
+     * Forget the GL-call caches (framebuffer binding, viewport, clear color) so the next pass
+     * re-applies them. Called via the renderer's `resetState` runner when external GL code may
+     * have changed state behind our back.
+     * @internal
+     */
+    public resetState(): void
+    {
+        this._boundFramebuffer = undefined;
+        this._viewPortCache = new Rectangle();
+        this._clearColorCache = [0, 0, 0, 0];
+    }
+
+    /**
+     * Binds a framebuffer to `gl.FRAMEBUFFER`, skipping the call when it is already bound.
+     * The single blessed way to bind a framebuffer — keeps {@link _boundFramebuffer} coherent.
+     * @param framebuffer - the framebuffer to bind
+     * @internal
+     */
+    public bindFramebuffer(framebuffer: WebGLFramebuffer | null): void
+    {
+        if (this._boundFramebuffer === framebuffer) return;
+
+        this._boundFramebuffer = framebuffer;
+        this._renderer.gl.bindFramebuffer(this._renderer.gl.FRAMEBUFFER, framebuffer);
     }
 }

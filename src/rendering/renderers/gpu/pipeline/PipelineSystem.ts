@@ -8,10 +8,10 @@ import { GpuStencilModesToPixi } from '../state/GpuStencilModesToPixi';
 
 import type { Topology } from '../../shared/geometry/const';
 import type { Geometry } from '../../shared/geometry/Geometry';
+import type { RenderTarget } from '../../shared/renderTarget/RenderTarget';
 import type { State } from '../../shared/state/State';
 import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
-import type { GpuRenderTarget } from '../renderTarget/GpuRenderTarget';
 import type { GpuProgram } from '../shader/GpuProgram';
 import type { StencilState } from '../state/GpuStencilModesToPixi';
 import type { WebGPURenderer } from '../WebGPURenderer';
@@ -26,13 +26,17 @@ const topologyStringToId = {
 
 const emptyOverrides = new ShaderOverrides({});
 
+// `index` is the value baked into the pipeline cache key (see getGlobalStateKey).
+// Index 0 is reserved for "no depth-stencil attachment" (emptyDepthStencilFormatData);
+// every real format gets a distinct non-zero index so a depth-less target and a
+// depth-enabled target can never resolve to the same pipeline-cache slot.
 const depthStencilFormatMap: Record<string, { depth: boolean, stencil: boolean, index: number }> = {
-    'depth24plus-stencil8': { depth: true, stencil: true, index: 0 },
-    depth24plus: { depth: true, stencil: false, index: 1 },
-    depth32float: { depth: true, stencil: false, index: 2 },
-    'depth32float-stencil8': { depth: true, stencil: true, index: 3 },
-    depth16unorm: { depth: true, stencil: false, index: 4 },
-    stencil8: { depth: false, stencil: true, index: 5 },
+    'depth24plus-stencil8': { depth: true, stencil: true, index: 1 },
+    depth24plus: { depth: true, stencil: false, index: 2 },
+    depth32float: { depth: true, stencil: false, index: 3 },
+    'depth32float-stencil8': { depth: true, stencil: true, index: 4 },
+    depth16unorm: { depth: true, stencil: false, index: 5 },
+    stencil8: { depth: false, stencil: true, index: 6 },
 };
 
 const emptyDepthStencilFormatData = { depth: false, stencil: false, index: 0 };
@@ -97,28 +101,56 @@ function getGraphicsStateKey(
     + topology;
 }
 
-// colorMask = 16;// 4 bits // 16 states // value 0-15;
-// stencilState = 8; // 3 bits // 8 states // value 0-7;
-// renderTarget = 1; // 2 bit // 3 states // value 0-3; // none, stencil, depth, depth-stencil
-// multiSampleCount = 1; // 1 bit // 2 states // value 0-1;
-// colorTargetCount = 4; // 2 bits // 4 states // value 0-3; // supports 1-4 color targets
-// depthStencilFormat = 7; // 3 bits // 8 states // value 0-7;
+// Module-local interner for color attachment formats. Realistic apps will populate
+// 1-3 entries ever (default render-target format + maybe rgba16float for HDR), so the
+// id stays small and fits comfortably in a few bits of the global cache key.
+//
+// Trade-off: only the first attachment's format is encoded. Mixed-format MRT (where
+// different attachments use different formats) would alias the same cache slot. The
+// failure mode is a clean WebGPU validation error at setPipeline time, not silent
+// corruption, so it surfaces immediately if anyone hits it.
+const colorFormatIds: Record<string, number> = Object.create(null);
+let nextColorFormatId = 0;
+
+function getColorFormatId(format: GPUTextureFormat): number
+{
+    let id = colorFormatIds[format];
+
+    if (id === undefined) id = colorFormatIds[format] = nextColorFormatId++;
+
+    return id;
+}
+
+// multiSampleCount = 1;     // bit 0      // 2 states // value 0-1 (normalized from sampleCount 1|4)
+// colorTargetCount = 9;     // bits 1-4   // supports 0-8 color targets (WebGPU maxColorAttachments)
+// depthReadOnly = 1;        // bit 5      // 2 states // value 0-1;
+// stencilState = 8;         // bits 6-8   // 8 states // value 0-7;
+// colorMask = 16;           // bits 9-12  // 16 states // value 0-15;
+// depthStencilFormat = 7;   // bits 13-15 // 8 states // value 0-7;
+// colorFormatId = 16;       // bits 16-19 // 16 interned color attachment formats
 function getGlobalStateKey(
     stencilStateId: number,
     multiSampleCount: number,
     colorMask: number,
     colorTargetCount: number,
     depthStencilFormat: number,
+    colorFormatId: number,
+    depthReadOnly: number,
 ): number
 {
-    return (depthStencilFormat << 12) // Allocate 3 bits
-         | (colorMask << 8) // Allocate the 4 bits for colorMask at the top
-         | (stencilStateId << 5) // Next 3 bits for stencilStateId
-         | (colorTargetCount << 1) // 2 bits for colorTargetCount
-         | multiSampleCount; // And 1 bit for multiSampleCount at the least significant position
+    return (colorFormatId << 16) // 4 bits for colorFormatId
+         | (depthStencilFormat << 13) // 3 bits for depthStencilFormat
+         | (colorMask << 9) // 4 bits for colorMask
+         | (stencilStateId << 6) // 3 bits for stencilStateId
+         | (depthReadOnly << 5) // 1 bit for depthReadOnly (read-only depth passes can't emit depth writes)
+         | (colorTargetCount << 1) // 4 bits for colorTargetCount (0-8, WebGPU's maxColorAttachments)
+         | multiSampleCount; // 1 bit for multiSampleCount at the least significant position
 }
 
-type PipeHash = Record<number, GPURenderPipeline>;
+// a Map, not a plain object: the combined graphics key exceeds 2^31, and big numeric
+// keys on objects get stringified per lookup (dictionary mode) — Map hashes numbers
+// natively, which benchmarks ~3x faster on this per-draw path
+type PipeHash = Map<number, GPURenderPipeline>;
 
 /**
  * A system that creates and manages the GPU pipelines.
@@ -153,7 +185,7 @@ export class PipelineSystem implements System
     private _bufferLayoutsCache: Record<number, GPUVertexBufferLayout[]> = Object.create(null);
     private readonly _bindingNamesCache: Record<string, Record<string, string>> = Object.create(null);
 
-    private _pipeCache: PipeHash = Object.create(null);
+    private _pipeCache: PipeHash = new Map();
     private readonly _pipeStateCaches: Record<number, PipeHash> = Object.create(null);
 
     private _gpu: GPU;
@@ -163,8 +195,11 @@ export class PipelineSystem implements System
     private _colorMask = 0b1111;
     private _multisampleCount = 1;
     private _colorTargetCount = 1;
+    private _colorFormat: GPUTextureFormat = 'bgra8unorm';
+    private _colorFormatId = getColorFormatId('bgra8unorm');
     private _depthStencilFormat: GPUTextureFormat = 'depth24plus-stencil8';
     private _depthStencilFormatData = emptyDepthStencilFormatData;
+    private _depthReadOnly = false;
 
     constructor(renderer: WebGPURenderer)
     {
@@ -188,12 +223,22 @@ export class PipelineSystem implements System
         this._updatePipeHash();
     }
 
-    public setRenderTarget(renderTarget: GpuRenderTarget)
+    public setRenderTarget(renderTarget: RenderTarget)
     {
-        this._multisampleCount = renderTarget.msaaSamples;
-        this._colorTargetCount = renderTarget.colorTargetCount;
-        this._depthStencilFormat = renderTarget.depthStencilFormat;
+        // Depth-only render targets (e.g. shadow maps) have no color attachments.
+        // Pipelines built against them will have no fragment color outputs, but we still
+        // need stable defaults for the cache key.
+        const colorTexture = renderTarget.colorAttachments[0]?.texture;
+
+        this._multisampleCount = colorTexture?.source.antialias ? 4 : 1;
+        this._colorTargetCount = renderTarget.colorAttachments.length;
+        this._colorFormat = colorTexture?.format ?? 'bgra8unorm';
+        this._colorFormatId = getColorFormatId(this._colorFormat);
+        // the adaptor ensures a depth/stencil request has materialised its texture before
+        // calling this (GpuRenderTargetAdaptor.startRenderPass), so the attachment is the truth
+        this._depthStencilFormat = renderTarget.depthStencilAttachment?.texture.format;
         this._depthStencilFormatData = depthStencilFormatMap[this._depthStencilFormat] || emptyDepthStencilFormatData;
+        this._depthReadOnly = renderTarget.depthStencilAttachment?.depthReadOnly ?? false;
         this._updatePipeHash();
     }
 
@@ -228,7 +273,7 @@ export class PipelineSystem implements System
 
         for (let i = 0; i < this._colorTargetCount; i++)
         {
-            colorFormats.push('bgra8unorm');
+            colorFormats.push(this._colorFormat);
         }
 
         const descriptor: GPURenderBundleEncoderDescriptor = {
@@ -315,11 +360,15 @@ export class PipelineSystem implements System
             overrides.id,
         );
 
-        if (this._pipeCache[key]) return this._pipeCache[key];
+        let pipeline = this._pipeCache.get(key);
 
-        this._pipeCache[key] = this._createPipeline(geometry, program, state, topology, overrides);
+        if (!pipeline)
+        {
+            pipeline = this._createPipeline(geometry, program, state, topology, overrides);
+            this._pipeCache.set(key, pipeline);
+        }
 
-        return this._pipeCache[key];
+        return pipeline;
     }
 
     private _createPipeline(
@@ -334,7 +383,7 @@ export class PipelineSystem implements System
 
         const buffers = this._createVertexBufferLayouts(geometry, program);
 
-        const blendModes = this._renderer.state.getColorTargets(state, this._colorTargetCount);
+        const blendModes = this._renderer.state.getColorTargets(state, this._colorTargetCount, this._colorFormat);
 
         // Apply write mask to all color targets
         const writeMask = this._stencilMode === STENCIL_MODES.RENDERING_MASK_ADD ? 0 : this._colorMask;
@@ -389,7 +438,7 @@ export class PipelineSystem implements System
                 count: this._multisampleCount,
             },
             // depthStencil,
-            label: `PIXI Pipeline`,
+            label: program.name ? `PIXI Pipeline (${program.name})` : `PIXI Pipeline`,
         };
 
         // only apply if the texture has stencil or depth
@@ -401,7 +450,7 @@ export class PipelineSystem implements System
             descriptor.depthStencil = {
                 ...this._stencilState,
                 format: this._depthStencilFormat,
-                depthWriteEnabled: formatData.depth ? state.depthMask : false,
+                depthWriteEnabled: formatData.depth ? (state.depthMask && !this._depthReadOnly) : false,
                 depthCompare: formatData.depth && state.depthTest ? 'less' : 'always',
             };
         }
@@ -583,18 +632,17 @@ export class PipelineSystem implements System
     {
         const key = getGlobalStateKey(
             this._stencilMode,
-            this._multisampleCount,
+            // normalize the raw sample count (1 or 4 — WebGPU's only renderable counts) to a
+            // true single bit, so it cannot spill into the colorTargetCount field above it
+            this._multisampleCount === 1 ? 0 : 1,
             this._colorMask,
             this._colorTargetCount,
-            this._depthStencilFormatData.index
+            this._depthStencilFormatData.index,
+            this._colorFormatId,
+            this._depthReadOnly ? 1 : 0,
         );
 
-        if (!this._pipeStateCaches[key])
-        {
-            this._pipeStateCaches[key] = Object.create(null);
-        }
-
-        this._pipeCache = this._pipeStateCaches[key];
+        this._pipeCache = this._pipeStateCaches[key] ??= new Map();
     }
 
     public destroy(): void

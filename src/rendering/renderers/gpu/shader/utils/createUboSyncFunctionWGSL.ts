@@ -1,4 +1,4 @@
-import { createUboSyncFunction } from '../../../shared/shader/utils/createUboSyncFunction';
+import { compileBufferSync } from '../../../shared/shader/utils/compileBufferSync';
 import { uboSyncFunctionsWGSL } from '../../../shared/shader/utils/uboSyncFunctions';
 import { generateArraySyncWGSL } from './generateArraySyncWGSL';
 
@@ -12,10 +12,9 @@ export function createUboSyncFunctionWGSL(
     uboElements: UboElement[],
 ): UniformsSyncCallback
 {
-    return createUboSyncFunction(
+    return compileBufferSync(
         uboElements,
-        'uboWgsl',
-        generateArraySyncWGSL,
         uboSyncFunctionsWGSL,
+        generateArraySyncWGSL,
     );
 }
