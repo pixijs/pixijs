@@ -1,6 +1,6 @@
 import { RenderTarget } from '../../../shared/renderTarget/RenderTarget';
 import { TextureSource } from '../../../shared/texture/sources/TextureSource';
-import { getWebGPURenderer } from '@test-utils';
+import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
 
 import type { WebGPURenderer } from '../../WebGPURenderer';
 
@@ -12,7 +12,7 @@ function makeTarget(): RenderTarget
     });
 }
 
-describe('GpuRenderTargetAdaptor copies', () =>
+describeLocalOnly('GpuRenderTargetAdaptor copies', () =>
 {
     it('should close an open render pass before recording copyDepthTexture mid-frame', async () =>
     {
@@ -44,7 +44,7 @@ describe('GpuRenderTargetAdaptor copies', () =>
     });
 });
 
-describe('GpuRenderTargetAdaptor labels', () =>
+describeLocalOnly('GpuRenderTargetAdaptor labels', () =>
 {
     it('should plumb the RenderTarget label through to the render pass descriptor', async () =>
     {

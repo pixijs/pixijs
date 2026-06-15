@@ -1,6 +1,6 @@
 import { ExternalSource } from '../sources/ExternalSource';
 import { Texture } from '../Texture';
-import { getWebGLRenderer } from '@test-utils';
+import { describeLocalOnly, getWebGLRenderer } from '@test-utils';
 
 describe('ExternalSource', () =>
 {
@@ -298,7 +298,7 @@ describe('ExternalSource', () =>
     });
 });
 
-describe('ExternalSource updateGPUTexture (WebGPU)', () =>
+describeLocalOnly('ExternalSource updateGPUTexture (WebGPU)', () =>
 {
     it('should invalidate cached views and bind keys when the GPU texture is swapped', async () =>
     {

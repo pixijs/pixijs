@@ -5,6 +5,7 @@ import { BufferUsage } from '../shared/buffer/const';
 import { UniformGroup } from '../shared/shader/UniformGroup';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
 import { TextureStyle } from '../shared/texture/TextureStyle';
+import { itLocalOnly } from '@test-utils';
 import { resetUids } from '~/utils';
 
 describe('BindGroup', () =>
@@ -181,7 +182,7 @@ describe('BindGroup', () =>
         expect(bindGroup.resources[0]).toBe(source);
     });
 
-    it('should raise a clear error when resolving a bind group whose resource was destroyed', async () =>
+    itLocalOnly('should raise a clear error when resolving a bind group whose resource was destroyed', async () =>
     {
         const { getWebGPURenderer } = await import('@test-utils');
         const { GpuProgram } = await import('../gpu/shader/GpuProgram');

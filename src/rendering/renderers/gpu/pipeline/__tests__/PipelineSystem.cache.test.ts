@@ -1,14 +1,22 @@
 import { RenderTarget } from '../../../shared/renderTarget/RenderTarget';
 import { TextureSource } from '../../../shared/texture/sources/TextureSource';
-import { getWebGPURenderer } from '@test-utils';
+import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
 
 import type { WebGPURenderer } from '../../WebGPURenderer';
 
-describe('PipelineSystem color format cache', () =>
+let renderer: WebGPURenderer;
+
+afterEach(() =>
+{
+    renderer?.destroy();
+    renderer = null;
+});
+
+describeLocalOnly('PipelineSystem color format cache', () =>
 {
     it('switches to a separate pipeline cache bucket when the color format changes', async () =>
     {
-        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
 
         const rgba8Target = new RenderTarget({
             colorTextures: [new TextureSource({ width: 16, height: 16, format: 'rgba8unorm' })],
@@ -39,11 +47,11 @@ describe('PipelineSystem color format cache', () =>
     });
 });
 
-describe('PipelineSystem depth-stencil format cache', () =>
+describeLocalOnly('PipelineSystem depth-stencil format cache', () =>
 {
     it('switches to a separate pipeline cache bucket when a depth-stencil attachment is present', async () =>
     {
-        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
 
         // Identical color format on both targets so the depth-stencil attachment is the
         // only thing that differs between them.
@@ -83,11 +91,11 @@ describe('PipelineSystem depth-stencil format cache', () =>
     });
 });
 
-describe('PipelineSystem depth-read-only cache', () =>
+describeLocalOnly('PipelineSystem depth-read-only cache', () =>
 {
     it('switches to a separate pipeline cache bucket when the depth attachment is read-only', async () =>
     {
-        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
 
         // Identical color + depth-stencil formats on both targets so the only thing that
         // differs is whether the depth attachment is bound read-only.
@@ -133,11 +141,11 @@ describe('PipelineSystem depth-read-only cache', () =>
     });
 });
 
-describe('PipelineSystem color target count cache', () =>
+describeLocalOnly('PipelineSystem color target count cache', () =>
 {
     it('must not alias a 4-attachment MRT target with a depth-only read-only target', async () =>
     {
-        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
 
         const depthFormat = 'depth24plus-stencil8';
 

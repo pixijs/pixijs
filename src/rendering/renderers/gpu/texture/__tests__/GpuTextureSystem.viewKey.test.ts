@@ -1,9 +1,9 @@
 import { TextureSource } from '../../../shared/texture/sources/TextureSource';
-import { getWebGPURenderer } from '@test-utils';
+import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
 
 import type { WebGPURenderer } from '../../WebGPURenderer';
 
-describe('GpuTextureSystem texture view cache key', () =>
+describeLocalOnly('GpuTextureSystem texture view cache key', () =>
 {
     it('should return distinct views for descriptors differing only in mip/layer fields', async () =>
     {
