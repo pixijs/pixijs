@@ -486,6 +486,8 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
 
         this.resources = null;
         this.groups = null;
+
+        (this._overrides as null) = null;
     }
 
     /**

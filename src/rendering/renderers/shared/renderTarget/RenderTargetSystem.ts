@@ -805,7 +805,7 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         {
             if (renderTarget !== key)
             {
-                renderTarget.destroy();
+                this._releaseRenderTarget(key as TextureSource, renderTarget);
             }
         });
 
@@ -838,26 +838,41 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
                 renderTarget.isRoot = true;
             }
 
-            // TODO add a test for this
-            renderSurface.once('destroy', () =>
-            {
-                renderTarget.destroy();
-
-                this._renderSurfaceToRenderTargetHash.delete(renderSurface);
-
-                const gpuRenderTarget = this._gpuRenderTargetHash[renderTarget.uid];
-
-                if (gpuRenderTarget)
-                {
-                    this._gpuRenderTargetHash[renderTarget.uid] = null;
-                    this.adaptor.destroyGpuRenderTarget(gpuRenderTarget);
-                }
-            });
+            renderSurface.once('destroy', this._onRenderSurfaceDestroy, this);
         }
 
         this._renderSurfaceToRenderTargetHash.set(renderSurface, renderTarget);
 
         return renderTarget;
+    }
+
+    private _onRenderSurfaceDestroy(renderSurface: TextureSource): void
+    {
+        const renderTarget = this._renderSurfaceToRenderTargetHash.get(renderSurface);
+
+        if (renderTarget) this._releaseRenderTarget(renderSurface, renderTarget);
+    }
+
+    /**
+     * Tears down a render target that wraps a texture source, removing every reference the
+     * system holds to it so neither the system's own teardown nor the source's `destroy`
+     * event can destroy it a second time.
+     * @param renderSurface - the texture source the render target wraps
+     * @param renderTarget - the render target to release
+     */
+    private _releaseRenderTarget(renderSurface: TextureSource, renderTarget: RenderTarget): void
+    {
+        renderTarget.destroy();
+        this._renderSurfaceToRenderTargetHash.delete(renderSurface);
+        renderSurface.off('destroy', this._onRenderSurfaceDestroy, this);
+
+        const gpuRenderTarget = this._gpuRenderTargetHash[renderTarget.uid];
+
+        if (gpuRenderTarget)
+        {
+            this._gpuRenderTargetHash[renderTarget.uid] = null;
+            this.adaptor.destroyGpuRenderTarget(gpuRenderTarget);
+        }
     }
 
     public getGpuRenderTarget(renderTarget: RenderTarget)
