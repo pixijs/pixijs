@@ -42,6 +42,7 @@ export class GPUTextureGpuData implements GPUData
     {
         this.gpuTexture.destroy();
         this.textureView = null;
+        this.textureViews = null;
         this.gpuTexture = null;
     }
 }

@@ -408,6 +408,8 @@ export class RenderTarget
 
     public destroy()
     {
+        // return if already destroyed
+        if (!this.colorAttachments && !this.depthStencilAttachment) return;
         this.sizeSource.off('resize', this.onSourceResize, this);
 
         if (this._managedColorTextures)
@@ -423,6 +425,9 @@ export class RenderTarget
             this.depthStencilAttachment.texture.destroy();
             delete this.depthStencilAttachment;
         }
+
+        this.colorAttachments = null;
+        this._colorTextures = null;
     }
 
     /**

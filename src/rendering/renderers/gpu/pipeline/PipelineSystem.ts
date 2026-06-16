@@ -54,7 +54,6 @@ const emptyDepthStencilFormatData = { depth: false, stencil: false, index: 0 };
  * @param overrides - A map of override names to their numeric values.
  * @returns The modified WGSL source with matching `override` declarations replaced by `const`.
  * @internal
- * @ignore
  */
 export function bakeOverridesIntoSource(source: string, overrides: Record<string, number>): string
 {
@@ -647,7 +646,12 @@ export class PipelineSystem implements System
 
     public destroy(): void
     {
-        (this._renderer as null) = null;
         this._bufferLayoutsCache = null;
+        this._pipeCache = null;
+        this._gpu = null;
+        (this._renderer as null) = null;
+        (this._bindingNamesCache as null) = null;
+        (this._pipeStateCaches as null) = null;
+        (this._moduleCache as null) = null;
     }
 }
