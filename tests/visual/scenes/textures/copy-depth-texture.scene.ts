@@ -11,6 +11,7 @@ export const scene: TestScene = {
         webgpu: true,
         webgl2: true,
         webgl1: false,
+        canvas: false,
     },
     create: async (scene: Container, renderer: Renderer) =>
     {

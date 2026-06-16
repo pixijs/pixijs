@@ -7,11 +7,7 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should support reading from a color texture that was previously rendered to',
-    renderers: {
-        webgpu: true,
-        webgl2: false,
-        webgl1: false,
-    },
+    renderers: ['webgpu'],
     create: async (scene: Container, renderer: Renderer) =>
     {
         // 1. Create the color texture we will render to in pass 1, then read in pass 2.
