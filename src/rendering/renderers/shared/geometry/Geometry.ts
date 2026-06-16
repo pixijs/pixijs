@@ -1,7 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import { Bounds } from '../../../../scene/container/bounds/Bounds';
 import { uid } from '../../../../utils/data/uid';
-import { deprecation, v8_3_4 } from '../../../../utils/logging/deprecation';
+import { deprecation } from '../../../../utils/logging/deprecation';
 import { type GlGeometryGpuData } from '../../gl/geometry/GlGeometrySystem';
 import { type GPUDataOwner } from '../../types';
 import { Buffer } from '../buffer/Buffer';
@@ -275,11 +275,13 @@ export class Geometry extends EventEmitter<{
     /**
      * Used to figure out how many vertices there are in this geometry
      * @returns the number of vertices in the geometry
-     * @deprecated since 8.x, use {@link Geometry.vertexCount} instead
+     * @deprecated since 8.20.0, use {@link Geometry.vertexCount} instead
      */
     public getSize(): number
     {
-        deprecation(v8_3_4, 'Geometry.getSize is deprecated, please use Geometry.vertexCount instead.');
+        // #if _DEBUG
+        deprecation('8.20.0', 'Geometry.getSize is deprecated, please use Geometry.vertexCount instead.');
+        // #endif
 
         return this.vertexCount;
     }

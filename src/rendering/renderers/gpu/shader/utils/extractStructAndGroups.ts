@@ -1,5 +1,9 @@
-/** The access mode for a buffer binding in WGSL */
-type WgslAccessMode = 'uniform' | 'storage' | undefined;
+/**
+ * The access mode for a buffer binding in WGSL
+ * @category rendering
+ * @advanced
+ */
+export type WgslAccessMode = 'uniform' | 'storage' | undefined;
 
 /**
  * Defines the structure of the extracted WGSL structs and groups.

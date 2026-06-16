@@ -206,7 +206,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
                         throw new Error('[RenderTargetSystem] Rendering to 2D array textures requires WebGL2.');
                     }
 
-                    (gl as any as WebGL2RenderingContext).framebufferTextureLayer(
+                    gl.framebufferTextureLayer(
                         gl.FRAMEBUFFER,
                         gl.COLOR_ATTACHMENT0 + i,
                         glSource.texture,
@@ -528,14 +528,14 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
                     0
                 );
             }
-            else if (glSource.target === (gl as any).TEXTURE_2D_ARRAY)
+            else if (glSource.target === gl.TEXTURE_2D_ARRAY)
             {
                 if (renderer.context.webGLVersion < 2)
                 {
                     throw new Error('[RenderTargetSystem] TEXTURE_2D_ARRAY requires WebGL2.');
                 }
 
-                (gl as any as WebGL2RenderingContext).framebufferTextureLayer(
+                gl.framebufferTextureLayer(
                     gl.FRAMEBUFFER,
                     gl.COLOR_ATTACHMENT0 + i,
                     glTexture,
@@ -599,8 +599,8 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
 
-        (gl as WebGL2RenderingContext).drawBuffers([gl.NONE]);
-        (gl as WebGL2RenderingContext).readBuffer(gl.NONE);
+        gl.drawBuffers([gl.NONE]);
+        gl.readBuffer(gl.NONE);
     }
 
     private _resizeColor(renderTarget: RenderTarget, glRenderTarget: GlRenderTarget)
@@ -705,7 +705,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         }
         else if (glSource.target === gl.TEXTURE_2D_ARRAY)
         {
-            (gl as any as WebGL2RenderingContext).framebufferTextureLayer(
+            gl.framebufferTextureLayer(
                 gl.FRAMEBUFFER,
                 attachment,
                 glTexture,
@@ -843,7 +843,6 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
      * Forget the GL-call caches (framebuffer binding, viewport, clear color) so the next pass
      * re-applies them. Called via the renderer's `resetState` runner when external GL code may
      * have changed state behind our back.
-     * @internal
      */
     public resetState(): void
     {
