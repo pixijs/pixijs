@@ -67,7 +67,7 @@ export class BindGroupSystem implements System
         for (const j in groupLayout)
         {
             // resources may be keyed by resource name or by binding index — try the name first
-            const resource: BindResource = group.resources[j as unknown as number] ?? group.resources[groupLayout[j]];
+            const resource: BindResource = group.resources[j] ?? group.resources[groupLayout[j]];
 
             // a destroyed resource leaves a null slot (see BindGroup.onResourceChange) or may
             // have been handed in already destroyed — either way this group cannot render
