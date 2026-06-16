@@ -8,11 +8,7 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should support reading from a depth texture while it is attached as depthReadOnly',
-    renderers: {
-        webgpu: true,
-        webgl2: false,
-        webgl1: false,
-    },
+    renderers: ['webgpu'],
     create: async (scene: Container, renderer: Renderer) =>
     {
         // 1. Create a colour texture to render into.
@@ -146,7 +142,7 @@ export const scene: TestScene = {
                 let dimensions = textureDimensions(uDepthTexture);
                 let coord = vec2<i32>(uv * vec2<f32>(dimensions));
                 let depthValue = textureLoad(uDepthTexture, coord, 0);
-                
+
                 // Output depth value as grayscale color
                 return vec4<f32>(depthValue, depthValue, depthValue, 1.0);
             }
