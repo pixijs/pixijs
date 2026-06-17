@@ -37,7 +37,15 @@ export class GpuEncoderSystem implements System
     } as const;
 
     public commandEncoder: GPUCommandEncoder;
-    public renderPassEncoder: GPURenderPassEncoder;
+    /**
+     * The active command target that draws and state are recorded into. This is the live render
+     * pass during normal rendering, or a {@link GPURenderBundleEncoder} while a render bundle is
+     * being recorded (see {@link beginBundle}). Both encoders expose the same render/bind command
+     * API the encoder relies on ({@link GPURenderCommandsMixin} + {@link GPUBindingCommandsMixin}),
+     * so callers write to it without caring which one is active. Pass-level commands (viewport,
+     * stencil, executeBundles, end) are not part of that shared API and go through {@link _passEncoder}.
+     */
+    public renderPassEncoder: GPURenderPassEncoder | GPURenderBundleEncoder;
     public commandFinished: Promise<void>;
 
     private _resolveCommandFinished: (value: void) => void;
@@ -53,8 +61,12 @@ export class GpuEncoderSystem implements System
     private _boundVertexBuffer: Record<number, Buffer> = Object.create(null);
     private _boundIndexBuffer: Buffer;
     private _boundPipeline: GPURenderPipeline;
-    /** Stores the real render pass encoder while a render bundle is being recorded. */
-    private _savedPassEncoder: GPURenderPassEncoder | null = null;
+    /**
+     * The real render pass encoder. Unlike {@link renderPassEncoder}, this is never swapped out for
+     * a bundle encoder, so pass-level commands (viewport, stencil, executeBundles, end) always have
+     * a correctly typed target — even while a bundle is being recorded.
+     */
+    private _passEncoder: GPURenderPassEncoder;
 
     private readonly _renderer: WebGPURenderer;
 
@@ -86,17 +98,19 @@ export class GpuEncoderSystem implements System
 
         this._clearCache();
 
-        this.renderPassEncoder = this.commandEncoder.beginRenderPass(gpuRenderTarget.descriptor);
+        this._passEncoder = this.commandEncoder.beginRenderPass(gpuRenderTarget.descriptor);
+        this.renderPassEncoder = this._passEncoder;
     }
 
     public endRenderPass()
     {
-        if (this.renderPassEncoder)
+        if (this._passEncoder)
         {
-            this.renderPassEncoder.end();
+            this._passEncoder.end();
         }
 
         this.renderPassEncoder = null;
+        this._passEncoder = null;
     }
 
     /**
@@ -110,18 +124,21 @@ export class GpuEncoderSystem implements System
      */
     public beginBundle(): void
     {
-        if (this._savedPassEncoder)
+        // While a bundle is recording, renderPassEncoder is swapped to the bundle encoder and no
+        // longer matches the real pass. Equal references therefore mean no bundle is active.
+        if (this._passEncoder !== this.renderPassEncoder)
         {
             throw new Error('Cannot begin a new render bundle while one is already being recorded.');
         }
 
-        this._savedPassEncoder = this.renderPassEncoder;
         this._clearCache();
 
         const descriptor = this._renderer.pipeline.getBundleDescriptor();
 
-        this.renderPassEncoder = this._gpu.device
-            .createRenderBundleEncoder(descriptor) as unknown as GPURenderPassEncoder;
+        // A bundle encoder exposes the same render/bind command API as the pass, so it stands in as
+        // the write target while recording. The real pass stays in _passEncoder and is restored by
+        // endBundle.
+        this.renderPassEncoder = this._gpu.device.createRenderBundleEncoder(descriptor);
     }
 
     /**
@@ -130,10 +147,18 @@ export class GpuEncoderSystem implements System
      */
     public endBundle(): GPURenderBundle
     {
-        const bundle = (this.renderPassEncoder as unknown as GPURenderBundleEncoder).finish();
+        const encoder = this.renderPassEncoder;
 
-        this.renderPassEncoder = this._savedPassEncoder;
-        this._savedPassEncoder = null;
+        // `finish` only exists on a bundle encoder, so it both narrows the type for the call below
+        // and guards against endBundle being called without an active bundle.
+        if (!encoder || !('finish' in encoder))
+        {
+            throw new Error('endBundle called without an active render bundle.');
+        }
+
+        const bundle = encoder.finish();
+
+        this.renderPassEncoder = this._passEncoder;
         this._clearCache();
 
         return bundle;
@@ -147,12 +172,22 @@ export class GpuEncoderSystem implements System
     public executeBundle(bundle: GPURenderBundle): void
     {
         this._clearCache();
-        (this.renderPassEncoder as GPURenderPassEncoder).executeBundles([bundle]);
+        this._passEncoder.executeBundles([bundle]);
     }
 
     public setViewport(viewport: Rectangle): void
     {
-        this.renderPassEncoder.setViewport(viewport.x, viewport.y, viewport.width, viewport.height, 0, 1);
+        this._passEncoder.setViewport(viewport.x, viewport.y, viewport.width, viewport.height, 0, 1);
+    }
+
+    /**
+     * Sets the stencil reference value for subsequent draws. This is a pass-level command, so it
+     * always targets the real render pass — not a bundle encoder, which cannot set stencil state.
+     * @param stencilReference - The stencil reference value to use.
+     */
+    public setStencilReference(stencilReference: number): void
+    {
+        this._passEncoder.setStencilReference(stencilReference);
     }
 
     public setPipelineFromGeometryProgramAndState(
@@ -376,10 +411,11 @@ export class GpuEncoderSystem implements System
 
     public finishRenderPass()
     {
-        if (this.renderPassEncoder)
+        if (this._passEncoder)
         {
-            this.renderPassEncoder.end();
+            this._passEncoder.end();
             this.renderPassEncoder = null;
+            this._passEncoder = null;
         }
     }
 
@@ -418,7 +454,8 @@ export class GpuEncoderSystem implements System
         this._boundVertexBuffer = null;
         this._boundIndexBuffer = null;
         this._boundPipeline = null;
-        this._savedPassEncoder = null;
+        this.renderPassEncoder = null;
+        this._passEncoder = null;
     }
 
     protected contextChange(gpu: GPU): void
