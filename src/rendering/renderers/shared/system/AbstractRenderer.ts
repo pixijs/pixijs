@@ -52,6 +52,19 @@ export interface RenderOptions extends ClearOptions
     container: Container;
     /** the transform to apply to the container. */
     transform?: Matrix;
+    /**
+     * Opt-in toggle that inverts the render's Y orientation. Defaults to `false` — a no-op, so existing
+     * renders are unchanged on both WebGL and WebGPU.
+     *
+     * Set `flipY: true` to invert the automatic orientation: when rendering to a texture this stores the
+     * capture in screen orientation (the un-flipped result 3D geometry UVs expect), removing the need to
+     * flip at sample time on every consuming material.
+     *
+     * The projection flip and the winding/cull inversion flip together, so back-face culling of 3D content
+     * rendered into the texture stays correct.
+     * @default false
+     */
+    flipY?: boolean;
 }
 
 /**

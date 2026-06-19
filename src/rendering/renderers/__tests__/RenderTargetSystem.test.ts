@@ -2,6 +2,7 @@ import { CLEAR } from '../gl/const';
 import { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
 import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
+import { Graphics } from '~/scene/graphics/shared/Graphics';
 
 import type { WebGLRenderer } from '../gl/WebGLRenderer';
 import type { WebGPURenderer } from '../gpu/WebGPURenderer';
@@ -221,6 +222,111 @@ describe('RenderTargetSystem idempotent bind (WebGL)', () =>
         renderer.renderTarget.bind(targetB, false);
 
         expect(bindFramebufferSpy).toHaveBeenCalled();
+    });
+});
+
+describe('RenderTargetSystem flipY orientation toggle (WebGL)', () =>
+{
+    it('is a no-op by default / when false, and toggles the projection only when true', async () =>
+    {
+        renderer = await getWebGLRenderer() as WebGLRenderer;
+
+        const target = createTarget();
+        const { renderTarget } = renderer;
+
+        // default (toggle off): a texture target flips as it always has -> positive Y scale (matrix.d)
+        renderTarget.bind(target);
+        expect(target.flipY).toBeUndefined();
+        expect(renderTarget.projectionMatrix.d).toBeGreaterThan(0);
+
+        // flipY:false is inert -> identical to the default
+        renderTarget.bind(target, true, null, null, 0, 0, false);
+        expect(target.flipY).toBe(false);
+        expect(renderTarget.projectionMatrix.d).toBeGreaterThan(0);
+
+        // flipY:true inverts the orientation -> screen-oriented -> negative Y scale
+        renderTarget.bind(target, true, null, null, 0, 0, true);
+        expect(target.flipY).toBe(true);
+        expect(renderTarget.projectionMatrix.d).toBeLessThan(0);
+
+        // omitting flipY again resets the (pooled) target back to the default
+        renderTarget.bind(target);
+        expect(target.flipY).toBeUndefined();
+        expect(renderTarget.projectionMatrix.d).toBeGreaterThan(0);
+    });
+
+    it('inverts the WebGL front face only when flipY is true (welded to the projection flip)', async () =>
+    {
+        renderer = await getWebGLRenderer() as WebGLRenderer;
+
+        const { renderTarget } = renderer;
+        const state = (renderer as WebGLRenderer).state as unknown as { _invertFrontFace: boolean };
+        const a = createTarget();
+        const b = createTarget();
+
+        // default texture: inverted as it always has been (welded to its automatic flip)
+        renderTarget.bind(a);
+        expect(state._invertFrontFace).toBe(true);
+
+        // flipY:false is inert -> still inverted (switch target to force the change to re-emit)
+        renderTarget.bind(b, true, null, null, 0, 0, false);
+        expect(state._invertFrontFace).toBe(true);
+
+        // flipY:true toggles the winding the other way, in lockstep with the projection
+        renderTarget.bind(a, true, null, null, 0, 0, true);
+        expect(state._invertFrontFace).toBe(false);
+    });
+
+    it('restores flipY when popping back to a target pushed with flipY:true', async () =>
+    {
+        renderer = await getWebGLRenderer() as WebGLRenderer;
+
+        const { renderTarget } = renderer;
+        const state = (renderer as WebGLRenderer).state as unknown as { _invertFrontFace: boolean };
+        const outer = createTarget();
+        const inner = createTarget();
+
+        // capture into `outer` toggled to screen orientation (the ContainerSource case): flipY:true
+        renderTarget.push(outer, true, null, null, 0, 0, true);
+        expect(outer.flipY).toBe(true);
+        expect(renderTarget.projectionMatrix.d).toBeLessThan(0);
+        expect(state._invertFrontFace).toBe(false);
+
+        // a nested render group / mask pushes its own target with the default orientation
+        renderTarget.push(inner);
+        expect(renderTarget.projectionMatrix.d).toBeGreaterThan(0);
+        expect(state._invertFrontFace).toBe(true);
+
+        // popping back must restore flipY:true, not leave `outer` reset to the default
+        renderTarget.pop();
+        expect(renderTarget.renderTarget).toBe(outer);
+        expect(outer.flipY).toBe(true);
+        expect(renderTarget.projectionMatrix.d).toBeLessThan(0);
+        expect(state._invertFrontFace).toBe(false);
+    });
+});
+
+describeLocalOnly('RenderTargetSystem flipY orientation toggle (WebGPU)', () =>
+{
+    it('bakes an inverted front face into the pipeline only when flipY is true', async () =>
+    {
+        renderer = await getWebGPURenderer() as WebGPURenderer;
+
+        const target = createTarget();
+        const graphics = new Graphics().rect(0, 0, 32, 32).fill(0xff0000);
+
+        const spy = jest.spyOn((renderer as WebGPURenderer).gpu.device, 'createRenderPipeline');
+
+        // default render: nothing inverts -> every pipeline keeps WebGPU's natural ccw winding
+        renderer.render({ container: graphics, target, clear: true });
+        expect(spy).toHaveBeenCalled();
+        expect(spy.mock.calls.every(([d]) => d.primitive?.frontFace !== 'cw')).toBe(true);
+
+        spy.mockClear();
+
+        // flipY:true render: the winding inverts, so a distinct pipeline is baked with frontFace 'cw'
+        renderer.render({ container: graphics, target, clear: true, flipY: true });
+        expect(spy.mock.calls.some(([d]) => d.primitive?.frontFace === 'cw')).toBe(true);
     });
 });
 

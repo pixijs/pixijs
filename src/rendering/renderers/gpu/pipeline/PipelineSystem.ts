@@ -127,6 +127,7 @@ function getColorFormatId(format: GPUTextureFormat): number
 // colorMask = 16;           // bits 9-12  // 16 states // value 0-15;
 // depthStencilFormat = 7;   // bits 13-15 // 8 states // value 0-7;
 // colorFormatId = 16;       // bits 16-19 // 16 interned color attachment formats
+// invertFrontFace = 1;      // bit 20     // 2 states // value 0-1 (flipY winding inversion)
 function getGlobalStateKey(
     stencilStateId: number,
     multiSampleCount: number,
@@ -135,9 +136,11 @@ function getGlobalStateKey(
     depthStencilFormat: number,
     colorFormatId: number,
     depthReadOnly: number,
+    invertFrontFace: number,
 ): number
 {
-    return (colorFormatId << 16) // 4 bits for colorFormatId
+    return (invertFrontFace << 20) // 1 bit for invertFrontFace (flipY winding inversion)
+         | (colorFormatId << 16) // 4 bits for colorFormatId
          | (depthStencilFormat << 13) // 3 bits for depthStencilFormat
          | (colorMask << 9) // 4 bits for colorMask
          | (stencilStateId << 6) // 3 bits for stencilStateId
@@ -199,6 +202,7 @@ export class PipelineSystem implements System
     private _depthStencilFormat: GPUTextureFormat = 'depth24plus-stencil8';
     private _depthStencilFormatData = emptyDepthStencilFormatData;
     private _depthReadOnly = false;
+    private _invertFrontFace = false;
 
     constructor(renderer: WebGPURenderer)
     {
@@ -238,6 +242,11 @@ export class PipelineSystem implements System
         this._depthStencilFormat = renderTarget.depthStencilAttachment?.texture.format;
         this._depthStencilFormatData = depthStencilFormatMap[this._depthStencilFormat] || emptyDepthStencilFormatData;
         this._depthReadOnly = renderTarget.depthStencilAttachment?.depthReadOnly ?? false;
+        // WebGPU bakes winding into the (cached) pipeline, not as live state. `flipY` is opt-in: off →
+        // the framebuffer's natural ccw (exactly today); on → invert to cw so the projection flip and the
+        // winding flip cancel and culling is preserved. This bit feeds the cache key (getGlobalStateKey),
+        // so a flipY pass gets its own pipeline rather than aliasing — and an off pass keeps today's key.
+        this._invertFrontFace = !!renderTarget.flipY;
         this._updatePipeHash();
     }
 
@@ -431,6 +440,9 @@ export class PipelineSystem implements System
             primitive: {
                 topology,
                 cullMode: state.cullMode,
+                // Flip the winding when `flipY` inverted the projection (see setRenderTarget), so the two
+                // cancel and a front face stays a front face. The flag is part of the pipeline cache key.
+                frontFace: this._invertFrontFace ? 'cw' : 'ccw',
             },
             layout,
             multisample: {
@@ -639,6 +651,7 @@ export class PipelineSystem implements System
             this._depthStencilFormatData.index,
             this._colorFormatId,
             this._depthReadOnly ? 1 : 0,
+            this._invertFrontFace ? 1 : 0,
         );
 
         this._pipeCache = this._pipeStateCaches[key] ??= new Map();
