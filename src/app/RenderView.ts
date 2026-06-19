@@ -1,0 +1,308 @@
+import { DOMAdapter } from '../environment/adapter';
+import { CanvasSource } from '../rendering/renderers/shared/texture/sources/CanvasSource';
+import { Container } from '../scene/container/Container';
+import { ResizeController } from './ResizeController';
+
+import type { ColorSource } from '../color/Color';
+import type { ICanvas } from '../environment/canvas/ICanvas';
+import type { EventSystemFeatures } from '../events/EventSystem';
+import type { Rectangle } from '../maths/shapes/Rectangle';
+import type { RendererView } from '../rendering/renderers/shared/view/RendererView';
+import type { Renderer } from '../rendering/renderers/types';
+import type { DestroyOptions } from '../scene/container/destroyTypes';
+
+/**
+ * Options for creating a {@link RenderView} via {@link Application#addView}.
+ * @category app
+ * @standard
+ */
+export interface RenderViewOptions<R extends Renderer = Renderer>
+{
+    /**
+     * The canvas this view renders to. If omitted, a new canvas is created (but not attached to
+     * the DOM - you must append `view.canvas` yourself for events and DOM/accessibility overlays to work).
+     */
+    canvas?: R['canvas'];
+    /** The root container rendered to this view's canvas. Defaults to a new {@link Container}. */
+    stage?: Container;
+    /** The color used to clear the canvas before each render. Defaults to the renderer's background. */
+    clearColor?: ColorSource;
+    /**
+     * Whether the view is rendered as part of {@link Application#render}. Toggle to cheaply pause a view.
+     * @default true
+     */
+    enabled?: boolean;
+    /**
+     * An element to automatically resize this view's canvas to, mirroring {@link Application#resizeTo}
+     * but scoped to this view. The primary view is resized via {@link Application#resizeTo} instead.
+     */
+    resizeTo?: Window | HTMLElement;
+    /** If provided with `height`, resizes the view's canvas once on creation. */
+    width?: number;
+    /** If provided with `width`, resizes the view's canvas once on creation. */
+    height?: number;
+    /** The resolution / device pixel ratio for this view's canvas. Defaults to the renderer's resolution. */
+    resolution?: number;
+    /** Whether the canvas's CSS size is kept independent of its resolution. Defaults to the renderer's setting. */
+    autoDensity?: boolean;
+    /**
+     * Whether this view's canvas participates in the event system. Ignored for the primary view.
+     * @default true
+     */
+    events?: boolean;
+    /**
+     * Whether this view's canvas participates in the accessibility system. Ignored for the primary view.
+     * @default true
+     */
+    accessibility?: boolean;
+    /**
+     * Whether this view's canvas renders DOM elements. Ignored for the primary view.
+     * @default true
+     */
+    dom?: boolean;
+    /** Per-view overrides for the event system features. Ignored for the primary view. */
+    eventFeatures?: Partial<EventSystemFeatures>;
+    /**
+     * Whether anti-aliasing is enabled for this view. Defaults to the renderer's antialias. Ignored
+     * for the primary view; affects WebGPU secondary canvases.
+     */
+    antialias?: boolean;
+    /**
+     * Whether this view's canvas is transparent (drives the WebGPU canvas alphaMode). Defaults to the
+     * renderer's background alpha being less than 1. Ignored for the primary view.
+     */
+    transparent?: boolean;
+    /** Whether coordinates are rounded to whole pixels when rendering this view. Defaults to the renderer's roundPixels. */
+    roundPixels?: boolean;
+    /**
+     * Whether the view's canvas is cleared before each render. Defaults to the renderer's
+     * clearBeforeRender. Set `false` to accumulate draws across frames.
+     */
+    clear?: boolean;
+}
+
+/**
+ * A canvas the {@link Application} renders a {@link Container} to. Every application has a
+ * {@link Application#primaryView primaryView} wrapping the renderer's own canvas and the main
+ * {@link Application#stage stage}; additional views are created with {@link Application#addView}
+ * to drive extra canvases from the same renderer (the multiView feature).
+ *
+ * Each view pairs a canvas with a stage, an optional clear color, and its own auto-resize target.
+ * @example
+ * ```ts
+ * const app = new Application();
+ * await app.init({ multiView: true });
+ *
+ * const minimap = app.addView({ canvas: minimapCanvas, clearColor: 0x222222 });
+ * minimap.stage.addChild(mapSprite);
+ *
+ * // app.render() renders the primary view and every added view each frame
+ * ```
+ * @category app
+ * @standard
+ */
+export class RenderView<R extends Renderer = Renderer>
+{
+    /** The canvas this view renders to. */
+    public canvas: R['canvas'];
+    /** The root container rendered to this view's canvas. */
+    public stage: Container;
+    /** The color used to clear the canvas before each render, or undefined to use the renderer's background. */
+    public clearColor?: ColorSource;
+    /** Whether {@link Application#render} renders this view. */
+    public enabled: boolean;
+    /** Whether this is the application's primary view (wrapping the renderer's own canvas and stage). */
+    public readonly isPrimary: boolean;
+
+    private _renderer: R;
+    /**
+     * The renderer-level view registered for a secondary canvas, so per-canvas systems (events,
+     * accessibility, DOM) track it. Null for the primary view, whose renderer view is the main one.
+     */
+    private _rendererView: RendererView | null = null;
+    /** Whether this view created its own canvas (and so should detach it on destroy). */
+    private readonly _ownsCanvas: boolean;
+    private _resolution: number;
+    private readonly _autoDensity: boolean;
+    /** Resolved per-view roundPixels, applied to the renderer before each render of this view. */
+    private readonly _roundPixels: boolean;
+    /**
+     * Resolved per-render clear flag forwarded into `renderer.render`. `undefined` defers to the
+     * renderer's `clearBeforeRender`.
+     */
+    private readonly _clear: boolean | undefined;
+    /** Auto-resize controller; resizes this view (without rendering) when its target changes size. */
+    private readonly _resizeController: ResizeController;
+
+    /**
+     * @param renderer - the renderer all views share
+     * @param options - the view configuration
+     * @param isPrimary - whether this is the application's primary view
+     */
+    constructor(renderer: R, options: RenderViewOptions<R> = {}, isPrimary = false)
+    {
+        this._renderer = renderer;
+        this.isPrimary = isPrimary;
+
+        this._ownsCanvas = !options.canvas && !isPrimary;
+        this.canvas = options.canvas
+            ?? (isPrimary ? renderer.canvas : DOMAdapter.get().createCanvas() as R['canvas']);
+
+        this.stage = options.stage ?? new Container();
+        this.clearColor = options.clearColor;
+        this.enabled = options.enabled ?? true;
+
+        this._resolution = options.resolution ?? renderer.resolution;
+        this._autoDensity = options.autoDensity ?? renderer.view.autoDensity;
+        this._roundPixels = options.roundPixels ?? renderer.roundPixels;
+        this._clear = options.clear;
+
+        // we deliberately do NOT render on auto-resize: a secondary view's render would leave
+        // Renderer#lastObjectRendered pointing at this view's stage instead of the primary's,
+        // breaking main-canvas event hit-testing until the next frame.
+        this._resizeController = new ResizeController((width, height) => this.resize(width, height));
+
+        // register the secondary canvas with the renderer so its per-canvas systems (events,
+        // accessibility, DOM) track it; the primary view reuses the renderer's main view
+        if (!isPrimary)
+        {
+            this._rendererView = renderer.addView({
+                canvas: this.canvas,
+                resolution: this._resolution,
+                autoDensity: this._autoDensity,
+                events: options.events,
+                accessibility: options.accessibility,
+                dom: options.dom,
+                eventFeatures: options.eventFeatures,
+                antialias: options.antialias,
+                transparent: options.transparent,
+                roundPixels: options.roundPixels,
+            });
+        }
+
+        if (options.width !== undefined && options.height !== undefined)
+        {
+            this.resize(options.width, options.height, options.resolution);
+        }
+
+        if (options.resizeTo)
+        {
+            this.resizeTo = options.resizeTo;
+        }
+    }
+
+    /**
+     * The renderer-level {@link RendererView} backing this view, or null for the primary view (whose
+     * renderer view is the renderer's auto-registered main view at `renderer.views[0]`).
+     */
+    public get rendererView(): RendererView | null
+    {
+        return this._rendererView;
+    }
+
+    /**
+     * An element this view's canvas is automatically resized to. Setting it attaches a throttled
+     * window resize listener and resizes immediately; setting null detaches it.
+     */
+    public get resizeTo(): Window | HTMLElement
+    {
+        return this._resizeController.resizeTo;
+    }
+
+    public set resizeTo(dom: Window | HTMLElement | null)
+    {
+        this._resizeController.resizeTo = dom ?? null;
+    }
+
+    /**
+     * The CSS-pixel viewport of this view, `(0, 0, width, height)`. The primary view reports the
+     * renderer's screen; a secondary view reports its own canvas size.
+     */
+    public get screen(): Rectangle
+    {
+        return this.isPrimary ? this._renderer.screen : this._rendererView.screen;
+    }
+
+    /** Renders this view's stage to its canvas. Called for every enabled view by {@link Application#render}. */
+    public render(): void
+    {
+        // apply this view's resolved roundPixels to the renderer before drawing; the pipes OR the
+        // renderer's _roundPixels with each renderable's own flag when they (re)build GPU data
+        this._renderer._roundPixels = this._roundPixels ? 1 : 0;
+
+        // the primary view renders to the renderer's own canvas via the main-view fast path, so it
+        // stays byte-for-byte identical to a classic single-canvas Application.render
+        if (this.isPrimary)
+        {
+            this._renderer.render({ container: this.stage, clearColor: this.clearColor, clear: this._clear });
+
+            return;
+        }
+
+        this._renderer.render({
+            container: this.stage,
+            target: this.canvas,
+            clearColor: this.clearColor,
+            clear: this._clear,
+        });
+    }
+
+    /**
+     * Resizes this view's canvas. The primary view resizes the renderer itself; a secondary view
+     * resizes only its own canvas source, leaving the renderer's main view untouched.
+     * @param width - the width in CSS pixels
+     * @param height - the height in CSS pixels
+     * @param resolution - the resolution / device pixel ratio; defaults to the view's current resolution
+     */
+    public resize(width: number, height: number, resolution?: number): void
+    {
+        if (this.isPrimary)
+        {
+            this._renderer.resize(width, height, resolution);
+
+            return;
+        }
+
+        this._resolution = resolution ?? this._resolution;
+
+        const source = this._renderer.renderTarget.getRenderTarget(this.canvas).colorTexture;
+
+        if (source instanceof CanvasSource)
+        {
+            source.autoDensity = this._autoDensity;
+            source.resize(width, height, this._resolution);
+        }
+    }
+
+    /**
+     * Destroys this view, removing its resize listener. A stage-destroy option destroys the stage too;
+     * a canvas this view created is detached from the DOM.
+     * @param stageDestroyOptions - if provided, the view's stage is destroyed with these options
+     */
+    public destroy(stageDestroyOptions?: DestroyOptions): void
+    {
+        this._resizeController.destroy();
+
+        if (this._rendererView)
+        {
+            this._renderer.removeView(this._rendererView);
+            this._rendererView = null;
+        }
+
+        if (stageDestroyOptions !== undefined)
+        {
+            this.stage?.destroy(stageDestroyOptions);
+        }
+
+        if (this._ownsCanvas)
+        {
+            const canvas = this.canvas as ICanvas as HTMLCanvasElement;
+
+            canvas?.parentNode?.removeChild(canvas);
+        }
+
+        this.stage = null;
+        this.canvas = null;
+        this._renderer = null;
+    }
+}

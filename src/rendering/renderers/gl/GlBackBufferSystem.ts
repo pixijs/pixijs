@@ -181,6 +181,11 @@ export class GlBackBufferSystem implements System<GlBackBufferOptions>
             shader: this._bigTriangleShader,
             state: this._state,
         });
+
+        // present the resolved frame to a secondary DOM canvas while the back buffer is active.
+        // a no-op for the main view / non-multiView (postrender early-returns on !multiView), and
+        // the back-buffer texture is never a CanvasSource so RenderTargetSystem.postrender stays inert.
+        renderer.renderTarget.presentRenderSurface(this._targetTexture);
     }
 
     private _getBackBufferTexture(targetSourceTexture: TextureSource)

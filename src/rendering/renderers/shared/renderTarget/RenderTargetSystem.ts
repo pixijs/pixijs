@@ -9,7 +9,7 @@ import { SystemRunner } from '../system/SystemRunner';
 import { CanvasSource } from '../texture/sources/CanvasSource';
 import { TextureSource } from '../texture/sources/TextureSource';
 import { Texture } from '../texture/Texture';
-import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
+import { getCanvasTexture, hasCachedCanvasTexture } from '../texture/utils/getCanvasTexture';
 import { isRenderingToScreen } from './isRenderingToScreen';
 import { RenderTarget } from './RenderTarget';
 
@@ -376,7 +376,20 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
 
     public postrender()
     {
-        this.adaptor.postrender?.(this.rootRenderTarget);
+        this.presentRenderSurface(this.rootRenderTarget);
+    }
+
+    /**
+     * Presents a render target to its canvas when rendering goes through an intermediate
+     * surface (WebGL multiView). A no-op on renderers that draw directly to their targets.
+     * @param renderSurface - the surface to present
+     * @internal
+     */
+    public presentRenderSurface(renderSurface: RenderSurface): void
+    {
+        if (!renderSurface) return;
+
+        this.adaptor.postrender?.(this.getRenderTarget(renderSurface));
     }
 
     /**
@@ -702,7 +715,9 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
 
         if (target)
         {
-            target = this.getRenderTarget(target);
+            // the clear is applied to whatever is currently bound, so an explicit
+            // target must be bound first (without its own clear)
+            target = this.bind(target, false, null, undefined, mipLevel, layer);
         }
 
         this.adaptor.clear(
@@ -1039,17 +1054,55 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         }
     }
 
+    /**
+     * Associates a render surface with an existing render target, so that future
+     * `getRenderTarget` lookups for that surface resolve to it rather than creating a duplicate.
+     * Used by the view system to register the main canvas.
+     * @param renderSurface - the surface to associate
+     * @param renderTarget - the render target the surface should resolve to
+     * @internal
+     */
+    public registerRenderTarget(renderSurface: RenderSurface, renderTarget: RenderTarget): void
+    {
+        this._renderSurfaceToRenderTargetHash.set(renderSurface, renderTarget);
+    }
+
     /** nukes the render target system */
     public destroy()
     {
+        const viewCanvas = this._renderer.view?.canvas;
+
         (this._renderer as null) = null;
+
+        const destroyed = new Set<RenderTarget>();
+        const canvasSources = new Set<CanvasSource>();
 
         this._renderSurfaceToRenderTargetHash.forEach((renderTarget, key) =>
         {
-            if (renderTarget !== key)
+            // canvas sources created implicitly for raw canvas targets are owned by this
+            // system; destroying them evicts the module-level canvas cache and releases
+            // the listener closures that would otherwise retain the destroyed renderer.
+            // The main view's source is owned (and destroyed) by the view system.
+            if (CanvasSource.test(key) && key !== viewCanvas)
             {
-                this._releaseRenderTarget(key as TextureSource, renderTarget);
+                const source = renderTarget.colorTexture;
+
+                if (source instanceof CanvasSource && !source.destroyed)
+                {
+                    canvasSources.add(source);
+                }
             }
+
+            if (renderTarget !== key && !destroyed.has(renderTarget))
+            {
+                destroyed.add(renderTarget);
+                renderTarget.destroy();
+            }
+        });
+
+        canvasSources.forEach((source) =>
+        {
+            source.destroy();
         });
 
         this._renderSurfaceToRenderTargetHash.clear();
@@ -1057,13 +1110,77 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         this._gpuRenderTargetHash = Object.create(null);
     }
 
+    /**
+     * Releases the render target associated with a render surface, evicting both hash entries
+     * (the raw surface key and the coerced CanvasSource key), destroying its gpu render target,
+     * and destroying the {@link RenderTarget} itself. The underlying color source is left intact,
+     * so a user canvas and its {@link CanvasSource} survive a release.
+     *
+     * Idempotent: a release for a surface that has no registered render target is a no-op, so a
+     * second call (or a call racing the source's own `destroy` listener) is safe.
+     *
+     * Never call this for the main view's render surface; the view system gates on `!isMain`.
+     * @param renderSurface - the render surface whose render target should be released
+     * @internal
+     */
+    public releaseRenderTarget(renderSurface: RenderSurface): void
+    {
+        // coerce a raw canvas to its CanvasSource exactly as getRenderTarget keys the hash, so the
+        // lookup resolves the same RenderTarget that was registered. Only coerce while the canvas
+        // is still cached: when this runs from the source's own destroy listener the canvas cache
+        // has already been evicted, so we resolve through the raw-canvas key the hash also stores
+        const coercedSurface = (CanvasSource.test(renderSurface) && hasCachedCanvasTexture(renderSurface))
+            ? getCanvasTexture(renderSurface).source
+            : renderSurface;
+
+        const renderTarget = this._renderSurfaceToRenderTargetHash.get(coercedSurface)
+            ?? this._renderSurfaceToRenderTargetHash.get(renderSurface);
+
+        if (!renderTarget) return;
+
+        // evict both the raw surface key and the coerced CanvasSource key
+        this._renderSurfaceToRenderTargetHash.delete(renderSurface);
+        this._renderSurfaceToRenderTargetHash.delete(renderTarget.colorTexture);
+
+        const gpu = this._gpuRenderTargetHash[renderTarget.uid];
+
+        if (gpu)
+        {
+            this._gpuRenderTargetHash[renderTarget.uid] = null;
+            this.adaptor.destroyGpuRenderTarget(gpu);
+        }
+
+        // RenderTarget.destroy leaves array/unmanaged color textures alone, so the
+        // user's CanvasSource (and canvas) is preserved
+        renderTarget.destroy();
+    }
+
     private _initRenderTarget(renderSurface: RenderSurface): RenderTarget
     {
         let renderTarget: RenderTarget = null;
 
+        // a raw canvas is coerced to its CanvasSource, but the hash must also be keyed by the
+        // canvas itself, otherwise every `getRenderTarget(canvas)` lookup misses the cache and
+        // creates a fresh RenderTarget (re-running gpu init and stacking listeners each frame)
+        const originalSurface = renderSurface;
+
         if (CanvasSource.test(renderSurface))
         {
-            renderSurface = getCanvasTexture(renderSurface as ICanvas).source;
+            // only a CanvasSource created for the first time by this lookup gets the forced
+            // transparency default; a repeated lookup of an already-cached canvas must not
+            // clobber a value a caller (eg ViewSystem.addView) set on the existing source
+            const isNewSource = !hasCachedCanvasTexture(renderSurface as ICanvas);
+            const canvasSource = getCanvasTexture(renderSurface as ICanvas).source;
+
+            if (isNewSource)
+            {
+                // raw canvas targets inherit the renderer's background transparency, matching
+                // the main view (on WebGPU this drives the canvas alphaMode); pass a
+                // CanvasSource as the target instead for explicit control
+                canvasSource.transparent = this._renderer.background.alpha < 1;
+            }
+
+            renderSurface = canvasSource;
         }
 
         if (renderSurface instanceof RenderTarget)
@@ -1085,41 +1202,23 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
                 renderTarget.isRoot = true;
             }
 
-            renderSurface.once('destroy', this._onRenderSurfaceDestroy, this);
+            // free the render target when its source is destroyed; both the raw-canvas and
+            // CanvasSource paths route through releaseRenderTarget so they stay identical, and
+            // its hash-miss return makes a double free (eg a manual release + this listener) safe
+            renderSurface.once('destroy', () =>
+            {
+                this.releaseRenderTarget(originalSurface);
+            });
+        }
+
+        if (originalSurface !== renderSurface)
+        {
+            this._renderSurfaceToRenderTargetHash.set(originalSurface, renderTarget);
         }
 
         this._renderSurfaceToRenderTargetHash.set(renderSurface, renderTarget);
 
         return renderTarget;
-    }
-
-    private _onRenderSurfaceDestroy(renderSurface: TextureSource): void
-    {
-        const renderTarget = this._renderSurfaceToRenderTargetHash.get(renderSurface);
-
-        if (renderTarget) this._releaseRenderTarget(renderSurface, renderTarget);
-    }
-
-    /**
-     * Tears down a render target that wraps a texture source, removing every reference the
-     * system holds to it so neither the system's own teardown nor the source's `destroy`
-     * event can destroy it a second time.
-     * @param renderSurface - the texture source the render target wraps
-     * @param renderTarget - the render target to release
-     */
-    private _releaseRenderTarget(renderSurface: TextureSource, renderTarget: RenderTarget): void
-    {
-        renderTarget.destroy();
-        this._renderSurfaceToRenderTargetHash.delete(renderSurface);
-        renderSurface.off('destroy', this._onRenderSurfaceDestroy, this);
-
-        const gpuRenderTarget = this._gpuRenderTargetHash[renderTarget.uid];
-
-        if (gpuRenderTarget)
-        {
-            this._gpuRenderTargetHash[renderTarget.uid] = null;
-            this.adaptor.destroyGpuRenderTarget(gpuRenderTarget);
-        }
     }
 
     public getGpuRenderTarget(renderTarget: RenderTarget)

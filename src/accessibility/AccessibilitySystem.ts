@@ -2,15 +2,53 @@
 import { CanvasObserver } from '../dom/CanvasObserver';
 import { FederatedEvent } from '../events/FederatedEvent';
 import { ExtensionType } from '../extensions/Extensions';
+import { type TrackedViewData, ViewTracker } from '../rendering/renderers/shared/view/ViewTracker';
 import { isMobile } from '../utils/browser/isMobile';
 import { removeItems } from '../utils/data/removeItems';
 import { type AccessibleHTMLElement } from './accessibilityTarget';
 
 import type { Rectangle } from '../maths/shapes/Rectangle';
+import type { RenderOptions } from '../rendering/renderers/shared/system/AbstractRenderer';
 import type { System } from '../rendering/renderers/shared/system/System';
+import type { CanvasSource } from '../rendering/renderers/shared/texture/sources/CanvasSource';
+import type { RendererView } from '../rendering/renderers/shared/view/RendererView';
 import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
 import type { isMobileResult } from '../utils/browser/isMobile';
+
+/**
+ * The per-canvas accessibility state tracked by the {@link AccessibilitySystem}. One view exists
+ * for the renderer's main canvas and, under multiView, one for every additional canvas registered
+ * with the renderer. Each owns its own overlay div, {@link CanvasObserver}, accessible-object list
+ * and div pools, so a render to one canvas never garbage-collects another's overlays.
+ *
+ * The overlay DOM (`div`/`observer`) is built lazily: a view added while accessibility is inactive
+ * keeps them `null` until activation, matching the legacy "register now, build on Tab" behaviour.
+ * @internal
+ */
+interface AccessibilityViewData extends TrackedViewData
+{
+    /** The renderer view this overlay belongs to. */
+    rendererView: RendererView;
+    /** The canvas this overlay sits over. */
+    element: HTMLCanvasElement;
+    /** The overlay container the accessible divs are appended to, kept in sync with the canvas. */
+    div: HTMLElement | null;
+    /** Keeps the overlay div aligned with the canvas's page position and scale. */
+    observer: CanvasObserver | null;
+    /** The accessible containers currently overlaid for this canvas. */
+    children: Container[];
+    /** Recyclable divs keyed by accessible element type. */
+    pools: Record<string, AccessibleHTMLElement[]>;
+    /** Per-canvas frame counter used to detect containers that are no longer rendered. */
+    renderId: number;
+    /** Per-canvas throttle timestamp for android div updates. */
+    androidUpdateCount: number;
+    /** The canvas source backing the element (null for the main view, which follows the renderer). */
+    source: CanvasSource | null;
+    /** The container last rendered to this canvas; the scene graph walked for accessible objects. */
+    rootContainer: Container | null;
+}
 
 /** @ignore */
 const KEY_CODE_TAB = 9;
@@ -158,27 +196,16 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
     /** Button element for handling touch hooks. */
     private _hookDiv: HTMLElement | null;
 
-    /** This is the dom element that will sit over the PixiJS element. This is where the div overlays will go. */
-    private _div: HTMLElement | null = null;
-
-    /** A simple pool for storing divs. */
-    private _pools: Record<string, AccessibleHTMLElement[]> = {};
-
-    /** This is a tick used to check if an object is no longer being rendered. */
-    private _renderId = 0;
-
-    /** The array of currently active accessible items. */
-    private _children: Container[] = [];
-
-    /** Count to throttle div updates on android devices. */
-    private _androidUpdateCount = 0;
+    /**
+     * Per-canvas view bookkeeping. Holds the main view and, under multiView, one view per additional
+     * canvas registered with the renderer. The tracker owns the canvas-keyed map, the main/active
+     * pointers and the prerender target resolution; this system only supplies the overlay
+     * create/destroy closures and the activation attach.
+     */
+    private readonly _tracker: ViewTracker<AccessibilityViewData>;
 
     /**  The frequency to update the div elements. */
     private readonly _androidUpdateFrequency = 500; // 2fps
-    private _canvasObserver: CanvasObserver;
-
-    // eslint-disable-next-line @typescript-eslint/prefer-readonly
-    private _isRunningTests: boolean = false;
 
     /** Bound function references for proper event listener removal */
     private _boundOnKeyDown: (e: KeyboardEvent) => void = this._onKeyDown.bind(this);
@@ -198,6 +225,13 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         }
 
         this._renderer = renderer;
+
+        this._tracker = new ViewTracker<AccessibilityViewData>({
+            renderer,
+            participates: (view) => view.accessibility,
+            create: (view) => this._createView(view),
+            destroy: (data) => this._teardownView(data, true),
+        });
     }
 
     /**
@@ -230,12 +264,13 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
     }
 
     /**
-     * The DOM element that will sit over the PixiJS element. This is where the div overlays will go.
+     * The DOM element that sits over the renderer's main canvas. This is where the main view's
+     * div overlays go. Under multiView each additional canvas has its own overlay, managed internally.
      * @readonly
      */
     get div()
     {
-        return this._div;
+        return this._tracker.mainView?.div ?? null;
     }
 
     /**
@@ -281,6 +316,42 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
     }
 
     /**
+     * Registers a renderer view for accessibility. The renderer emits this for its main canvas
+     * during init and for every canvas passed to {@link AbstractRenderer#addView}. Overlays are
+     * created lazily on activation, so a view registered while inactive is recorded here and gets
+     * its overlay when accessibility next activates.
+     * @param view - the renderer view that was added
+     * @ignore
+     */
+    public viewAdded(view: RendererView): void
+    {
+        if (!view.accessibility) return;
+
+        const data = this._tracker.addFromView(view);
+
+        if (!data) return;
+
+        // a main view registered after activation still needs its overlay attached and the render
+        // hooks started, the work _activate normally does for it
+        if (view.isMain && this._isActive)
+        {
+            data.observer?.ensureAttached();
+            this._initAccessibilitySetup();
+        }
+    }
+
+    /**
+     * Removes a renderer view from accessibility, tearing down its overlay. The renderer emits this
+     * when a view's canvas source is destroyed or {@link AbstractRenderer#removeView} is called.
+     * @param view - the renderer view that was removed
+     * @ignore
+     */
+    public viewRemoved(view: RendererView): void
+    {
+        this._tracker.removeView(view);
+    }
+
+    /**
      * Activating will cause the Accessibility layer to be shown.
      * This is called when a user presses the tab key.
      * @private
@@ -294,21 +365,12 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
         this._isActive = true;
 
-        // Create and add div if needed
-        if (!this._div)
+        // build the overlays for every tracked view now that accessibility is on. The views are
+        // already registered with the tracker via the viewAdded runner; activation just materialises
+        // their overlay DOM
+        for (const data of this._tracker.values())
         {
-            this._div = document.createElement('div');
-            this._div.style.position = 'absolute';
-            this._div.style.top = `${DIV_TOUCH_POS_X}px`;
-            this._div.style.left = `${DIV_TOUCH_POS_Y}px`;
-            this._div.style.pointerEvents = 'none';
-            this._div.style.zIndex = DIV_TOUCH_ZINDEX.toString();
-
-            // Initialize the CanvasTransformSync to keep the DOM element in sync with the canvas
-            this._canvasObserver = new CanvasObserver({
-                domElement: this._div,
-                renderer: this._renderer,
-            });
+            this._buildOverlay(data);
         }
 
         // Add listeners using the stored bound references
@@ -334,7 +396,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
                     observer.disconnect();
 
                     // Add to DOM
-                    this._canvasObserver.ensureAttached();
+                    this._tracker.mainView?.observer?.ensureAttached();
                     // Only start the postrender runner after div is ready
                     this._initAccessibilitySetup();
                 }
@@ -345,7 +407,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         else
         {
             // Add to DOM
-            this._canvasObserver.ensureAttached();
+            this._tracker.mainView?.observer?.ensureAttached();
             // Div is ready, initialize accessibility
             this._initAccessibilitySetup();
         }
@@ -354,14 +416,82 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
     // New method to handle initialization after div is ready
     private _initAccessibilitySetup(): void
     {
-        // Add the postrender runner to start processing accessible objects
+        // prerender resolves the target view before the back buffer can swap it; postrender then
+        // walks that view's scene and lays out its overlay
+        this._renderer.runners.prerender.add(this);
         this._renderer.runners.postrender.add(this);
 
         // Force an initial update of accessible objects
-        if (this._renderer.lastObjectRendered)
+        if (this._renderer.lastObjectRendered && this._tracker.mainView)
         {
-            this._updateAccessibleObjects(this._renderer.lastObjectRendered as Container);
+            this._updateView(this._tracker.mainView);
         }
+    }
+
+    /**
+     * Materialises a tracked view's overlay DOM on activation: an absolutely positioned container div
+     * kept aligned with the canvas by a {@link CanvasObserver}. No-op if the overlay already exists.
+     * Secondary views attach immediately; the main view follows the renderer and attaches in
+     * {@link AccessibilitySystem#_activate}.
+     * @param data - the tracked view to build an overlay for
+     */
+    private _buildOverlay(data: AccessibilityViewData): void
+    {
+        if (data.div) return;
+
+        const div = document.createElement('div');
+
+        div.style.position = 'absolute';
+        div.style.top = `${DIV_TOUCH_POS_X}px`;
+        div.style.left = `${DIV_TOUCH_POS_Y}px`;
+        div.style.pointerEvents = 'none';
+        div.style.zIndex = DIV_TOUCH_ZINDEX.toString();
+
+        data.div = div;
+        data.observer = new CanvasObserver({
+            domElement: div,
+            renderer: this._renderer,
+            source: data.source ?? undefined,
+        });
+
+        // the main view follows the renderer and is attached to the DOM in _activate; a secondary
+        // view attaches its overlay immediately
+        if (data.rendererView.isMain) return;
+
+        data.observer.ensureAttached();
+    }
+
+    /**
+     * The tracker's {@link ViewTracker#create} closure: builds the per-canvas data object for a newly
+     * added view. The overlay DOM is built lazily (only while accessibility is active) by
+     * {@link AccessibilitySystem#_buildOverlay}.
+     * @param rendererView - the renderer view the overlay belongs to
+     * @returns the tracked view data for the canvas
+     */
+    private _createView(rendererView: RendererView): AccessibilityViewData
+    {
+        // the main view follows the renderer (null source); secondary views track their own source
+        const source = rendererView.isMain ? null : rendererView.source;
+
+        const data: AccessibilityViewData = {
+            rendererView,
+            element: rendererView.canvas as HTMLCanvasElement,
+            div: null,
+            observer: null,
+            children: [],
+            pools: {},
+            renderId: 0,
+            androidUpdateCount: 0,
+            source,
+            rootContainer: null,
+        };
+
+        if (this._isActive)
+        {
+            this._buildOverlay(data);
+        }
+
+        return data;
     }
 
     /**
@@ -384,50 +514,60 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             globalThis.addEventListener('keydown', this._boundOnKeyDown, false);
         }
 
+        this._renderer.runners.prerender.remove(this);
         this._renderer.runners.postrender.remove(this);
+        this._tracker.clearActive();
 
-        // Remove all active accessibility elements
-        for (const child of this._children)
+        // Tear down every overlay while keeping the views registered with the tracker so they rebuild
+        // on the next activation. Secondary views drop their observer + div entirely; the main view
+        // keeps its div + observer for reuse, matching legacy behaviour.
+        for (const view of this._tracker.values())
         {
-            if (child._accessibleDiv?.parentNode)
-            {
-                child._accessibleDiv.parentNode.removeChild(child._accessibleDiv);
-                child._accessibleDiv = null;
-            }
+            this._teardownView(view, view !== this._tracker.mainView);
+        }
+    }
+
+    /**
+     * Detaches a view's overlay and recycles its accessible state. When `full` the observer and div
+     * are destroyed too; otherwise they are kept detached for reuse (the main view across reactivation).
+     * @param view - the view to tear down
+     * @param full - whether to also destroy the observer and drop the div
+     */
+    private _teardownView(view: AccessibilityViewData, full: boolean): void
+    {
+        for (const child of view.children)
+        {
+            child._accessibleDiv?.parentNode?.removeChild(child._accessibleDiv);
+            child._accessibleDiv = null;
             child._accessibleActive = false;
         }
+        view.children.length = 0;
 
-        // Clear the pool of divs
-        for (const accessibleType in this._pools)
+        for (const accessibleType in view.pools)
         {
-            const pool = this._pools[accessibleType];
-
-            pool.forEach((div) =>
-            {
-                if (div.parentNode)
-                {
-                    div.parentNode.removeChild(div);
-                }
-            });
-            delete this._pools[accessibleType];
+            view.pools[accessibleType].forEach((div) => div.parentNode?.removeChild(div));
         }
+        view.pools = {};
 
-        // Remove parent div from DOM
-        if (this._div?.parentNode)
+        view.div?.parentNode?.removeChild(view.div);
+        view.rootContainer = null;
+        view.source = null;
+
+        if (full)
         {
-            this._div.parentNode.removeChild(this._div);
+            view.observer?.destroy();
+            view.observer = null;
+            view.div = null;
         }
-
-        this._pools = {};
-        this._children = [];
     }
 
     /**
      * This recursive function will run through the scene graph and add any new accessible objects to the DOM layer.
      * @private
      * @param {Container} container - The Container to check.
+     * @param view - the overlay view the accessible objects belong to
      */
-    private _updateAccessibleObjects(container: Container): void
+    private _updateAccessibleObjects(container: Container, view: AccessibilityViewData): void
     {
         if (!container.visible || !container.accessibleChildren)
         {
@@ -439,10 +579,10 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         {
             if (!container._accessibleActive)
             {
-                this._addChild(container);
+                this._addChild(container, view);
             }
 
-            container._renderId = this._renderId;
+            container._renderId = view.renderId;
         }
 
         const children = container.children;
@@ -451,7 +591,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         {
             for (let i = 0; i < children.length; i++)
             {
-                this._updateAccessibleObjects(children[i] as Container);
+                this._updateAccessibleObjects(children[i] as Container, view);
             }
         }
     }
@@ -475,11 +615,22 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         this._activateOnTab = mergedOptions.accessibilityOptions.activateOnTab;
         this._deactivateOnMouseMove = mergedOptions.accessibilityOptions.deactivateOnMouseMove;
 
+        // register any views that already exist on the renderer. The renderer emits viewAdded for the
+        // main view during ViewSystem.init, but the runner order is not guaranteed and a system can be
+        // constructed after init (as in tests), so pick up the registry here too.
+        for (const view of this._renderer.view.views)
+        {
+            this.viewAdded(view);
+        }
+
         if (mergedOptions.accessibilityOptions.enabledByDefault)
         {
             this._activate();
         }
 
+        // a system is auto-added to every runner whose method it implements; stay off the render
+        // hooks until activation re-adds us once the overlay is ready (_initAccessibilitySetup)
+        this._renderer.runners.prerender.remove(this);
         this._renderer.runners.postrender.remove(this);
     }
 
@@ -493,46 +644,72 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
      */
     public postrender(): void
     {
+        // the active view is resolved in prerender, before any back-buffer swap. A null active view
+        // (offscreen RenderTexture render, or a secondary canvas registered with accessibility:false)
+        // must not relayout/re-attach the main overlay against a stale root.
+        const view = this._tracker.consumeActive();
+
+        if (!view) return;
+
         /* On Android default web browser, tab order seems to be calculated by position rather than tabIndex,
         *  moving buttons can cause focus to flicker between two buttons making it hard/impossible to navigate,
         *  so I am just running update every half a second, seems to fix it.
         */
         const now = performance.now();
 
-        if (this._mobileInfo.android.device && now < this._androidUpdateCount)
+        if (this._mobileInfo.android.device && now < view.androidUpdateCount)
         {
             return;
         }
 
-        this._androidUpdateCount = now + this._androidUpdateFrequency;
+        view.androidUpdateCount = now + this._androidUpdateFrequency;
 
-        if ((!this._renderer.renderingToScreen || !this._renderer.view.canvas)
-            && !this._isRunningTests)
-        {
-            return;
-        }
+        this._updateView(view);
+    }
+
+    /**
+     * Resolves which overlay this render targets, before a system such as the back buffer can swap
+     * `options.target` in renderStart. Consumed by {@link AccessibilitySystem#postrender}.
+     * @param options - the options the renderer was called with
+     * @ignore
+     */
+    public prerender(options: RenderOptions): void
+    {
+        // resolves the target view and captures its rootContainer before the back buffer can swap
+        // options.target in renderStart; a non-participating / offscreen target nulls the active view
+        this._tracker.setActive(options);
+    }
+
+    /**
+     * Walks a view's scene graph, syncs its accessible divs (adding new ones, recycling stale ones),
+     * and repositions them over the view's canvas.
+     * @param view - the overlay view to update
+     */
+    private _updateView(view: AccessibilityViewData): void
+    {
+        const root = this._tracker.rootFor(view);
 
         // Track which containers are still active this frame
         const activeIds = new Set<number>();
 
-        if (this._renderer.lastObjectRendered)
+        if (root)
         {
-            this._updateAccessibleObjects(this._renderer.lastObjectRendered as Container);
+            this._updateAccessibleObjects(root, view);
 
             // Mark all updated containers as active
-            for (const child of this._children)
+            for (const child of view.children)
             {
-                if (child._renderId === this._renderId)
+                if (child._renderId === view.renderId)
                 {
-                    activeIds.add(this._children.indexOf(child));
+                    activeIds.add(view.children.indexOf(child));
                 }
             }
         }
 
         // Remove any containers that weren't updated this frame
-        for (let i = this._children.length - 1; i >= 0; i--)
+        for (let i = view.children.length - 1; i >= 0; i--)
         {
-            const child = this._children[i];
+            const child = view.children[i];
 
             if (!activeIds.has(i))
             {
@@ -541,27 +718,23 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
                 {
                     child._accessibleDiv.parentNode.removeChild(child._accessibleDiv);
 
-                    const pool = this._getPool(child.accessibleType);
+                    const pool = this._getPool(child.accessibleType, view);
 
                     pool.push(child._accessibleDiv);
                     child._accessibleDiv = null;
                 }
                 child._accessibleActive = false;
-                removeItems(this._children, i, 1);
+                removeItems(view.children, i, 1);
             }
         }
 
-        // Update root div dimensions if needed
-        if (this._renderer.renderingToScreen)
-        {
-            // Ensure the main DOM element is attached to the same parent as the canvas
-            this._canvasObserver.ensureAttached();
-        }
+        // Ensure the overlay is attached to the same parent as its canvas
+        view.observer?.ensureAttached();
 
         // Update positions of existing divs
-        for (let i = 0; i < this._children.length; i++)
+        for (let i = 0; i < view.children.length; i++)
         {
-            const child = this._children[i];
+            const child = view.children[i];
 
             if (!child._accessibleActive || !child._accessibleDiv)
             {
@@ -583,7 +756,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             }
             else
             {
-                this._capHitArea(hitArea);
+                this._capHitArea(hitArea, view);
                 div.style.left = `${hitArea.x}px`;
                 div.style.top = `${hitArea.y}px`;
                 div.style.width = `${hitArea.width}px`;
@@ -592,7 +765,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         }
 
         // increment the render id..
-        this._renderId++;
+        view.renderId++;
     }
 
     /**
@@ -608,8 +781,9 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
     /**
      * Adjust the hit area based on the bounds of a display object
      * @param {Rectangle} hitArea - Bounds of the child
+     * @param view - the overlay view whose canvas dimensions bound the hit area
      */
-    private _capHitArea(hitArea: Rectangle): void
+    private _capHitArea(hitArea: Rectangle, view: AccessibilityViewData): void
     {
         if (hitArea.x < 0)
         {
@@ -623,7 +797,11 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             hitArea.y = 0;
         }
 
-        const { width: viewWidth, height: viewHeight } = this._renderer;
+        // the main view clamps to the renderer dimensions; a secondary view clamps to its own
+        // canvas source's logical size
+        const { width: viewWidth, height: viewHeight } = view === this._tracker.mainView || !view.source
+            ? this._renderer
+            : view.source;
 
         if (hitArea.x + hitArea.width > viewWidth)
         {
@@ -641,10 +819,11 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
      * Sets up ARIA attributes, event listeners, and positioning based on the container's properties.
      * @private
      * @param {Container} container - The child to make accessible.
+     * @param view - the overlay view the child belongs to
      */
-    private _addChild<T extends Container>(container: T): void
+    private _addChild<T extends Container>(container: T, view: AccessibilityViewData = this._tracker.mainView): void
     {
-        const pool = this._getPool(container.accessibleType);
+        const pool = this._getPool(container.accessibleType, view);
 
         let div = pool.pop();
 
@@ -763,24 +942,44 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         container._accessibleDiv = div;
         div.container = container;
 
-        this._children.push(container);
-        this._div.appendChild(container._accessibleDiv);
+        view.children.push(container);
+        // _addChild only runs while active, so the overlay div is guaranteed built here
+        view.div!.appendChild(container._accessibleDiv);
     }
 
     /**
-     * Dispatch events with the EventSystem.
+     * Dispatch events with the EventSystem, scoped to the canvas the accessible div belongs to.
      * @param e
      * @param type
      * @private
      */
     private _dispatchEvent(e: UIEvent, type: string[]): void
     {
-        const { container: target } = e.target as AccessibleHTMLElement;
-        const boundary = this._renderer.events.rootBoundary;
+        const div = e.target as AccessibleHTMLElement;
+        const { container: target } = div;
+        const events = this._renderer.events;
+        // route to the boundary of the canvas whose overlay this div sits in (the main view when
+        // the div has no recognised owner, e.g. direct test usage)
+        const element = this._viewForDiv(div)?.element;
+        const boundary = events.boundaryForElement(element);
         const event: FederatedEvent = Object.assign(new FederatedEvent(boundary), { target });
 
-        boundary.rootTarget = this._renderer.lastObjectRendered as Container;
+        boundary.rootTarget = events.rootTargetForElement(element);
         type.forEach((type) => boundary.dispatchEvent(event, type));
+    }
+
+    /**
+     * Finds the overlay view an accessible div belongs to, by the overlay it is parented to.
+     * @param div - the accessible div that received a DOM event
+     */
+    private _viewForDiv(div: AccessibleHTMLElement): AccessibilityViewData | null
+    {
+        for (const view of this._tracker.values())
+        {
+            if (view.div === div.parentNode) return view;
+        }
+
+        return null;
     }
 
     /**
@@ -863,12 +1062,11 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         this._deactivate();
         this._destroyTouchHook();
 
-        this._canvasObserver?.destroy();
-        this._canvasObserver = null;
+        // _deactivate keeps the main view's div + observer for reuse; tear everything down now. The
+        // tracker runs the destroy closure (_teardownView(data, true)) for every tracked view, clears
+        // the map and nulls its main/active pointers.
+        this._tracker.destroyAll();
 
-        this._div = null;
-        this._pools = null;
-        this._children = null;
         this._renderer = null;
         this._hookDiv = null;
 
@@ -900,13 +1098,10 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         }
     }
 
-    private _getPool(accessibleType: string): AccessibleHTMLElement[]
+    private _getPool(accessibleType: string, view: AccessibilityViewData): AccessibleHTMLElement[]
     {
-        if (!this._pools[accessibleType])
-        {
-            this._pools[accessibleType] = [];
-        }
+        view.pools[accessibleType] ??= [];
 
-        return this._pools[accessibleType];
+        return view.pools[accessibleType];
     }
 }

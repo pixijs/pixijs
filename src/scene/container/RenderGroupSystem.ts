@@ -128,8 +128,16 @@ export class RenderGroupSystem implements System
                 // as if the texture changes, we need to invalidate the parent render group!
                 const bounds = renderGroup.root.getLocalBounds();
                 const renderer = this._renderer;
-                const resolution = renderGroup.textureOptions.resolution || renderer.view.resolution;
-                const antialias = renderGroup.textureOptions.antialias ?? renderer.view.antialias;
+
+                // resolve the active on-screen view so cacheAsTexture inherits the resolution and
+                // antialias of the canvas it is being presented to; viewForTarget returns null for
+                // offscreen / RenderTexture targets, which keep using renderer.view.* unchanged
+                const active = renderer.renderTarget.rootRenderTarget;
+                const view = active ? renderer.view.viewForTarget(active) : null;
+                const resolution = renderGroup.textureOptions.resolution
+                    || (view ? view.resolution : renderer.view.resolution);
+                const antialias = renderGroup.textureOptions.antialias
+                    ?? (view ? active.colorTexture.antialias : renderer.view.antialias);
                 const scaleMode = renderGroup.textureOptions.scaleMode ?? 'linear';
                 const lastTexture = renderGroup.texture;
 
