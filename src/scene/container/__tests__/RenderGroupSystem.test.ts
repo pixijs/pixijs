@@ -1,6 +1,6 @@
 import { Container } from '../Container';
 import '../../text/init';
-import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
+import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer, itLocalOnly } from '@test-utils';
 import { RenderTexture, Texture } from '~/rendering';
 import { Sprite, Text } from '~/scene';
 
@@ -53,6 +53,16 @@ function describeCachedContainerMove(createRenderer: () => Promise<Renderer>): v
         target.destroy(true);
         renderer.destroy();
     });
+}
+
+function createCanvas(width = 100, height = 100)
+{
+    const canvas = document.createElement('canvas');
+
+    canvas.width = width;
+    canvas.height = height;
+
+    return canvas;
 }
 
 describe('RenderGroupSystem', () =>
@@ -121,6 +131,60 @@ describe('RenderGroupSystem', () =>
         renderer.render(container);
 
         expect(container.renderGroup.texture._source.scaleMode).toEqual('nearest');
+    });
+
+    it('should cache a render group texture at the active secondary view resolution', async () =>
+    {
+        const renderer = await getWebGLRenderer({ resolution: 1 });
+        const canvas = createCanvas();
+        const view = renderer.addView({ canvas, resolution: 3 });
+
+        const container = new Container();
+
+        container.addChild(new Text({ text: 'hello world' }));
+        container.cacheAsTexture(true);
+
+        renderer.render({ container, target: canvas });
+
+        expect(view.resolution).toEqual(3);
+        expect(container.renderGroup.texture._source._resolution).toEqual(3);
+
+        renderer.destroy();
+    });
+
+    it('should cache a main-view render group texture at the renderer resolution and antialias', async () =>
+    {
+        const renderer = await getWebGLRenderer({ resolution: 1, antialias: false });
+        const container = new Container();
+
+        container.addChild(new Text({ text: 'hello world' }));
+        container.cacheAsTexture(true);
+
+        renderer.render(container);
+
+        expect(container.renderGroup.texture._source._resolution).toEqual(renderer.view.resolution);
+        expect(container.renderGroup.texture._source.antialias).toEqual(renderer.view.antialias);
+
+        renderer.destroy();
+    });
+
+    itLocalOnly('should cache a render group texture at the active secondary view resolution (WebGPU)', async () =>
+    {
+        const renderer = await getWebGPURenderer({ resolution: 1 });
+        const canvas = createCanvas();
+        const view = renderer.addView({ canvas, resolution: 3 });
+
+        const container = new Container();
+
+        container.addChild(new Text({ text: 'hello world' }));
+        container.cacheAsTexture(true);
+
+        renderer.render({ container, target: canvas });
+
+        expect(view.resolution).toEqual(3);
+        expect(container.renderGroup.texture._source._resolution).toEqual(3);
+
+        renderer.destroy();
     });
 });
 

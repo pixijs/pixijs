@@ -1,4 +1,5 @@
 import { ExtensionType } from '../extensions/Extensions';
+import { ResizeController } from './ResizeController';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 import type { Renderer } from '../rendering/renderers/types';
@@ -84,11 +85,7 @@ export class ResizePlugin
     /** @internal */
     public static render: () => void;
     /** @internal */
-    private static _resizeId: number;
-    /** @internal */
-    private static _resizeTo: Window | HTMLElement;
-    /** @internal */
-    private static _cancelResize: () => void;
+    private static _resizeController: ResizeController;
 
     /**
      * Initialize the plugin with scope of application instance
@@ -97,82 +94,31 @@ export class ResizePlugin
      */
     public static init(options: ResizePluginOptions): void
     {
+        const resizeController = new ResizeController((width: number, height: number) =>
+        {
+            this.renderer.resize(width, height);
+            this.render();
+        });
+
+        this._resizeController = resizeController;
+
         Object.defineProperty(this, 'resizeTo',
             {
                 configurable: true,
                 set(dom: Window | HTMLElement)
                 {
-                    globalThis.removeEventListener('resize', this.queueResize);
-                    this._resizeTo = dom;
-                    if (dom)
-                    {
-                        globalThis.addEventListener('resize', this.queueResize);
-                        this.resize();
-                    }
+                    resizeController.resizeTo = dom;
                 },
                 get()
                 {
-                    return this._resizeTo;
+                    return resizeController.resizeTo;
                 },
             });
 
-        this.queueResize = (): void =>
-        {
-            if (!this._resizeTo)
-            {
-                return;
-            }
+        this.queueResize = (): void => resizeController.queueResize();
+        this.resize = (): void => resizeController.resizeNow();
 
-            this._cancelResize();
-
-            // // Throttle resize events per raf
-            this._resizeId = requestAnimationFrame(() => this.resize());
-        };
-
-        this._cancelResize = (): void =>
-        {
-            if (this._resizeId)
-            {
-                cancelAnimationFrame(this._resizeId);
-                this._resizeId = null;
-            }
-        };
-
-        this.resize = (): void =>
-        {
-            if (!this._resizeTo)
-            {
-                return;
-            }
-
-            // clear queue resize
-            this._cancelResize();
-
-            let width: number;
-            let height: number;
-
-            // Resize to the window
-            if (this._resizeTo === globalThis.window)
-            {
-                width = globalThis.innerWidth;
-                height = globalThis.innerHeight;
-            }
-            // Resize to other HTML entities
-            else
-            {
-                const { clientWidth, clientHeight } = this._resizeTo as HTMLElement;
-
-                width = clientWidth;
-                height = clientHeight;
-            }
-
-            this.renderer.resize(width, height);
-            this.render();
-        };
-
-        // On resize
-        this._resizeId = null;
-        this._resizeTo = null;
+        // Set the target last so the initial resize fires.
         this.resizeTo = options.resizeTo || null;
     }
 
@@ -182,9 +128,8 @@ export class ResizePlugin
      */
     public static destroy(): void
     {
-        globalThis.removeEventListener('resize', this.queueResize);
-        this._cancelResize();
-        this._cancelResize = null;
+        this._resizeController?.destroy();
+        this._resizeController = null;
         this.queueResize = null;
         this.resizeTo = null;
         this.resize = null;

@@ -8,7 +8,21 @@ import { Rectangle } from '~/maths';
 import { Container, Graphics } from '~/scene';
 
 import type { FederatedPointerEvent } from '../FederatedPointerEvent';
-import type { RendererOptions } from '~/rendering';
+import type { RendererOptions, WebGLRenderer } from '~/rendering';
+
+const createdRenderers: WebGLRenderer[] = [];
+
+afterEach(() =>
+{
+    // these renderers share a WebGL context across tests (so they are intentionally not destroyed),
+    // but each EventSystem attaches document/window level pointer listeners. Detach those listeners
+    // so a leaked listener does not hit-test this suite's stale scenes when a later suite dispatches
+    // real document events (e.g. the multi-view event tests).
+    while (createdRenderers.length)
+    {
+        createdRenderers.pop().events.setTargetElement(null);
+    }
+});
 
 async function createRenderer(
     canvas?: HTMLCanvasElement,
@@ -23,10 +37,12 @@ async function createRenderer(
         ...rendererOptions,
     });
 
+    createdRenderers.push(renderer);
+
     if (supportsPointerEvents === false)
     {
         // todo: keep these props
-        renderer.events['_removeEvents']();
+        renderer.events.setTargetElement(null);
         (renderer.events as any).supportsPointerEvents = false;
         renderer.events.setTargetElement(renderer.canvas);
     }

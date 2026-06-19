@@ -136,6 +136,32 @@ for (let z = 0; z < 4; z++) {
 
 Custom render code can bind a layer the same way with `renderer.renderTarget.push({ target, layer })`.
 
+## Rendering to multiple canvases (multiView)
+
+A single renderer can present to more than one canvas. The renderer's own canvas is registered
+automatically as the main view at `renderer.views[0]`. Register extra canvases with
+{@link AbstractRenderer#addView | renderer.addView}, then target them in `render()`:
+
+```ts
+const view = renderer.addView({ canvas: secondCanvas });
+
+renderer.render({ container: sceneA }); // draws to the main canvas
+renderer.render({ container: sceneB, target: secondCanvas }); // draws to secondCanvas
+
+renderer.removeView(view); // stop tracking it (does not destroy your canvas)
+```
+
+`addView` accepts a canvas plus per-view participation flags: `resolution`, `autoDensity`, `events`,
+`accessibility`, `dom`, and `eventFeatures`. Each defaults to the renderer's init setting (events and dom
+default to `true`), so secondary canvases can be retina and get their own events, DOM overlays, and
+accessibility. Per-view `antialias` and `alpha` are not offered: on WebGL these are context-global and fixed
+when the renderer is created.
+
+> [!NOTE]
+> `renderer.addView` is the low-level primitive. When using an {@link Application}, prefer
+> {@link Application#addView}, which wraps it and adds `stage`, `clearColor`, `resizeTo`, and `enabled`.
+> WebGL requires `multiView: true` at init for additional views; the WebGPU renderer needs no such option.
+
 ## Flipping the output (advanced)
 
 By default a texture render is stored in PixiJS's Y-down orientation, which the 2D pipeline samples upright but 3D UV conventions read upside down. Pass `flipY: true` to invert the Y orientation of the render. Back-face culling stays correct because the winding order flips together with the projection.
@@ -421,6 +447,8 @@ This removes all `EventEmitter` listeners attached to the renderer and nullifies
 - {@link WebGPURenderer}
 - {@link CanvasRenderer}
 - {@link autoDetectRenderer}
+- {@link RendererView}
+  - {@link RendererViewOptions}
 - {@link ExtractSystem}
 - {@link GenerateTextureSystem}
 - {@link RenderTexture}

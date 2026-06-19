@@ -3,6 +3,8 @@ import { autoDetectRenderer } from '../rendering/renderers/autoDetectRenderer';
 import { Container } from '../scene/container/Container';
 import { ApplicationInitHook } from '../utils/global/globalHooks';
 import { deprecation, v8_0_0 } from '../utils/logging/deprecation';
+import { warn } from '../utils/logging/warn';
+import { RenderView } from './RenderView';
 import '../app/init';
 
 import type { Rectangle } from '../maths/shapes/Rectangle';
@@ -10,6 +12,7 @@ import type { AutoDetectOptions } from '../rendering/renderers/autoDetectRendere
 import type { RendererDestroyOptions } from '../rendering/renderers/shared/system/AbstractRenderer';
 import type { Renderer } from '../rendering/renderers/types';
 import type { DestroyOptions } from '../scene/container/destroyTypes';
+import type { RenderViewOptions } from './RenderView';
 
 /**
  * Interface for creating Application plugins. Any plugin that's usable for Application must implement these methods.
@@ -173,9 +176,23 @@ export class Application<R extends Renderer = Renderer>
      */
     public static _plugins: ApplicationPlugin[] = [];
 
+    /** Backing stage used before {@link Application#init}, after which the primary view owns it. */
+    private _stage: Container = new Container();
+
+    /** The render views driven each frame. `views[0]` is always the {@link Application#primaryView}. */
+    private _views: RenderView<R>[] = [];
+
+    /**
+     * The application's primary view: the {@link RenderView} wrapping the renderer's own canvas and
+     * the main {@link Application#stage stage}. Available after {@link Application#init}.
+     */
+    public primaryView: RenderView<R> = null;
+
     /**
      * The root display container for your application.
      * All visual elements should be added to this container or its children.
+     *
+     * This is the same container as `app.primaryView.stage`.
      * @example
      * ```js
      * // Create a sprite and add it to the stage
@@ -187,7 +204,32 @@ export class Application<R extends Renderer = Renderer>
      * app.stage.addChild(container);
      * ```
      */
-    public stage: Container = new Container();
+    get stage(): Container
+    {
+        return this.primaryView ? this.primaryView.stage : this._stage;
+    }
+
+    set stage(value: Container)
+    {
+        if (this.primaryView)
+        {
+            this.primaryView.stage = value;
+        }
+        else
+        {
+            this._stage = value;
+        }
+    }
+
+    /**
+     * All render views driven by {@link Application#render}, the {@link Application#primaryView}
+     * first followed by any added with {@link Application#addView}.
+     * @readonly
+     */
+    get views(): ReadonlyArray<RenderView<R>>
+    {
+        return this._views;
+    }
 
     /**
      * The renderer instance that handles all drawing operations.
@@ -253,6 +295,11 @@ export class Application<R extends Renderer = Renderer>
         this.stage ||= new Container();
         this.renderer = await autoDetectRenderer(options as ApplicationOptions) as R;
 
+        // the primary view wraps the renderer's own canvas and the main stage, so a single-view
+        // application renders byte-for-byte identically to a classic single-canvas Application
+        this.primaryView = new RenderView(this.renderer, { canvas: this.renderer.canvas, stage: this.stage }, true);
+        this._views = [this.primaryView];
+
         // install plugins here
         Application._plugins.forEach((plugin) =>
         {
@@ -288,7 +335,98 @@ export class Application<R extends Renderer = Renderer>
      */
     public render(): void
     {
-        this.renderer.render({ container: this.stage });
+        const views = this._views;
+
+        // render added views first and the primary view last, so the renderer's lastObjectRendered
+        // (used by the main view's events) ends up being the primary stage
+        for (let i = 1; i < views.length; i++)
+        {
+            if (views[i].enabled) views[i].render();
+        }
+
+        if (views[0]?.enabled) views[0].render();
+    }
+
+    /**
+     * Adds an additional canvas for this application's renderer to draw to, driven each frame by
+     * {@link Application#render}. This powers the multiView feature: one renderer driving many canvases,
+     * each with its own stage, clear color and optional auto-resize.
+     *
+     * > [!IMPORTANT] On the WebGL renderer, additional canvases only render if the application was
+     * > initialized with `multiView: true`. WebGPU needs no such option.
+     * @param options - configuration for the new view
+     * @returns the created {@link RenderView}
+     * @example
+     * ```ts
+     * const app = new Application();
+     * await app.init({ multiView: true });
+     *
+     * const view = app.addView({ canvas: secondCanvas, clearColor: 0x222222 });
+     * view.stage.addChild(sprite);
+     * ```
+     */
+    public addView(options: RenderViewOptions<R> = {}): RenderView<R>
+    {
+        // #if _DEBUG
+        const context = (this.renderer as Renderer & { context?: { multiView?: boolean } }).context;
+
+        if (context && 'multiView' in context && !context.multiView)
+        {
+            warn('Application#addView: the WebGL renderer was not created with multiView:true, so additional '
+                + 'canvases will not render. Pass multiView:true to app.init() (this cannot be enabled later).');
+        }
+
+        // one canvas can back only one view; sharing it (including passing renderer.canvas) would
+        // make the per-canvas event/DOM/accessibility overlays flip between the two stages each frame
+        if (options.canvas && this._views.some((existing) => existing.canvas === options.canvas))
+        {
+            warn('Application#addView: that canvas already backs another view. Each view needs its own canvas.');
+        }
+        // #endif
+
+        const view = new RenderView(this.renderer, options, false);
+
+        // #if _DEBUG
+        const canvas = view.canvas as { isConnected?: boolean };
+
+        if (canvas && canvas.isConnected === false)
+        {
+            warn('Application#addView: the view canvas is not attached to the DOM. Append view.canvas to the '
+                + 'document for its events and DOM/accessibility overlays to work.');
+        }
+        // #endif
+
+        this._views.push(view);
+
+        return view;
+    }
+
+    /**
+     * Removes a view previously added with {@link Application#addView}, stopping it from rendering.
+     * Its stage is left intact (destroy it yourself if needed). The {@link Application#primaryView}
+     * cannot be removed.
+     * @param view - the view to remove
+     * @returns whether the view was removed
+     */
+    public removeView(view: RenderView<R>): boolean
+    {
+        if (view === this.primaryView)
+        {
+            // #if _DEBUG
+            warn('Application#removeView: the primary view cannot be removed.');
+            // #endif
+
+            return false;
+        }
+
+        const index = this._views.indexOf(view);
+
+        if (index === -1) return false;
+
+        this._views.splice(index, 1);
+        view.destroy();
+
+        return true;
     }
 
     /**
@@ -421,8 +559,21 @@ export class Application<R extends Renderer = Renderer>
             plugin.destroy.call(this);
         });
 
-        this.stage.destroy(options);
-        this.stage = null;
+        // tear down added views (their stages + any auto-created canvas); the primary view's stage
+        // and canvas are the application's own and are cleaned up just below / by the renderer
+        for (let i = this._views.length - 1; i >= 1; i--)
+        {
+            this._views[i].destroy(options);
+        }
+
+        const stage = this.stage;
+
+        this.primaryView?.destroy();
+        this.primaryView = null;
+        this._views = [];
+
+        stage.destroy(options);
+        this._stage = null;
 
         this.renderer.destroy(rendererDestroyOptions);
         this.renderer = null;
