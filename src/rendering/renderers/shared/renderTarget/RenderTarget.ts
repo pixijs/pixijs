@@ -159,6 +159,19 @@ export class RenderTarget
 
     public dirtyId = 0;
     public isRoot = false;
+    /**
+     * Opt-in toggle that inverts this target's Y orientation, resolved at `bind` time.
+     *
+     * Defaults to `undefined`/`false` — a no-op, so rendering is exactly what it has always been
+     * (texture targets flip so they sample upright in the 2D pipeline; the screen does not). Set `true`
+     * to invert that automatic orientation — e.g. to store a capture in screen orientation for 3D, where
+     * geometry UVs expect the un-flipped result.
+     *
+     * When `true`, the projection Y-flip and the winding/cull inversion flip together, so a front-facing
+     * triangle stays front-facing — back-face culling of content rendered into the target stays correct.
+     * @advanced
+     */
+    public flipY?: boolean;
     /** a label for debugging — shows up on the render pass in GPU debuggers (WebGPU) */
     public label?: string;
 

@@ -115,7 +115,10 @@ export class GlStateSystem implements System
 
     protected onRenderTargetChange(renderTarget: RenderTarget)
     {
-        this._invertFrontFace = !renderTarget.isRoot;
+        // Keep the winding inversion welded to the projection Y-flip: both resolve from the same toggle
+        // (see RenderTargetSystem.bind). `flipY` off → the historical `!isRoot`; `flipY` on inverts it,
+        // so the projection flip and the winding inversion flip together and back-face culling stays correct.
+        this._invertFrontFace = !renderTarget.isRoot !== !!renderTarget.flipY;
 
         // mini optimization to avoid setting the front face if culling is disabled
         if (this._cullFace)

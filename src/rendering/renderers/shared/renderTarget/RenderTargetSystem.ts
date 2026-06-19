@@ -45,6 +45,8 @@ interface RenderTargetAndFrame
     mipLevel: number;
     /** array layer to render to (subresource) */
     layer: number;
+    /** per-render Y-flip override; restored on `pop` so nested pushes don't lose it */
+    flipY?: boolean;
 }
 
 /**
@@ -308,6 +310,8 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      * @param options.mipLevel - the mip level to render to
      * @param options.layer - The layer of the render target to render to. Used for array or 3D textures, or when rendering
      * to a specific layer of a layered render target. Optional.
+     * @param options.flipY - Opt-in Y-orientation toggle. `false`/omitted is a no-op (the historical
+     * `!isRoot` behavior); `true` inverts the orientation (and the winding with it). Optional.
      */
     public renderStart({
         target,
@@ -315,7 +319,8 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         clearColor,
         frame,
         mipLevel,
-        layer
+        layer,
+        flipY
     }: {
         target: RenderSurface;
         clear: CLEAR_OR_BOOL;
@@ -323,6 +328,7 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         frame?: Rectangle;
         mipLevel?: number;
         layer?: number;
+        flipY?: boolean;
     }): void
     {
         // TODO no need to reset this - use optimised index instead
@@ -334,7 +340,8 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
             clearColor,
             frame,
             mipLevel || 0,
-            layer || 0
+            layer || 0,
+            flipY
         );
 
         this.rootViewPort.copyFrom(this.viewport);
@@ -382,6 +389,9 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      * @param layer - the layer (or slice) of the render surface to render to. For array textures,
      * 3D textures, or cubemaps, this specifies the target layer or face. Defaults to 0 (the first layer/face).
      * Ignored for surfaces that do not support layers.
+     * @param flipY - opt-in Y-orientation toggle. `false`/omitted is a no-op (the historical `!isRoot`
+     * behavior); `true` inverts the orientation. The projection and the WebGL front-face inversion both
+     * flip with it, so back-face culling stays correct.
      * @returns the render target that was bound
      */
     public bind(
@@ -390,7 +400,8 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         clearColor?: RgbaArray,
         frame?: Rectangle,
         mipLevel = 0,
-        layer = 0
+        layer = 0,
+        flipY?: boolean
     ): RenderTarget
     {
         const renderTarget = this.getRenderTarget(renderSurface);
@@ -497,12 +508,18 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
             viewport.height = pixelHeight;
         }
 
+        // Store the raw `flipY` toggle on the target — always, even when `undefined`, so a pooled target
+        // resets to the default. `flipY` is opt-in: off → the historical orientation (`!isRoot`), on →
+        // that orientation inverted. Resolving it here keeps the projection (below) and the WebGL
+        // front-face inversion (GlStateSystem.onRenderTargetChange) reading the same welded value.
+        renderTarget.flipY = flipY;
+
         calculateProjection(
             this.projectionMatrix,
             0, 0,
             viewport.width / source.resolution,
             viewport.height / source.resolution,
-            !renderTarget.isRoot
+            !renderTarget.isRoot !== !!renderTarget.flipY
         );
 
         this.adaptor.startRenderPass(renderTarget, clear, clearColor, viewport, mipLevel, layer);
@@ -554,6 +571,7 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      * @param mipLevel - the mip level to render to
      * @param layer - The layer of the render surface to render to. For array textures or cube maps, this specifies
      * which layer or face to target. Defaults to 0 (the first layer).
+     * @param flipY - opt-in Y-orientation toggle; stored on the stack so it is restored on `pop`.
      */
     public push(
         renderSurface: RenderSurface,
@@ -561,16 +579,18 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         clearColor?: RgbaArray,
         frame?: Rectangle,
         mipLevel = 0,
-        layer = 0
+        layer = 0,
+        flipY?: boolean
     )
     {
-        const renderTarget = this.bind(renderSurface, clear, clearColor, frame, mipLevel, layer);
+        const renderTarget = this.bind(renderSurface, clear, clearColor, frame, mipLevel, layer, flipY);
 
         this._renderTargetStack.push({
             renderTarget,
             frame,
             mipLevel,
             layer,
+            flipY,
         });
 
         return renderTarget;
@@ -589,7 +609,8 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
             null,
             currentRenderTargetData.frame,
             currentRenderTargetData.mipLevel,
-            currentRenderTargetData.layer
+            currentRenderTargetData.layer,
+            currentRenderTargetData.flipY
         );
     }
 
