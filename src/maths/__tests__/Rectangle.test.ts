@@ -483,12 +483,24 @@ describe('Rectangle', () =>
             expect(outer.containsRect(edge3)).toBe(true);
         });
 
-        it('should handle identical rectangles', () =>
+        it('should return true for identical rectangles', () =>
         {
+            // Rectangles that occupy the same space are considered to be containing each other.
             const rect1 = new Rectangle(0, 0, 100, 100);
             const rect2 = new Rectangle(0, 0, 100, 100);
 
-            expect(rect1.containsRect(rect2)).toBe(false);
+            expect(rect1.containsRect(rect2)).toBe(true);
+            expect(rect1.containsRect(rect1)).toBe(true);
+        });
+
+        it('should return false when an arealess rectangle sits on the edge', () =>
+        {
+            const outer = new Rectangle(0, 0, 100, 100);
+
+            // An arealess rectangle can only be contained if it is strictly inside.
+            expect(outer.containsRect(new Rectangle(50, 50, 0, 0))).toBe(true);
+            expect(outer.containsRect(new Rectangle(0, 50, 0, 0))).toBe(false);
+            expect(outer.containsRect(new Rectangle(100, 50, 0, 0))).toBe(false);
         });
     });
 });

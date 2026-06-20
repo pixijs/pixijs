@@ -794,17 +794,15 @@ export class Rectangle implements ShapePrimitive
      */
     public containsRect(other: Rectangle): boolean
     {
-        if (this.width <= 0 || this.height <= 0) return false;
+        // An arealess rectangle can be contained, but only if it sits strictly inside this one.
+        if (other.width <= 0 || other.height <= 0)
+        {
+            return other.x > this.x && other.y > this.y && other.right < this.right && other.bottom < this.bottom;
+        }
 
-        const x1 = other.x;
-        const y1 = other.y;
-        const x2 = other.x + other.width;
-        const y2 = other.y + other.height;
-
-        return x1 >= this.x && x1 < this.x + this.width
-            && y1 >= this.y && y1 < this.y + this.height
-            && x2 >= this.x && x2 < this.x + this.width
-            && y2 >= this.y && y2 < this.y + this.height;
+        // Rectangles that occupy the same space are considered to be containing each other,
+        // so the shared edges are inclusive (`<=` / `>=`).
+        return other.x >= this.x && other.y >= this.y && other.right <= this.right && other.bottom <= this.bottom;
     }
 
     /**
