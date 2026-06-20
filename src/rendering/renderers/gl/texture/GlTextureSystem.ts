@@ -167,14 +167,19 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         const gl = this._gl;
 
+        // a destroyed source can still be bound if its texture is destroyed while a sprite
+        // using it is rendered; fall back to the empty source to avoid reading its null style
+        if (!source || source.destroyed)
+        {
+            source = Texture.EMPTY.source;
+        }
+
         source._gcLastUsed = this._renderer.gc.now;
 
         if (this._boundTextures[location] !== source)
         {
             this._boundTextures[location] = source;
             this._activateLocation(location);
-
-            source ||= Texture.EMPTY.source;
 
             // bind texture and source!
             const glTexture = this.getGlSource(source);
