@@ -3,6 +3,7 @@ import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { warn } from '../../../../utils/logging/warn';
 import { CLEAR } from '../../gl/const';
 import { calculateProjection } from '../../gpu/renderTarget/calculateProjection';
+import { type Renderer, RendererType } from '../../types';
 import { SystemRunner } from '../system/SystemRunner';
 import { CanvasSource } from '../texture/sources/CanvasSource';
 import { TextureSource } from '../texture/sources/TextureSource';
@@ -17,7 +18,6 @@ import type { CanvasRenderTarget } from '../../canvas/renderTarget/CanvasRenderT
 import type { CLEAR_OR_BOOL } from '../../gl/const';
 import type { GlRenderTarget } from '../../gl/GlRenderTarget';
 import type { GpuRenderTarget } from '../../gpu/renderTarget/GpuRenderTarget';
-import type { Renderer } from '../../types';
 import type { System } from '../system/System';
 import type { BindableTexture } from '../texture/Texture';
 
@@ -175,8 +175,7 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
     destroyGpuRenderTarget(gpuRenderTarget: RENDER_TARGET): void
 
     /**
-     * Copies the depth attachment from one render target to another.
-     * Both source and destination must have a depthStencilAttachment.
+     * Copies the depth attachment of a render target into a depth/stencil texture.
      *
      * **Important Note:** When using the copied depth buffer in a subsequent render pass,
      * you must ensure you do not clear the depth buffer again. If you need to clear the color
@@ -184,7 +183,7 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
      * @example
      * ```js
      * renderer.renderTarget.copyDepthTexture(
-     *   sourceRT, destRT, { x: 0, y: 0 }, { width: 200, height: 200 }, { x: 0, y: 0 }
+     *   sourceRT, destDepthTexture, { x: 0, y: 0 }, { width: 200, height: 200 }, { x: 0, y: 0 }
      * );
      *
      * // In the subsequent render pass, clear ONLY the color buffer!
@@ -196,7 +195,7 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
      * });
      * ```
      * @param {RenderTarget} source - the render target to copy depth from
-     * @param {RenderTarget} destination - the render target to copy depth to
+     * @param {Texture} destination - the depth/stencil texture to copy depth to
      * @param {object} originSrc - the origin of the copy
      * @param {number} originSrc.x - the x origin of the copy
      * @param {number} originSrc.y - the y origin of the copy
@@ -209,7 +208,7 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
      */
     copyDepthTexture(
         source: RenderTarget,
-        destination: RenderTarget,
+        destination: Texture,
         originSrc: { x: number; y: number },
         size: { width: number; height: number },
         originDest?: { x: number; y: number },
@@ -532,6 +531,38 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         return renderTarget;
     }
 
+    /**
+     * The effective front-face orientation of the current bind — `true` when a front-facing triangle
+     * ends up wound the opposite way on the surface (so the winding/cull has been inverted to compensate).
+     *
+     * This is the requested `flipY` combined with the backend's inherent orientation, not the raw request:
+     *
+     * ```text
+     * frontFaceInverted = flipY XOR (isWebGL && !isRoot)
+     * ```
+     *
+     * WebGL's non-root FBOs carry an inherent Y-flip vs the root (the classic render-texture flip), so the
+     * same requested `flipY` lands with the opposite winding depending on `isRoot`. WebGPU has no such
+     * inherent flip, so there it is simply `flipY`. This is exactly the winding inversion each backend bakes
+     * at bind ({@link GlStateSystem} / {@link PipelineSystem}), exposed so consumers (e.g. 3D pipelines) can
+     * read the resolved orientation instead of re-deriving it from `flipY`, `isRoot`, and a backend check of
+     * their own.
+     *
+     * It is per-bind, not per-target: `flipY` is set on every `bind`/`renderStart` while `isRoot` is fixed on
+     * the target, so this recomputes from whatever the last bind resolved.
+     * @returns whether the current bind's front face is inverted
+     */
+    public get frontFaceInverted(): boolean
+    {
+        const renderTarget = this.renderTarget;
+
+        if (!renderTarget) return false;
+
+        const glInherentFlip = this._renderer.type === RendererType.WEBGL && !renderTarget.isRoot;
+
+        return !!renderTarget.flipY !== glInherentFlip;
+    }
+
     public clear(
         target?: RenderSurface,
         clear: CLEAR_OR_BOOL = CLEAR.ALL,
@@ -659,7 +690,7 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      * The best way to copy a canvas is to create a texture from it. Then render with that.
      *
      * Parsing in a RenderTarget canvas context (with a 2d context)
-     * @param sourceRenderSurfaceTexture - the render surface to copy from
+     * @param sourceRenderSurface - the render surface (render target, texture, or canvas) to copy from
      * @param {Texture} destinationTexture - the texture to copy to
      * @param {object} originSrc - the origin of the copy
      * @param {number} originSrc.x - the x origin of the copy
@@ -672,13 +703,16 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      * @param {number} originDest.y - the y origin of the paste
      */
     public copyToTexture(
-        sourceRenderSurfaceTexture: RenderTarget,
+        sourceRenderSurface: RenderSurface,
         destinationTexture: Texture,
         originSrc: { x: number; y: number },
         size: { width: number; height: number },
         originDest: { x: number; y: number; },
     )
     {
+        // a texture or canvas source is copied from its render target's framebuffer
+        const sourceRenderTarget = this.getRenderTarget(sourceRenderSurface);
+
         // fit the size to the source we don't want to go out of bounds
 
         if (originSrc.x < 0)
@@ -695,13 +729,13 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
             originSrc.y = 0;
         }
 
-        const { pixelWidth, pixelHeight } = sourceRenderSurfaceTexture;
+        const { pixelWidth, pixelHeight } = sourceRenderTarget;
 
         size.width = Math.min(size.width, pixelWidth - originSrc.x);
         size.height = Math.min(size.height, pixelHeight - originSrc.y);
 
         return this.adaptor.copyToTexture(
-            sourceRenderSurfaceTexture,
+            sourceRenderTarget,
             destinationTexture,
             originSrc,
             size,
@@ -730,8 +764,8 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      *   clearColor: [0, 0, 0, 1]
      * });
      * ```
-     * @param source - the render target to copy depth from
-     * @param destination - the render target to copy depth to
+     * @param source - the render surface (render target, depth texture, or canvas) to copy depth from
+     * @param destination - the depth/stencil texture to copy depth to
      * @param {object} originSrc - the origin of the copy
      * @param {number} originSrc.x - the x origin of the copy
      * @param {number} originSrc.y - the y origin of the copy
@@ -743,13 +777,33 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      * @param {number} originDest.y - the y origin of the paste
      */
     public copyDepthTexture(
-        source: RenderTarget,
-        destination: RenderTarget,
+        source: RenderSurface,
+        destination: Texture,
         originSrc: { x: number; y: number },
         size: { width: number; height: number },
         originDest: { x: number; y: number; } = { x: 0, y: 0 },
     ): void
     {
+        // a depth texture source is copied from its render target's depth attachment
+        const sourceRenderTarget = this.getRenderTarget(source);
+
+        if (!sourceRenderTarget.depthStencilAttachment)
+        {
+            warn('[RenderTargetSystem] copyDepthTexture: the source render target has no depth attachment to copy from');
+
+            return;
+        }
+
+        const destSource = destination.source;
+
+        if (!destSource.format.includes('depth') && !destSource.format.includes('stencil'))
+        {
+            warn('[RenderTargetSystem] copyDepthTexture: the destination texture must have a depth/stencil format '
+                + `(got '${destSource.format}')`);
+
+            return;
+        }
+
         // clamp into locals — callers often reuse their rect objects across frames,
         // so the arguments must never be mutated
         let srcX = originSrc.x;
@@ -774,18 +828,18 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
             srcY = 0;
         }
 
-        width = Math.min(width, source.pixelWidth - srcX);
-        height = Math.min(height, source.pixelHeight - srcY);
+        width = Math.min(width, sourceRenderTarget.pixelWidth - srcX);
+        height = Math.min(height, sourceRenderTarget.pixelHeight - srcY);
 
         // fit to the destination bounds too — WebGPU validates the copy against them
         // (GL silently clips), and an oversized copy would discard the whole frame
-        width = Math.min(width, destination.pixelWidth - destX);
-        height = Math.min(height, destination.pixelHeight - destY);
+        width = Math.min(width, destSource.pixelWidth - destX);
+        height = Math.min(height, destSource.pixelHeight - destY);
 
         if (width <= 0 || height <= 0) return;
 
         this.adaptor.copyDepthTexture(
-            source, destination,
+            sourceRenderTarget, destination,
             { x: srcX, y: srcY },
             { width, height },
             { x: destX, y: destY },
@@ -850,9 +904,13 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         }
         else if (renderSurface instanceof TextureSource)
         {
-            renderTarget = new RenderTarget({
-                colorTextures: [renderSurface],
-            });
+            // a depth/stencil-format source is a depth attachment, any other format is a color one
+            const format = renderSurface.format;
+            const isDepthStencil = format.includes('depth') || format.includes('stencil');
+
+            renderTarget = isDepthStencil
+                ? new RenderTarget({ colorTextures: 0, depthStencilTexture: renderSurface })
+                : new RenderTarget({ colorTextures: [renderSurface] });
 
             if (renderSurface.source instanceof CanvasSource)
             {

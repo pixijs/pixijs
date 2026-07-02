@@ -203,9 +203,9 @@ export class CanvasRenderTargetAdaptor implements RenderTargetAdaptor<CanvasRend
     }
 
     /**
-     * Copies the depth attachment from one render target to another (not supported in canvas).
+     * Copies the depth attachment of a render target into a texture (not supported in canvas).
      * @param _source - Source render target.
-     * @param _destination - Destination render target.
+     * @param _destination - Destination depth/stencil texture.
      * @param _originSrc - Source origin of the copy.
      * @param _originSrc.x
      * @param _originSrc.y
@@ -219,7 +219,7 @@ export class CanvasRenderTargetAdaptor implements RenderTargetAdaptor<CanvasRend
      */
     public copyDepthTexture(
         _source: RenderTarget,
-        _destination: RenderTarget,
+        _destination: Texture,
         _originSrc?: { x: number; y: number; },
         _size?: { width: number; height: number; },
         _originDest?: { x: number; y: number; },

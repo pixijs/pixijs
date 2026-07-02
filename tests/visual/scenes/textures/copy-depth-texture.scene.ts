@@ -53,6 +53,8 @@ export const scene: TestScene = {
             autoGenerateMipmaps: false,
         });
 
+        const destDepthTexture = new Texture({ source: destDepthSource });
+
         // -- Render Targets --
 
         const sourceRT = new RenderTarget({
@@ -188,7 +190,7 @@ export const scene: TestScene = {
 
         renderer.renderTarget.copyDepthTexture(
             sourceRT,
-            destRT,
+            destDepthTexture,
             { x: 0, y: 0 },
             { width: sourceRT.pixelWidth, height: sourceRT.pixelHeight },
             { x: 0, y: 0 },

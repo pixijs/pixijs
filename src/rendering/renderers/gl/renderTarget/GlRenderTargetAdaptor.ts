@@ -92,26 +92,23 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
     public copyDepthTexture(
         source: RenderTarget,
-        destination: RenderTarget,
+        destination: Texture,
         originSrc: { x: number; y: number; },
         size: { width: number; height: number; },
         originDest: { x: number; y: number; },
     ): void
     {
-        if (!source.depthStencilAttachment || !destination.depthStencilAttachment)
-        {
-            warn('[GlRenderTargetAdaptor] copyDepthTexture: source and destination must both have depth attachments');
-
-            return;
-        }
-
         const renderTargetSystem = this._renderTargetSystem;
         const gl = this._renderer.gl;
 
         this.finishRenderPass(source);
 
+        // blitFramebuffer moves depth between framebuffers, so the destination texture is
+        // resolved to its (depth-only) render target to provide one to blit into
+        const destinationRenderTarget = renderTargetSystem.getRenderTarget(destination);
+
         const srcGl = renderTargetSystem.getGpuRenderTarget(source);
-        const dstGl = renderTargetSystem.getGpuRenderTarget(destination);
+        const dstGl = renderTargetSystem.getGpuRenderTarget(destinationRenderTarget);
 
         gl.bindFramebuffer(gl.READ_FRAMEBUFFER, srcGl.framebuffer);
         gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, dstGl.framebuffer);
