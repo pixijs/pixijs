@@ -115,7 +115,7 @@ describe('isRenderingToScreen', () =>
 
         const renderTexture = RenderTexture.create({ width: 100, height: 100 });
 
-        renderer.renderTarget.bind(renderTexture);
+        renderer.renderTarget.bind({ target: renderTexture });
 
         const renderTarget = renderer.renderTarget.getRenderTarget(renderTexture);
 
@@ -136,7 +136,7 @@ describe('isRenderingToScreen', () =>
 
         const renderTexture = RenderTexture.create({ width: 100, height: 100 });
 
-        renderer.renderTarget.bind(renderTexture);
+        renderer.renderTarget.bind({ target: renderTexture });
 
         const renderTarget = renderer.renderTarget.getRenderTarget(renderTexture);
 
@@ -260,7 +260,7 @@ describe('Depth-only RenderTarget', () =>
             depth: true,
         });
 
-        expect(() => renderer.renderTarget.bind(renderTarget, true)).not.toThrow();
+        expect(() => renderer.renderTarget.bind({ target: renderTarget, clear: true })).not.toThrow();
 
         renderTarget.destroy();
     });

@@ -640,7 +640,7 @@ export class FilterSystem implements System
             filterData.backTexture = this.getBackTexture(renderTarget, bounds, previousFilterData?.bounds);
         }
 
-        renderer.renderTarget.bind(filterData.inputTexture, true);
+        renderer.renderTarget.bind({ target: filterData.inputTexture, clear: true });
 
         // set the global uniforms to take into account the bounds offset required
         renderer.globalUniforms.push({
@@ -747,7 +747,7 @@ export class FilterSystem implements System
         // set the output texture - this is where we are going to render to
         const renderTarget = this.renderer.renderTarget.getRenderTarget(output);
 
-        this.renderer.renderTarget.bind(output, !!clear);
+        this.renderer.renderTarget.bind({ target: output, clear: !!clear });
 
         if (output instanceof Texture)
         {

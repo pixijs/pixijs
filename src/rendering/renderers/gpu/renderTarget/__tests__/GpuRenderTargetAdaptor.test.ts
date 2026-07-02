@@ -35,7 +35,7 @@ describeLocalOnly('GpuRenderTargetAdaptor copies', () =>
         // simulate the documented mid-frame use: a frame is underway and a render
         // pass is open when the copy is requested
         renderer.encoder.renderStart();
-        renderer.renderTarget.bind(source, true);
+        renderer.renderTarget.bind({ target: source, clear: true });
 
         renderer.renderTarget.copyDepthTexture(
             source, destination,
@@ -64,7 +64,7 @@ describeLocalOnly('GpuRenderTargetAdaptor labels', () =>
         });
 
         renderer.encoder.renderStart();
-        renderer.renderTarget.bind(target, true);
+        renderer.renderTarget.bind({ target, clear: true });
 
         const gpuRenderTarget = renderer.renderTarget.getGpuRenderTarget(target);
 
