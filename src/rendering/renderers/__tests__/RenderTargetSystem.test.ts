@@ -1,6 +1,7 @@
 import { CLEAR } from '../gl/const';
 import { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
+import { Texture } from '../shared/texture/Texture';
 import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
 import { Graphics } from '~/scene/graphics/shared/Graphics';
 
@@ -277,6 +278,31 @@ describe('RenderTargetSystem flipY orientation toggle (WebGL)', () =>
         expect(state._invertFrontFace).toBe(false);
     });
 
+    it('exposes frontFaceInverted matching the baked winding inversion (welded to flipY and isRoot)', async () =>
+    {
+        renderer = await getWebGLRenderer() as WebGLRenderer;
+
+        const { renderTarget } = renderer;
+        const state = (renderer as WebGLRenderer).state as unknown as { _invertFrontFace: boolean };
+        const a = createTarget();
+        const b = createTarget();
+
+        // non-root texture, default: WebGL's inherent flip inverts the winding
+        renderTarget.bind(a);
+        expect(renderTarget.frontFaceInverted).toBe(true);
+        expect(renderTarget.frontFaceInverted).toBe(state._invertFrontFace);
+
+        // flipY:false is inert -> still inverted (switch target to force the change to re-emit)
+        renderTarget.bind(b, true, null, null, 0, 0, false);
+        expect(renderTarget.frontFaceInverted).toBe(true);
+        expect(renderTarget.frontFaceInverted).toBe(state._invertFrontFace);
+
+        // flipY:true cancels the inherent flip -> not inverted
+        renderTarget.bind(a, true, null, null, 0, 0, true);
+        expect(renderTarget.frontFaceInverted).toBe(false);
+        expect(renderTarget.frontFaceInverted).toBe(state._invertFrontFace);
+    });
+
     it('restores flipY when popping back to a target pushed with flipY:true', async () =>
     {
         renderer = await getWebGLRenderer() as WebGLRenderer;
@@ -328,6 +354,23 @@ describeLocalOnly('RenderTargetSystem flipY orientation toggle (WebGPU)', () =>
         renderer.render({ container: graphics, target, clear: true, flipY: true });
         expect(spy.mock.calls.some(([d]) => d.primitive?.frontFace === 'cw')).toBe(true);
     });
+
+    it('exposes frontFaceInverted as the raw flipY (WebGPU has no inherent Y-flip)', async () =>
+    {
+        renderer = await getWebGPURenderer() as WebGPURenderer;
+
+        renderer.encoder.renderStart();
+
+        const { renderTarget } = renderer;
+        const target = createTarget();
+
+        // no inherent flip on WebGPU: isRoot never enters the equation, so it tracks flipY directly
+        renderTarget.bind(target, true, null, null, 0, 0, false);
+        expect(renderTarget.frontFaceInverted).toBe(false);
+
+        renderTarget.bind(target, true, null, null, 0, 0, true);
+        expect(renderTarget.frontFaceInverted).toBe(true);
+    });
 });
 
 describe('copyDepthTexture argument safety', () =>
@@ -336,13 +379,14 @@ describe('copyDepthTexture argument safety', () =>
     {
         renderer = await getWebGLRenderer({ width: 64, height: 64 });
 
-        const makeTarget = () => new RenderTarget({
+        const source = new RenderTarget({
             colorTextures: [new TextureSource({ width: 32, height: 32 })],
             depthStencilTexture: new TextureSource({ width: 32, height: 32, format: 'depth24plus-stencil8' }),
         });
 
-        const source = makeTarget();
-        const destination = makeTarget();
+        const destination = new Texture({
+            source: new TextureSource({ width: 32, height: 32, format: 'depth24plus-stencil8' }),
+        });
 
         // the per-frame reuse pattern: one rect object, used every call —
         // negative origin and oversized extent both force clamping

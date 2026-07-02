@@ -1,5 +1,6 @@
 import { RenderTarget } from '../../../shared/renderTarget/RenderTarget';
 import { TextureSource } from '../../../shared/texture/sources/TextureSource';
+import { Texture } from '../../../shared/texture/Texture';
 import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
 
 import type { WebGPURenderer } from '../../WebGPURenderer';
@@ -12,13 +13,20 @@ function makeTarget(): RenderTarget
     });
 }
 
+function makeDepthTexture(): Texture
+{
+    return new Texture({
+        source: new TextureSource({ width: 16, height: 16, format: 'depth24plus-stencil8' }),
+    });
+}
+
 describeLocalOnly('GpuRenderTargetAdaptor copies', () =>
 {
     it('should close an open render pass before recording copyDepthTexture mid-frame', async () =>
     {
         const renderer = (await getWebGPURenderer()) as WebGPURenderer;
         const source = makeTarget();
-        const destination = makeTarget();
+        const destination = makeDepthTexture();
 
         const device = renderer.gpu.device;
 
