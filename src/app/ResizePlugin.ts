@@ -83,6 +83,8 @@ export class ResizePlugin
     /** @internal */
     public static queueResize: () => void;
     /** @internal */
+    public static cancelResize: () => void;
+    /** @internal */
     public static render: () => void;
     /** @internal */
     private static _resizeController: ResizeController;
@@ -116,6 +118,7 @@ export class ResizePlugin
             });
 
         this.queueResize = (): void => resizeController.queueResize();
+        this.cancelResize = (): void => resizeController.cancelResize();
         this.resize = (): void => resizeController.resizeNow();
 
         // Set the target last so the initial resize fires.
@@ -131,6 +134,7 @@ export class ResizePlugin
         this._resizeController?.destroy();
         this._resizeController = null;
         this.queueResize = null;
+        this.cancelResize = null;
         this.resizeTo = null;
         this.resize = null;
     }

@@ -64,6 +64,10 @@ export class CanvasObserver
     /** Attaches the DOM element to the canvas parent if it is not already attached. */
     public ensureAttached()
     {
+        // _canvas is undefined for an OffscreenCanvas-backed view (the constructor returns early),
+        // so guard before dereferencing it, mirroring updateTranslation()
+        if (!this._canvas) return;
+
         if (!this._domElement.parentNode && this._canvas.parentNode)
         {
             this._canvas.parentNode.appendChild(this._domElement);
@@ -138,6 +142,7 @@ export class CanvasObserver
         else if (!this._tickerAttached)
         {
             Ticker.shared.add(this.updateTranslation, this, UPDATE_PRIORITY.HIGH);
+            this._tickerAttached = true;
         }
     }
 
@@ -151,7 +156,8 @@ export class CanvasObserver
         }
         else if (this._tickerAttached)
         {
-            Ticker.shared.remove(this.updateTranslation);
+            // must pass the same context the add used, or TickerListener.match won't find the listener
+            Ticker.shared.remove(this.updateTranslation, this);
         }
 
         (this._domElement as null) = null;

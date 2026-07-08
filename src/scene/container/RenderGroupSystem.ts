@@ -130,14 +130,14 @@ export class RenderGroupSystem implements System
                 const renderer = this._renderer;
 
                 // resolve the active on-screen view so cacheAsTexture inherits the resolution and
-                // antialias of the canvas it is being presented to; viewForTarget returns null for
+                // antialias of the canvas it is being presented to. activeView is resolved at
+                // prerender before the WebGL back buffer swaps the target, and is null for
                 // offscreen / RenderTexture targets, which keep using renderer.view.* unchanged
-                const active = renderer.renderTarget.rootRenderTarget;
-                const view = active ? renderer.view.viewForTarget(active) : null;
+                const view = renderer.view.activeView;
                 const resolution = renderGroup.textureOptions.resolution
                     || (view ? view.resolution : renderer.view.resolution);
                 const antialias = renderGroup.textureOptions.antialias
-                    ?? (view ? active.colorTexture.antialias : renderer.view.antialias);
+                    ?? (view ? view.source.antialias : renderer.view.antialias);
                 const scaleMode = renderGroup.textureOptions.scaleMode ?? 'linear';
                 const lastTexture = renderGroup.texture;
 

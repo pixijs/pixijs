@@ -2,6 +2,7 @@ import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
+import { warn } from '../../../../utils/logging/warn';
 import { type Renderer, type RendererOptions } from '../../types';
 import { RenderTarget } from '../renderTarget/RenderTarget';
 import { CanvasSource } from '../texture/sources/CanvasSource';
@@ -11,6 +12,7 @@ import { RendererView } from './RendererView';
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { TypeOrBool } from '../../../../scene/container/destroyTypes';
 import type { RenderSurface } from '../renderTarget/RenderTargetSystem';
+import type { RenderOptions } from '../system/AbstractRenderer';
 import type { System } from '../system/System';
 import type { Texture } from '../texture/Texture';
 import type { RendererViewOptions } from './RendererView';
@@ -119,6 +121,20 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
     /** The registered views, with the main view always at index 0. */
     private readonly _views: RendererView[] = [];
 
+    /**
+     * Maps each view's {@link CanvasSource} to its {@link RendererView} so {@link viewForTarget} can
+     * resolve a canvas-backed target in O(1). Kept in sync with {@link _views} at every add/remove.
+     */
+    private readonly _viewBySource = new Map<CanvasSource, RendererView>();
+    /** Per-view source 'destroy' handlers, kept so removeView/destroy can detach them and not leak listeners. */
+    private readonly _viewDestroyHandlers: Map<RendererView, () => void> = new Map();
+
+    /** The on-screen view the current frame renders to, resolved at prerender. */
+    private _activeView: RendererView | null = null;
+
+    /** The renderer's `_roundPixels` flag saved at prerender and restored at postrender. */
+    private _savedRoundPixels: 0 | 1 = 0;
+
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
@@ -128,6 +144,15 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
     public get views(): readonly RendererView[]
     {
         return this._views;
+    }
+
+    /**
+     * The on-screen view this frame renders to, resolved at prerender before the WebGL back buffer
+     * swaps `options.target`. Null for offscreen / RenderTexture targets.
+     */
+    public get activeView(): RendererView | null
+    {
+        return this._activeView;
     }
 
     /**
@@ -225,9 +250,11 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
             accessibility: true,
             dom: true,
             eventFeatures: rendererOptions.eventFeatures,
+            roundPixels: this._renderer.roundPixels,
         });
 
         this._views.push(mainView);
+        this._viewBySource.set(mainView.source, mainView);
         this._renderer.runners.viewAdded.emit(mainView);
     }
 
@@ -269,6 +296,19 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
             throw new Error('ViewSystem.addView: the target render surface is not canvas-backed');
         }
 
+        // one canvas can back only one view; a duplicate would clobber _viewBySource (keyed by source)
+        // and orphan the sibling on removeView. Return the existing view, matching Application.addView.
+        const existingView = this._viewBySource.get(source);
+
+        if (existingView)
+        {
+            // #if _DEBUG
+            warn('ViewSystem.addView: that canvas already backs a view. Each view needs its own canvas.');
+            // #endif
+
+            return existingView;
+        }
+
         // apply the resolved view settings to a freshly created source so secondary canvases
         // can present at their own resolution / density
         source.autoDensity = autoDensity;
@@ -292,14 +332,18 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
             accessibility: options.accessibility ?? true,
             dom: options.dom ?? true,
             eventFeatures: options.eventFeatures,
-            antialias,
-            transparent,
             roundPixels: options.roundPixels ?? this._renderer.roundPixels,
         });
 
-        source.once('destroy', () => this.removeView(view));
+        // store the handler so removeView/destroy can detach it; an inline arrow would leak one listener
+        // (and a retained RendererView closure) per add/remove cycle on a surviving user canvas
+        const onSourceDestroy = (): void => this.removeView(view);
+
+        source.once('destroy', onSourceDestroy);
+        this._viewDestroyHandlers.set(view, onSourceDestroy);
 
         this._views.push(view);
+        this._viewBySource.set(source, view);
         this._renderer.runners.viewAdded.emit(view);
 
         return view;
@@ -314,11 +358,33 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
      */
     public removeView(view: RendererView): void
     {
+        // the main view lives for the renderer's lifetime (its render target is never released and its
+        // EventsTicker listener is only torn down by the full destroy() path); removing it would fire
+        // viewRemoved while leaking the ticker listener and pinning the old element
+        if (view.isMain)
+        {
+            // #if _DEBUG
+            warn('ViewSystem.removeView: the main view cannot be removed; it is torn down only by destroy().');
+            // #endif
+
+            return;
+        }
+
         const index = this._views.indexOf(view);
 
         if (index === -1) return;
 
         this._views.splice(index, 1);
+        this._viewBySource.delete(view.source);
+
+        // detach the source 'destroy' listener so a surviving user canvas does not retain the removed view
+        const onSourceDestroy = this._viewDestroyHandlers.get(view);
+
+        if (onSourceDestroy)
+        {
+            view.source.off('destroy', onSourceDestroy);
+            this._viewDestroyHandlers.delete(view);
+        }
 
         // free the GPU render target and evict the render-target hashes for a secondary canvas
         // without destroying the user's CanvasSource. The main view is never released.
@@ -328,6 +394,29 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         }
 
         this._renderer.runners.viewRemoved.emit(view);
+    }
+
+    /**
+     * Resolves the on-screen view this frame renders to and applies its per-view roundPixels to the
+     * renderer. Runs before the WebGL back buffer swaps `options.target` in `renderStart`, so the
+     * original target is still reliable here. The saved roundPixels is restored in {@link postrender}.
+     * @param options - the options the renderer was called with
+     */
+    public prerender(options: RenderOptions): void
+    {
+        this._activeView = options.target ? this.viewForTarget(options.target) : (this._views[0] ?? null);
+        this._savedRoundPixels = this._renderer._roundPixels;
+
+        if (this._activeView)
+        {
+            this._renderer._roundPixels = this._activeView.roundPixels ? 1 : 0;
+        }
+    }
+
+    /** Restores the renderer's roundPixels saved in {@link prerender}. */
+    public postrender(): void
+    {
+        this._renderer._roundPixels = this._savedRoundPixels;
     }
 
     /**
@@ -353,7 +442,7 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         // only canvas-backed targets map to a view; texture targets are skipped
         if (!(source instanceof CanvasSource)) return null;
 
-        return this._views.find((view) => view.source === source) ?? null;
+        return this._viewBySource.get(source) ?? null;
     }
 
     /**
@@ -381,6 +470,11 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         }
 
         this._views.length = 0;
+        this._viewBySource.clear();
+
+        // detach any remaining source 'destroy' listeners; a user-supplied canvas can outlive the renderer
+        this._viewDestroyHandlers.forEach((handler, view) => view.source?.off('destroy', handler));
+        this._viewDestroyHandlers.clear();
 
         this.texture.destroy();
 

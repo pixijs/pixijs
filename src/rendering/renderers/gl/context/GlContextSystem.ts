@@ -440,15 +440,15 @@ export class GlContextSystem implements System<ContextSystemOptions>
 
     public destroy(): void
     {
-        const element = this.gl.canvas as ICanvas;
+        const element = this.gl?.canvas as ICanvas | undefined;
 
         this._renderer = null;
 
         // remove listeners
-        (element as any).removeEventListener('webglcontextlost', this.handleContextLost);
-        element.removeEventListener('webglcontextrestored', this.handleContextRestored);
+        (element as any)?.removeEventListener('webglcontextlost', this.handleContextLost);
+        element?.removeEventListener('webglcontextrestored', this.handleContextRestored);
 
-        this.gl.useProgram(null);
+        this.gl?.useProgram(null);
 
         this.extensions.loseContext?.loseContext();
     }

@@ -131,15 +131,17 @@ describe('RenderView options', () =>
         canvasB.remove();
     });
 
-    it('applies the resolved roundPixels to the renderer before rendering a view', async () =>
+    it('restores the renderer roundPixels after rendering a view (no leak)', async () =>
     {
-        const app = await getApp({ multiView: true });
+        const app = await getApp({ multiView: true, roundPixels: false });
         const canvasB = attachedCanvas();
-        const view = app.addView({ canvas: canvasB, roundPixels: true });
 
-        view.render();
+        // a roundPixels:true view applies its value during render (via ViewSystem prerender) and
+        // restores it afterwards, so it does not leak into later renders/extract. Per-view application
+        // is covered end-to-end by RenderViewRoundPixels.test.ts.
+        app.addView({ canvas: canvasB, roundPixels: true }).render();
 
-        expect(app.renderer['_roundPixels']).toBe(1);
+        expect(app.renderer['_roundPixels']).toBe(0);
 
         app.destroy(true, true);
         canvasB.remove();

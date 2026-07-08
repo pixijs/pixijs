@@ -5,6 +5,7 @@ import { ExtensionType } from '../extensions/Extensions';
 import { type TrackedViewData, ViewTracker } from '../rendering/renderers/shared/view/ViewTracker';
 import { isMobile } from '../utils/browser/isMobile';
 import { removeItems } from '../utils/data/removeItems';
+import { warn } from '../utils/logging/warn';
 import { type AccessibleHTMLElement } from './accessibilityTarget';
 
 import type { Rectangle } from '../maths/shapes/Rectangle';
@@ -551,7 +552,9 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
         view.div?.parentNode?.removeChild(view.div);
         view.rootContainer = null;
-        view.source = null;
+        // do NOT null view.source here: it is the secondary view's readonly CanvasSource (from the
+        // RendererView) and must survive a deactivate->reactivate cycle, or _buildOverlay rebuilds the
+        // observer against the main canvas. The full-destroy path drops the whole data object anyway.
 
         if (full)
         {
@@ -696,12 +699,13 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         {
             this._updateAccessibleObjects(root, view);
 
-            // Mark all updated containers as active
-            for (const child of view.children)
+            // Mark all updated containers as active. The loop index is the child's position in
+            // view.children, so use it directly instead of indexOf (which made this O(K^2)).
+            for (let i = 0; i < view.children.length; i++)
             {
-                if (child._renderId === view.renderId)
+                if (view.children[i]._renderId === view.renderId)
                 {
-                    activeIds.add(view.children.indexOf(child));
+                    activeIds.add(i);
                 }
             }
         }
@@ -958,9 +962,24 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         const div = e.target as AccessibleHTMLElement;
         const { container: target } = div;
         const events = this._renderer.events;
+        // resolve the owning canvas's view once; a null owner (direct test usage / unparented div)
+        // falls back to the main view, which always participates in events
+        const view = this._viewForDiv(div);
+
+        // a recognised owning view whose canvas opted out of events must not dispatch into its scene
+        // nor pollute the main boundary; drop the interaction here
+        if (view && !view.rendererView.events)
+        {
+            // #if _DEBUG
+            warn('[AccessibilitySystem]: accessible-div event ignored, its view opted out of events');
+            // #endif
+
+            return;
+        }
+
         // route to the boundary of the canvas whose overlay this div sits in (the main view when
         // the div has no recognised owner, e.g. direct test usage)
-        const element = this._viewForDiv(div)?.element;
+        const element = view?.element;
         const boundary = events.boundaryForElement(element);
         const event: FederatedEvent = Object.assign(new FederatedEvent(boundary), { target });
 

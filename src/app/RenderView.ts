@@ -7,6 +7,7 @@ import type { ColorSource } from '../color/Color';
 import type { ICanvas } from '../environment/canvas/ICanvas';
 import type { EventSystemFeatures } from '../events/EventSystem';
 import type { Rectangle } from '../maths/shapes/Rectangle';
+import type { RenderOptions } from '../rendering/renderers/shared/system/AbstractRenderer';
 import type { RendererView } from '../rendering/renderers/shared/view/RendererView';
 import type { Renderer } from '../rendering/renderers/types';
 import type { DestroyOptions } from '../scene/container/destroyTypes';
@@ -124,8 +125,6 @@ export class RenderView<R extends Renderer = Renderer>
     private readonly _ownsCanvas: boolean;
     private _resolution: number;
     private readonly _autoDensity: boolean;
-    /** Resolved per-view roundPixels, applied to the renderer before each render of this view. */
-    private readonly _roundPixels: boolean;
     /**
      * Resolved per-render clear flag forwarded into `renderer.render`. `undefined` defers to the
      * renderer's `clearBeforeRender`.
@@ -133,6 +132,13 @@ export class RenderView<R extends Renderer = Renderer>
     private readonly _clear: boolean | undefined;
     /** Auto-resize controller; resizes this view (without rendering) when its target changes size. */
     private readonly _resizeController: ResizeController;
+    /**
+     * Reused render-options object passed to `renderer.render` each frame, so a view at scale does
+     * not allocate a fresh literal per frame. The renderer mutates this object during render (it
+     * normalizes `clearColor` to an array and defaults `target`/`clear`/`transform`), so every field
+     * is reset from this view's own state before each render to avoid leaking a stale value.
+     */
+    private readonly _renderOptions: RenderOptions;
 
     /**
      * @param renderer - the renderer all views share
@@ -154,13 +160,14 @@ export class RenderView<R extends Renderer = Renderer>
 
         this._resolution = options.resolution ?? renderer.resolution;
         this._autoDensity = options.autoDensity ?? renderer.view.autoDensity;
-        this._roundPixels = options.roundPixels ?? renderer.roundPixels;
         this._clear = options.clear;
 
         // we deliberately do NOT render on auto-resize: a secondary view's render would leave
         // Renderer#lastObjectRendered pointing at this view's stage instead of the primary's,
         // breaking main-canvas event hit-testing until the next frame.
         this._resizeController = new ResizeController((width, height) => this.resize(width, height));
+
+        this._renderOptions = { container: this.stage };
 
         // register the secondary canvas with the renderer so its per-canvas systems (events,
         // accessibility, DOM) track it; the primary view reuses the renderer's main view
@@ -220,31 +227,29 @@ export class RenderView<R extends Renderer = Renderer>
      */
     public get screen(): Rectangle
     {
-        return this.isPrimary ? this._renderer.screen : this._rendererView.screen;
+        return this.isPrimary ? this._renderer.screen : (this._rendererView?.screen ?? this._renderer.screen);
     }
 
     /** Renders this view's stage to its canvas. Called for every enabled view by {@link Application#render}. */
     public render(): void
     {
-        // apply this view's resolved roundPixels to the renderer before drawing; the pipes OR the
-        // renderer's _roundPixels with each renderable's own flag when they (re)build GPU data
-        this._renderer._roundPixels = this._roundPixels ? 1 : 0;
+        // per-view roundPixels is applied by ViewSystem.prerender, which resolves the active view
+        // from this render's target before the WebGL back buffer swaps it.
 
-        // the primary view renders to the renderer's own canvas via the main-view fast path, so it
-        // stays byte-for-byte identical to a classic single-canvas Application.render
-        if (this.isPrimary)
-        {
-            this._renderer.render({ container: this.stage, clearColor: this.clearColor, clear: this._clear });
+        // reset every field the renderer reads or mutates from this view's own state, so a value
+        // normalized/defaulted by a previous frame (e.g. clearColor turned into an array, target
+        // defaulted to the main render target, transform set from the container) cannot leak into
+        // this frame. The primary view omits `target` so it takes the main-view fast path and stays
+        // byte-for-byte identical to a classic single-canvas Application.render.
+        const options = this._renderOptions;
 
-            return;
-        }
+        options.container = this.stage;
+        options.target = this.isPrimary ? undefined : this.canvas;
+        options.clearColor = this.clearColor;
+        options.clear = this._clear;
+        options.transform = undefined;
 
-        this._renderer.render({
-            container: this.stage,
-            target: this.canvas,
-            clearColor: this.clearColor,
-            clear: this._clear,
-        });
+        this._renderer.render(options);
     }
 
     /**
@@ -283,6 +288,10 @@ export class RenderView<R extends Renderer = Renderer>
     {
         this._resizeController.destroy();
 
+        // a canvas this view created is fully owned, so its source must be destroyed too; capture it
+        // before removeView (which deliberately preserves user-supplied sources) nulls _rendererView
+        const ownedSource = this._ownsCanvas ? this._rendererView?.source : null;
+
         if (this._rendererView)
         {
             this._renderer.removeView(this._rendererView);
@@ -299,6 +308,10 @@ export class RenderView<R extends Renderer = Renderer>
             const canvas = this.canvas as ICanvas as HTMLCanvasElement;
 
             canvas?.parentNode?.removeChild(canvas);
+
+            // destroy the owned source so getCanvasTexture's module-level canvasCache (a strong Map)
+            // does not pin the canvas/texture/source for the process lifetime. Idempotent with removeView.
+            ownedSource?.destroy();
         }
 
         this.stage = null;

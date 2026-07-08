@@ -186,7 +186,6 @@ export * from './renderers/shared/renderTarget/GlobalUniformSystem';
 export * from './renderers/shared/renderTarget/isRenderingToScreen';
 export * from './renderers/shared/renderTarget/RenderTarget';
 export * from './renderers/shared/renderTarget/RenderTargetSystem';
-export * from './renderers/shared/renderTarget/resolveCanvasTarget';
 export * from './renderers/shared/SchedulerSystem';
 export * from './renderers/shared/shader/const';
 export * from './renderers/shared/shader/Shader';

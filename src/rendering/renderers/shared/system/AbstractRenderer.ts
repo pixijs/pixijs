@@ -438,7 +438,9 @@ export class AbstractRenderer<
         const renderer = this as unknown as Renderer;
 
         options.target ||= renderer.renderTarget.renderTarget;
-        options.clearColor ||= this.background.colorRgba;
+        // ??= (not ||=) so an explicit clearColor of 0 (opaque black) is honored, matching render()'s
+        // guard; ||= would treat the falsy 0 as absent and clear to the background instead.
+        options.clearColor ??= this.background.colorRgba;
         options.clear ??= CLEAR.ALL;
 
         const { clear, clearColor, target, mipLevel, layer } = options;

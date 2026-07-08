@@ -89,6 +89,8 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
             updateTextBounds(batchableHTMLText, htmlText);
         }
 
+        batchableHTMLText.roundPixels = (this._renderer._roundPixels | htmlText._roundPixels) as 0 | 1;
+
         this._renderer.renderPipes.batch.addToBatch(batchableHTMLText, instructionSet);
     }
 
@@ -161,7 +163,6 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         batchableHTMLText.transform = htmlText.groupTransform;
         batchableHTMLText.texture = Texture.EMPTY;
         batchableHTMLText.bounds = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
-        batchableHTMLText.roundPixels = (this._renderer._roundPixels | htmlText._roundPixels) as 0 | 1;
 
         htmlText._resolution = htmlText._autoResolution ? this._renderer.resolution : htmlText.resolution;
         htmlText._gpuData[this._renderer.uid] = batchableHTMLText;

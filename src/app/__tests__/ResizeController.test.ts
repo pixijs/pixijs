@@ -63,7 +63,7 @@ describe('ResizeController', () =>
         el.remove();
     });
 
-    it('resizes immediately and attaches a resize listener when a target is set', () =>
+    it('resizes immediately and observes an element target instead of the window', () =>
     {
         const addSpy = jest.spyOn(globalThis, 'addEventListener');
         const doResize = jest.fn();
@@ -75,27 +75,32 @@ describe('ResizeController', () =>
         expect(controller.resizeTo).toBe(el);
         expect(doResize).toHaveBeenCalledTimes(1);
         expect(doResize).toHaveBeenCalledWith(100, 80);
-        expect(addSpy).toHaveBeenCalledWith('resize', expect.any(Function));
+        // an element target is watched with a ResizeObserver, not a window 'resize' listener
+        expect(controller['_resizeObserver']).toBeInstanceOf(ResizeObserver);
+        expect(addSpy).not.toHaveBeenCalledWith('resize', expect.any(Function));
 
         controller.destroy();
         el.remove();
         addSpy.mockRestore();
     });
 
-    it('detaches the listener and stops resizing when set to null', () =>
+    it('disconnects the element observer and stops resizing when set to null', () =>
     {
-        const removeSpy = jest.spyOn(globalThis, 'removeEventListener');
         const doResize = jest.fn();
         const controller = new ResizeController(doResize);
         const el = attachedElement();
 
         controller.resizeTo = el;
+
+        const disconnectSpy = jest.spyOn(controller['_resizeObserver']!, 'disconnect');
+
         doResize.mockClear();
 
         controller.resizeTo = null;
 
         expect(controller.resizeTo).toBeNull();
-        expect(removeSpy).toHaveBeenCalledWith('resize', expect.any(Function));
+        expect(disconnectSpy).toHaveBeenCalled();
+        expect(controller['_resizeObserver']).toBeNull();
 
         // with no target, queue/resize become no-ops
         controller.queueResize();
@@ -104,7 +109,6 @@ describe('ResizeController', () =>
 
         controller.destroy();
         el.remove();
-        removeSpy.mockRestore();
     });
 
     it('cancels a queued resize on destroy', () =>

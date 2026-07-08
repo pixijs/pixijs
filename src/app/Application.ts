@@ -375,14 +375,24 @@ export class Application<R extends Renderer = Renderer>
             warn('Application#addView: the WebGL renderer was not created with multiView:true, so additional '
                 + 'canvases will not render. Pass multiView:true to app.init() (this cannot be enabled later).');
         }
-
-        // one canvas can back only one view; sharing it (including passing renderer.canvas) would
-        // make the per-canvas event/DOM/accessibility overlays flip between the two stages each frame
-        if (options.canvas && this._views.some((existing) => existing.canvas === options.canvas))
-        {
-            warn('Application#addView: that canvas already backs another view. Each view needs its own canvas.');
-        }
         // #endif
+
+        // one canvas can back only one view; sharing it (including passing renderer.canvas) would make the
+        // per-canvas event/DOM/accessibility overlays flip between stages and corrupt the renderer's
+        // canvas->view map, so reject a duplicate and hand back the view that already owns that canvas.
+        if (options.canvas)
+        {
+            const existing = this._views.find((existingView) => existingView.canvas === options.canvas);
+
+            if (existing)
+            {
+                // #if _DEBUG
+                warn('Application#addView: that canvas already backs another view. Each view needs its own canvas.');
+                // #endif
+
+                return existing;
+            }
+        }
 
         const view = new RenderView(this.renderer, options, false);
 
