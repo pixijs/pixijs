@@ -432,6 +432,13 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         // on the right surface (mirrors startRenderPass). The same-target in-place clear is undisturbed.
         const boundDifferentTarget = renderTarget !== renderTargetSystem.renderTarget;
 
+        // capture the raw GL binding (not the system's renderTarget) so it can be put back verbatim;
+        // re-resolving through getGpuRenderTarget on restore would re-init a target that was released
+        // between frames (e.g. a destroyed canvas source), crashing or leaking a fresh FBO
+        const previousFramebuffer = boundDifferentTarget
+            ? gl.getParameter(gl.FRAMEBUFFER_BINDING) as WebGLFramebuffer | null
+            : null;
+
         if (boundDifferentTarget)
         {
             this.bindFramebuffer(renderTargetSystem.getGpuRenderTarget(renderTarget).framebuffer);
@@ -464,14 +471,12 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         if (forceDepthMask) gl.depthMask(false);
 
-        // restore the framebuffer to the system's currently-bound target, so a later in-place clear
-        // (which skips the bind when renderTarget === renderTargetSystem.renderTarget) lands on the
-        // right FBO instead of the one this standalone clear left bound
+        // restore the exact framebuffer that was bound before this standalone clear, so a later in-place
+        // clear (which skips the bind when renderTarget === renderTargetSystem.renderTarget) lands on the
+        // right FBO instead of the one this clear left bound
         if (boundDifferentTarget)
         {
-            const bound = renderTargetSystem.renderTarget;
-
-            this.bindFramebuffer(bound ? renderTargetSystem.getGpuRenderTarget(bound).framebuffer : null);
+            this.bindFramebuffer(previousFramebuffer);
         }
     }
 
