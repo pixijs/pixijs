@@ -233,4 +233,73 @@ describe('Buffer', () =>
 
         expect(buffer.listenerCount('update')).toBe(1);
     });
+
+    it('should use correct source offset in bufferSubData when updating with offset (WebGL)', async () =>
+    {
+        const data = new Float32Array([1, 2, 3, 4, 5, 6, 7, 8]);
+
+        const buffer = new Buffer({
+            data,
+            usage: 1,
+        });
+
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
+
+        // Initial full upload to create the GL buffer and prime byteLength
+        renderer.buffer.updateBuffer(buffer);
+
+        const gl = renderer.gl;
+        const spy = jest.spyOn(gl, 'bufferSubData');
+
+        // Partial update: 8 bytes (2 floats) starting at byte offset 8 (float index 2)
+        const offsetInBytes = 8;
+        const sizeInBytes = 8;
+
+        buffer.update(sizeInBytes, offsetInBytes);
+        renderer.buffer.updateBuffer(buffer);
+
+        expect(spy).toHaveBeenCalledWith(
+            expect.anything(), // glBuffer.type
+            offsetInBytes, // dest offset (bytes)
+            data, // source typed array
+            offsetInBytes / data.BYTES_PER_ELEMENT, // source offset (elements)
+            sizeInBytes / data.BYTES_PER_ELEMENT // length (elements)
+        );
+
+        spy.mockRestore();
+    });
+
+    itLocalOnly('should use correct source offset in writeBuffer when updating with offset (WebGPU)', async () =>
+    {
+        const data = new Float32Array([1, 2, 3, 4, 5, 6, 7, 8]);
+
+        const buffer = new Buffer({
+            data,
+            usage: 1,
+        });
+
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        // Initial full upload to create the GPU buffer
+        renderer.buffer.updateBuffer(buffer);
+
+        const spy = jest.spyOn(renderer.gpu.device.queue, 'writeBuffer');
+
+        // Partial update: 8 bytes (2 floats) starting at byte offset 8 (float index 2)
+        const offsetInBytes = 8;
+        const sizeInBytes = 8;
+
+        buffer.update(sizeInBytes, offsetInBytes);
+        renderer.buffer.updateBuffer(buffer);
+
+        expect(spy).toHaveBeenCalledWith(
+            expect.anything(), // gpuBuffer
+            offsetInBytes, // dest offset (bytes)
+            data.buffer, // source ArrayBuffer
+            data.byteOffset + offsetInBytes, // source offset (bytes)
+            ((sizeInBytes) + 3) & ~3 // size rounded to 4 bytes
+        );
+
+        spy.mockRestore();
+    });
 });

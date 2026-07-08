@@ -172,7 +172,7 @@ export class GlBackBufferSystem implements System<GlBackBufferOptions>
 
         if (!this._useBackBufferThisRender) return;
 
-        renderer.renderTarget.bind(this._targetTexture, false);
+        renderer.renderTarget.bind({ target: this._targetTexture, clear: false });
 
         this._bigTriangleShader.resources.uTexture = this._backBufferTexture.source;
 

@@ -110,7 +110,8 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
                     batcher.geometry,
                     shader.gpuProgram,
                     graphicsPipe.state,
-                    batch.topology
+                    batch.topology,
+                    shader._overrides
                 );
             }
 

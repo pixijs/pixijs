@@ -250,12 +250,6 @@ export class GlTextureSystem implements System, CanvasGenerator
             throw new Error(`Unsupported view dimension: ${source.viewDimension} with this webgl version: ${this._renderer.context.webGLVersion}`);
         }
 
-        // Cube textures use a different GL target.
-        if (source.uploadMethodId === 'cube')
-        {
-            glTexture.target = gl.TEXTURE_CUBE_MAP;
-        }
-
         if (source.autoGenerateMipmaps && (this._renderer.context.supports.nonPowOf2mipmaps || source.isPowerOfTwo))
         {
             const biggestDimension = Math.max(source.width, source.height);
@@ -433,7 +427,7 @@ export class GlTextureSystem implements System, CanvasGenerator
             throw new Error('[GlTextureSystem] TEXTURE_2D_ARRAY requires WebGL2.');
         }
 
-        const gl2 = this._gl as WebGL2RenderingContext;
+        const gl2 = this._gl;
         const depth = Math.max(source.arrayLayerCount | 0, 1);
 
         // Level 0
@@ -536,7 +530,7 @@ export class GlTextureSystem implements System, CanvasGenerator
         // on iOS 18.0–18.1 (https://github.com/pixijs/pixijs/issues/11984).
         if (source.mipLevelCount <= 1) return;
 
-        const gl = this._gl as WebGL2RenderingContext;
+        const gl = this._gl;
         const maxLevel = Math.max((source.mipLevelCount | 0) - 1, 0);
 
         gl.texParameteri(glTexture.target, gl.TEXTURE_BASE_LEVEL, 0);
@@ -615,7 +609,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         const gl = renderer.gl;
 
-        gl.bindFramebuffer(gl.FRAMEBUFFER, glRenterTarget.resolveTargetFramebuffer);
+        renderer.renderTarget.adaptor.bindFramebuffer(glRenterTarget.resolveTargetFramebuffer);
 
         gl.readPixels(
             Math.round(frame.x * resolution),

@@ -277,7 +277,7 @@ export abstract class AbstractTextSystem implements System
         });
 
         // Restore the previous render target
-        this._renderer.renderTarget.bind(currentRenderTarget, false);
+        this._renderer.renderTarget.bind({ target: currentRenderTarget, clear: false });
 
         // Return the resulting texture with the filters applied
         return resultTexture;
