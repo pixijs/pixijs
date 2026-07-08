@@ -24,6 +24,9 @@ export class ResizeController
     /** The current auto-resize target, or `null` when auto-resize is disabled. */
     private _resizeTo: Window | HTMLElement | null = null;
 
+    /** The `ResizeObserver` watching an {@link HTMLElement} target, or `null` for window targets. */
+    private _resizeObserver: ResizeObserver | null = null;
+
     /**
      * @param doResize - invoked with the target's measured CSS-pixel width and height each time a
      * queued or immediate resize is flushed.
@@ -35,8 +38,10 @@ export class ResizeController
     }
 
     /**
-     * The element or window the controller auto-resizes to. Setting a target attaches a `resize`
-     * listener and resizes immediately; setting `null` detaches the listener and stops auto-resize.
+     * The element or window the controller auto-resizes to. Setting a {@link Window} target attaches a
+     * `resize` listener; setting an {@link HTMLElement} target attaches a `ResizeObserver` so the view
+     * follows the element even when the window does not resize. Either way the target is measured
+     * immediately. Setting `null` detaches the listener/observer and stops auto-resize.
      */
     public get resizeTo(): Window | HTMLElement | null
     {
@@ -45,12 +50,12 @@ export class ResizeController
 
     public set resizeTo(target: Window | HTMLElement | null)
     {
-        globalThis.removeEventListener('resize', this._boundQueueResize);
+        this._detachListener();
         this._resizeTo = target;
 
         if (target)
         {
-            globalThis.addEventListener('resize', this._boundQueueResize);
+            this._attachListener(target);
             this.resizeNow();
         }
     }
@@ -102,13 +107,44 @@ export class ResizeController
     }
 
     /**
-     * Detaches the `resize` listener, cancels any queued resize, and releases the target so the
-     * controller can be garbage collected.
+     * Detaches the `resize` listener or `ResizeObserver`, cancels any queued resize, and releases the
+     * target so the controller can be garbage collected.
      */
     public destroy(): void
     {
-        globalThis.removeEventListener('resize', this._boundQueueResize);
+        this._detachListener();
         this.cancelResize();
         this._resizeTo = null;
+    }
+
+    /**
+     * Attaches the change source for a target. {@link HTMLElement} targets are watched with a
+     * `ResizeObserver` (when available) so element-only resizes are caught; {@link Window} targets fall
+     * back to a window `resize` listener.
+     * @param target - the window or element to watch for size changes
+     */
+    private _attachListener(target: Window | HTMLElement): void
+    {
+        if (target !== globalThis.window && 'ResizeObserver' in globalThis)
+        {
+            this._resizeObserver = new ResizeObserver(this._boundQueueResize);
+            this._resizeObserver.observe(target as HTMLElement);
+        }
+        else
+        {
+            globalThis.addEventListener('resize', this._boundQueueResize);
+        }
+    }
+
+    /** Removes the window `resize` listener and disconnects any active `ResizeObserver`. */
+    private _detachListener(): void
+    {
+        globalThis.removeEventListener('resize', this._boundQueueResize);
+
+        if (this._resizeObserver)
+        {
+            this._resizeObserver.disconnect();
+            this._resizeObserver = null;
+        }
     }
 }

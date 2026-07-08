@@ -207,9 +207,13 @@ export abstract class AbstractGraphicsPipe<TBatchable extends PipeBatchable> imp
 
         const batches = this._getGpuDataForRenderable(graphics).batches;
 
+        const roundPixels = (this.renderer._roundPixels | graphics._roundPixels) as 0 | 1;
+
         for (let i = 0; i < batches.length; i++)
         {
             const batch = batches[i];
+
+            batch.roundPixels = roundPixels;
 
             batchPipe.addToBatch(batch, instructionSet);
         }

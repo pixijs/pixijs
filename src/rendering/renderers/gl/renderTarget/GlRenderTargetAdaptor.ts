@@ -603,6 +603,18 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         if (forceDepthMask) gl.depthMask(true);
 
+        // A standalone clear (renderer.clear({ target }) between frames) does not run startRenderPass, so
+        // the target's framebuffer is never bound and gl.clear would land on whatever FBO is current.
+        // When the passed target is not the currently-bound one, bind its framebuffer so the clear lands
+        // on the right surface (mirrors startRenderPass). The same-target in-place clear is undisturbed.
+        const renderTargetSystem = this._renderTargetSystem;
+        const boundDifferentTarget = renderTarget !== renderTargetSystem.renderTarget;
+
+        if (boundDifferentTarget)
+        {
+            this.bindFramebuffer(renderTargetSystem.getGpuRenderTarget(renderTarget).framebuffer);
+        }
+
         if (clear & CLEAR.COLOR)
         {
             const glRenderTarget = this._renderTargetSystem.getGpuRenderTarget(renderTarget);
@@ -646,6 +658,16 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         if (clear) gl.clear(clear);
 
         if (forceDepthMask) gl.depthMask(false);
+
+        // restore the framebuffer to the system's currently-bound target, so a later in-place clear
+        // (which skips the bind when renderTarget === renderTargetSystem.renderTarget) lands on the
+        // right FBO instead of the one this standalone clear left bound
+        if (boundDifferentTarget)
+        {
+            const bound = renderTargetSystem.renderTarget;
+
+            this.bindFramebuffer(bound ? renderTargetSystem.getGpuRenderTarget(bound).framebuffer : null);
+        }
     }
 
     /**

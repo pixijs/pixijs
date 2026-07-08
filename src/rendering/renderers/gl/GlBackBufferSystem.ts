@@ -3,6 +3,7 @@ import { warn } from '../../../utils/logging/warn';
 import { Geometry } from '../shared/geometry/Geometry';
 import { Shader } from '../shared/shader/Shader';
 import { State } from '../shared/state/State';
+import { CanvasSource } from '../shared/texture/sources/CanvasSource';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
 import { Texture } from '../shared/texture/Texture';
 import { GlProgram } from './shader/GlProgram';
@@ -152,6 +153,15 @@ export class GlBackBufferSystem implements System<GlBackBufferOptions>
         if (this._useBackBufferThisRender)
         {
             const renderTarget = this._renderer.renderTarget.getRenderTarget(options.target);
+            const resource = renderTarget.colorTexture.resource;
+
+            // the back buffer swaps the target before RenderTargetSystem.renderStart runs, so the GL
+            // adaptor's prerender (which grows the shared context canvas to fit the target) never sees
+            // the real canvas. Grow it here too, or a resized secondary canvas is clipped to its old size.
+            if (this._renderer.context.multiView && CanvasSource.test(resource))
+            {
+                this._renderer.context.ensureCanvasSize(resource);
+            }
 
             this._targetTexture = renderTarget.colorTexture;
 

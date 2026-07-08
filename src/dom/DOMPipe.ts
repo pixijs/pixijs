@@ -166,14 +166,19 @@ export class DOMPipe implements RenderPipe<DOMContainer>
         const attached = this._attachedDomElements;
         const view = this._tracker.consumeActive();
 
-        // drop elements removed from the scene graph entirely, regardless of which canvas rendered.
-        // visibility (globalDisplayStatus) is NOT checked here: it is only valid for a scene that has
-        // already rendered this frame, and the primary renders last - so it is checked per-view below
+        // drop elements removed from the scene graph entirely, or hidden by their own visible/renderable
+        // flags. Both signals are view-independent and always fresh (localDisplayStatus is written
+        // synchronously by the visible/renderable setters), so they are safe to act on regardless of which
+        // canvas rendered this frame. The cull bit (0b100) and ancestor visibility fold into
+        // globalDisplayStatus, which is only valid for a scene that rendered this frame, so that check stays
+        // gated per-view below.
         for (let i = 0; i < attached.length; i++)
         {
-            if (!attached[i].parent)
+            const domContainer = attached[i];
+
+            if (!domContainer.parent || (domContainer.localDisplayStatus & 0b011) !== 0b011)
             {
-                attached[i].element?.remove();
+                domContainer.element?.remove();
                 attached.splice(i, 1);
                 i--;
             }
@@ -187,7 +192,18 @@ export class DOMPipe implements RenderPipe<DOMContainer>
         {
             const domContainer = attached[i];
 
-            if (!this._belongsToView(domContainer, root)) continue;
+            if (!this._belongsToView(domContainer, root))
+            {
+                // it moved to another view's scene whose new owner has not rendered since; detach it
+                // from THIS overlay (only ever our own children) so it does not ghost over this canvas.
+                // Kept in `attached` so the new owning view re-parents it on its next render.
+                if (domContainer.element?.parentNode === view.overlay)
+                {
+                    domContainer.element.remove();
+                }
+
+                continue;
+            }
 
             // hidden or culled within its own scene, which has now rendered so the status is valid
             if (domContainer.globalDisplayStatus < 0b111)

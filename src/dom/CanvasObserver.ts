@@ -64,6 +64,10 @@ export class CanvasObserver
     /** Attaches the DOM element to the canvas parent if it is not already attached. */
     public ensureAttached()
     {
+        // _canvas is undefined for an OffscreenCanvas-backed view (the constructor returns early),
+        // so guard before dereferencing it, mirroring updateTranslation()
+        if (!this._canvas) return;
+
         if (!this._domElement.parentNode && this._canvas.parentNode)
         {
             this._canvas.parentNode.appendChild(this._domElement);

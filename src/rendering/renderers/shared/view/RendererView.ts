@@ -74,10 +74,6 @@ export class RendererView
     public readonly dom: boolean;
     /** Per-view overrides for the event system features. */
     public readonly eventFeatures?: Partial<EventSystemFeatures>;
-    /** Whether anti-aliasing is enabled for this view (relevant for WebGPU secondary canvases). */
-    public readonly antialias: boolean;
-    /** Whether this view's canvas is transparent (drives the WebGPU canvas alphaMode). */
-    public readonly transparent: boolean;
     /** Whether coordinates are rounded to whole pixels when rendering this view. */
     public readonly roundPixels: boolean;
 
@@ -95,8 +91,6 @@ export class RendererView
      * @param options.accessibility
      * @param options.dom
      * @param options.eventFeatures
-     * @param options.antialias
-     * @param options.transparent
      * @param options.roundPixels
      */
     constructor(options: {
@@ -108,8 +102,6 @@ export class RendererView
         accessibility: boolean;
         dom: boolean;
         eventFeatures?: Partial<EventSystemFeatures>;
-        antialias?: boolean;
-        transparent?: boolean;
         roundPixels?: boolean;
     })
     {
@@ -121,11 +113,24 @@ export class RendererView
         this.accessibility = options.accessibility;
         this.dom = options.dom;
         this.eventFeatures = options.eventFeatures;
-        this.antialias = !!options.antialias;
-        this.transparent = !!options.transparent;
         this.roundPixels = !!options.roundPixels;
 
         this._screen = new Rectangle(0, 0, options.source.width, options.source.height);
+    }
+
+    /**
+     * Whether anti-aliasing is enabled for this view (relevant for WebGPU secondary canvases),
+     * derived from its canvas source.
+     */
+    public get antialias(): boolean
+    {
+        return this.source.antialias;
+    }
+
+    /** Whether this view's canvas is transparent (drives the WebGPU canvas alphaMode), derived from its canvas source. */
+    public get transparent(): boolean
+    {
+        return this.source.transparent;
     }
 
     /** The resolution / device pixel ratio of this view, derived from its canvas source. */
