@@ -251,7 +251,7 @@ function getCanvasStyle(
             // getTintedPattern crops the texture to its frame, so the pattern content starts
             // at (0,0) - but textureMatrix maps into full-source pixel coordinates. Compensate
             // for the frame origin, otherwise atlas sub-textures render shifted and wrapped.
-            const resolution = texture.source.resolution;
+            const { resolution } = texture.source;
 
             patternMatrix.translate(-texture.frame.x * resolution, -texture.frame.y * resolution);
         }
