@@ -22,7 +22,7 @@ export function generateUboSyncPolyfillSTD40(uboElements: UboElement[]): Uniform
             const elementSize = (uboElement.data.value as Array<number>).length / uboElement.data.size;// size / rowSize;
             const remainder = (4 - (elementSize % 4)) % 4;
 
-            return (_name: string, data: Float32Array, offset: number, _uv: any, v: any) =>
+            return (_name: string, data: Float32Array, offset: number, _uv: any, v: any, _dataInt32: Int32Array) =>
             {
                 let t = 0;
 
@@ -56,7 +56,7 @@ export function generateUboSyncPolyfillWGSL(uboElements: UboElement[]): Uniforms
 
             const remainder = (size - align) / 4;
 
-            return (_name: string, data: Float32Array, offset: number, _uv: any, v: any) =>
+            return (_name: string, data: Float32Array, offset: number, _uv: any, v: any, _dataInt32: Int32Array) =>
             {
                 let t = 0;
 
@@ -123,15 +123,29 @@ function generateUboSyncPolyfill(
         }
     }
 
+    // The returned callback matches the eval build's compiled signature
+    // (`uniforms, data, dataInt32, offset`) so `UboSystem.syncUniformGroup` can call
+    // it with four arguments. Earlier versions of this polyfill emitted a 3-arg
+    // closure that silently dropped the numeric `offset` and coerced the
+    // `dataInt32` typed array to a string key, so every custom UniformGroup under
+    // a strict-CSP `pixi.js/unsafe-eval` build uploaded all-zero UBOs. See #12117.
     return (
         uniforms: UniformGroup,
         data: Float32Array,
+        dataInt32: Int32Array,
         offset: number
     ) =>
     {
         for (const i in functionMap)
         {
-            functionMap[i].func(i, data, offset + functionMap[i].offset, uniforms, uniforms[i as keyof typeof uniforms]);
+            functionMap[i].func(
+                i,
+                data,
+                offset + functionMap[i].offset,
+                uniforms,
+                uniforms[i as keyof typeof uniforms],
+                dataInt32
+            );
         }
     };
 }

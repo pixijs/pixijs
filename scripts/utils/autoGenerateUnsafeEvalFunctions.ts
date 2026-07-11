@@ -91,11 +91,17 @@ function autoGenerateUboUnsafeEvalFunctions()
 {
     const out: string[] = [header];
 
-    out.push(`export type UboUploadFunction = (name:string, data:Float32Array, offset:number, uv:any, v:any) => void;`);
+    // The 6-arg signature matches the eval build's `UboUploadFunction` shape
+    // (`name, data, offset, uv, v, dataInt32`). The polyfill wrapper in
+    // `generateUboSyncPolyfill.ts` invokes every per-uniform writer with all
+    // six arguments; `dataInt32` lets integer-typed setters (`i32`, `u32`,
+    // `vec*<i32>`, `vec*<u32>`) write through the Int32Array view rather than
+    // aliasing the float bits. See #12117.
+    out.push(`export type UboUploadFunction = (name:string, data:Float32Array, offset:number, uv:any, v:any, dataInt32:Int32Array) => void;`);
 
     function convertToFunction(body: string)
     {
-        return `(name:string, data:Float32Array, offset:number, uv:any, v:any):void =>
+        return `(name:string, data:Float32Array, offset:number, uv:any, v:any, dataInt32:Int32Array):void =>
         {
             ${body}
         }`;
