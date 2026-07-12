@@ -1,16 +1,17 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { warn } from '../../../../utils/logging/warn';
 import { ensureAttributes } from '../../gl/shader/program/ensureAttributes';
+import { ShaderOverrides } from '../../shared/shader/ShaderOverrides';
 import { STENCIL_MODES } from '../../shared/state/const';
 import { createIdFromString } from '../../shared/utils/createIdFromString';
 import { GpuStencilModesToPixi } from '../state/GpuStencilModesToPixi';
 
 import type { Topology } from '../../shared/geometry/const';
 import type { Geometry } from '../../shared/geometry/Geometry';
+import type { RenderTarget } from '../../shared/renderTarget/RenderTarget';
 import type { State } from '../../shared/state/State';
 import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
-import type { GpuRenderTarget } from '../renderTarget/GpuRenderTarget';
 import type { GpuProgram } from '../shader/GpuProgram';
 import type { StencilState } from '../state/GpuStencilModesToPixi';
 import type { WebGPURenderer } from '../WebGPURenderer';
@@ -23,6 +24,60 @@ const topologyStringToId = {
     'triangle-strip': 4,
 };
 
+const emptyOverrides = new ShaderOverrides({});
+
+// `index` is the value baked into the pipeline cache key (see getGlobalStateKey).
+// Index 0 is reserved for "no depth-stencil attachment" (emptyDepthStencilFormatData);
+// every real format gets a distinct non-zero index so a depth-less target and a
+// depth-enabled target can never resolve to the same pipeline-cache slot.
+const depthStencilFormatMap: Record<string, { depth: boolean, stencil: boolean, index: number }> = {
+    'depth24plus-stencil8': { depth: true, stencil: true, index: 1 },
+    depth24plus: { depth: true, stencil: false, index: 2 },
+    depth32float: { depth: true, stencil: false, index: 3 },
+    'depth32float-stencil8': { depth: true, stencil: true, index: 4 },
+    depth16unorm: { depth: true, stencil: false, index: 5 },
+    stencil8: { depth: false, stencil: true, index: 6 },
+};
+
+const emptyDepthStencilFormatData = { depth: false, stencil: false, index: 0 };
+
+/**
+ * Rewrites WGSL source by replacing `override` declarations with `const` declarations
+ * whose values are baked in from the provided overrides map. Used as a fallback for
+ * browsers that don't support the `constants` field in `GPURenderPipelineDescriptor` (e.g. Safari).
+ *
+ * Values are formatted according to WGSL literal rules:
+ * - `u32` → unsigned integer suffix (`42u`)
+ * - `i32` → plain integer (`42`)
+ * - `f32` → float with decimal point (`42.0`)
+ * @param source - The WGSL shader source string containing `override` declarations.
+ * @param overrides - A map of override names to their numeric values.
+ * @returns The modified WGSL source with matching `override` declarations replaced by `const`.
+ * @internal
+ */
+export function bakeOverridesIntoSource(source: string, overrides: Record<string, number>): string
+{
+    for (const [name, value] of Object.entries(overrides))
+    {
+        const re = new RegExp(
+            `override\\s+${name}\\s*:\\s*(\\w+)\\s*(?:=[^;]*)?;`
+        );
+
+        source = source.replace(re, (_, type) =>
+        {
+            let lit: string;
+
+            if (type === 'u32') lit = `${Math.trunc(value)}u`;
+            else if (type === 'i32') lit = `${Math.trunc(value)}`;
+            else lit = Number.isInteger(value) ? `${value}.0` : `${value}`;
+
+            return `const ${name}: ${type} = ${lit};`;
+        });
+    }
+
+    return source;
+}
+
 // geometryLayouts = 256; // 8 bits // 256 states // value 0-255;
 // shaderKeys = 256; // 8 bits // 256 states // value 0-255;
 // state = 64; // 6 bits // 64 states // value 0-63;
@@ -34,36 +89,70 @@ function getGraphicsStateKey(
     state: number,
     blendMode: number,
     topology: number,
+    overrideId: number
 ): number
 {
-    return (geometryLayout << 24) // Allocate the 8 bits for geometryLayouts at the top
-         | (shaderKey << 16) // Next 8 bits for shaderKeys
-         | (state << 10) // 6 bits for state
-         | (blendMode << 5) // 5 bits for blendMode
-         | topology; // And 3 bits for topology at the least significant position
+    return (geometryLayout * 35184372088832) // 2^45 - 8 bits space for geometry (256)
+    + (shaderKey * 536870912) // 2^29 - 16 bits space for shader (65,536)
+    + (overrideId * 16384) // 2^14 - 15 bits space for overrides (32,768)
+    + (state << 8)
+    + (blendMode << 3)
+    + topology;
 }
 
-// colorMask = 16;// 4 bits // 16 states // value 0-15;
-// stencilState = 8; // 3 bits // 8 states // value 0-7;
-// renderTarget = 1; // 2 bit // 3 states // value 0-3; // none, stencil, depth, depth-stencil
-// multiSampleCount = 1; // 1 bit // 2 states // value 0-1;
-// colorTargetCount = 4; // 2 bits // 4 states // value 0-3; // supports 1-4 color targets
+// Module-local interner for color attachment formats. Realistic apps will populate
+// 1-3 entries ever (default render-target format + maybe rgba16float for HDR), so the
+// id stays small and fits comfortably in a few bits of the global cache key.
+//
+// Trade-off: only the first attachment's format is encoded. Mixed-format MRT (where
+// different attachments use different formats) would alias the same cache slot. The
+// failure mode is a clean WebGPU validation error at setPipeline time, not silent
+// corruption, so it surfaces immediately if anyone hits it.
+const colorFormatIds: Record<string, number> = Object.create(null);
+let nextColorFormatId = 0;
+
+function getColorFormatId(format: GPUTextureFormat): number
+{
+    let id = colorFormatIds[format];
+
+    if (id === undefined) id = colorFormatIds[format] = nextColorFormatId++;
+
+    return id;
+}
+
+// multiSampleCount = 1;     // bit 0      // 2 states // value 0-1 (normalized from sampleCount 1|4)
+// colorTargetCount = 9;     // bits 1-4   // supports 0-8 color targets (WebGPU maxColorAttachments)
+// depthReadOnly = 1;        // bit 5      // 2 states // value 0-1;
+// stencilState = 8;         // bits 6-8   // 8 states // value 0-7;
+// colorMask = 16;           // bits 9-12  // 16 states // value 0-15;
+// depthStencilFormat = 7;   // bits 13-15 // 8 states // value 0-7;
+// colorFormatId = 16;       // bits 16-19 // 16 interned color attachment formats
+// invertFrontFace = 1;      // bit 20     // 2 states // value 0-1 (flipY winding inversion)
 function getGlobalStateKey(
     stencilStateId: number,
     multiSampleCount: number,
     colorMask: number,
-    renderTarget: number,
     colorTargetCount: number,
+    depthStencilFormat: number,
+    colorFormatId: number,
+    depthReadOnly: number,
+    invertFrontFace: number,
 ): number
 {
-    return (colorMask << 8) // Allocate the 4 bits for colorMask at the top
-         | (stencilStateId << 5) // Next 3 bits for stencilStateId
-         | (renderTarget << 3) // 2 bits for renderTarget
-         | (colorTargetCount << 1) // 2 bits for colorTargetCount
-         | multiSampleCount; // And 1 bit for multiSampleCount at the least significant position
+    return (invertFrontFace << 20) // 1 bit for invertFrontFace (flipY winding inversion)
+         | (colorFormatId << 16) // 4 bits for colorFormatId
+         | (depthStencilFormat << 13) // 3 bits for depthStencilFormat
+         | (colorMask << 9) // 4 bits for colorMask
+         | (stencilStateId << 6) // 3 bits for stencilStateId
+         | (depthReadOnly << 5) // 1 bit for depthReadOnly (read-only depth passes can't emit depth writes)
+         | (colorTargetCount << 1) // 4 bits for colorTargetCount (0-8, WebGPU's maxColorAttachments)
+         | multiSampleCount; // 1 bit for multiSampleCount at the least significant position
 }
 
-type PipeHash = Record<number, GPURenderPipeline>;
+// a Map, not a plain object: the combined graphics key exceeds 2^31, and big numeric
+// keys on objects get stringified per lookup (dictionary mode) — Map hashes numbers
+// natively, which benchmarks ~3x faster on this per-draw path
+type PipeHash = Map<number, GPURenderPipeline>;
 
 /**
  * A system that creates and manages the GPU pipelines.
@@ -98,7 +187,7 @@ export class PipelineSystem implements System
     private _bufferLayoutsCache: Record<number, GPUVertexBufferLayout[]> = Object.create(null);
     private readonly _bindingNamesCache: Record<string, Record<string, string>> = Object.create(null);
 
-    private _pipeCache: PipeHash = Object.create(null);
+    private _pipeCache: PipeHash = new Map();
     private readonly _pipeStateCaches: Record<number, PipeHash> = Object.create(null);
 
     private _gpu: GPU;
@@ -108,7 +197,12 @@ export class PipelineSystem implements System
     private _colorMask = 0b1111;
     private _multisampleCount = 1;
     private _colorTargetCount = 1;
-    private _depthStencilAttachment: 0 | 1;
+    private _colorFormat: GPUTextureFormat = 'bgra8unorm';
+    private _colorFormatId = getColorFormatId('bgra8unorm');
+    private _depthStencilFormat: GPUTextureFormat = 'depth24plus-stencil8';
+    private _depthStencilFormatData = emptyDepthStencilFormatData;
+    private _depthReadOnly = false;
+    private _invertFrontFace = false;
 
     constructor(renderer: WebGPURenderer)
     {
@@ -132,11 +226,27 @@ export class PipelineSystem implements System
         this._updatePipeHash();
     }
 
-    public setRenderTarget(renderTarget: GpuRenderTarget)
+    public setRenderTarget(renderTarget: RenderTarget)
     {
-        this._multisampleCount = renderTarget.msaaSamples;
-        this._depthStencilAttachment = renderTarget.descriptor.depthStencilAttachment ? 1 : 0;
-        this._colorTargetCount = renderTarget.colorTargetCount;
+        // Depth-only render targets (e.g. shadow maps) have no color attachments.
+        // Pipelines built against them will have no fragment color outputs, but we still
+        // need stable defaults for the cache key.
+        const colorTexture = renderTarget.colorAttachments[0]?.texture;
+
+        this._multisampleCount = colorTexture?.source.antialias ? 4 : 1;
+        this._colorTargetCount = renderTarget.colorAttachments.length;
+        this._colorFormat = colorTexture?.format ?? 'bgra8unorm';
+        this._colorFormatId = getColorFormatId(this._colorFormat);
+        // the adaptor ensures a depth/stencil request has materialised its texture before
+        // calling this (GpuRenderTargetAdaptor.startRenderPass), so the attachment is the truth
+        this._depthStencilFormat = renderTarget.depthStencilAttachment?.texture.format;
+        this._depthStencilFormatData = depthStencilFormatMap[this._depthStencilFormat] || emptyDepthStencilFormatData;
+        this._depthReadOnly = renderTarget.depthStencilAttachment?.depthReadOnly ?? false;
+        // WebGPU bakes winding into the (cached) pipeline, not as live state. `flipY` is opt-in: off →
+        // the framebuffer's natural ccw (exactly today); on → invert to cw so the projection flip and the
+        // winding flip cancel and culling is preserved. This bit feeds the cache key (getGlobalStateKey),
+        // so a flipY pass gets its own pipeline rather than aliasing — and an off pass keeps today's key.
+        this._invertFrontFace = !!renderTarget.flipY;
         this._updatePipeHash();
     }
 
@@ -159,6 +269,34 @@ export class PipelineSystem implements System
         this._updatePipeHash();
     }
 
+    /**
+     * Builds a {@link GPURenderBundleEncoderDescriptor} that matches the current render target
+     * configuration (color formats, sample count, and depth/stencil format).
+     * Used by {@link GpuEncoderSystem.beginBundle} to create a compatible render bundle encoder.
+     * @returns A descriptor for creating a GPURenderBundleEncoder.
+     */
+    public getBundleDescriptor(): GPURenderBundleEncoderDescriptor
+    {
+        const colorFormats: GPUTextureFormat[] = [];
+
+        for (let i = 0; i < this._colorTargetCount; i++)
+        {
+            colorFormats.push(this._colorFormat);
+        }
+
+        const descriptor: GPURenderBundleEncoderDescriptor = {
+            colorFormats,
+            sampleCount: this._multisampleCount,
+        };
+
+        if (this._depthStencilFormatData.depth || this._depthStencilFormatData.stencil)
+        {
+            descriptor.depthStencilFormat = this._depthStencilFormat;
+        }
+
+        return descriptor;
+    }
+
     public setPipeline(geometry: Geometry, program: GpuProgram, state: State, passEncoder: GPURenderPassEncoder): void
     {
         const pipeline = this.getPipeline(geometry, program, state);
@@ -166,11 +304,47 @@ export class PipelineSystem implements System
         passEncoder.setPipeline(pipeline);
     }
 
+    /**
+     * Generates a key for the pipeline.advanced usage only.
+     * @param geometry - The geometry to get the key for
+     * @param program - The program to get the key for
+     * @param state - The state to get the key for
+     * @param topology - The topology to get the key for
+     * @param overrides - The overrides to get the key for
+     * @returns The key for the pipeline
+     */
+    public getPipelineKey(
+        geometry: Geometry,
+        program: GpuProgram,
+        state: State,
+        topology: Topology,
+        overrides: ShaderOverrides,
+    ): number
+    {
+        if (!geometry._layoutKey)
+        {
+            ensureAttributes(geometry, program.attributeData);
+
+            // prepare the geometry for the pipeline
+            this._generateBufferKey(geometry);
+        }
+
+        return getGraphicsStateKey(
+            geometry._layoutKey,
+            program._layoutKey,
+            state.data,
+            state._blendModeId,
+            topologyStringToId[topology],
+            overrides.id,
+        );
+    }
+
     public getPipeline(
         geometry: Geometry,
         program: GpuProgram,
         state: State,
         topology?: Topology,
+        overrides?: ShaderOverrides,
     ): GPURenderPipeline
     {
         if (!geometry._layoutKey)
@@ -182,6 +356,7 @@ export class PipelineSystem implements System
         }
 
         topology ||= geometry.topology;
+        overrides ||= emptyOverrides;
 
         // now we have set the Ids - the key is different...
         const key = getGraphicsStateKey(
@@ -190,22 +365,33 @@ export class PipelineSystem implements System
             state.data,
             state._blendModeId,
             topologyStringToId[topology],
+            overrides.id,
         );
 
-        if (this._pipeCache[key]) return this._pipeCache[key];
+        let pipeline = this._pipeCache.get(key);
 
-        this._pipeCache[key] = this._createPipeline(geometry, program, state, topology);
+        if (!pipeline)
+        {
+            pipeline = this._createPipeline(geometry, program, state, topology, overrides);
+            this._pipeCache.set(key, pipeline);
+        }
 
-        return this._pipeCache[key];
+        return pipeline;
     }
 
-    private _createPipeline(geometry: Geometry, program: GpuProgram, state: State, topology: Topology): GPURenderPipeline
+    private _createPipeline(
+        geometry: Geometry,
+        program: GpuProgram,
+        state: State,
+        topology: Topology,
+        overrides: ShaderOverrides
+    ): GPURenderPipeline
     {
         const device = this._gpu.device;
 
         const buffers = this._createVertexBufferLayouts(geometry, program);
 
-        const blendModes = this._renderer.state.getColorTargets(state, this._colorTargetCount);
+        const blendModes = this._renderer.state.getColorTargets(state, this._colorTargetCount, this._colorFormat);
 
         // Apply write mask to all color targets
         const writeMask = this._stencilMode === STENCIL_MODES.RENDERING_MASK_ADD ? 0 : this._colorMask;
@@ -217,41 +403,66 @@ export class PipelineSystem implements System
 
         const layout = this._renderer.shader.getProgramData(program).pipeline;
 
+        const hasOverrides = Object.keys(overrides.data).length > 0;
+
+        let vertexSource = program.vertex.source;
+        let fragmentSource = program.fragment.source;
+        let constants: Record<string, number> | undefined;
+
+        if (hasOverrides)
+        {
+            if (this._renderer.limits.supportsOverrideConstants)
+            {
+                constants = overrides.data;
+            }
+            else
+            {
+                vertexSource = bakeOverridesIntoSource(vertexSource, overrides.data);
+                fragmentSource = bakeOverridesIntoSource(fragmentSource, overrides.data);
+            }
+        }
+
         const descriptor: GPURenderPipelineDescriptor = {
             // TODO later check if its helpful to create..
             // layout,
             vertex: {
-                module: this._getModule(program.vertex.source),
+                module: this._getModule(vertexSource),
                 entryPoint: program.vertex.entryPoint,
-                // geometry..
+                constants,
                 buffers,
             },
             fragment: {
-                module: this._getModule(program.fragment.source),
+                module: this._getModule(fragmentSource),
                 entryPoint: program.fragment.entryPoint,
                 targets: blendModes,
+                constants,
             },
             primitive: {
                 topology,
                 cullMode: state.cullMode,
+                // Flip the winding when `flipY` inverted the projection (see setRenderTarget), so the two
+                // cancel and a front face stays a front face. The flag is part of the pipeline cache key.
+                frontFace: this._invertFrontFace ? 'cw' : 'ccw',
             },
             layout,
             multisample: {
                 count: this._multisampleCount,
             },
             // depthStencil,
-            label: `PIXI Pipeline`,
+            label: program.name ? `PIXI Pipeline (${program.name})` : `PIXI Pipeline`,
         };
 
         // only apply if the texture has stencil or depth
-        if (this._depthStencilAttachment)
+        if (this._depthStencilFormatData.depth || this._depthStencilFormatData.stencil)
         {
+            const formatData = this._depthStencilFormatData;
+
             // mask states..
             descriptor.depthStencil = {
                 ...this._stencilState,
-                format: 'depth24plus-stencil8',
-                depthWriteEnabled: state.depthTest,
-                depthCompare: state.depthTest ? 'less' : 'always',
+                format: this._depthStencilFormat,
+                depthWriteEnabled: formatData.depth ? (state.depthMask && !this._depthReadOnly) : false,
+                depthCompare: formatData.depth && state.depthTest ? 'less' : 'always',
             };
         }
 
@@ -276,11 +487,16 @@ export class PipelineSystem implements System
         return this._moduleCache[code];
     }
 
+    /**
+     * Generates and caches a numeric layout key on the geometry based on its sorted attribute
+     * descriptors (offset, format, stride, instancing). Geometries with identical attribute
+     * layouts share the same key, enabling pipeline reuse.
+     * @param geometry - The geometry to generate a layout key for.
+     */
     private _generateBufferKey(geometry: Geometry): number
     {
         const keyGen = [];
         let index = 0;
-        // generate a key..
 
         const attributeKeys = Object.keys(geometry.attributes).sort();
 
@@ -427,23 +643,28 @@ export class PipelineSystem implements System
     {
         const key = getGlobalStateKey(
             this._stencilMode,
-            this._multisampleCount,
+            // normalize the raw sample count (1 or 4 — WebGPU's only renderable counts) to a
+            // true single bit, so it cannot spill into the colorTargetCount field above it
+            this._multisampleCount === 1 ? 0 : 1,
             this._colorMask,
-            this._depthStencilAttachment,
             this._colorTargetCount,
+            this._depthStencilFormatData.index,
+            this._colorFormatId,
+            this._depthReadOnly ? 1 : 0,
+            this._invertFrontFace ? 1 : 0,
         );
 
-        if (!this._pipeStateCaches[key])
-        {
-            this._pipeStateCaches[key] = Object.create(null);
-        }
-
-        this._pipeCache = this._pipeStateCaches[key];
+        this._pipeCache = this._pipeStateCaches[key] ??= new Map();
     }
 
     public destroy(): void
     {
-        (this._renderer as null) = null;
         this._bufferLayoutsCache = null;
+        this._pipeCache = null;
+        this._gpu = null;
+        (this._renderer as null) = null;
+        (this._bindingNamesCache as null) = null;
+        (this._pipeStateCaches as null) = null;
+        (this._moduleCache as null) = null;
     }
 }

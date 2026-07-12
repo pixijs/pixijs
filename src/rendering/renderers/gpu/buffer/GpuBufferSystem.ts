@@ -83,7 +83,10 @@ export class GpuBufferSystem implements System
 
             // make sure
             this._gpu.device.queue.writeBuffer(
-                gpuBuffer, 0, data.buffer, 0,
+                gpuBuffer,
+                buffer._updateOffset,
+                data.buffer,
+                data.byteOffset + buffer._updateOffset,
                 // round to the nearest 4 bytes
                 ((buffer._updateSize || data.byteLength) + 3) & ~3
             );

@@ -140,15 +140,24 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
             forceFallbackAdapter: options.forceFallbackAdapter,
         });
 
+        if (!adapter)
+        {
+            throw new Error('WebGPU not supported. No GPU adapter was returned by navigator.gpu.requestAdapter().');
+        }
+
         const requiredFeatures = [
             'texture-compression-bc',
             'texture-compression-astc',
             'texture-compression-etc2',
+            'indirect-first-instance',
         ].filter((feature) => adapter.features.has(feature)) as GPUFeatureName[];
 
-        // TODO and one of these!
         const device = await adapter.requestDevice({
-            requiredFeatures
+            requiredFeatures,
+            requiredLimits: {
+                maxSampledTexturesPerShaderStage: adapter.limits.maxSampledTexturesPerShaderStage,
+                maxSamplersPerShaderStage: adapter.limits.maxSamplersPerShaderStage,
+            },
         });
 
         return { adapter, device };

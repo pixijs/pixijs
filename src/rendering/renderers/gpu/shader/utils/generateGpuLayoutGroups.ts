@@ -21,7 +21,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
             layout[group.group] = [];
         }
 
-        if (group.isUniform)
+        if (group.accessMode === 'uniform')
         {
             layout[group.group].push({
                 binding: group.binding,
@@ -31,13 +31,33 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
                 }
             });
         }
+        else if (group.accessMode === 'storage')
+        {
+            layout[group.group].push({
+                binding: group.binding,
+                visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
+                buffer: {
+                    type: 'read-only-storage'
+                }
+            });
+        }
         else if (group.type === 'sampler')
         {
             layout[group.group].push({
                 binding: group.binding,
-                visibility: ShaderStage.FRAGMENT,
+                visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
                 sampler: {
                     type: 'filtering'
+                }
+            });
+        }
+        else if (group.type === 'sampler_comparison')
+        {
+            layout[group.group].push({
+                binding: group.binding,
+                visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
+                sampler: {
+                    type: 'comparison'
                 }
             });
         }
@@ -45,10 +65,34 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
         {
             layout[group.group].push({
                 binding: group.binding,
-                visibility: ShaderStage.FRAGMENT,
+                visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
                 texture: {
                     sampleType: 'float',
                     viewDimension: '2d',
+                    multisampled: false,
+                }
+            });
+        }
+        else if (group.type === 'texture_depth_2d')
+        {
+            layout[group.group].push({
+                binding: group.binding,
+                visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
+                texture: {
+                    sampleType: 'depth',
+                    viewDimension: '2d',
+                    multisampled: false,
+                }
+            });
+        }
+        else if (group.type === 'texture_depth_2d_array')
+        {
+            layout[group.group].push({
+                binding: group.binding,
+                visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
+                texture: {
+                    sampleType: 'depth',
+                    viewDimension: '2d-array',
                     multisampled: false,
                 }
             });
@@ -57,7 +101,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
         {
             layout[group.group].push({
                 binding: group.binding,
-                visibility: ShaderStage.FRAGMENT,
+                visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
                 texture: {
                     sampleType: 'float',
                     viewDimension: '2d-array',
@@ -69,7 +113,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
         {
             layout[group.group].push({
                 binding: group.binding,
-                visibility: ShaderStage.FRAGMENT,
+                visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
                 texture: {
                     sampleType: 'float',
                     viewDimension: 'cube',

@@ -1,6 +1,6 @@
 import { ExternalSource } from '../sources/ExternalSource';
 import { Texture } from '../Texture';
-import { getWebGLRenderer } from '@test-utils';
+import { describeLocalOnly, getWebGLRenderer } from '@test-utils';
 
 describe('ExternalSource', () =>
 {
@@ -293,6 +293,43 @@ describe('ExternalSource', () =>
         {
             delete (globalThis as any).GPUTexture;
         }
+
+        renderer.destroy();
+    });
+});
+
+describeLocalOnly('ExternalSource updateGPUTexture (WebGPU)', () =>
+{
+    it('should invalidate cached views and bind keys when the GPU texture is swapped', async () =>
+    {
+        const { getWebGPURenderer } = await import('@test-utils');
+        const renderer = await getWebGPURenderer();
+        const device = (renderer as any).gpu.device as GPUDevice;
+
+        const makeTexture = () => device.createTexture({
+            size: { width: 8, height: 8 },
+            format: 'rgba8unorm',
+            usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST,
+        });
+
+        const texA = makeTexture();
+        const texB = makeTexture();
+
+        const source = new ExternalSource({ resource: texA, renderer });
+
+        const textureSystem = (renderer as any).texture;
+
+        const viewBefore = textureSystem.getTextureView(source);
+        const resourceIdBefore = source._resourceId;
+
+        source.updateGPUTexture(texB);
+
+        const viewAfter = textureSystem.getTextureView(source);
+
+        // the cached view pointed at the old GPUTexture and must be rebuilt...
+        expect(viewAfter).not.toBe(viewBefore);
+        // ...and bind groups must see a changed resource id so they re-resolve
+        expect(source._resourceId).not.toBe(resourceIdBefore);
 
         renderer.destroy();
     });

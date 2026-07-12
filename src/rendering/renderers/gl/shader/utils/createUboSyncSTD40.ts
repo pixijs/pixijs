@@ -1,4 +1,4 @@
-import { createUboSyncFunction } from '../../../shared/shader/utils/createUboSyncFunction';
+import { compileBufferSync } from '../../../shared/shader/utils/compileBufferSync';
 import { uboSyncFunctionsSTD40 } from '../../../shared/shader/utils/uboSyncFunctions';
 import { generateArraySyncSTD40 } from './generateArraySyncSTD40';
 
@@ -12,10 +12,9 @@ export function createUboSyncFunctionSTD40(
     uboElements: UboElement[],
 ): UniformsSyncCallback
 {
-    return createUboSyncFunction(
+    return compileBufferSync(
         uboElements,
-        'uboStd40',
-        generateArraySyncSTD40,
         uboSyncFunctionsSTD40,
+        generateArraySyncSTD40,
     );
 }

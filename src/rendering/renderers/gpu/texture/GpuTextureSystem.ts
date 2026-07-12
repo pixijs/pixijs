@@ -30,6 +30,7 @@ export class GPUTextureGpuData implements GPUData
 {
     public gpuTexture: GPUTexture;
     public textureView: GPUTextureView = null;
+    public textureViews: Record<string, GPUTextureView> = Object.create(null);
 
     constructor(gpuTexture: GPUTexture)
     {
@@ -41,8 +42,23 @@ export class GPUTextureGpuData implements GPUData
     {
         this.gpuTexture.destroy();
         this.textureView = null;
+        this.textureViews = null;
         this.gpuTexture = null;
     }
+}
+
+/**
+ * Builds a cache key covering every view-affecting field of a GPUTextureViewDescriptor —
+ * two descriptors selecting different subresources (mips, layers, aspects, formats) must
+ * never share a cached GPUTextureView. Only runs when bind groups / pass descriptors are
+ * (re)built, never per draw.
+ * @param viewDescriptor
+ */
+function getViewDescriptorKey(viewDescriptor: GPUTextureViewDescriptor): string
+{
+    return `${viewDescriptor.format || ''}.${viewDescriptor.dimension || ''}.${viewDescriptor.aspect || ''}.`
+        + `${viewDescriptor.baseMipLevel || 0}.${viewDescriptor.mipLevelCount || ''}.`
+        + `${viewDescriptor.baseArrayLayer || 0}.${viewDescriptor.arrayLayerCount || ''}`;
 }
 
 /**
@@ -169,6 +185,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
         const textureDescriptor: GPUTextureDescriptor = {
             label: source.label,
+            // WebGPU cube textures are 2D textures with 6 array layers and a cube view.
             size: { width, height, depthOrArrayLayers: source.arrayLayerCount },
             format: source.format,
             sampleCount: source.sampleCount,
@@ -300,7 +317,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
         return this._bindGroupHash[texture.uid];
     }
 
-    public getTextureView(texture: BindableTexture)
+    public getTextureView(texture: BindableTexture, viewDescriptor?: GPUTextureViewDescriptor)
     {
         const source = texture.source;
 
@@ -313,9 +330,53 @@ export class GpuTextureSystem implements System, CanvasGenerator
             gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
         }
 
-        gpuData.textureView ||= gpuData.gpuTexture.createView({ dimension: source.viewDimension });
+        const descriptorKey = viewDescriptor ? getViewDescriptorKey(viewDescriptor) : 0;
 
-        return gpuData.textureView;
+        gpuData.textureViews[descriptorKey] ||= gpuData.gpuTexture.createView({
+            dimension: source.viewDimension,
+            ...viewDescriptor
+        });
+
+        return gpuData.textureViews[descriptorKey];
+    }
+
+    public getTextureRenderTargetView(
+        texture: BindableTexture,
+        mipLevel = 0,
+        layer = 0,
+        viewDescriptor?: GPUTextureViewDescriptor
+    )
+    {
+        const source = texture.source;
+
+        source._gcLastUsed = this._renderer.gc.now;
+        let gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
+
+        if (!gpuData)
+        {
+            this.initSource(source);
+            gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
+        }
+
+        // numeric fast path for the common case; explicit descriptors get the full string key.
+        // (+1 keeps mip 0 / layer 0 distinct from the default bind view at key 0)
+        let descriptorKey: string | number = (layer * (source.mipLevelCount || 1)) + mipLevel + 1;
+
+        if (viewDescriptor)
+        {
+            descriptorKey = `${descriptorKey}.${getViewDescriptorKey(viewDescriptor)}`;
+        }
+
+        gpuData.textureViews[descriptorKey] ||= gpuData.gpuTexture.createView({
+            dimension: '2d',
+            baseMipLevel: mipLevel,
+            mipLevelCount: 1,
+            baseArrayLayer: layer,
+            arrayLayerCount: 1,
+            ...viewDescriptor
+        });
+
+        return gpuData.textureViews[descriptorKey];
     }
 
     public generateCanvas(texture: Texture): ICanvas

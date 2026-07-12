@@ -31,12 +31,15 @@ const GL_TO_GLSL_TYPES: Dict<string> = {
     SAMPLER_2D:              'sampler2D',
     INT_SAMPLER_2D:          'sampler2D',
     UNSIGNED_INT_SAMPLER_2D: 'sampler2D',
+    SAMPLER_2D_SHADOW:       'sampler2DShadow',
     SAMPLER_CUBE:              'samplerCube',
     INT_SAMPLER_CUBE:          'samplerCube',
     UNSIGNED_INT_SAMPLER_CUBE: 'samplerCube',
+    SAMPLER_CUBE_SHADOW:       'samplerCubeShadow',
     SAMPLER_2D_ARRAY:              'sampler2DArray',
     INT_SAMPLER_2D_ARRAY:          'sampler2DArray',
     UNSIGNED_INT_SAMPLER_2D_ARRAY: 'sampler2DArray',
+    SAMPLER_2D_ARRAY_SHADOW:       'sampler2DArrayShadow',
 };
 
 const GLSL_TO_VERTEX_TYPES: Record<string, VertexFormat> = {

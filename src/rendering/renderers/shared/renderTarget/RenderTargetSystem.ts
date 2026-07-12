@@ -1,7 +1,10 @@
 import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
+import { deprecation } from '../../../../utils/logging/deprecation';
+import { warn } from '../../../../utils/logging/warn';
 import { CLEAR } from '../../gl/const';
 import { calculateProjection } from '../../gpu/renderTarget/calculateProjection';
+import { type Renderer, RendererType } from '../../types';
 import { SystemRunner } from '../system/SystemRunner';
 import { CanvasSource } from '../texture/sources/CanvasSource';
 import { TextureSource } from '../texture/sources/TextureSource';
@@ -16,7 +19,6 @@ import type { CanvasRenderTarget } from '../../canvas/renderTarget/CanvasRenderT
 import type { CLEAR_OR_BOOL } from '../../gl/const';
 import type { GlRenderTarget } from '../../gl/GlRenderTarget';
 import type { GpuRenderTarget } from '../../gpu/renderTarget/GpuRenderTarget';
-import type { Renderer } from '../../types';
 import type { System } from '../system/System';
 import type { BindableTexture } from '../texture/Texture';
 
@@ -31,19 +33,54 @@ import type { BindableTexture } from '../texture/Texture';
 export type RenderSurface = ICanvas | BindableTexture | RenderTarget;
 
 /**
- * stores a render target and its frame
- * @ignore
+ * The persistent description of a render-surface binding: the target plus the frame,
+ * subresource, and orientation axes. Captured by {@link RenderTargetSystem.getBindState}.
+ *
+ * A clear is a per-call action, not part of the binding — see {@link BindOptions}.
+ * @category rendering
+ * @advanced
  */
-interface RenderTargetAndFrame
+export interface BindState
 {
-    /** the render target */
-    renderTarget: RenderTarget;
-    /** the frame to use when using the render target */
-    frame: Rectangle;
-    /** mip level to render to (subresource) */
-    mipLevel: number;
-    /** array layer to render to (subresource) */
-    layer: number;
+    /** the render surface to bind: a texture, canvas, or render target */
+    target: RenderSurface;
+    /**
+     * the frame to render to, in base mip (mip 0) pixel space. When omitted, a {@link Texture}
+     * target falls back to its own frame and any other target binds in full.
+     */
+    frame?: Rectangle;
+    /**
+     * the mip level to render to (subresource)
+     * @default 0
+     */
+    mipLevel?: number;
+    /**
+     * the array layer (or slice/face) of the render surface to render to (subresource)
+     * @default 0
+     */
+    layer?: number;
+    /**
+     * opt-in Y-orientation toggle. `false`/omitted is a no-op (the historical `!isRoot`
+     * behavior); `true` inverts the orientation, and the winding with it.
+     */
+    flipY?: boolean;
+}
+
+/**
+ * Options for binding a render surface via {@link RenderTargetSystem.bind}: the persistent
+ * {@link BindState} plus the per-call clear actions.
+ * @category rendering
+ * @advanced
+ */
+export interface BindOptions extends BindState
+{
+    /**
+     * the clear mode to use. Can be `true` or a CLEAR number 'COLOR | DEPTH | STENCIL' 0b111
+     * @default true
+     */
+    clear?: CLEAR_OR_BOOL;
+    /** the color to clear to */
+    clearColor?: RgbaArray;
 }
 
 /**
@@ -170,6 +207,46 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
      * @param {RendererRenderTarget} gpuRenderTarget - the gpu render target to destroy
      */
     destroyGpuRenderTarget(gpuRenderTarget: RENDER_TARGET): void
+
+    /**
+     * Copies the depth attachment of a render target into a depth/stencil texture.
+     *
+     * **Important Note:** When using the copied depth buffer in a subsequent render pass,
+     * you must ensure you do not clear the depth buffer again. If you need to clear the color
+     * buffer of the destination render target, use `clear: CLEAR.COLOR` to preserve the copied depth data.
+     * @example
+     * ```js
+     * renderer.renderTarget.copyDepthTexture(
+     *   sourceRT, destDepthTexture, { x: 0, y: 0 }, { width: 200, height: 200 }, { x: 0, y: 0 }
+     * );
+     *
+     * // In the subsequent render pass, clear ONLY the color buffer!
+     * renderer.render({
+     *   target: destRT,
+     *   container: myMesh,
+     *   clear: CLEAR.COLOR, // Preserves the copied depth
+     *   clearColor: [0, 0, 0, 1]
+     * });
+     * ```
+     * @param {RenderTarget} source - the render target to copy depth from
+     * @param {Texture} destination - the depth/stencil texture to copy depth to
+     * @param {object} originSrc - the origin of the copy
+     * @param {number} originSrc.x - the x origin of the copy
+     * @param {number} originSrc.y - the y origin of the copy
+     * @param {object} size - the size of the copy
+     * @param {number} size.width - the width of the copy
+     * @param {number} size.height - the height of the copy
+     * @param {object} originDest - the destination origin (top left to paste from!)
+     * @param {number} originDest.x - the x destination origin of the copy
+     * @param {number} originDest.y - the y destination origin of the copy
+     */
+    copyDepthTexture(
+        source: RenderTarget,
+        destination: Texture,
+        originSrc: { x: number; y: number },
+        size: { width: number; height: number },
+        originDest?: { x: number; y: number },
+    ): void
 }
 
 /**
@@ -191,7 +268,7 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
  * });
  *
  * // bind the render target
- * renderer.renderTarget.bind(renderTarget);
+ * renderer.renderTarget.bind({ target: renderTarget });
  *
  * // draw something!
  * ```
@@ -208,14 +285,8 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
     public renderingToScreen: boolean;
     /** the current active render target */
     public renderTarget: RenderTarget;
-    /** the current active render surface that the render target is created from */
-    public renderSurface: RenderSurface;
     /** the current viewport that the gpu is using */
     public readonly viewport = new Rectangle();
-    /** the current mip level being rendered to (for texture subresources) */
-    public mipLevel = 0;
-    /** the current array layer being rendered to (for array-backed targets) */
-    public layer = 0;
     /**
      * a runner that lets systems know if the active render target has changed.
      * Eg the Stencil System needs to know so it can manage the stencil buffer
@@ -235,12 +306,22 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         = new Map();
     /** A hash that stores a gpu render target for a given render target. */
     private _gpuRenderTargetHash: Record<number, RENDER_TARGET> = Object.create(null);
+    /** the pushed bindings; each entry is a replayable BindOptions that pop() re-binds */
+    private readonly _renderTargetStack: BindOptions[] = [];
     /**
-     * A stack that stores the render target and frame that is currently being rendered to.
-     * When push is called, the current render target is stored in this stack.
-     * When pop is called, the previous render target is restored.
+     * the state of the current binding, written on every bind — backs the `renderSurface`,
+     * `mipLevel` and `layer` getters and `getBindState`. Its `frame` aliases `_bindFrame`
+     * and must never be handed out by reference.
      */
-    private readonly _renderTargetStack: RenderTargetAndFrame[] = [];
+    private readonly _bindState: BindState = {
+        target: null,
+        frame: undefined,
+        mipLevel: 0,
+        layer: 0,
+        flipY: false,
+    };
+    /** system-owned rect backing `_bindState.frame`; as-passed frames are copied into it */
+    private readonly _bindFrame = new Rectangle();
     /** A reference to the renderer */
     private readonly _renderer: Renderer;
 
@@ -250,6 +331,24 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         renderer.gc.addCollection(this, '_gpuRenderTargetHash', 'hash');
     }
 
+    /** the current active render surface that the render target is created from */
+    public get renderSurface(): RenderSurface
+    {
+        return this._bindState.target;
+    }
+
+    /** the current mip level being rendered to (for texture subresources) */
+    public get mipLevel(): number
+    {
+        return this._bindState.mipLevel;
+    }
+
+    /** the current array layer being rendered to (for array-backed targets) */
+    public get layer(): number
+    {
+        return this._bindState.layer;
+    }
+
     /** called when dev wants to finish a render pass */
     public finishRenderPass()
     {
@@ -257,43 +356,16 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
     }
 
     /**
-     * called when the renderer starts to render a scene.
-     * @param options
-     * @param options.target - the render target to render to
-     * @param options.clear - the clear mode to use. Can be true or a CLEAR number 'COLOR | DEPTH | STENCIL' 0b111
-     * @param options.clearColor - the color to clear to
-     * @param options.frame - the frame to render to
-     * @param options.mipLevel - the mip level to render to
-     * @param options.layer - The layer of the render target to render to. Used for array or 3D textures, or when rendering
-     * to a specific layer of a layered render target. Optional.
+     * called when the renderer starts to render a scene: resets the bind stack and binds the
+     * root render surface
+     * @param options - the {@link BindOptions} for the root binding
      */
-    public renderStart({
-        target,
-        clear,
-        clearColor,
-        frame,
-        mipLevel,
-        layer
-    }: {
-        target: RenderSurface;
-        clear: CLEAR_OR_BOOL;
-        clearColor: RgbaArray;
-        frame?: Rectangle;
-        mipLevel?: number;
-        layer?: number;
-    }): void
+    public renderStart(options: BindOptions): void
     {
         // TODO no need to reset this - use optimised index instead
         this._renderTargetStack.length = 0;
 
-        this.push(
-            target,
-            clear,
-            clearColor,
-            frame,
-            mipLevel ?? 0,
-            layer ?? 0
-        );
+        this.push(options);
 
         this.rootViewPort.copyFrom(this.viewport);
         this.rootRenderTarget = this.renderTarget;
@@ -314,6 +386,16 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      *
      * If a frame is not provided and the render surface is a {@link Texture}, the frame of the texture will be used.
      *
+     * IDEMPOTENT BIND:
+     * Binding is "smart" — the viewport/projection math is always recomputed, but the underlying render pass is
+     * only torn down and re-begun when something that actually requires it changes. If you bind the render target
+     * that the currently open pass is already on (same `mipLevel`/`layer`) and request **no clear**
+     * (`clear` is `false` / `CLEAR.NONE`), the live pass is reused and only the viewport is updated. This makes
+     * drawing N things into one target at N viewports a single pass with N `setViewport` calls, and makes a
+     * redundant same-target `bind`/`pop` essentially free. Any clear (even a partial one like `CLEAR.DEPTH`), a
+     * different target, or a different `mipLevel`/`layer` forces a real begin. The MSAA resolve is never skipped:
+     * it is deferred to the genuine pass end, which still happens before any target switch or read-back.
+     *
      * IMPORTANT:
      * - `frame` is treated as **base mip (mip 0) pixel space**.
      * - When `mipLevel > 0`, the viewport derived from `frame` is scaled by \(2^{mipLevel}\) and clamped to the
@@ -322,31 +404,76 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      *   render into
      *   the underlying {@link TextureSource} (Pixi will create/use a {@link RenderTarget} for the source) using the
      *   texture's frame to define the region (in mip 0 space).
+     * @param options - the bind options: see {@link BindOptions}
+     * @returns the render target that was bound
+     */
+    public bind(options: BindOptions): RenderTarget;
+    /**
+     * Binds a render surface using positional arguments.
      * @param renderSurface - the render surface to bind
      * @param clear - the clear mode to use. Can be true or a CLEAR number 'COLOR | DEPTH | STENCIL' 0b111
      * @param clearColor - the color to clear to
      * @param frame - the frame to render to
      * @param mipLevel - the mip level to render to
-     * @param layer - the layer (or slice) of the render surface to render to. For array textures,
-     * 3D textures, or cubemaps, this specifies the target layer or face. Defaults to 0 (the first layer/face).
-     * Ignored for surfaces that do not support layers.
+     * @param layer - the layer (or slice) of the render surface to render to
+     * @param flipY - opt-in Y-orientation toggle
      * @returns the render target that was bound
+     * @deprecated since 8.20.0 — use an options object instead:
+     * `bind({ target, clear, clearColor, frame, mipLevel, layer, flipY })`
      */
     public bind(
         renderSurface: RenderSurface,
+        clear?: CLEAR_OR_BOOL,
+        clearColor?: RgbaArray,
+        frame?: Rectangle,
+        mipLevel?: number,
+        layer?: number,
+        flipY?: boolean
+    ): RenderTarget;
+    public bind(
+        surfaceOrOptions: RenderSurface | BindOptions,
         clear: CLEAR_OR_BOOL = true,
         clearColor?: RgbaArray,
         frame?: Rectangle,
         mipLevel = 0,
-        layer = 0
+        layer = 0,
+        flipY?: boolean
     ): RenderTarget
     {
+        let options: BindOptions;
+
+        if ('target' in surfaceOrOptions)
+        {
+            options = surfaceOrOptions;
+        }
+        else
+        {
+            // legacy positional call: sanitise the arguments into a BindOptions and carry on
+            // #if _DEBUG
+            deprecation('8.20.0', 'RenderTargetSystem.bind: positional arguments are deprecated, '
+                + 'please use an options object instead: '
+                + 'bind({ target, clear, clearColor, frame, mipLevel, layer, flipY })');
+            // #endif
+
+            options = { target: surfaceOrOptions, clear, clearColor, frame, mipLevel, layer, flipY };
+        }
+
+        // the options object is caller-owned and read-only: read everything into locals here
+        // and never write back into it (the frame fallback below reassigns the local)
+        const renderSurface = options.target;
+
+        clear = options.clear ?? true;
+        clearColor = options.clearColor;
+        mipLevel = (options.mipLevel ?? 0) | 0;
+        layer = (options.layer ?? 0) | 0;
+        flipY = options.flipY;
+        frame = options.frame;
+
         const renderTarget = this.getRenderTarget(renderSurface);
 
         const didChange = this.renderTarget !== renderTarget;
 
         this.renderTarget = renderTarget;
-        this.renderSurface = renderSurface;
 
         const gpuRenderTarget = this.getGpuRenderTarget(renderTarget);
 
@@ -359,22 +486,24 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
             gpuRenderTarget.height = renderTarget.pixelHeight;
         }
 
-        const source = renderTarget.colorTexture;
+        const source = renderTarget.colorAttachments[0]?.texture || renderTarget.depthStencilAttachment?.texture;
         const viewport = this.viewport;
         const arrayLayerCount = source.arrayLayerCount || 1;
-
-        if ((layer | 0) !== layer)
-        {
-            layer |= 0;
-        }
 
         if (layer < 0 || layer >= arrayLayerCount)
         {
             throw new Error(`[RenderTargetSystem] layer ${layer} is out of bounds (arrayLayerCount=${arrayLayerCount}).`);
         }
 
-        this.mipLevel = mipLevel | 0;
-        this.layer = layer | 0;
+        // retain the as-passed bind state for the getters and getBindState; the frame is
+        // copied, not referenced — callers reuse their rects
+        const bindState = this._bindState;
+
+        bindState.target = renderSurface;
+        bindState.frame = frame ? this._bindFrame.copyFrom(frame) : undefined;
+        bindState.mipLevel = mipLevel;
+        bindState.layer = layer;
+        bindState.flipY = flipY;
 
         const pixelWidth = Math.max(source.pixelWidth >> mipLevel, 1);
         const pixelHeight = Math.max(source.pixelHeight >> mipLevel, 1);
@@ -390,7 +519,7 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         if (frame)
         {
             const resolution = source._resolution;
-            const scale = 1 << Math.max(mipLevel | 0, 0);
+            const scale = 1 << Math.max(mipLevel, 0);
 
             // Convert frame to pixel units (mip 0), then scale to the requested mip level.
             const baseX = ((frame.x * resolution) + 0.5) | 0;
@@ -406,10 +535,31 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
             let h = Math.ceil(baseH / scale);
 
             // Clamp to mip dimensions.
-            x = Math.min(Math.max(x, 0), pixelWidth - 1);
-            y = Math.min(Math.max(y, 0), pixelHeight - 1);
-            w = Math.min(Math.max(w, 1), pixelWidth - x);
-            h = Math.min(Math.max(h, 1), pixelHeight - y);
+            // We clamp the position first, then calculate the width/height based on the new position.
+            // This ensures that we don't collapse the width/height if the position is clamped.
+            if (x < 0)
+            {
+                w += x;
+                x = 0;
+            }
+
+            if (y < 0)
+            {
+                h += y;
+                y = 0;
+            }
+
+            // clamp position to the texture bounds
+            x = Math.min(x, pixelWidth - 1);
+            y = Math.min(y, pixelHeight - 1);
+
+            // now clamp the width/height to the texture bounds
+            w = Math.min(w, pixelWidth - x);
+            h = Math.min(h, pixelHeight - y);
+
+            // ensure we have at least 1 pixel
+            w = Math.max(w, 1);
+            h = Math.max(h, 1);
 
             viewport.x = x;
             viewport.y = y;
@@ -424,12 +574,18 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
             viewport.height = pixelHeight;
         }
 
+        // Store the raw `flipY` toggle on the target — always, even when `undefined`, so a pooled target
+        // resets to the default. `flipY` is opt-in: off → the historical orientation (`!isRoot`), on →
+        // that orientation inverted. Resolving it here keeps the projection (below) and the WebGL
+        // front-face inversion (GlStateSystem.onRenderTargetChange) reading the same welded value.
+        renderTarget.flipY = flipY;
+
         calculateProjection(
             this.projectionMatrix,
             0, 0,
             viewport.width / source.resolution,
             viewport.height / source.resolution,
-            !renderTarget.isRoot
+            !renderTarget.isRoot !== !!renderTarget.flipY
         );
 
         this.adaptor.startRenderPass(renderTarget, clear, clearColor, viewport, mipLevel, layer);
@@ -440,6 +596,98 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         }
 
         return renderTarget;
+    }
+
+    /**
+     * Captures the current binding as a {@link BindOptions} that can be passed back to
+     * {@link RenderTargetSystem.bind} to restore it. The capture replays non-destructively:
+     * its `clear` is `CLEAR.NONE`, so restoring never wipes the target.
+     *
+     * ```js
+     * const saved = renderer.renderTarget.getBindState();
+     *
+     * renderer.renderTarget.bind({ target: scratchTexture, clear: true });
+     * // ... draw ...
+     * renderer.renderTarget.bind(saved);
+     *
+     * // or compose: the saved binding, but into mip 1
+     * renderer.renderTarget.bind({ ...saved, mipLevel: 1 });
+     * ```
+     *
+     * The capture is a snapshot owned by the caller — later binds cannot change it — and holds
+     * `target` and `frame` as they were passed, so a Texture bound without an explicit frame
+     * replays through its frame fallback. It stays valid for as long as its target does.
+     * Pass `out` to reuse one object across captures; every field of it is overwritten.
+     * @param out - an optional object to write the bind state into; allocated when omitted
+     * @returns the captured bind state (`out` when provided)
+     */
+    public getBindState(out?: BindOptions): BindOptions
+    {
+        if (!this.renderTarget)
+        {
+            throw new Error('[RenderTargetSystem] getBindState is only valid while a render surface is bound');
+        }
+
+        const bindState = this._bindState;
+
+        out ??= {} as BindOptions;
+
+        out.target = bindState.target;
+        // pinned to NONE so replaying the capture never clears the restored target
+        out.clear = CLEAR.NONE;
+        out.clearColor = undefined;
+
+        if (!bindState.frame)
+        {
+            out.frame = undefined;
+        }
+        else if (out.frame)
+        {
+            // reuse the out object's own rect in place
+            out.frame.copyFrom(bindState.frame);
+        }
+        else
+        {
+            out.frame = bindState.frame.clone();
+        }
+
+        out.mipLevel = bindState.mipLevel;
+        out.layer = bindState.layer;
+        out.flipY = !!bindState.flipY;
+
+        return out;
+    }
+
+    /**
+     * The effective front-face orientation of the current bind — `true` when a front-facing triangle
+     * ends up wound the opposite way on the surface (so the winding/cull has been inverted to compensate).
+     *
+     * This is the requested `flipY` combined with the backend's inherent orientation, not the raw request:
+     *
+     * ```text
+     * frontFaceInverted = flipY XOR (isWebGL && !isRoot)
+     * ```
+     *
+     * WebGL's non-root FBOs carry an inherent Y-flip vs the root (the classic render-texture flip), so the
+     * same requested `flipY` lands with the opposite winding depending on `isRoot`. WebGPU has no such
+     * inherent flip, so there it is simply `flipY`. This is exactly the winding inversion each backend bakes
+     * at bind ({@link GlStateSystem} / {@link PipelineSystem}), exposed so consumers (e.g. 3D pipelines) can
+     * read the resolved orientation instead of re-deriving it from `flipY`, `isRoot`, and a backend check of
+     * their own.
+     *
+     * It is per-bind, not per-target: `flipY` is set on every `bind`/`renderStart` while `isRoot` is fixed on
+     * the target, so this recomputes from whatever the last bind resolved.
+     * @returns whether the current bind's front face is inverted
+     */
+    public get frontFaceInverted(): boolean
+    {
+        const renderTarget = this.renderTarget;
+
+        if (!renderTarget) return false;
+
+        const glInherentFlip = this._renderer.type === RendererType.WEBGL && !renderTarget.isRoot;
+
+        return !!renderTarget.flipY !== glInherentFlip;
     }
 
     public clear(
@@ -473,51 +721,96 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
     }
 
     /**
-     * Push a render surface to the renderer. This will bind the render surface to the renderer,
+     * Push a render surface to the renderer. This will bind the render surface to the renderer
+     * and store the binding on a stack, so `pop()` can restore the previous binding.
+     * @param options - the bind options: see {@link BindOptions}
+     * @returns the render target that was bound
+     */
+    public push(options: BindOptions): RenderTarget;
+    /**
+     * Push a render surface using positional arguments.
      * @param renderSurface - the render surface to push
      * @param clear - the clear mode to use. Can be true or a CLEAR number 'COLOR | DEPTH | STENCIL' 0b111
      * @param clearColor - the color to clear to
      * @param frame - the frame to use when rendering to the render surface
      * @param mipLevel - the mip level to render to
-     * @param layer - The layer of the render surface to render to. For array textures or cube maps, this specifies
-     * which layer or face to target. Defaults to 0 (the first layer).
+     * @param layer - the layer of the render surface to render to
+     * @param flipY - opt-in Y-orientation toggle; stored on the stack so it is restored on `pop`
+     * @returns the render target that was bound
+     * @deprecated since 8.20.0 — use an options object instead:
+     * `push({ target, clear, clearColor, frame, mipLevel, layer, flipY })`
      */
     public push(
         renderSurface: RenderSurface,
+        clear?: CLEAR | boolean,
+        clearColor?: RgbaArray,
+        frame?: Rectangle,
+        mipLevel?: number,
+        layer?: number,
+        flipY?: boolean
+    ): RenderTarget;
+    public push(
+        surfaceOrOptions: RenderSurface | BindOptions,
         clear: CLEAR | boolean = CLEAR.ALL,
         clearColor?: RgbaArray,
         frame?: Rectangle,
         mipLevel = 0,
-        layer = 0
-    )
+        layer = 0,
+        flipY?: boolean
+    ): RenderTarget
     {
-        const renderTarget = this.bind(renderSurface, clear, clearColor, frame, mipLevel, layer);
+        let options: BindOptions;
 
+        if ('target' in surfaceOrOptions)
+        {
+            options = surfaceOrOptions;
+        }
+        else
+        {
+            // legacy positional call: sanitise the arguments into a BindOptions and carry on
+            // #if _DEBUG
+            deprecation('8.20.0', 'RenderTargetSystem.push: positional arguments are deprecated, '
+                + 'please use an options object instead: '
+                + 'push({ target, clear, clearColor, frame, mipLevel, layer, flipY })');
+            // #endif
+
+            options = { target: surfaceOrOptions, clear, clearColor, frame, mipLevel, layer, flipY };
+        }
+
+        const renderTarget = this.bind(options);
+
+        // the entry is replayed by pop(): the target is stored as passed (a Texture keeps its
+        // frame fallback), the frame is copied (callers reuse their rects), and clear is false
+        // (restoring must not wipe the target)
         this._renderTargetStack.push({
-            renderTarget,
-            frame,
-            mipLevel,
-            layer,
+            target: options.target,
+            clear: false,
+            clearColor: undefined,
+            frame: options.frame ? options.frame.clone() : undefined,
+            mipLevel: options.mipLevel,
+            layer: options.layer,
+            flipY: options.flipY,
         });
 
         return renderTarget;
     }
 
-    /** Pops the current render target from the renderer and restores the previous render target. */
-    public pop()
+    /**
+     * Pops the current render target and restores the previous binding.
+     * @returns the render target that was restored
+     */
+    public pop(): RenderTarget
     {
         this._renderTargetStack.pop();
 
-        const currentRenderTargetData = this._renderTargetStack[this._renderTargetStack.length - 1];
+        const previous = this._renderTargetStack[this._renderTargetStack.length - 1];
 
-        this.bind(
-            currentRenderTargetData.renderTarget,
-            false,
-            null,
-            currentRenderTargetData.frame,
-            currentRenderTargetData.mipLevel,
-            currentRenderTargetData.layer
-        );
+        if (!previous)
+        {
+            throw new Error('[RenderTargetSystem] pop: no previous binding to restore (unbalanced pop)');
+        }
+
+        return this.bind(previous);
     }
 
     /**
@@ -565,7 +858,7 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      * The best way to copy a canvas is to create a texture from it. Then render with that.
      *
      * Parsing in a RenderTarget canvas context (with a 2d context)
-     * @param sourceRenderSurfaceTexture - the render surface to copy from
+     * @param sourceRenderSurface - the render surface (render target, texture, or canvas) to copy from
      * @param {Texture} destinationTexture - the texture to copy to
      * @param {object} originSrc - the origin of the copy
      * @param {number} originSrc.x - the x origin of the copy
@@ -578,13 +871,16 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      * @param {number} originDest.y - the y origin of the paste
      */
     public copyToTexture(
-        sourceRenderSurfaceTexture: RenderTarget,
+        sourceRenderSurface: RenderSurface,
         destinationTexture: Texture,
         originSrc: { x: number; y: number },
         size: { width: number; height: number },
         originDest: { x: number; y: number; },
     )
     {
+        // a texture or canvas source is copied from its render target's framebuffer
+        const sourceRenderTarget = this.getRenderTarget(sourceRenderSurface);
+
         // fit the size to the source we don't want to go out of bounds
 
         if (originSrc.x < 0)
@@ -601,17 +897,120 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
             originSrc.y = 0;
         }
 
-        const { pixelWidth, pixelHeight } = sourceRenderSurfaceTexture;
+        const { pixelWidth, pixelHeight } = sourceRenderTarget;
 
         size.width = Math.min(size.width, pixelWidth - originSrc.x);
         size.height = Math.min(size.height, pixelHeight - originSrc.y);
 
         return this.adaptor.copyToTexture(
-            sourceRenderSurfaceTexture,
+            sourceRenderTarget,
             destinationTexture,
             originSrc,
             size,
             originDest
+        );
+    }
+
+    /**
+     * Copies the depth attachment from one render target to another.
+     * Both source and destination must have a depthStencilAttachment.
+     *
+     * **Important Note:** When using the copied depth buffer in a subsequent render pass,
+     * you must ensure you do not clear the depth buffer again. If you need to clear the color
+     * buffer of the destination render target, use `clear: CLEAR.COLOR` to preserve the copied depth data.
+     * @example
+     * ```js
+     * renderer.renderTarget.copyDepthTexture(
+     *   sourceRT, destRT, { x: 0, y: 0 }, { width: 200, height: 200 }, { x: 0, y: 0 }
+     * );
+     *
+     * // In the subsequent render pass, clear ONLY the color buffer!
+     * renderer.render({
+     *   target: destRT,
+     *   container: myMesh,
+     *   clear: CLEAR.COLOR, // Preserves the copied depth
+     *   clearColor: [0, 0, 0, 1]
+     * });
+     * ```
+     * @param source - the render surface (render target, depth texture, or canvas) to copy depth from
+     * @param destination - the depth/stencil texture to copy depth to
+     * @param {object} originSrc - the origin of the copy
+     * @param {number} originSrc.x - the x origin of the copy
+     * @param {number} originSrc.y - the y origin of the copy
+     * @param {object} size - the size of the copy
+     * @param {number} size.width - the width of the copy
+     * @param {number} size.height - the height of the copy
+     * @param {object} originDest - the destination origin (top left to paste from!)
+     * @param {number} originDest.x - the x origin of the paste
+     * @param {number} originDest.y - the y origin of the paste
+     */
+    public copyDepthTexture(
+        source: RenderSurface,
+        destination: Texture,
+        originSrc: { x: number; y: number },
+        size: { width: number; height: number },
+        originDest: { x: number; y: number; } = { x: 0, y: 0 },
+    ): void
+    {
+        // a depth texture source is copied from its render target's depth attachment
+        const sourceRenderTarget = this.getRenderTarget(source);
+
+        if (!sourceRenderTarget.depthStencilAttachment)
+        {
+            warn('[RenderTargetSystem] copyDepthTexture: the source render target has no depth attachment to copy from');
+
+            return;
+        }
+
+        const destSource = destination.source;
+
+        if (!destSource.format.includes('depth') && !destSource.format.includes('stencil'))
+        {
+            warn('[RenderTargetSystem] copyDepthTexture: the destination texture must have a depth/stencil format '
+                + `(got '${destSource.format}')`);
+
+            return;
+        }
+
+        // clamp into locals — callers often reuse their rect objects across frames,
+        // so the arguments must never be mutated
+        let srcX = originSrc.x;
+        let srcY = originSrc.y;
+        let destX = originDest.x;
+        let destY = originDest.y;
+        let width = size.width;
+        let height = size.height;
+
+        // fit to the source bounds
+        if (srcX < 0)
+        {
+            width += srcX;
+            destX -= srcX;
+            srcX = 0;
+        }
+
+        if (srcY < 0)
+        {
+            height += srcY;
+            destY -= srcY;
+            srcY = 0;
+        }
+
+        width = Math.min(width, sourceRenderTarget.pixelWidth - srcX);
+        height = Math.min(height, sourceRenderTarget.pixelHeight - srcY);
+
+        // fit to the destination bounds too — WebGPU validates the copy against them
+        // (GL silently clips), and an oversized copy would discard the whole frame
+        width = Math.min(width, destSource.pixelWidth - destX);
+        height = Math.min(height, destSource.pixelHeight - destY);
+
+        if (width <= 0 || height <= 0) return;
+
+        this.adaptor.copyDepthTexture(
+            sourceRenderTarget, destination,
+            { x: srcX, y: srcY },
+            { width, height },
+            { x: destX, y: destY },
         );
     }
 
@@ -623,7 +1022,18 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
     {
         if (!this.renderTarget.stencil)
         {
-            this.renderTarget.stencil = true;
+            if (this.renderTarget.depthStencilTexture)
+            {
+                // an explicit depth-only texture (e.g. 'depth24plus') cannot gain a stencil aspect
+                warn('[RenderTargetSystem] a stencil mask is being used, but the render target\'s '
+                    + `depthStencilTexture format '${this.renderTarget.depthStencilTexture.format}' has no `
+                    + 'stencil aspect, so masking cannot work here. Use a \'depth24plus-stencil8\' texture instead.');
+
+                return;
+            }
+
+            this.renderTarget._depth = true;
+            this.renderTarget._stencil = true;
 
             this.adaptor.startRenderPass(this.renderTarget, false, null, this.viewport, 0, this.layer);
         }
@@ -638,7 +1048,7 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         {
             if (renderTarget !== key)
             {
-                renderTarget.destroy();
+                this._releaseRenderTarget(key as TextureSource, renderTarget);
             }
         });
 
@@ -662,35 +1072,54 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         }
         else if (renderSurface instanceof TextureSource)
         {
-            renderTarget = new RenderTarget({
-                colorTextures: [renderSurface],
-            });
+            // a depth/stencil-format source is a depth attachment, any other format is a color one
+            const format = renderSurface.format;
+            const isDepthStencil = format.includes('depth') || format.includes('stencil');
+
+            renderTarget = isDepthStencil
+                ? new RenderTarget({ colorTextures: 0, depthStencilTexture: renderSurface })
+                : new RenderTarget({ colorTextures: [renderSurface] });
 
             if (renderSurface.source instanceof CanvasSource)
             {
                 renderTarget.isRoot = true;
             }
 
-            // TODO add a test for this
-            renderSurface.once('destroy', () =>
-            {
-                renderTarget.destroy();
-
-                this._renderSurfaceToRenderTargetHash.delete(renderSurface);
-
-                const gpuRenderTarget = this._gpuRenderTargetHash[renderTarget.uid];
-
-                if (gpuRenderTarget)
-                {
-                    this._gpuRenderTargetHash[renderTarget.uid] = null;
-                    this.adaptor.destroyGpuRenderTarget(gpuRenderTarget);
-                }
-            });
+            renderSurface.once('destroy', this._onRenderSurfaceDestroy, this);
         }
 
         this._renderSurfaceToRenderTargetHash.set(renderSurface, renderTarget);
 
         return renderTarget;
+    }
+
+    private _onRenderSurfaceDestroy(renderSurface: TextureSource): void
+    {
+        const renderTarget = this._renderSurfaceToRenderTargetHash.get(renderSurface);
+
+        if (renderTarget) this._releaseRenderTarget(renderSurface, renderTarget);
+    }
+
+    /**
+     * Tears down a render target that wraps a texture source, removing every reference the
+     * system holds to it so neither the system's own teardown nor the source's `destroy`
+     * event can destroy it a second time.
+     * @param renderSurface - the texture source the render target wraps
+     * @param renderTarget - the render target to release
+     */
+    private _releaseRenderTarget(renderSurface: TextureSource, renderTarget: RenderTarget): void
+    {
+        renderTarget.destroy();
+        this._renderSurfaceToRenderTargetHash.delete(renderSurface);
+        renderSurface.off('destroy', this._onRenderSurfaceDestroy, this);
+
+        const gpuRenderTarget = this._gpuRenderTargetHash[renderTarget.uid];
+
+        if (gpuRenderTarget)
+        {
+            this._gpuRenderTargetHash[renderTarget.uid] = null;
+            this.adaptor.destroyGpuRenderTarget(gpuRenderTarget);
+        }
     }
 
     public getGpuRenderTarget(renderTarget: RenderTarget)
@@ -702,6 +1131,6 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
     public resetState(): void
     {
         this.renderTarget = null;
-        this.renderSurface = null;
+        this._bindState.target = null;
     }
 }

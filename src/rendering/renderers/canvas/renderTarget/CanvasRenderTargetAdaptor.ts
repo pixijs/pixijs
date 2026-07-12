@@ -1,5 +1,6 @@
 import { Color } from '../../../../color/Color';
 import { DOMAdapter } from '../../../../environment/adapter';
+import { warn } from '../../../../utils/logging/warn';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
@@ -199,6 +200,32 @@ export class CanvasRenderTargetAdaptor implements RenderTargetAdaptor<CanvasRend
         destSource.update();
 
         return destinationTexture;
+    }
+
+    /**
+     * Copies the depth attachment of a render target into a texture (not supported in canvas).
+     * @param _source - Source render target.
+     * @param _destination - Destination depth/stencil texture.
+     * @param _originSrc - Source origin of the copy.
+     * @param _originSrc.x
+     * @param _originSrc.y
+     * @param _size - Size of the copy.
+     * @param _size.width
+     * @param _size.height
+     * @param _originDest - Destination origin of the copy.
+     * @param _originDest.x
+     * @param _originDest.y
+     * @advanced
+     */
+    public copyDepthTexture(
+        _source: RenderTarget,
+        _destination: Texture,
+        _originSrc?: { x: number; y: number; },
+        _size?: { width: number; height: number; },
+        _originDest?: { x: number; y: number; },
+    ): void
+    {
+        warn('[CanvasRenderTargetAdaptor] copyDepthTexture is not supported in the canvas renderer');
     }
 
     /**

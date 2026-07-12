@@ -102,7 +102,11 @@ export class RenderGroupPipe implements InstructionPipe<RenderGroup>
                 -renderGroup._textureBounds.y
             );
 
-            this._renderer.renderTarget.push(renderGroup.texture, true, null, renderGroup.texture.frame);
+            this._renderer.renderTarget.push({
+                target: renderGroup.texture,
+                clear: true,
+                frame: renderGroup.texture.frame,
+            });
 
             this._renderer.globalUniforms.push({
                 worldTransformMatrix,

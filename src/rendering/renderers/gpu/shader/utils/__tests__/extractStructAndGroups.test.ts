@@ -21,14 +21,14 @@ describe('extractStructAndGroups', () =>
             group: 0,
             binding: 0,
             name: 'particles',
-            isUniform: false,
+            accessMode: 'storage',
             type: 'array<Particle>',
         });
         expect(result.groups[1]).toEqual({
             group: 0,
             binding: 1,
             name: 'deltaTime',
-            isUniform: true,
+            accessMode: 'uniform',
             type: 'f32',
         });
 

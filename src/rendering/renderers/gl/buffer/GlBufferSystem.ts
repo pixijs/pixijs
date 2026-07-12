@@ -246,8 +246,13 @@ export class GlBufferSystem implements System
             if (glBuffer.byteLength >= data.byteLength)
             {
                 // assuming our buffers are aligned to 4 bits...
-                // offset is always zero for now!
-                gl.bufferSubData(glBuffer.type, 0, data, 0, buffer._updateSize / data.BYTES_PER_ELEMENT);
+                gl.bufferSubData(
+                    glBuffer.type,
+                    buffer._updateOffset,
+                    data,
+                    buffer._updateOffset / data.BYTES_PER_ELEMENT,
+                    (buffer._updateSize || data.byteLength) / data.BYTES_PER_ELEMENT
+                );
             }
             else
             {

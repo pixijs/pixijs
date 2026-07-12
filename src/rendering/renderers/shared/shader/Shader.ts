@@ -1,9 +1,11 @@
 import EventEmitter from 'eventemitter3';
 import { uid } from '../../../../utils/data/uid';
+import { warn } from '../../../../utils/logging/warn';
 import { GlProgram } from '../../gl/shader/GlProgram';
 import { BindGroup } from '../../gpu/shader/BindGroup';
 import { GpuProgram } from '../../gpu/shader/GpuProgram';
 import { RendererType } from '../../types';
+import { ShaderOverrides } from './ShaderOverrides';
 import { UniformGroup } from './UniformGroup';
 
 import type { GlProgramOptions } from '../../gl/shader/GlProgram';
@@ -33,6 +35,9 @@ interface ShaderBase
      * This is automatically set based on if a {@link GlProgram} or {@link GpuProgram} is provided.
      */
     compatibleRenderers?: number
+
+    /** The overrides used by the shader. */
+    overrides?: Record<string, number> | ShaderOverrides;
 }
 
 /**
@@ -220,6 +225,9 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
     private readonly _ownedBindGroups: BindGroup[] = [];
 
     /** @internal */
+    public readonly _overrides: ShaderOverrides;
+
+    /** @internal */
     public _destroyed: boolean = false;
 
     /**
@@ -250,9 +258,12 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
             groups,
             resources,
             compatibleRenderers,
-            groupMap
+            groupMap,
+            overrides,
         } = options;
         /* eslint-enable prefer-const */
+
+        this._overrides = overrides ? ShaderOverrides.from(overrides) : null;
 
         this.gpuProgram = gpuProgram;
         this.glProgram = glProgram;
@@ -269,20 +280,7 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
 
         const nameHash: Record<string, GroupsData> = {};
 
-        if (!resources && !groups)
-        {
-            resources = {};
-        }
-
-        if (resources && groups)
-        {
-            throw new Error('[Shader] Cannot have both resources and groups');
-        }
-        else if (!gpuProgram && groups && !groupMap)
-        {
-            throw new Error('[Shader] No group map or WebGPU shader provided - consider using resources instead.');
-        }
-        else if (!gpuProgram && groups && groupMap)
+        if (groupMap)
         {
             for (const i in groupMap)
             {
@@ -297,6 +295,20 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
                     };
                 }
             }
+        }
+
+        if (!resources && !groups)
+        {
+            resources = {};
+        }
+
+        if (resources && groups)
+        {
+            throw new Error('[Shader] Cannot have both resources and groups');
+        }
+        else if (!gpuProgram && groups && !groupMap)
+        {
+            throw new Error('[Shader] No group map or WebGPU shader provided - consider using resources instead.');
         }
         else if (gpuProgram && groups && !groupMap)
         {
@@ -315,7 +327,7 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
         else if (resources)
         {
             groups = {};
-            groupMap = {};
+            groupMap ||= {};
 
             if (gpuProgram)
             {
@@ -335,6 +347,16 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
             for (const i in resources)
             {
                 if (nameHash[i]) continue;
+
+                // with no GL program to belong to, an unmatched resource is a genuine
+                // mistake (typo, or a leftover after editing the WGSL) — say so now,
+                // at construction, rather than silently skipping it at draw time
+                if (gpuProgram && !glProgram)
+                {
+                    // #if _DEBUG
+                    warn(`[Shader] the resource '${i}' matches no binding in the WGSL source — is the name correct?`);
+                    // #endif
+                }
 
                 // build out a dummy bind group..
                 if (!groups[99])
@@ -464,6 +486,8 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
 
         this.resources = null;
         this.groups = null;
+
+        (this._overrides as null) = null;
     }
 
     /**
