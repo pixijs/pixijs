@@ -321,6 +321,14 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         source.antialias = antialias;
         source.transparent = transparent;
 
+        // if the user already rendered directly to this canvas, its gpu render target was created and
+        // cached before the flags above were latched, so lazy gpu init never reads them (no MSAA, stale
+        // alphaMode). Drop the cached gpu render target so the next render re-inits with the new flags.
+        if (this._renderer.renderTarget.hasGpuRenderTarget(renderTarget))
+        {
+            this._renderer.renderTarget.invalidateGpuRenderTarget(renderTarget);
+        }
+
         source.resize(source.width, source.height, resolution);
 
         const view = new RendererView({

@@ -441,6 +441,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         renderTarget: RenderTarget,
         clear: CLEAR_OR_BOOL = true,
         clearColor?: RgbaArray,
+        standalone = false,
         viewport?: Rectangle,
         mipLevel = 0,
         layer = 0
@@ -448,14 +449,16 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
     {
         if (!clear) return;
 
-        const { gpu, encoder } = this._renderer;
+        const { gpu } = this._renderer;
 
         const device = gpu.device;
 
-        const standAlone = encoder.commandEncoder === null;
-
-        if (standAlone)
+        if (standalone)
         {
+            // a standalone clear with no bound target (a fresh renderer's no-target clear()) has nothing
+            // to draw to; WebGPU draws directly per-target, so there is no current pass to clear either
+            if (!renderTarget) return;
+
             const commandEncoder = device.createCommandEncoder();
             const renderPassDescriptor = this.getDescriptor(renderTarget, clear, clearColor, mipLevel, layer);
 

@@ -215,4 +215,36 @@ describe('Application multiView', () =>
         app.destroy(true, true);
         canvasB.remove();
     });
+
+    it('does not throw on render when a view was destroyed directly while still in the list', async () =>
+    {
+        const app = await getApp({ multiView: true });
+        const canvasB = attachedCanvas();
+        const view = app.addView({ canvas: canvasB });
+
+        view.destroy();
+
+        expect(view.enabled).toBe(false);
+        expect(() => app.render()).not.toThrow();
+
+        app.destroy(true, true);
+        canvasB.remove();
+    });
+
+    it('removeView with stage destroy options destroys the stage children', async () =>
+    {
+        const app = await getApp({ multiView: true });
+        const canvasB = attachedCanvas();
+        const view = app.addView({ canvas: canvasB });
+        const child = new Container();
+
+        view.stage.addChild(child);
+        const childSpy = jest.spyOn(child, 'destroy');
+
+        expect(app.removeView(view, { children: true })).toBe(true);
+        expect(childSpy).toHaveBeenCalled();
+
+        app.destroy(true, true);
+        canvasB.remove();
+    });
 });

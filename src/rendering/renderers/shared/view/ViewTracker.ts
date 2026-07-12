@@ -1,7 +1,6 @@
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { Container } from '../../../../scene/container/Container';
 import type { Renderer } from '../../types';
-import type { RenderOptions } from '../system/AbstractRenderer';
 import type { RendererView } from './RendererView';
 
 /**
@@ -41,10 +40,10 @@ export interface ViewTrackerOptions<TData extends TrackedViewData>
  * several canvases; {@link EventSystem}, {@link AccessibilitySystem} and {@link DOMPipe} each keep
  * one of these to map a render target to its per-canvas state.
  *
- * The tracker centralizes the back-buffer timing invariant: the active view for a frame is resolved
- * in {@link ViewTracker#setActive} (called from a `prerender` hook), before the back buffer swaps
- * `options.target` in `renderStart`. It also centralizes the main-view replacement rule and the
- * root-resolution special case (the main view follows {@link AbstractRenderer#lastObjectRendered}).
+ * {@link ViewSystem} owns resolving which on-screen view a frame targets; the tracker records that
+ * view's container in {@link ViewTracker#setActive} and maps it to per-canvas data. It also
+ * centralizes the main-view replacement rule and the root-resolution special case (the main view
+ * follows {@link AbstractRenderer#lastObjectRendered}).
  * @internal
  */
 export class ViewTracker<TData extends TrackedViewData>
@@ -211,22 +210,26 @@ export class ViewTracker<TData extends TrackedViewData>
     }
 
     /**
-     * Resolves which registered view this render targets and records the container being rendered to
-     * it. Call from a `prerender` hook: the back buffer swaps `options.target` in `renderStart`, so
-     * the target is only reliable beforehand.
-     * @param options - the options the renderer was called with
+     * Records the per-canvas data for the frame's active view and the container being rendered to it.
+     *
+     * The active view is resolved once per frame by {@link ViewSystem#prerender} and passed in here.
+     * Callers must invoke this from a `prerender` hook, before the back buffer swaps `options.target`
+     * in `renderStart`; {@link ViewSystem} runs first (higher extension priority; the per-canvas
+     * systems append themselves to the `prerender` runner during their own init), so its resolved
+     * view is already available.
+     * @param view - the on-screen view this frame targets, from {@link ViewSystem#activeView}
+     * @param container - the container being rendered to the view
      * @returns the resolved data, or `null` for an unregistered (offscreen / texture) target
      */
-    public setActive(options: RenderOptions): TData | null
+    public setActive(view: RendererView | null, container: Container): TData | null
     {
-        const view = this._renderer.view.viewForTarget(options.target);
         const data = view ? this._views.get(view.canvas) : undefined;
 
         this._activeView = data ?? null;
 
         if (data)
         {
-            data.rootContainer = options.container;
+            data.rootContainer = container;
         }
 
         return this._activeView;

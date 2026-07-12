@@ -678,9 +678,8 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
      */
     public prerender(options: RenderOptions): void
     {
-        // resolves the target view and captures its rootContainer before the back buffer can swap
-        // options.target in renderStart; a non-participating / offscreen target nulls the active view
-        this._tracker.setActive(options);
+        // records the frame's active view (resolved by ViewSystem) and its rootContainer
+        this._tracker.setActive(this._renderer.view.activeView, options.container);
     }
 
     /**

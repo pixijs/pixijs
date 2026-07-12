@@ -682,9 +682,9 @@ export class EventSystem implements System<EventSystemOptions>
      */
     public prerender(options: RenderOptions): void
     {
-        // the tracker resolves the target view and records its rootContainer; events do not use
-        // the resolved activeView - per-event dispatch routes by the element the listener fired on
-        this._views.setActive(options);
+        // records the frame's active view (resolved by ViewSystem) and its rootContainer; events do
+        // not use the resolved activeView - per-event dispatch routes by the element the listener fired on
+        this._views.setActive(this.renderer.view.activeView, options.container);
     }
 
     /**
@@ -1106,11 +1106,12 @@ export class EventSystem implements System<EventSystemOptions>
 
         if (view.boundary.enableGlobalMoveEvents) return true;
 
-        // cold start: the rect has not been measured, so we cannot tell whether the pointer is already
-        // resting over this canvas (a native pointerover only fires on a fresh enter, not when the
-        // pointer was already inside when the view was added). Dispatch conservatively; the dispatch
-        // caches the rect, so subsequent moves can skip correctly via _pointerInsideRect.
-        if (!view.clientRect) return true;
+        // cold start: the rect has not been measured (e.g. a page scroll just invalidated it), so we
+        // cannot yet tell geometrically whether the pointer is over this canvas. Measure it once here -
+        // dispatch would pay the same getBoundingClientRect anyway - so views the pointer is outside skip
+        // the scene hit-test below instead of all dispatching. A disconnected element has no layout box;
+        // for it keep dispatching conservatively.
+        if (!view.clientRect && !this._measureClientRect(view)) return true;
 
         for (let i = 0, j = normalizedEvents.length; i < j; i++)
         {
@@ -1706,6 +1707,33 @@ export class EventSystem implements System<EventSystemOptions>
     }
 
     /**
+     * Measures a connected view element's client rect and caches it on the view in the shape
+     * {@link EventSystem#_pointerInsideRect} and {@link EventSystem#_mapPositionToPoint} read. The
+     * cache is invalidated on view resize, page scroll/resize, and at the start of each interaction
+     * (pointer-enter and gesture-down re-measure so a canvas moved with no scroll/resize event still
+     * maps against its live position).
+     * @param view - The view whose element to measure and cache
+     * @returns The freshly cached rect, or `null` for a disconnected element (no layout box to measure)
+     */
+    private _measureClientRect(view: EventsViewData): EventsViewData['clientRect']
+    {
+        const element = view.element;
+
+        if (!element.isConnected) return null;
+
+        const domRect = element.getBoundingClientRect();
+
+        view.clientRect = {
+            left: domRect.left,
+            top: domRect.top,
+            width: domRect.width,
+            height: domRect.height,
+        };
+
+        return view.clientRect;
+    }
+
+    /**
      * Maps coordinates from DOM/client space into a view's PixiJS coordinate space, using
      * that view's element rect and resolution.
      * @param point - The point to store the mapped coordinates in
@@ -1717,36 +1745,14 @@ export class EventSystem implements System<EventSystemOptions>
     {
         const element = view.element;
 
-        let rect = view.clientRect;
-
-        if (!rect)
-        {
-            if (element.isConnected)
-            {
-                // populate the cache lazily; invalidated on view resize, page scroll/resize, and at
-                // the start of each interaction (pointer-enter and gesture-down re-measure so a
-                // canvas moved with no scroll/resize event still maps against its live position)
-                const domRect = element.getBoundingClientRect();
-
-                rect = view.clientRect = {
-                    left: domRect.left,
-                    top: domRect.top,
-                    width: domRect.width,
-                    height: domRect.height,
-                };
-            }
-            else
-            {
-                // a disconnected element has no layout box; fall back without caching so a later
-                // reconnect re-measures. Byte-identical to the previous per-move computation.
-                rect = {
-                    left: 0,
-                    top: 0,
-                    width: (element as any).width,
-                    height: (element as any).height,
-                };
-            }
-        }
+        // a disconnected element has no layout box; fall back without caching so a later reconnect
+        // re-measures. Byte-identical to the previous per-move computation.
+        const rect = view.clientRect ?? this._measureClientRect(view) ?? {
+            left: 0,
+            top: 0,
+            width: (element as any).width,
+            height: (element as any).height,
+        };
 
         // a custom main element has no canvas source, so the main view follows the renderer resolution
         const resolution = view === this._views.mainView ? this.resolution : (view.source?.resolution ?? 1);

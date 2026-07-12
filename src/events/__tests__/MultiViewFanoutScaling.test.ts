@@ -269,10 +269,9 @@ describe('Multi-view EventSystem fan-out narrowing', () =>
 
         const viewC = getView(renderer, canvasC);
 
-        // warm C's client rect so the narrowing can use the cached-rect over-state check; enter then
-        // leave so C ends at rest (rect measured, no hover). A view whose rect is not yet measured is
-        // dispatched conservatively (the pointer could already be resting over it), so the skip only
-        // applies once the rect is known.
+        // put C at rest with the pointer away from it: enter to warm the rect, then leave so C ends
+        // hovered=false with a measured rect and no active gesture. The cold-rect path (rect null) is
+        // covered separately; there the rect is re-measured in place and the same geometry skip applies.
         enterCanvas(canvasC, 425, 25);
         document.dispatchEvent(pointerEvent('pointermove', 425, 25));
         leaveCanvas(canvasC, 425, 25);
@@ -299,7 +298,8 @@ describe('Multi-view EventSystem fan-out narrowing', () =>
 
         // viewB.over is false and its clientRect is null: no native pointerover fired because the
         // pointer was already resting inside B when the view was added. A document move over B's
-        // geometry (canvasB is at page 200,0,100x100) must still reach B despite the cold rect.
+        // geometry (canvasB is at page 200,0,100x100) re-measures the cold rect in place and, being
+        // inside it, still reaches B.
         const viewB = getView(renderer, canvasB);
         const mapEventB = jest.spyOn(viewB.boundary, 'mapEvent');
 
@@ -308,6 +308,40 @@ describe('Multi-view EventSystem fan-out narrowing', () =>
         expect(mapEventB).toHaveBeenCalled();
 
         mapEventB.mockRestore();
+        renderer.destroy();
+    });
+
+    it('re-measures and skips an at-rest view after a page scroll instead of dispatching to it', async () =>
+    {
+        const { renderer, canvasA, canvasC } = await setupMultiView();
+
+        renderer.events.features.globalMove = false;
+
+        const viewC = getView(renderer, canvasC);
+
+        // warm C's rect, then leave so it comes to rest with the pointer away from it
+        enterCanvas(canvasC, 425, 25);
+        document.dispatchEvent(pointerEvent('pointermove', 425, 25));
+        leaveCanvas(canvasC, 425, 25);
+
+        // a page scroll invalidates every cached rect. Before the fix the next move cold-started C
+        // (clientRect null) and dispatched to it unconditionally; now C is re-measured in place and,
+        // because the pointer is over A and outside C, its scene hit-test is skipped.
+        window.dispatchEvent(new Event('scroll'));
+
+        const mapEventC = jest.spyOn(viewC.boundary, 'mapEvent');
+        const rectC = jest.spyOn(canvasC, 'getBoundingClientRect');
+
+        enterCanvas(canvasA, 25, 25);
+        document.dispatchEvent(pointerEvent('pointermove', 25, 25));
+
+        // the rect is re-measured once (dispatch would have paid the same getBoundingClientRect), but
+        // the boundary hit-test never runs for the at-rest view
+        expect(rectC.mock.calls.length).toBe(1);
+        expect(mapEventC).not.toHaveBeenCalled();
+
+        mapEventC.mockRestore();
+        rectC.mockRestore();
         renderer.destroy();
     });
 

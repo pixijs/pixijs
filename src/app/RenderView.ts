@@ -1,6 +1,6 @@
 import { DOMAdapter } from '../environment/adapter';
-import { CanvasSource } from '../rendering/renderers/shared/texture/sources/CanvasSource';
 import { Container } from '../scene/container/Container';
+import { warn } from '../utils/logging/warn';
 import { ResizeController } from './ResizeController';
 
 import type { ColorSource } from '../color/Color';
@@ -77,7 +77,9 @@ export interface RenderViewOptions<R extends Renderer = Renderer>
     roundPixels?: boolean;
     /**
      * Whether the view's canvas is cleared before each render. Defaults to the renderer's
-     * clearBeforeRender. Set `false` to accumulate draws across frames.
+     * clearBeforeRender. Setting `false` skips the pre-render clear, but a secondary view presents
+     * from a shared (WebGL) or transient (WebGPU) surface, so its previous-frame pixels are not
+     * preserved and draws do not accumulate across frames.
      */
     clear?: boolean;
 }
@@ -123,8 +125,6 @@ export class RenderView<R extends Renderer = Renderer>
     private _rendererView: RendererView | null = null;
     /** Whether this view created its own canvas (and so should detach it on destroy). */
     private readonly _ownsCanvas: boolean;
-    private _resolution: number;
-    private readonly _autoDensity: boolean;
     /**
      * Resolved per-render clear flag forwarded into `renderer.render`. `undefined` defers to the
      * renderer's `clearBeforeRender`.
@@ -158,9 +158,21 @@ export class RenderView<R extends Renderer = Renderer>
         this.clearColor = options.clearColor;
         this.enabled = options.enabled ?? true;
 
-        this._resolution = options.resolution ?? renderer.resolution;
-        this._autoDensity = options.autoDensity ?? renderer.view.autoDensity;
         this._clear = options.clear;
+
+        // #if _DEBUG
+        if (options.clear === false && !isPrimary)
+        {
+            const context = (renderer as Renderer & { context?: { multiView?: boolean } }).context;
+
+            if (context && 'multiView' in context && context.multiView)
+            {
+                warn('RenderView: clear:false does not accumulate draws for a secondary view. Under WebGL '
+                    + 'multiView every canvas presents by blitting from a shared context canvas, so this '
+                    + 'view\'s previous-frame pixels are not preserved.');
+            }
+        }
+        // #endif
 
         // we deliberately do NOT render on auto-resize: a secondary view's render would leave
         // Renderer#lastObjectRendered pointing at this view's stage instead of the primary's,
@@ -175,8 +187,8 @@ export class RenderView<R extends Renderer = Renderer>
         {
             this._rendererView = renderer.addView({
                 canvas: this.canvas,
-                resolution: this._resolution,
-                autoDensity: this._autoDensity,
+                resolution: options.resolution,
+                autoDensity: options.autoDensity,
                 events: options.events,
                 accessibility: options.accessibility,
                 dom: options.dom,
@@ -268,15 +280,9 @@ export class RenderView<R extends Renderer = Renderer>
             return;
         }
 
-        this._resolution = resolution ?? this._resolution;
-
-        const source = this._renderer.renderTarget.getRenderTarget(this.canvas).colorTexture;
-
-        if (source instanceof CanvasSource)
-        {
-            source.autoDensity = this._autoDensity;
-            source.resize(width, height, this._resolution);
-        }
+        // a secondary view always registers a renderer view in the constructor before this runs;
+        // CanvasSource.resize defaults an omitted resolution to the source's current one
+        this._rendererView!.source.resize(width, height, resolution);
     }
 
     /**
@@ -286,6 +292,10 @@ export class RenderView<R extends Renderer = Renderer>
      */
     public destroy(stageDestroyOptions?: DestroyOptions): void
     {
+        // a directly-destroyed view may still be in Application#_views; disabling it first means the
+        // next Application.render skips it instead of dereferencing the nulled stage/renderer below
+        this.enabled = false;
+
         this._resizeController.destroy();
 
         // a canvas this view created is fully owned, so its source must be destroyed too; capture it

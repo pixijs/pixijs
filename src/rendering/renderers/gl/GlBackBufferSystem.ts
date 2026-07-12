@@ -76,6 +76,15 @@ export class GlBackBufferSystem implements System<GlBackBufferOptions>
     /** if true, the back buffer is used */
     public useBackBuffer = false;
 
+    /**
+     * One back-buffer texture per target color source (keyed by source identity). With multiView the
+     * renderer alternates between differently-sized views every frame; a single shared texture would
+     * ping-pong sizes and destroy/recreate its GL texture (+ MSAA renderbuffers) each render.
+     */
+    private readonly _backBufferTextures: Map<TextureSource, Texture> = new Map();
+    /** Per-source 'destroy' handlers, kept so the map entry can be evicted and the listener detached. */
+    private readonly _sourceDestroyHandlers: Map<TextureSource, () => void> = new Map();
+    /** The back-buffer texture selected for the current render (its source is presented in renderEnd). */
     private _backBufferTexture: Texture;
     private readonly _renderer: WebGLRenderer;
     private _targetTexture: TextureSource;
@@ -164,8 +173,9 @@ export class GlBackBufferSystem implements System<GlBackBufferOptions>
             }
 
             this._targetTexture = renderTarget.colorTexture;
+            this._backBufferTexture = this._getBackBufferTexture(renderTarget.colorTexture);
 
-            options.target = this._getBackBufferTexture(renderTarget.colorTexture);
+            options.target = this._backBufferTexture;
         }
     }
 
@@ -200,32 +210,79 @@ export class GlBackBufferSystem implements System<GlBackBufferOptions>
 
     private _getBackBufferTexture(targetSourceTexture: TextureSource)
     {
-        this._backBufferTexture = this._backBufferTexture || new Texture({
-            source: new TextureSource({
-                width: targetSourceTexture.width,
-                height: targetSourceTexture.height,
-                resolution: targetSourceTexture._resolution,
-                antialias: this._antialias,
-            }),
-        });
+        let backBufferTexture = this._backBufferTextures.get(targetSourceTexture);
+
+        if (!backBufferTexture)
+        {
+            backBufferTexture = new Texture({
+                source: new TextureSource({
+                    width: targetSourceTexture.width,
+                    height: targetSourceTexture.height,
+                    resolution: targetSourceTexture._resolution,
+                    antialias: this._antialias,
+                }),
+            });
+
+            this._backBufferTextures.set(targetSourceTexture, backBufferTexture);
+
+            // evict this entry when the view's source is destroyed (removeView / renderer destroy), so a
+            // long-lived renderer cycling through views does not retain a back buffer per dead source
+            const onSourceDestroy = (): void => this._releaseBackBufferTexture(targetSourceTexture);
+
+            targetSourceTexture.once('destroy', onSourceDestroy);
+            this._sourceDestroyHandlers.set(targetSourceTexture, onSourceDestroy);
+        }
 
         // this will not resize if its the same size already! No extra check required
-        this._backBufferTexture.source.resize(
+        backBufferTexture.source.resize(
             targetSourceTexture.width,
             targetSourceTexture.height,
             targetSourceTexture._resolution,
         );
 
-        return this._backBufferTexture;
+        return backBufferTexture;
+    }
+
+    private _releaseBackBufferTexture(source: TextureSource): void
+    {
+        const backBufferTexture = this._backBufferTextures.get(source);
+
+        if (!backBufferTexture) return;
+
+        const onSourceDestroy = this._sourceDestroyHandlers.get(source);
+
+        if (onSourceDestroy)
+        {
+            source.off('destroy', onSourceDestroy);
+            this._sourceDestroyHandlers.delete(source);
+        }
+
+        backBufferTexture.destroy();
+        this._backBufferTextures.delete(source);
+
+        if (this._backBufferTexture === backBufferTexture)
+        {
+            this._backBufferTexture = null;
+        }
     }
 
     /** destroys the back buffer */
     public destroy()
     {
-        if (this._backBufferTexture)
+        this._backBufferTextures.forEach((backBufferTexture, source) =>
         {
-            this._backBufferTexture.destroy();
-            this._backBufferTexture = null;
-        }
+            const onSourceDestroy = this._sourceDestroyHandlers.get(source);
+
+            if (onSourceDestroy)
+            {
+                source.off('destroy', onSourceDestroy);
+            }
+
+            backBufferTexture.destroy();
+        });
+
+        this._backBufferTextures.clear();
+        this._sourceDestroyHandlers.clear();
+        this._backBufferTexture = null;
     }
 }

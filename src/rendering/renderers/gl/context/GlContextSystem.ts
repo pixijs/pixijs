@@ -65,13 +65,15 @@ export interface ContextSystemOptions
      * Whether to enable multi-view rendering, where one renderer drives multiple canvases.
      * Set to true when rendering to multiple canvases on the dom.
      *
-     * Pass each extra canvas as the `target` of a render call:
+     * Pass each extra canvas as the `target` of a render call to draw to it:
      * ```js
      * renderer.render({ container: sceneA, target: canvasA });
      * renderer.render({ container: sceneB, target: canvasB });
      * ```
-     * Interaction events work on every canvas rendered to - each canvas hit-tests
-     * against the container last rendered to it.
+     * Rendering to a `target` only draws to that canvas. To also give a secondary
+     * canvas its own interaction, accessibility, and DOM overlays, register it with
+     * `renderer.addView({ canvas })` (or `app.addView(...)` at the application layer).
+     * Each registered canvas then hit-tests against the container last rendered to it.
      *
      * This option only exists on the WebGL renderer; the WebGPU renderer can always
      * render to multiple canvases and ignores this option.

@@ -154,12 +154,17 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
      * @param {RenderTarget} renderTarget - the render target to clear
      * @param {CLEAR_OR_BOOL} clear - the clear mode to use. Can be true or a CLEAR number 'COLOR | DEPTH | STENCIL' 0b111*
      * @param {RgbaArray} [clearColor] - the color to clear to
+     * @param {boolean} [standalone] - true when clearing outside a render pass (no live binding / encoder)
      * @param {Rectangle} [viewport] - the viewport to use
+     * @param {number} [mipLevel] - the mip level to clear (subresource)
+     * @param {number} [layer] - the array layer to clear (subresource)
      */
     clear(
         renderTarget: RenderTarget,
         clear: CLEAR_OR_BOOL,
         clearColor?: RgbaArray,
+        /** true when clearing outside a render pass (no live binding / command encoder) */
+        standalone?: boolean,
         /** the viewport to use */
         viewport?: Rectangle,
         /** mip level to clear (subresource) */
@@ -507,16 +512,7 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
 
         this.renderTarget = renderTarget;
 
-        const gpuRenderTarget = this.getGpuRenderTarget(renderTarget);
-
-        if (renderTarget.pixelWidth !== gpuRenderTarget.width
-            || renderTarget.pixelHeight !== gpuRenderTarget.height)
-        {
-            this.adaptor.resizeGpuRenderTarget(renderTarget);
-
-            gpuRenderTarget.width = renderTarget.pixelWidth;
-            gpuRenderTarget.height = renderTarget.pixelHeight;
-        }
+        this._syncGpuRenderTargetSize(renderTarget);
 
         const source = renderTarget.colorAttachments[0]?.texture || renderTarget.depthStencilAttachment?.texture;
         const viewport = this.viewport;
@@ -732,6 +728,13 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
     {
         if (!clear) return;
 
+        // _renderingDepth === 0 means no render is in progress, so there is no active render pass
+        // (and on WebGPU no command encoder). Computed once here and threaded into adaptor.clear so
+        // each adaptor stops inferring it ambiently: GL self-manages its FBO save/bind/restore and the
+        // MSAA resolve, WebGPU self-creates a command encoder. A mid-render clear (depth > 0) is never
+        // standalone, so the different-target branch below binds through the live pass instead.
+        const standalone = this._renderingDepth === 0;
+
         // an explicit target DIFFERENT from the currently-bound one must be bound first (the GL adaptor
         // clears whatever framebuffer is bound). A fresh target defaults to mip 0 / layer 0 - inheriting
         // the prior binding's mip/layer could bind it out of bounds. The currently-bound target (a
@@ -744,16 +747,19 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
             const targetMipLevel = mipLevel ?? 0;
             const targetLayer = layer ?? 0;
 
-            // _renderingDepth === 0 means no render is in progress, so there is no active render pass
-            // (and on WebGPU no command encoder). Binding here would call adaptor.startRenderPass ->
-            // commandEncoder.beginRenderPass on a null encoder and crash.
-            if (this._renderingDepth === 0)
+            // standalone: no live pass. Binding here would call adaptor.startRenderPass ->
+            // commandEncoder.beginRenderPass on a null encoder and crash, so clear directly instead.
+            if (standalone)
             {
                 const rt = this.getRenderTarget(target);
 
                 // grow the shared GL canvas for a resized secondary before the standalone clear so
                 // the viewport below is valid (no-op on renderers that draw directly)
                 this.adaptor.prerender?.(rt);
+
+                // bind() syncs this on a live render; a standalone clear skips bind(), so an
+                // antialiased / resized target would otherwise clear through a stale or 1x1 MSAA texture
+                this._syncGpuRenderTargetSize(rt);
 
                 // viewport = the requested subresource's full size (mip-adjusted, clamped to >= 1)
                 const source = rt.colorTexture;
@@ -765,7 +771,7 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
 
                 // clear the target directly without binding: the WebGPU adaptor self-creates an encoder
                 // via its standAlone path, and the GL adaptor binds (and restores) the target framebuffer
-                this.adaptor.clear(rt, clear, clearColor, viewport, targetMipLevel, targetLayer);
+                this.adaptor.clear(rt, clear, clearColor, standalone, viewport, targetMipLevel, targetLayer);
 
                 return;
             }
@@ -784,6 +790,7 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
                 rt,
                 clear,
                 clearColor,
+                standalone,
                 this.viewport,
                 targetMipLevel,
                 targetLayer
@@ -802,10 +809,31 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
             this.renderTarget,
             clear,
             clearColor,
+            standalone,
             this.viewport,
             mipLevel ?? this.mipLevel,
             layer ?? this.layer
         );
+    }
+
+    /**
+     * Syncs the gpu render target's cached size to the render target's current pixel dimensions,
+     * resizing the gpu render target (and its MSAA / attachment textures) when they diverge. Called
+     * from {@link bind} and from the standalone {@link clear} path (which skips bind()).
+     * @param renderTarget - the render target whose gpu render target should be resized to match
+     */
+    private _syncGpuRenderTargetSize(renderTarget: RenderTarget): void
+    {
+        const gpuRenderTarget = this.getGpuRenderTarget(renderTarget);
+
+        if (renderTarget.pixelWidth !== gpuRenderTarget.width
+            || renderTarget.pixelHeight !== gpuRenderTarget.height)
+        {
+            this.adaptor.resizeGpuRenderTarget(renderTarget);
+
+            gpuRenderTarget.width = renderTarget.pixelWidth;
+            gpuRenderTarget.height = renderTarget.pixelHeight;
+        }
     }
 
     protected contextChange(): void
@@ -1238,6 +1266,37 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         this._renderSurfaceToRenderTargetHash.delete(renderSurface);
         this._renderSurfaceToRenderTargetHash.delete(renderTarget.colorTexture);
 
+        this.invalidateGpuRenderTarget(renderTarget);
+
+        // RenderTarget.destroy leaves array/unmanaged color textures alone, so the
+        // user's CanvasSource (and canvas) is preserved
+        renderTarget.destroy();
+    }
+
+    /**
+     * Whether a gpu render target has already been created (and cached) for the given render target.
+     * Unlike {@link getGpuRenderTarget}, this never creates one on a miss.
+     * @param renderTarget - the render target to check
+     * @returns true if a gpu render target is cached for it
+     * @internal
+     */
+    public hasGpuRenderTarget(renderTarget: RenderTarget): boolean
+    {
+        return !!this._gpuRenderTargetHash[renderTarget.uid];
+    }
+
+    /**
+     * Destroys and evicts the cached gpu render target for the given render target, so the next
+     * {@link getGpuRenderTarget} re-initializes it from the render target's current source flags.
+     *
+     * Used when a source flag that is only read at gpu init (antialias / transparency) changes after
+     * the gpu render target was already created - e.g. {@link ViewSystem.addView} on a canvas that was
+     * already rendered to directly. A no-op when no gpu render target is cached.
+     * @param renderTarget - the render target whose gpu render target should be invalidated
+     * @internal
+     */
+    public invalidateGpuRenderTarget(renderTarget: RenderTarget): void
+    {
         const gpu = this._gpuRenderTargetHash[renderTarget.uid];
 
         if (gpu)
@@ -1245,10 +1304,6 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
             this._gpuRenderTargetHash[renderTarget.uid] = null;
             this.adaptor.destroyGpuRenderTarget(gpu);
         }
-
-        // RenderTarget.destroy leaves array/unmanaged color textures alone, so the
-        // user's CanvasSource (and canvas) is preserved
-        renderTarget.destroy();
     }
 
     private _initRenderTarget(renderSurface: RenderSurface): RenderTarget
