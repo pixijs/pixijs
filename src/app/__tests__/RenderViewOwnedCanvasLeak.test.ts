@@ -19,7 +19,7 @@ function attachedCanvas(width = 128, height = 128): HTMLCanvasElement
 async function ownedSourceDestroyedScenario(app: Application)
 {
     const view = app.addView({});
-    const source = view.rendererView.source;
+    const source = view.canvasView.source;
 
     expect(source).toBeInstanceOf(CanvasSource);
     expect(source.destroyed).toBe(false);
@@ -34,7 +34,7 @@ async function userSourcePreservedScenario(app: Application)
 {
     const ownCanvas = attachedCanvas();
     const view = app.addView({ canvas: ownCanvas });
-    const source = view.rendererView.source;
+    const source = view.canvasView.source;
 
     expect(source).toBeInstanceOf(CanvasSource);
     expect(source.destroyed).toBe(false);

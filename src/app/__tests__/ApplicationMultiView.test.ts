@@ -159,27 +159,27 @@ describe('Application multiView', () =>
         canvasB.remove();
     });
 
-    it('backs an added view with a RendererView registered on the renderer', async () =>
+    it('backs an added view with a CanvasView registered on the renderer', async () =>
     {
         const app = await getApp({ multiView: true });
         const canvasB = attachedCanvas();
         const view = app.addView({ canvas: canvasB });
 
-        expect(view.rendererView).not.toBeNull();
-        expect(app.renderer.views).toContain(view.rendererView);
-        expect(view.rendererView.canvas).toBe(canvasB);
-        expect(view.rendererView.isMain).toBe(false);
+        expect(view.canvasView).not.toBeNull();
+        expect(app.renderer.views).toContain(view.canvasView);
+        expect(view.canvasView.canvas).toBe(canvasB);
+        expect(view.canvasView.isMain).toBe(false);
 
         app.destroy(true, true);
         canvasB.remove();
     });
 
-    it('tears the RendererView down across systems when removed from the renderer', async () =>
+    it('tears the CanvasView down across systems when removed from the renderer', async () =>
     {
         const app = await getApp({ multiView: true });
         const canvasB = attachedCanvas();
         const view = app.addView({ canvas: canvasB });
-        const rendererView = view.rendererView;
+        const canvasView = view.canvasView;
 
         const events = app.renderer.events;
         const accessibility = app.renderer.accessibility;
@@ -188,9 +188,9 @@ describe('Application multiView', () =>
         expect(events['_views'].get(canvasB)).toBeTruthy();
         expect(accessibility['_tracker'].get(canvasB)).toBeTruthy();
 
-        app.renderer.removeView(rendererView);
+        app.renderer.removeView(canvasView);
 
-        expect(app.renderer.views).not.toContain(rendererView);
+        expect(app.renderer.views).not.toContain(canvasView);
         expect(events['_views'].get(canvasB)).toBeFalsy();
         expect(accessibility['_tracker'].get(canvasB)).toBeFalsy();
 
@@ -204,11 +204,11 @@ describe('Application multiView', () =>
         const canvasB = attachedCanvas(100, 100);
         const view = app.addView({ canvas: canvasB, resolution: 2 });
 
-        const source = view.rendererView.source;
+        const source = view.canvasView.source;
 
         expect(source).toBeInstanceOf(CanvasSource);
         expect(source.resolution).toBe(2);
-        expect(view.rendererView.resolution).toBe(2);
+        expect(view.canvasView.resolution).toBe(2);
         // the renderer's own main view stays at the renderer resolution
         expect(app.renderer.resolution).toBe(1);
 

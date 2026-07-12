@@ -73,7 +73,7 @@ async function setupMultiView()
 
     const canvasB = createCanvas(200, 0);
 
-    // secondary canvases are registered explicitly through the renderer view registry
+    // secondary canvases are registered explicitly through the canvas view registry
     const viewB = renderer.addView({ canvas: canvasB });
 
     const sceneA = createScene();

@@ -9,7 +9,7 @@ import { CanvasPool } from '../texture/CanvasPool';
 import { CanvasSource } from '../texture/sources/CanvasSource';
 import { TexturePool } from '../texture/TexturePool';
 import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
-import { RendererView } from './RendererView';
+import { CanvasView } from './CanvasView';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { TypeOrBool } from '../../../../scene/container/destroyTypes';
@@ -17,7 +17,7 @@ import type { RenderSurface } from '../renderTarget/RenderTargetSystem';
 import type { RenderOptions } from '../system/AbstractRenderer';
 import type { System } from '../system/System';
 import type { Texture } from '../texture/Texture';
-import type { RendererViewOptions } from './RendererView';
+import type { CanvasViewOptions } from './CanvasView';
 
 /**
  * Options passed to the ViewSystem
@@ -44,7 +44,7 @@ export interface ViewSystemOptions
      */
     view?: ICanvas;
     /**
-     * Resizes renderer view in CSS pixels to allow for resolutions other than 1.
+     * Resizes canvas view in CSS pixels to allow for resolutions other than 1.
      *
      * This is only supported for HTMLCanvasElement
      * and will be ignored if the canvas is an OffscreenCanvas.
@@ -128,24 +128,24 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
     public texture: Texture<CanvasSource>;
 
     /** The registered views, with the main view always at index 0. */
-    private readonly _views: RendererView[] = [];
+    private readonly _views: CanvasView[] = [];
 
     /**
-     * Maps each view's {@link CanvasSource} to its {@link RendererView} so {@link viewForTarget} can
+     * Maps each view's {@link CanvasSource} to its {@link CanvasView} so {@link viewForTarget} can
      * resolve a canvas-backed target in O(1). Kept in sync with {@link _views} at every add/remove.
      */
-    private readonly _viewBySource = new Map<CanvasSource, RendererView>();
+    private readonly _viewBySource = new Map<CanvasSource, CanvasView>();
     /** Per-view source 'destroy' handlers, kept so removeView/destroy can detach them and not leak listeners. */
-    private readonly _viewDestroyHandlers: Map<RendererView, () => void> = new Map();
+    private readonly _viewDestroyHandlers: Map<CanvasView, () => void> = new Map();
 
     /** The on-screen view the current frame renders to, resolved at prerender. */
-    private _activeView: RendererView | null = null;
+    private _activeView: CanvasView | null = null;
 
     /** The renderer's `_roundPixels` flag saved at prerender and restored at postrender. */
     private _savedRoundPixels: 0 | 1 = 0;
 
     /** The views the renderer presents to. The main view is always at index 0. */
-    public get views(): readonly RendererView[]
+    public get views(): readonly CanvasView[]
     {
         return this._views;
     }
@@ -154,7 +154,7 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
      * The on-screen view this frame renders to, resolved at prerender before the WebGL back buffer
      * swaps `options.target`. Null for offscreen / RenderTexture targets.
      */
-    public get activeView(): RendererView | null
+    public get activeView(): CanvasView | null
     {
         return this._activeView;
     }
@@ -263,7 +263,7 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         // so emitting here lets them set up their state for the main canvas. The main view always
         // participates in every per-canvas system, matching the hardcoded events/dom flags; the
         // accessibility module's enabledByDefault/activateOnTab still control activation timing.
-        const mainView = new RendererView({
+        const mainView = new CanvasView({
             canvas: this.canvas,
             source: this.texture.source,
             renderTarget: this.renderTarget,
@@ -307,7 +307,7 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
      * @returns The registered view.
      * @advanced
      */
-    public addView(options: RendererViewOptions): RendererView
+    public addView(options: CanvasViewOptions): CanvasView
     {
         const resolution = options.resolution ?? this.resolution;
         const autoDensity = options.autoDensity ?? this.autoDensity;
@@ -356,7 +356,7 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
 
         source.resize(source.width, source.height, resolution);
 
-        const view = new RendererView({
+        const view = new CanvasView({
             canvas,
             source,
             renderTarget,
@@ -369,7 +369,7 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         });
 
         // store the handler so removeView/destroy can detach it; an inline arrow would leak one listener
-        // (and a retained RendererView closure) per add/remove cycle on a surviving user canvas
+        // (and a retained CanvasView closure) per add/remove cycle on a surviving user canvas
         const onSourceDestroy = (): void => this.removeView(view);
 
         source.once('destroy', onSourceDestroy);
@@ -389,7 +389,7 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
      * @param view - The view to remove.
      * @advanced
      */
-    public removeView(view: RendererView): void
+    public removeView(view: CanvasView): void
     {
         // the main view lives for the renderer's lifetime (its render target is never released and its
         // EventsTicker listener is only torn down by the full destroy() path); removing it would fire
@@ -462,7 +462,7 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
      * @returns The matching view, or null when the target is not a registered on-screen canvas.
      * @internal
      */
-    public viewForTarget(target: RenderSurface): RendererView | null
+    public viewForTarget(target: RenderSurface): CanvasView | null
     {
         // main view fast path - the renderer's own render target, no lookup needed
         if (target === this.renderTarget)

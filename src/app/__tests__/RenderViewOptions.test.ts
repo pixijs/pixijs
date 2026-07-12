@@ -15,7 +15,7 @@ function attachedCanvas(width = 128, height = 128): HTMLCanvasElement
 
 describe('RenderView options', () =>
 {
-    it('forwards antialias/transparent/roundPixels onto the renderer view', async () =>
+    it('forwards antialias/transparent/roundPixels onto the canvas view', async () =>
     {
         const app = await getApp({ multiView: true });
         const canvasB = attachedCanvas();
@@ -27,9 +27,9 @@ describe('RenderView options', () =>
             roundPixels: true,
         });
 
-        expect(view.rendererView.antialias).toBe(true);
-        expect(view.rendererView.transparent).toBe(true);
-        expect(view.rendererView.roundPixels).toBe(true);
+        expect(view.canvasView.antialias).toBe(true);
+        expect(view.canvasView.transparent).toBe(true);
+        expect(view.canvasView.roundPixels).toBe(true);
 
         app.destroy(true, true);
         canvasB.remove();
@@ -42,9 +42,9 @@ describe('RenderView options', () =>
 
         const view = app.addView({ canvas: canvasB });
 
-        expect(view.rendererView.antialias).toBe(false);
-        expect(view.rendererView.transparent).toBe(false);
-        expect(view.rendererView.roundPixels).toBe(false);
+        expect(view.canvasView.antialias).toBe(false);
+        expect(view.canvasView.transparent).toBe(false);
+        expect(view.canvasView.roundPixels).toBe(false);
 
         app.destroy(true, true);
         canvasB.remove();
