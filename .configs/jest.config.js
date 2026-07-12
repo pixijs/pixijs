@@ -10,9 +10,7 @@ module.exports = {
     globalSetup: '<rootDir>/scripts/jest/jest-global-setup.ts',
     globalTeardown: '<rootDir>/scripts/jest/jest-global-teardown.ts',
     transform: {
-        // bundles worker entry files (imports included) before wrapping them as blob Workers;
-        // the stock @pixi/webworker-plugins/lib/jest-transform breaks workers that have value imports
-        '\\.worker.ts$': '<rootDir>/scripts/jest/jest-worker-transform.js',
+        '\\.worker.ts$': '@pixi/webworker-plugins/lib/jest-transform',
         '\\.vert$': 'jest-raw-loader',
         '\\.frag$': 'jest-raw-loader',
         '\\.wgsl$': 'jest-raw-loader',
