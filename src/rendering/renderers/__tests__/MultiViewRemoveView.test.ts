@@ -25,12 +25,14 @@ async function releaseScenario(renderer: Renderer)
 
     const renderTarget = renderer.renderTarget;
     const rt = renderTarget.getRenderTarget(canvas);
+    // capture before release: a destroyed render target has no colorTexture
+    const source = rt.colorTexture;
 
     const destroySpy = jest.spyOn(renderer.renderTarget.adaptor, 'destroyGpuRenderTarget');
 
     renderTarget.releaseRenderTarget(canvas);
 
-    return { canvas, rt, destroySpy };
+    return { canvas, rt, source, destroySpy };
 }
 
 describe('MultiView releaseRenderTarget', () =>
@@ -38,15 +40,15 @@ describe('MultiView releaseRenderTarget', () =>
     it('releases the gpu render target and both hash entries while preserving the source', async () =>
     {
         const renderer = await getWebGLRenderer({ multiView: true });
-        const { canvas, rt, destroySpy } = await releaseScenario(renderer);
+        const { canvas, rt, source, destroySpy } = await releaseScenario(renderer);
 
         const hash = renderer.renderTarget['_renderSurfaceToRenderTargetHash'];
 
         expect(destroySpy).toHaveBeenCalledTimes(1);
         expect(renderer.renderTarget['_gpuRenderTargetHash'][rt.uid]).toBeNull();
         expect(hash.has(canvas)).toBe(false);
-        expect(hash.has(rt.colorTexture)).toBe(false);
-        expect(rt.colorTexture.source.destroyed).toBe(false);
+        expect(hash.has(source)).toBe(false);
+        expect(source.destroyed).toBe(false);
 
         const fresh = renderer.renderTarget.getRenderTarget(canvas);
 
@@ -74,15 +76,15 @@ describe('MultiView releaseRenderTarget (WebGPU)', () =>
     itLocalOnly('releases the gpu render target and both hash entries while preserving the source', async () =>
     {
         const renderer = await getWebGPURenderer({});
-        const { canvas, rt, destroySpy } = await releaseScenario(renderer);
+        const { canvas, rt, source, destroySpy } = await releaseScenario(renderer);
 
         const hash = renderer.renderTarget['_renderSurfaceToRenderTargetHash'];
 
         expect(destroySpy).toHaveBeenCalledTimes(1);
         expect(renderer.renderTarget['_gpuRenderTargetHash'][rt.uid]).toBeNull();
         expect(hash.has(canvas)).toBe(false);
-        expect(hash.has(rt.colorTexture)).toBe(false);
-        expect(rt.colorTexture.source.destroyed).toBe(false);
+        expect(hash.has(source)).toBe(false);
+        expect(source.destroyed).toBe(false);
 
         const fresh = renderer.renderTarget.getRenderTarget(canvas);
 
