@@ -184,9 +184,14 @@ export class Application<R extends Renderer = Renderer>
 
     /**
      * The application's primary view: the {@link RenderView} wrapping the renderer's own canvas and
-     * the main {@link Application#stage stage}. Available after {@link Application#init}.
+     * the main {@link Application#stage stage}, or null before {@link Application#init}. This is always
+     * `views[0]`; it is derived from the view list so the two cannot drift apart.
+     * @readonly
      */
-    public primaryView: RenderView<R> = null;
+    get primaryView(): RenderView<R> | null
+    {
+        return this._views[0] ?? null;
+    }
 
     /**
      * The root display container for your application.
@@ -297,8 +302,9 @@ export class Application<R extends Renderer = Renderer>
 
         // the primary view wraps the renderer's own canvas and the main stage, so a single-view
         // application renders byte-for-byte identically to a classic single-canvas Application
-        this.primaryView = new RenderView(this.renderer, { canvas: this.renderer.canvas, stage: this.stage }, true);
-        this._views = [this.primaryView];
+        const primary = new RenderView(this.renderer, { canvas: this.renderer.canvas, stage: this.stage }, true);
+
+        this._views = [primary];
 
         // install plugins here
         Application._plugins.forEach((plugin) =>
@@ -413,12 +419,13 @@ export class Application<R extends Renderer = Renderer>
 
     /**
      * Removes a view previously added with {@link Application#addView}, stopping it from rendering.
-     * Its stage is left intact (destroy it yourself if needed). The {@link Application#primaryView}
-     * cannot be removed.
+     * The view's stage is preserved unless `stageDestroyOptions` is passed, in which case it is
+     * destroyed with those options. The {@link Application#primaryView} cannot be removed.
      * @param view - the view to remove
+     * @param stageDestroyOptions - if provided, the view's stage is destroyed with these options
      * @returns whether the view was removed
      */
-    public removeView(view: RenderView<R>): boolean
+    public removeView(view: RenderView<R>, stageDestroyOptions?: DestroyOptions): boolean
     {
         if (view === this.primaryView)
         {
@@ -434,7 +441,7 @@ export class Application<R extends Renderer = Renderer>
         if (index === -1) return false;
 
         this._views.splice(index, 1);
-        view.destroy();
+        view.destroy(stageDestroyOptions);
 
         return true;
     }
@@ -576,10 +583,11 @@ export class Application<R extends Renderer = Renderer>
             this._views[i].destroy(options);
         }
 
+        // capture the primary stage before the primary view is destroyed and the view list cleared,
+        // since the stage getter reads it from _views[0]
         const stage = this.stage;
 
-        this.primaryView?.destroy();
-        this.primaryView = null;
+        this._views[0]?.destroy();
         this._views = [];
 
         stage.destroy(options);

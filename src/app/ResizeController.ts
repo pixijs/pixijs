@@ -1,5 +1,3 @@
-import { measureResizeTarget } from './measureResizeTarget';
-
 /**
  * A render-agnostic, throttled auto-resize controller. It listens for `resize` events on a
  * {@link Window} or {@link HTMLElement} target, coalesces them to a single resize per animation
@@ -101,9 +99,27 @@ export class ResizeController
             return;
         }
 
-        const { width, height } = measureResizeTarget(this._resizeTo);
+        const { width, height } = this._measureTarget(this._resizeTo);
 
         this._doResize(width, height);
+    }
+
+    /**
+     * Measures the CSS-pixel size of the resize target. The window is measured with
+     * `innerWidth`/`innerHeight`; any other element with `clientWidth`/`clientHeight`.
+     * @param target - the window or element being resized to
+     * @returns the target's width and height in CSS pixels
+     */
+    private _measureTarget(target: Window | HTMLElement): { width: number; height: number }
+    {
+        if (target === globalThis.window)
+        {
+            return { width: globalThis.innerWidth, height: globalThis.innerHeight };
+        }
+
+        const { clientWidth, clientHeight } = target as HTMLElement;
+
+        return { width: clientWidth, height: clientHeight };
     }
 
     /**

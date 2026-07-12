@@ -67,6 +67,22 @@ describe('Standalone clear to target (WebGL)', () =>
 
 describe('Standalone clear to target (WebGPU)', () =>
 {
+    itLocalOnly('does not throw and reads the clear color before the first render', async () =>
+    {
+        // commandEncoder starts null (not undefined), so a clear before ANY render is recognised as
+        // standalone and routes through adaptor.clear (self-creates an encoder) instead of crashing in
+        // beginRenderPass on an undefined encoder.
+        const renderer = await getWebGPURenderer({ width: 16, height: 16 });
+
+        const secondary = createCanvas(8, 8);
+
+        expect(() => renderer.clear({ target: secondary, clearColor: [1, 0, 0, 1] })).not.toThrow();
+
+        expect(readPixel(secondary, 4, 4)).toEqual([255, 0, 0, 255]);
+
+        renderer.destroy();
+    });
+
     itLocalOnly('does not throw and reads the clear color between frames', async () =>
     {
         // WebGPU draws directly to its targets and nulls the command encoder between frames (in

@@ -157,7 +157,8 @@ export class DOMPipe implements RenderPipe<DOMContainer>
      */
     public prerender(options: RenderOptions): void
     {
-        this._tracker.setActive(options);
+        // records the frame's active view (resolved by ViewSystem) and its rootContainer
+        this._tracker.setActive(this._renderer.view.activeView, options.container);
     }
 
     /** Lays out the DOM elements belonging to the canvas that was just rendered. */

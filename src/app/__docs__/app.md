@@ -126,8 +126,10 @@ which registers a canvas with the renderer for per-canvas events, accessibility,
 `resizeTo`, and `enabled`. Reach for `renderer.addView` directly only when working with a bare renderer (no
 `Application`).
 
-Per-view `antialias` and `alpha` are not offered. On WebGL these are context-global, fixed when the renderer
-is created, so they're set once via the renderer init options and shared by every view.
+Views also accept per-view `antialias`, `transparent` (canvas alpha), and `roundPixels`. On WebGPU,
+`antialias` and `transparent` configure each secondary canvas surface independently (MSAA and alphaMode);
+on WebGL they're context-global, fixed when the renderer is created, so secondary views share the
+renderer's settings.
 
 ---
 

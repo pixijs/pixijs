@@ -1,7 +1,7 @@
 // description: This example demonstrates one renderer driving multiple interactive canvases using multiView
 import { autoDetectRenderer, Container, Graphics, Text, Ticker } from 'pixi.js';
 
-import type { FederatedPointerEvent, FederatedWheelEvent, Renderer } from 'pixi.js';
+import type { FederatedPointerEvent, FederatedWheelEvent, Rectangle, Renderer } from 'pixi.js';
 
 (async () => {
   const VIEWS = [
@@ -58,7 +58,15 @@ import type { FederatedPointerEvent, FederatedWheelEvent, Renderer } from 'pixi.
       antialias: true,
     });
 
-    const scenes = VIEWS.map((_, i) => buildScene(i));
+    // Drawing to a canvas and interacting with it are separate concerns. The main canvas is already
+    // registered as the renderer's first view; the extra canvases must be registered with addView so
+    // the event system builds per-canvas state for them. Without this, only the main canvas fires
+    // pointer and wheel events.
+    const views = canvases.map((canvas, i) =>
+      (i === 0 ? renderer.views[0] : renderer.addView({ canvas })),
+    );
+
+    const scenes = views.map((view, i) => buildScene(i, view.screen));
 
     ticker = new Ticker();
     ticker.add(() => {
@@ -73,7 +81,7 @@ import type { FederatedPointerEvent, FederatedWheelEvent, Renderer } from 'pixi.
     ticker.start();
   }
 
-  function buildScene(index: number) {
+  function buildScene(index: number, screen: Rectangle) {
     const stage = new Container();
     const view = VIEWS[index];
 
@@ -114,7 +122,7 @@ import type { FederatedPointerEvent, FederatedWheelEvent, Renderer } from 'pixi.
       dragging = true;
     });
     stage.eventMode = 'static';
-    stage.hitArea = renderer.screen;
+    stage.hitArea = screen;
     stage.on('pointermove', (e: FederatedPointerEvent) => {
       if (dragging) {
         shape.position.copyFrom(e.global);
