@@ -15,7 +15,7 @@ describe('RenderTargetSystem.clear mip/layer defaults', () =>
         expect(canvasSource.arrayLayerCount).toBe(1);
 
         // simulate the binding state a prior array-texture render leaves behind: a non-zero layer
-        renderer.renderTarget['layer'] = 3;
+        renderer.renderTarget['_bindState'].layer = 3;
 
         // clear with NO explicit mip/layer. Before the fix, clear defaulted mipLevel/layer to the
         // leftover this.mipLevel/this.layer (3), so binding the canvas threw

@@ -1183,6 +1183,13 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
 
         (this._renderer as null) = null;
 
+        // detach every source 'destroy' listener up front, while the render targets still have their
+        // attachments (a destroyed render target has no colorTexture); otherwise destroying the implicit
+        // canvas sources below re-enters releaseRenderTarget on already-destroyed targets
+        this._renderTargetDestroyHandlers.forEach((handler, renderTarget) =>
+            renderTarget.colorTexture?.off('destroy', handler));
+        this._renderTargetDestroyHandlers.clear();
+
         const destroyed = new Set<RenderTarget>();
         const canvasSources = new Set<CanvasSource>();
 
@@ -1194,7 +1201,9 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
             // (the main view and any addView canvas) are skipped so their canvases survive destroy.
             if (CanvasSource.test(key) && key !== viewCanvas)
             {
-                const source = renderTarget.colorTexture;
+                // a dual-keyed entry can visit a render target destroyed via its other key, whose
+                // attachments (and colorTexture) are already gone — its source was collected then
+                const source = renderTarget.colorAttachments ? renderTarget.colorTexture : null;
 
                 if (source instanceof CanvasSource && !source.destroyed && !viewSources.has(source))
                 {
@@ -1215,11 +1224,6 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         });
 
         this._renderSurfaceToRenderTargetHash.clear();
-
-        // detach any remaining source 'destroy' listeners; a user-supplied canvas can outlive the renderer
-        this._renderTargetDestroyHandlers.forEach((handler, renderTarget) =>
-            renderTarget.colorTexture?.off('destroy', handler));
-        this._renderTargetDestroyHandlers.clear();
 
         this._gpuRenderTargetHash = Object.create(null);
     }
@@ -1252,19 +1256,24 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
 
         if (!renderTarget) return;
 
+        // an already-destroyed render target has no attachments left, so its colorTexture is gone
+        const colorTexture: TextureSource | null = renderTarget.colorAttachments
+            ? renderTarget.colorTexture
+            : null;
+
         // detach the source 'destroy' listener _initRenderTarget added, so it does not accumulate when the
         // same canvas is released and re-initialized (addView/removeView churn re-runs _initRenderTarget)
         const onSourceDestroy = this._renderTargetDestroyHandlers.get(renderTarget);
 
         if (onSourceDestroy)
         {
-            renderTarget.colorTexture.off('destroy', onSourceDestroy);
+            colorTexture?.off('destroy', onSourceDestroy);
             this._renderTargetDestroyHandlers.delete(renderTarget);
         }
 
         // evict both the raw surface key and the coerced CanvasSource key
         this._renderSurfaceToRenderTargetHash.delete(renderSurface);
-        this._renderSurfaceToRenderTargetHash.delete(renderTarget.colorTexture);
+        if (colorTexture) this._renderSurfaceToRenderTargetHash.delete(colorTexture);
 
         this.invalidateGpuRenderTarget(renderTarget);
 
