@@ -27,11 +27,11 @@ describe('Application#addView duplicate canvas', () =>
         expect(app['_views'].length).toBe(2);
         expect(app['_views'][1]).toBe(v1);
 
-        // the renderer's canvas->view map resolves the duplicate canvas to v1's renderer view
-        const rendererView = app.renderer.view.viewForTarget(canvas);
+        // the renderer's canvas->view map resolves the duplicate canvas to v1's canvas view
+        const canvasView = app.renderer.view.viewForTarget(canvas);
 
-        expect(rendererView).not.toBeNull();
-        expect(rendererView).toBe(v1.rendererView);
+        expect(canvasView).not.toBeNull();
+        expect(canvasView).toBe(v1.canvasView);
 
         // removing the single owning view clears the map entry with no shared-source corruption
         expect(app.removeView(v1)).toBe(true);

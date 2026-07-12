@@ -51,7 +51,7 @@ describe('RenderView per-view roundPixels', () =>
 
         expect(appliedDuringRender).toBe(1);
         // and the active view resolved is the secondary canvas view
-        expect(app.renderer.view.activeView).toBe(view.rendererView);
+        expect(app.renderer.view.activeView).toBe(view.canvasView);
 
         spy.mockRestore();
         app.destroy(true, true);

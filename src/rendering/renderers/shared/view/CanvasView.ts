@@ -6,14 +6,14 @@ import type { RenderTarget } from '../renderTarget/RenderTarget';
 import type { CanvasSource } from '../texture/sources/CanvasSource';
 
 /**
- * Options used to register a canvas with a renderer as an additional {@link RendererView}.
+ * Options used to register a canvas with a renderer as an additional {@link CanvasView}.
  *
  * Every field is optional; {@link ViewSystem.addView} fills in the renderer-level defaults
  * (resolution, autoDensity) and the per-view participation defaults before constructing the view.
  * @category rendering
  * @advanced
  */
-export interface RendererViewOptions
+export interface CanvasViewOptions
 {
     /** The canvas this view presents to. When omitted a fresh canvas is created. */
     canvas?: ICanvas;
@@ -47,16 +47,16 @@ export interface RendererViewOptions
 }
 
 /**
- * A view is a single canvas a renderer presents to. The renderer always registers one view for its
- * main canvas, and {@link ViewSystem.addView} can register additional canvases so a single renderer
- * can drive several on-screen surfaces (multiView).
+ * A canvas view (`CanvasView`) is the record a renderer keeps per canvas it presents to. The renderer
+ * always registers one view for its main canvas, and {@link ViewSystem.addView} can register additional
+ * canvases so a single renderer can drive several on-screen surfaces (multiView).
  *
  * This is a plain, dependency-light data holder: per-canvas systems (events, accessibility, DOM)
  * subscribe to the `viewAdded`/`viewRemoved` runners and key their per-canvas state off the view.
  * @category rendering
  * @advanced
  */
-export class RendererView
+export class CanvasView
 {
     /** The canvas this view presents to. */
     public readonly canvas: ICanvas;
@@ -77,7 +77,7 @@ export class RendererView
     /** Whether coordinates are rounded to whole pixels when rendering this view. */
     public readonly roundPixels: boolean;
 
-    /** Cached CSS-pixel viewport rectangle returned by {@link RendererView#screen}. */
+    /** Cached CSS-pixel viewport rectangle returned by {@link CanvasView#screen}. */
     private readonly _screen: Rectangle;
 
     /**

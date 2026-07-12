@@ -10,7 +10,7 @@ import type { PointData } from '../maths/point/PointData';
 import type { RenderOptions } from '../rendering/renderers/shared/system/AbstractRenderer';
 import type { System } from '../rendering/renderers/shared/system/System';
 import type { CanvasSource } from '../rendering/renderers/shared/texture/sources/CanvasSource';
-import type { RendererView } from '../rendering/renderers/shared/view/RendererView';
+import type { CanvasView } from '../rendering/renderers/shared/view/CanvasView';
 import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
 import type { TrackingData } from './EventBoundaryTypes';
@@ -49,13 +49,13 @@ export interface EventsViewData extends TrackedViewData
     /** The cursor mode currently applied to the element. */
     currentCursor: string | null;
     /**
-     * The renderer view this data was registered for, or `null` for the main view when it is
+     * The canvas view this data was registered for, or `null` for the main view when it is
      * bound to a custom element via {@link EventSystem#setTargetElement}.
      */
-    rendererView: RendererView | null;
+    canvasView: CanvasView | null;
     /**
      * The event features resolved for this view at registration: the renderer-wide
-     * {@link EventSystem#features} overridden by the view's own {@link RendererView#eventFeatures}.
+     * {@link EventSystem#features} overridden by the view's own {@link CanvasView#eventFeatures}.
      */
     features: EventSystemFeatures;
     /**
@@ -582,7 +582,7 @@ export class EventSystem implements System<EventSystemOptions>
                         // the main view tracks the live value directly (its boundary is the rootBoundary)
                         if (view === this._views.mainView) return;
 
-                        const override = view.rendererView?.eventFeatures;
+                        const override = view.canvasView?.eventFeatures;
                         const resolved = override && featureKey in override ? !!override[featureKey] : resolvedValue;
 
                         view.features[featureKey] = resolved;
@@ -692,11 +692,11 @@ export class EventSystem implements System<EventSystemOptions>
      * state (scoped element listeners, event boundary, resolved features). For the main view this
      * performs the registration that {@link EventSystem#setTargetElement} used to do at init.
      *
-     * Does nothing if the view opted out of events via {@link RendererView#events}.
+     * Does nothing if the view opted out of events via {@link CanvasView#events}.
      * @param view - the view being registered
      * @ignore
      */
-    public viewAdded(view: RendererView): void
+    public viewAdded(view: CanvasView): void
     {
         // the tracker is participation-gated (v => v.events) and handles the main-view replacement
         // rule; the per-view event state is built in the create closure passed to the tracker
@@ -709,7 +709,7 @@ export class EventSystem implements System<EventSystemOptions>
      * @param view - the view being removed
      * @ignore
      */
-    public viewRemoved(view: RendererView): void
+    public viewRemoved(view: CanvasView): void
     {
         this._views.removeView(view);
     }
@@ -1396,7 +1396,7 @@ export class EventSystem implements System<EventSystemOptions>
                 this._views.removeByKey(element);
             }
 
-            // a custom main element has no RendererView; it references the live this.features so
+            // a custom main element has no CanvasView; it references the live this.features so
             // runtime feature toggles still take effect, matching single-canvas behavior. The
             // low-level register() path stores pre-built data without invoking create/destroy.
             const data = this._createView(
@@ -1414,11 +1414,11 @@ export class EventSystem implements System<EventSystemOptions>
 
     /**
      * Resolves a view's event features: the renderer-wide {@link EventSystem#features} (read as
-     * plain values) overridden by the view's own {@link RendererView#eventFeatures}. Resolved once
+     * plain values) overridden by the view's own {@link CanvasView#eventFeatures}. Resolved once
      * at registration, so later changes to the renderer-wide features do not retro-apply to a view.
-     * @param view - the renderer view to resolve features for
+     * @param view - the canvas view to resolve features for
      */
-    private _resolveViewFeatures(view: RendererView): EventSystemFeatures
+    private _resolveViewFeatures(view: CanvasView): EventSystemFeatures
     {
         return {
             ...(this.features as EventSystemFeatures),
@@ -1461,7 +1461,7 @@ export class EventSystem implements System<EventSystemOptions>
      * @param boundary - the event boundary that owns hit-testing for the view
      * @param isMain - whether this is the main view; it owns the ticker and the public pointer state
      * @param features - the resolved per-view event features
-     * @param rendererView - the renderer view this record is for, or null for a custom main element
+     * @param canvasView - the canvas view this record is for, or null for a custom main element
      * @param source - the canvas source backing the element, or null for a custom main element
      */
     private _createView(
@@ -1469,7 +1469,7 @@ export class EventSystem implements System<EventSystemOptions>
         boundary: EventBoundary,
         isMain: boolean,
         features: EventSystemFeatures,
-        rendererView: RendererView | null,
+        canvasView: CanvasView | null,
         source: CanvasSource | null,
     ): EventsViewData
     {
@@ -1479,7 +1479,7 @@ export class EventSystem implements System<EventSystemOptions>
             source,
             rootContainer: null,
             currentCursor: null,
-            rendererView,
+            canvasView,
             features,
             clientRect: null,
             onSourceResize: null,

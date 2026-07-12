@@ -8,7 +8,7 @@ import type { ICanvas } from '../environment/canvas/ICanvas';
 import type { EventSystemFeatures } from '../events/EventSystem';
 import type { Rectangle } from '../maths/shapes/Rectangle';
 import type { RenderOptions } from '../rendering/renderers/shared/system/AbstractRenderer';
-import type { RendererView } from '../rendering/renderers/shared/view/RendererView';
+import type { CanvasView } from '../rendering/renderers/shared/view/CanvasView';
 import type { Renderer } from '../rendering/renderers/types';
 import type { DestroyOptions } from '../scene/container/destroyTypes';
 
@@ -119,10 +119,10 @@ export class RenderView<R extends Renderer = Renderer>
 
     private _renderer: R;
     /**
-     * The renderer-level view registered for a secondary canvas, so per-canvas systems (events,
-     * accessibility, DOM) track it. Null for the primary view, whose renderer view is the main one.
+     * The canvas view registered for a secondary canvas, so per-canvas systems (events,
+     * accessibility, DOM) track it. Null for the primary view, whose canvas view is the main one.
      */
-    private _rendererView: RendererView | null = null;
+    private _canvasView: CanvasView | null = null;
     /** Whether this view created its own canvas (and so should detach it on destroy). */
     private readonly _ownsCanvas: boolean;
     /**
@@ -185,7 +185,7 @@ export class RenderView<R extends Renderer = Renderer>
         // accessibility, DOM) track it; the primary view reuses the renderer's main view
         if (!isPrimary)
         {
-            this._rendererView = renderer.addView({
+            this._canvasView = renderer.addView({
                 canvas: this.canvas,
                 resolution: options.resolution,
                 autoDensity: options.autoDensity,
@@ -211,12 +211,12 @@ export class RenderView<R extends Renderer = Renderer>
     }
 
     /**
-     * The renderer-level {@link RendererView} backing this view, or null for the primary view (whose
-     * renderer view is the renderer's auto-registered main view at `renderer.views[0]`).
+     * The renderer-level {@link CanvasView} backing this view, or null for the primary view (whose
+     * canvas view is the renderer's auto-registered main view at `renderer.views[0]`).
      */
-    public get rendererView(): RendererView | null
+    public get canvasView(): CanvasView | null
     {
-        return this._rendererView;
+        return this._canvasView;
     }
 
     /**
@@ -239,7 +239,7 @@ export class RenderView<R extends Renderer = Renderer>
      */
     public get screen(): Rectangle
     {
-        return this.isPrimary ? this._renderer.screen : (this._rendererView?.screen ?? this._renderer.screen);
+        return this.isPrimary ? this._renderer.screen : (this._canvasView?.screen ?? this._renderer.screen);
     }
 
     /** Renders this view's stage to its canvas. Called for every enabled view by {@link Application#render}. */
@@ -280,9 +280,9 @@ export class RenderView<R extends Renderer = Renderer>
             return;
         }
 
-        // a secondary view always registers a renderer view in the constructor before this runs;
+        // a secondary view always registers a canvas view in the constructor before this runs;
         // CanvasSource.resize defaults an omitted resolution to the source's current one
-        this._rendererView!.source.resize(width, height, resolution);
+        this._canvasView!.source.resize(width, height, resolution);
     }
 
     /**
@@ -299,13 +299,13 @@ export class RenderView<R extends Renderer = Renderer>
         this._resizeController.destroy();
 
         // a canvas this view created is fully owned, so its source must be destroyed too; capture it
-        // before removeView (which deliberately preserves user-supplied sources) nulls _rendererView
-        const ownedSource = this._ownsCanvas ? this._rendererView?.source : null;
+        // before removeView (which deliberately preserves user-supplied sources) nulls _canvasView
+        const ownedSource = this._ownsCanvas ? this._canvasView?.source : null;
 
-        if (this._rendererView)
+        if (this._canvasView)
         {
-            this._renderer.removeView(this._rendererView);
-            this._rendererView = null;
+            this._renderer.removeView(this._canvasView);
+            this._canvasView = null;
         }
 
         if (stageDestroyOptions !== undefined)

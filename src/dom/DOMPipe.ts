@@ -6,7 +6,7 @@ import { CanvasObserver } from './CanvasObserver';
 import type { InstructionSet } from '../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../rendering/renderers/shared/instructions/RenderPipe';
 import type { RenderOptions } from '../rendering/renderers/shared/system/AbstractRenderer';
-import type { RendererView } from '../rendering/renderers/shared/view/RendererView';
+import type { CanvasView } from '../rendering/renderers/shared/view/CanvasView';
 import type { TrackedViewData } from '../rendering/renderers/shared/view/ViewTracker';
 import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
@@ -103,7 +103,7 @@ export class DOMPipe implements RenderPipe<DOMContainer>
      * {@link DOMPipe#_domElement} as its overlay; secondary views get a fresh one.
      * @param view - The view that was added to the renderer.
      */
-    public viewAdded(view: RendererView): void
+    public viewAdded(view: CanvasView): void
     {
         this._tracker.addFromView(view);
     }
@@ -113,7 +113,7 @@ export class DOMPipe implements RenderPipe<DOMContainer>
      * destroy listeners are not needed here.
      * @param view - The view that was removed from the renderer.
      */
-    public viewRemoved(view: RendererView): void
+    public viewRemoved(view: CanvasView): void
     {
         this._tracker.removeView(view);
     }
@@ -270,7 +270,7 @@ export class DOMPipe implements RenderPipe<DOMContainer>
      * Builds the per-canvas overlay + observer for a view; the main view reuses the main overlay.
      * @param view
      */
-    private _createViewData(view: RendererView): DOMViewData
+    private _createViewData(view: CanvasView): DOMViewData
     {
         const overlay = view.isMain ? this._mainOverlay : this._createOverlay();
         const source = view.isMain ? null : view.source;

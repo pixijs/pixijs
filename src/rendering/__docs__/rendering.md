@@ -186,8 +186,8 @@ This removes all `EventEmitter` listeners attached to the renderer and nullifies
 - {@link WebGPURenderer}
 - {@link CanvasRenderer}
 - {@link autoDetectRenderer}
-- {@link RendererView}
-  - {@link RendererViewOptions}
+- {@link CanvasView}
+  - {@link CanvasViewOptions}
 - {@link ExtractSystem}
 - {@link GenerateTextureSystem}
 - {@link RenderTexture}

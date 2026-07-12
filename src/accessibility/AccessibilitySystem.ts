@@ -12,7 +12,7 @@ import type { Rectangle } from '../maths/shapes/Rectangle';
 import type { RenderOptions } from '../rendering/renderers/shared/system/AbstractRenderer';
 import type { System } from '../rendering/renderers/shared/system/System';
 import type { CanvasSource } from '../rendering/renderers/shared/texture/sources/CanvasSource';
-import type { RendererView } from '../rendering/renderers/shared/view/RendererView';
+import type { CanvasView } from '../rendering/renderers/shared/view/CanvasView';
 import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
 import type { isMobileResult } from '../utils/browser/isMobile';
@@ -29,8 +29,8 @@ import type { isMobileResult } from '../utils/browser/isMobile';
  */
 interface AccessibilityViewData extends TrackedViewData
 {
-    /** The renderer view this overlay belongs to. */
-    rendererView: RendererView;
+    /** The canvas view this overlay belongs to. */
+    canvasView: CanvasView;
     /** The canvas this overlay sits over. */
     element: HTMLCanvasElement;
     /** The overlay container the accessible divs are appended to, kept in sync with the canvas. */
@@ -317,14 +317,14 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
     }
 
     /**
-     * Registers a renderer view for accessibility. The renderer emits this for its main canvas
+     * Registers a canvas view for accessibility. The renderer emits this for its main canvas
      * during init and for every canvas passed to {@link AbstractRenderer#addView}. Overlays are
      * created lazily on activation, so a view registered while inactive is recorded here and gets
      * its overlay when accessibility next activates.
-     * @param view - the renderer view that was added
+     * @param view - the canvas view that was added
      * @ignore
      */
-    public viewAdded(view: RendererView): void
+    public viewAdded(view: CanvasView): void
     {
         if (!view.accessibility) return;
 
@@ -342,12 +342,12 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
     }
 
     /**
-     * Removes a renderer view from accessibility, tearing down its overlay. The renderer emits this
+     * Removes a canvas view from accessibility, tearing down its overlay. The renderer emits this
      * when a view's canvas source is destroyed or {@link AbstractRenderer#removeView} is called.
-     * @param view - the renderer view that was removed
+     * @param view - the canvas view that was removed
      * @ignore
      */
-    public viewRemoved(view: RendererView): void
+    public viewRemoved(view: CanvasView): void
     {
         this._tracker.removeView(view);
     }
@@ -457,7 +457,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
         // the main view follows the renderer and is attached to the DOM in _activate; a secondary
         // view attaches its overlay immediately
-        if (data.rendererView.isMain) return;
+        if (data.canvasView.isMain) return;
 
         data.observer.ensureAttached();
     }
@@ -466,17 +466,17 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
      * The tracker's {@link ViewTracker#create} closure: builds the per-canvas data object for a newly
      * added view. The overlay DOM is built lazily (only while accessibility is active) by
      * {@link AccessibilitySystem#_buildOverlay}.
-     * @param rendererView - the renderer view the overlay belongs to
+     * @param canvasView - the canvas view the overlay belongs to
      * @returns the tracked view data for the canvas
      */
-    private _createView(rendererView: RendererView): AccessibilityViewData
+    private _createView(canvasView: CanvasView): AccessibilityViewData
     {
         // the main view follows the renderer (null source); secondary views track their own source
-        const source = rendererView.isMain ? null : rendererView.source;
+        const source = canvasView.isMain ? null : canvasView.source;
 
         const data: AccessibilityViewData = {
-            rendererView,
-            element: rendererView.canvas as HTMLCanvasElement,
+            canvasView,
+            element: canvasView.canvas as HTMLCanvasElement,
             div: null,
             observer: null,
             children: [],
@@ -553,7 +553,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         view.div?.parentNode?.removeChild(view.div);
         view.rootContainer = null;
         // do NOT null view.source here: it is the secondary view's readonly CanvasSource (from the
-        // RendererView) and must survive a deactivate->reactivate cycle, or _buildOverlay rebuilds the
+        // CanvasView) and must survive a deactivate->reactivate cycle, or _buildOverlay rebuilds the
         // observer against the main canvas. The full-destroy path drops the whole data object anyway.
 
         if (full)
@@ -967,7 +967,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
         // a recognised owning view whose canvas opted out of events must not dispatch into its scene
         // nor pollute the main boundary; drop the interaction here
-        if (view && !view.rendererView.events)
+        if (view && !view.canvasView.events)
         {
             // #if _DEBUG
             warn('[AccessibilitySystem]: accessible-div event ignored, its view opted out of events');

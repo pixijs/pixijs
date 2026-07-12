@@ -22,7 +22,7 @@ import type { GenerateTextureOptions, GenerateTextureSystem } from '../extract/G
 import type { PipeConstructor } from '../instructions/RenderPipe';
 import type { RenderSurface } from '../renderTarget/RenderTargetSystem';
 import type { Texture } from '../texture/Texture';
-import type { RendererView, RendererViewOptions } from '../view/RendererView';
+import type { CanvasView, CanvasViewOptions } from '../view/CanvasView';
 import type { ViewSystem, ViewSystemDestroyOptions } from '../view/ViewSystem';
 import type { SharedRendererOptions } from './SharedSystems';
 import type { System, SystemConstructor } from './System';
@@ -531,7 +531,7 @@ export class AbstractRenderer<
      * The views the renderer presents to. The main view is always at index 0.
      * @advanced
      */
-    get views(): readonly RendererView[]
+    get views(): readonly CanvasView[]
     {
         return this.view.views;
     }
@@ -542,7 +542,7 @@ export class AbstractRenderer<
      * @returns The registered view.
      * @advanced
      */
-    public addView(options: RendererViewOptions): RendererView
+    public addView(options: CanvasViewOptions): CanvasView
     {
         return this.view.addView(options);
     }
@@ -552,7 +552,7 @@ export class AbstractRenderer<
      * @param view - The view to remove.
      * @advanced
      */
-    public removeView(view: RendererView): void
+    public removeView(view: CanvasView): void
     {
         this.view.removeView(view);
     }

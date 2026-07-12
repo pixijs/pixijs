@@ -1,7 +1,7 @@
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { Container } from '../../../../scene/container/Container';
 import type { Renderer } from '../../types';
-import type { RendererView } from './RendererView';
+import type { CanvasView } from './CanvasView';
 
 /**
  * The minimum shape every per-canvas data object tracked by a {@link ViewTracker} must satisfy.
@@ -25,10 +25,10 @@ export interface ViewTrackerOptions<TData extends TrackedViewData>
 {
     /** The renderer whose view registry this tracker mirrors. */
     renderer: Renderer;
-    /** Whether a given renderer view participates in this system (e.g. `v => v.events`). */
-    participates: (view: RendererView) => boolean;
+    /** Whether a given canvas view participates in this system (e.g. `v => v.events`). */
+    participates: (view: CanvasView) => boolean;
     /** Builds the per-canvas data object for a newly added view. */
-    create: (view: RendererView) => TData;
+    create: (view: CanvasView) => TData;
     /** Tears down a per-canvas data object that is being removed. */
     destroy: (data: TData) => void;
     /** Called after any add or remove, so callers can rebuild derived state (snapshots, feature unions). */
@@ -48,7 +48,7 @@ export interface ViewTrackerOptions<TData extends TrackedViewData>
  */
 export class ViewTracker<TData extends TrackedViewData>
 {
-    /** The data for the main canvas ({@link RendererView#isMain}) or a custom element via {@link ViewTracker#register}. */
+    /** The data for the main canvas ({@link CanvasView#isMain}) or a custom element via {@link ViewTracker#register}. */
     public mainView: TData | null = null;
 
     /** The data the current frame renders to, resolved in {@link ViewTracker#setActive}. */
@@ -58,10 +58,10 @@ export class ViewTracker<TData extends TrackedViewData>
     private readonly _views: Map<ICanvas | EventTarget, TData> = new Map();
     /** The renderer whose view registry this tracker mirrors. */
     private readonly _renderer: Renderer;
-    /** Whether a given renderer view participates in this system. */
-    private readonly _participates: (view: RendererView) => boolean;
+    /** Whether a given canvas view participates in this system. */
+    private readonly _participates: (view: CanvasView) => boolean;
     /** Builds the per-canvas data object for a newly added view. */
-    private readonly _create: (view: RendererView) => TData;
+    private readonly _create: (view: CanvasView) => TData;
     /** Tears down a per-canvas data object that is being removed. */
     private readonly _destroy: (data: TData) => void;
     /** Called after any add or remove. */
@@ -127,10 +127,10 @@ export class ViewTracker<TData extends TrackedViewData>
      * Adds a view from the `viewAdded` runner. Participation-gated; keyed by `view.canvas`. A
      * secondary view already tracked for the canvas is reused (the runner can fire more than once);
      * a main view added while another main is registered replaces it, destroying the old one first.
-     * @param view - the renderer view that was added
+     * @param view - the canvas view that was added
      * @returns the data for the view, or `null` when the view does not participate
      */
-    public addFromView(view: RendererView): TData | null
+    public addFromView(view: CanvasView): TData | null
     {
         if (!this._participates(view)) return null;
 
@@ -149,7 +149,7 @@ export class ViewTracker<TData extends TrackedViewData>
 
     /**
      * Stores pre-built data under a key, low-level path for a custom element with no
-     * {@link RendererView} (see {@link EventSystem#setTargetElement}). Sets {@link ViewTracker#mainView}
+     * {@link CanvasView} (see {@link EventSystem#setTargetElement}). Sets {@link ViewTracker#mainView}
      * when `isMain` and fires `onChange`. Does NOT call the create/destroy closures.
      *
      * Unlike {@link ViewTracker#addFromView}, this does not destroy an existing main view when
@@ -174,9 +174,9 @@ export class ViewTracker<TData extends TrackedViewData>
     /**
      * Removes a view from the `viewRemoved` runner: destroys and unregisters the data keyed by
      * `view.canvas`.
-     * @param view - the renderer view that was removed
+     * @param view - the canvas view that was removed
      */
-    public removeView(view: RendererView): void
+    public removeView(view: CanvasView): void
     {
         this.removeByKey(view.canvas);
     }
@@ -221,7 +221,7 @@ export class ViewTracker<TData extends TrackedViewData>
      * @param container - the container being rendered to the view
      * @returns the resolved data, or `null` for an unregistered (offscreen / texture) target
      */
-    public setActive(view: RendererView | null, container: Container): TData | null
+    public setActive(view: CanvasView | null, container: Container): TData | null
     {
         const data = view ? this._views.get(view.canvas) : undefined;
 

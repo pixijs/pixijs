@@ -10,7 +10,7 @@ function createCanvas(width = 100, height = 100): HTMLCanvasElement
     return canvas;
 }
 
-describe('RendererView derived antialias/transparent', () =>
+describe('CanvasView derived antialias/transparent', () =>
 {
     it('derives antialias/transparent from the canvas source', async () =>
     {
