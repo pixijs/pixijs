@@ -366,9 +366,6 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
             throw new Error(`${child}addChildAt: The index ${index} supplied is out of bounds ${children.length}`);
         }
 
-        // TODO - check if child is already in the list?
-        // we should be able to optimise this!
-
         const sameParent = child.parent === this;
 
         if (child.parent)
@@ -401,23 +398,29 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
             children.splice(index, 0, child);
         }
 
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+        if (this.sortableChildren) this.sortDirty = true;
+
+        // Same parent reorder: parentRenderGroup, depth and onRender membership are all
+        // unchanged, so an instruction rebuild is enough. Don't emit added events.
+        if (sameParent)
+        {
+            if (renderGroup)
+            {
+                renderGroup.structureDidChange = true;
+            }
+
+            return child;
+        }
+
         child.parent = this;
         child.didChange = true;
         child._updateFlags = 0b1111;
 
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
         if (renderGroup)
         {
             renderGroup.addChild(child);
-        }
-
-        if (this.sortableChildren) this.sortDirty = true;
-
-        // If same parent, don't emit added events
-        if (sameParent)
-        {
-            return child;
         }
 
         this.emit('childAdded', child, this, index);
