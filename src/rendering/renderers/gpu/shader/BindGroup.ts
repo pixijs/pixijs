@@ -1,3 +1,4 @@
+import { warn } from '../../../../utils/logging/warn';
 import { type GCable } from '../../shared/GCSystem';
 
 import type { BindResource } from './BindResource';
@@ -33,15 +34,38 @@ export class BindGroup
 {
     /** The resources that are bound together for use by a shader. */
     public resources: Record<string, BindResource> = Object.create(null);
+
     /**
-     * a key used internally to match it up to a WebGPU Bindgroup
+     * A key used internally to match it up to a WebGPU BindGroup.
+     * Lazily rebuilt from resource IDs when dirty.
      * @internal
      */
-    public _key: string;
+    public get _key(): string
+    {
+        if (this._dirty)
+        {
+            this._dirty = false;
+
+            const keyParts = [];
+            let index = 0;
+
+            for (const i in this.resources)
+            {
+                // -1 marks a destroyed buffer-like resource's null slot
+                keyParts[index++] = this.resources[i] ? this.resources[i]._resourceId : -1;
+            }
+
+            this._keyValue = keyParts.join('|');
+        }
+
+        return this._keyValue;
+    }
+
+    private _keyValue: string;
     private _dirty = true;
 
     /**
-     * Create a new instance eof the Bind Group.
+     * Create a new instance of the Bind Group.
      * @param resources - The resources that are bound together for use by a shader.
      */
     constructor(resources?: Record<string, BindResource>)
@@ -54,36 +78,10 @@ export class BindGroup
 
             this.setResource(resource, index++);
         }
-
-        this._updateKey();
     }
 
     /**
-     * Updates the key if its flagged as dirty. This is used internally to
-     * match this bind group to a WebGPU BindGroup.
-     * @internal
-     */
-    public _updateKey(): void
-    {
-        if (!this._dirty) return;
-
-        this._dirty = false;
-
-        const keyParts = [];
-        let index = 0;
-
-        // TODO - lets use big ints instead of strings...
-        for (const i in this.resources)
-        {
-            // TODO make this consistent...
-            keyParts[index++] = this.resources[i]._resourceId;
-        }
-
-        this._key = keyParts.join('|');
-    }
-
-    /**
-     * Set a resource at a given index. this function will
+     * Set a resource at a given index. This function will
      * ensure that listeners will be removed from the current resource
      * and added to the new resource.
      * @param resource - The resource to set.
@@ -95,7 +93,11 @@ export class BindGroup
 
         if (resource === currentResource) return;
 
-        currentResource?.off?.('change', this.onResourceChange, this);
+        if (currentResource)
+        {
+            currentResource.off?.('change', this.onResourceChange, this);
+        }
+
         resource.on?.('change', this.onResourceChange, this);
 
         this.resources[index] = resource;
@@ -125,8 +127,12 @@ export class BindGroup
 
         for (const i in resources)
         {
-            (resources[i] as BindResource & GCable)._gcLastUsed = now;
-            resources[i]._touched = tick;
+            const resource = resources[i] as BindResource & GCable;
+
+            if (!resource) continue;
+
+            resource._gcLastUsed = now;
+            resource._touched = tick;
         }
     }
 
@@ -149,15 +155,24 @@ export class BindGroup
     {
         this._dirty = true;
 
-        // check if a resource has been destroyed, if it has then we need to destroy this bind group
-        // using this bind group with a destroyed resource will cause the renderer to explode :)
+        // A destroyed resource must not stay bound — null the slot. Consumers tolerate the
+        // null; actually rendering with it raises a clear error in BindGroupSystem.
         if (resource.destroyed)
         {
-            this.destroy();
-        }
-        else
-        {
-            this._updateKey();
+            const resources = this.resources;
+
+            for (const i in resources)
+            {
+                if (resources[i] === resource)
+                {
+                    resources[i] = null;
+                }
+            }
+
+            // #if _DEBUG
+            warn(`[BindGroup] a '${resource._resourceType}' was destroyed while still bound to a shader. `
+                + 'Remove it from the shader before destroying it.');
+            // #endif
         }
     }
 }

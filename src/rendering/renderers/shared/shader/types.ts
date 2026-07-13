@@ -3,6 +3,7 @@
 export const UNIFORM_TYPES_VALUES = [
     'f32',
     'i32',
+    'u32',
     'vec2<f32>',
     'vec3<f32>',
     'vec4<f32>',
@@ -18,6 +19,9 @@ export const UNIFORM_TYPES_VALUES = [
     'vec2<i32>',
     'vec3<i32>',
     'vec4<i32>',
+    'vec2<u32>',
+    'vec3<u32>',
+    'vec4<u32>',
 ] as const;
 
 /**

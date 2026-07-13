@@ -203,7 +203,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
                     colorTextureSource.antialias
                 );
 
-                renderer.renderTarget.push(filterTexture, true);
+                renderer.renderTarget.push({ target: filterTexture, clear: true });
 
                 renderer.globalUniforms.push({
                     offset: bounds,

@@ -10,7 +10,7 @@ export interface BitmapFontRawData
         face: string;
         size: string;
     }[];
-    common: { lineHeight: string, base: string }[];
+    common: { lineHeight: string, base?: string }[];
     page: {
         id: string;
         file: string;
@@ -138,7 +138,9 @@ export const bitmapFontTextParser = {
 
         const map: Record<string, string> = {};
 
-        font.baseLineOffset = font.lineHeight - parseInt(common.base, 10);
+        // when `base` is missing, keep the offset at 0 (the AbstractBitmapFont default)
+        // rather than shifting the layout by a full line
+        font.baseLineOffset = common.base === undefined ? 0 : font.lineHeight - parseInt(common.base, 10);
 
         const char = rawData.char;
 
