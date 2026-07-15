@@ -57,9 +57,9 @@ export class CanvasPoolClass
 
         // willReadFrequently keeps these canvases in software rasterization. Without it,
         // Firefox's GPU-accelerated 2D canvas can hand texImage2D a stale or blank snapshot
-        // of a freshly drawn canvas, making Text objects intermittently render blank. It also
-        // matches how these canvases are used: CanvasTextGenerator reads them back with
-        // getImageData when trimming.
+        // of a freshly drawn canvas, making Text objects intermittently render blank.
+        // It also matches how these canvases are used: CanvasTextGenerator reads them back
+        // with getImageData when trimming.
         const context = canvas.getContext('2d', { willReadFrequently: true });
 
         return { canvas, context };
