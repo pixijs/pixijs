@@ -157,74 +157,50 @@ export class CanvasNineSliceSpritePipe implements RenderPipe<NineSliceSprite>
             sh = (finalSource as any).height;
         }
 
-        // Top-left
-        context.drawImage(finalSource, sx, sy, lw, tw, dx, dy, destLeftWidth, destTopHeight);
-        // Top-center
-        context.drawImage(
-            finalSource,
-            sx + lw, sy,
-            sw - lw - rw, tw,
-            dx + destLeftWidth, dy,
-            destCenterWidth, destTopHeight
-        );
-        // Top-right
-        context.drawImage(
-            finalSource,
-            sx + sw - rw, sy,
-            rw, tw,
-            dx + width - destRightWidth, dy,
-            destRightWidth, destTopHeight
-        );
+        // Center source spans within the frame. When the borders meet or overlap along an
+        // axis, the center span collapses to <= 0; a drawImage() call with a zero/negative
+        // source size draws nothing, which drops the stretched center (the WebGL/WebGPU path
+        // stretches the degenerate seam instead, filling it). Fall back to a 1px seam sampled
+        // at the border boundary so the center column/row is still rendered.
+        const centerSrcW = sw - lw - rw;
+        const centerSrcH = sh - tw - bw;
 
-        // Middle-left
-        context.drawImage(
-            finalSource,
-            sx, sy + tw,
-            lw, sh - tw - bw,
-            dx, dy + destTopHeight,
-            destLeftWidth, destCenterHeight
-        );
-        // Middle-center
-        context.drawImage(
-            finalSource,
-            sx + lw, sy + tw,
-            sw - lw - rw, sh - tw - bw,
-            dx + destLeftWidth, dy + destTopHeight,
-            destCenterWidth, destCenterHeight
-        );
-        // Middle-right
-        context.drawImage(
-            finalSource,
-            sx + sw - rw, sy + tw,
-            rw, sh - tw - bw,
-            dx + width - destRightWidth, dy + destTopHeight,
-            destRightWidth, destCenterHeight
-        );
+        const centerSx = centerSrcW > 0 ? sx + lw : Math.min(Math.max(sx + lw, sx), sx + sw - 1);
+        const centerSw = centerSrcW > 0 ? centerSrcW : 1;
+        const centerSy = centerSrcH > 0 ? sy + tw : Math.min(Math.max(sy + tw, sy), sy + sh - 1);
+        const centerSh = centerSrcH > 0 ? centerSrcH : 1;
 
-        // Bottom-left
-        context.drawImage(
-            finalSource,
-            sx, sy + sh - bw,
-            lw, bw,
-            dx, dy + height - destBottomHeight,
-            destLeftWidth, destBottomHeight
-        );
-        // Bottom-center
-        context.drawImage(
-            finalSource,
-            sx + lw, sy + sh - bw,
-            sw - lw - rw, bw,
-            dx + destLeftWidth, dy + height - destBottomHeight,
-            destCenterWidth, destBottomHeight
-        );
-        // Bottom-right
-        context.drawImage(
-            finalSource,
-            sx + sw - rw, sy + sh - bw,
-            rw, bw,
-            dx + width - destRightWidth, dy + height - destBottomHeight,
-            destRightWidth, destBottomHeight
-        );
+        // Source and destination spans for the 3 columns and 3 rows: [start, size].
+        const colsSrc = [[sx, lw], [centerSx, centerSw], [sx + sw - rw, rw]];
+        const rowsSrc = [[sy, tw], [centerSy, centerSh], [sy + sh - bw, bw]];
+        const colsDst = [
+            [dx, destLeftWidth],
+            [dx + destLeftWidth, destCenterWidth],
+            [dx + width - destRightWidth, destRightWidth],
+        ];
+        const rowsDst = [
+            [dy, destTopHeight],
+            [dy + destTopHeight, destCenterHeight],
+            [dy + height - destBottomHeight, destBottomHeight],
+        ];
+
+        for (let col = 0; col < 3; col++)
+        {
+            const [sxx, sww] = colsSrc[col];
+            const [dxx, dww] = colsDst[col];
+
+            if (dww <= 0) continue;
+
+            for (let row = 0; row < 3; row++)
+            {
+                const [syy, shh] = rowsSrc[row];
+                const [dyy, dhh] = rowsDst[row];
+
+                if (dhh <= 0) continue;
+
+                context.drawImage(finalSource, sxx, syy, sww, shh, dxx, dyy, dww, dhh);
+            }
+        }
 
         context.restore();
     }
