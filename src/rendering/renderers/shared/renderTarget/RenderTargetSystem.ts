@@ -449,9 +449,11 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         else
         {
             // legacy positional call: sanitise the arguments into a BindOptions and carry on
+            // #if _DEBUG
             deprecation('8.20.0', 'RenderTargetSystem.bind: positional arguments are deprecated, '
                 + 'please use an options object instead: '
                 + 'bind({ target, clear, clearColor, frame, mipLevel, layer, flipY })');
+            // #endif
 
             options = { target: surfaceOrOptions, clear, clearColor, frame, mipLevel, layer, flipY };
         }
@@ -766,9 +768,11 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         else
         {
             // legacy positional call: sanitise the arguments into a BindOptions and carry on
+            // #if _DEBUG
             deprecation('8.20.0', 'RenderTargetSystem.push: positional arguments are deprecated, '
                 + 'please use an options object instead: '
                 + 'push({ target, clear, clearColor, frame, mipLevel, layer, flipY })');
+            // #endif
 
             options = { target: surfaceOrOptions, clear, clearColor, frame, mipLevel, layer, flipY };
         }
