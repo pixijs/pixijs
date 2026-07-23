@@ -33,6 +33,20 @@ describe('RoundedRectangle', () =>
         expect(rrect1).not.toBe(rrect2);
     });
 
+    it('should copy from another rounded rectangle', () =>
+    {
+        const source = new RoundedRectangle(10, 20, 100, 200, 15);
+        const target = new RoundedRectangle();
+
+        target.copyFrom(source);
+
+        expect(target.x).toEqual(10);
+        expect(target.y).toEqual(20);
+        expect(target.width).toEqual(100);
+        expect(target.height).toEqual(200);
+        expect(target.radius).toEqual(15);
+    });
+
     it('should check if point is within rounded rectangle', () =>
     {
         const rrect1 = new RoundedRectangle(0, 0, 200, 200, 50);
