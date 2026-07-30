@@ -4,6 +4,7 @@ import { UniformGroup } from '../../../rendering/renderers/shared/shader/Uniform
 import { getAdjustedBlendModeBlend } from '../../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
 import { State } from '../../../rendering/renderers/shared/state/State';
 import { GCManagedHash } from '../../../utils/data/GCManagedHash';
+import { multiplyHexColors } from '../../container/utils/multiplyHexColors';
 import { color32BitToUniform } from '../../graphics/gpu/colorToUniform';
 import { ParticleBuffer } from './ParticleBuffer';
 import { ParticleShader } from './shader/ParticleShader';
@@ -143,8 +144,17 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
         uniforms.uResolution = globalUniformData.resolution;
         uniforms.uRound = renderer._roundPixels | container._roundPixels;
 
+        // The particle shader has no uWorldColorAlpha, so the render group's world
+        // color/alpha has to be composed into uColor here. Without this, particles
+        // ignore the tint and alpha of any ancestor render group.
+        const groupColorAlpha = container.groupColorAlpha;
+        const worldColorAlpha = globalUniformData.worldColor;
+
+        const alpha = (((groupColorAlpha >>> 24) * (worldColorAlpha >>> 24)) / 255) | 0;
+        const bgr = multiplyHexColors(groupColorAlpha & 0xFFFFFF, worldColorAlpha & 0xFFFFFF);
+
         color32BitToUniform(
-            container.groupColorAlpha,
+            ((alpha << 24) | bgr) >>> 0,
             uniforms.uColor,
             0
         );
