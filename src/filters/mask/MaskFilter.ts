@@ -84,6 +84,21 @@ export class MaskFilter extends Filter
         this._textureMatrix = textureMatrix;
     }
 
+    /**
+     * Rebinds the filter to a new mask sprite, moving the texture-matrix `update`
+     * listener and the bind group's `change` subscription over to the new sprite's
+     * texture. `apply` refreshes the same bindings on every use — this method exists
+     * to release the previous sprite's texture immediately, without waiting for
+     * (or requiring) another `apply`.
+     * @param sprite - the sprite to mask with from now on.
+     */
+    public setSprite(sprite: Sprite): void
+    {
+        this.sprite = sprite;
+        this._textureMatrix.texture = sprite.texture;
+        this.resources.uMaskTexture = sprite.texture.source;
+    }
+
     set inverse(value: boolean)
     {
         this.resources.filterUniforms.uniforms.uInverse = value ? 1 : 0;
@@ -122,5 +137,13 @@ export class MaskFilter extends Filter
         this.resources.uMaskTexture = this.sprite.texture.source;
 
         filterManager.applyFilter(this, input, output, clearMode);
+    }
+
+    public destroy(destroyPrograms = false): void
+    {
+        // the texture matrix subscribes to its texture outside the bind-group resource
+        // system, so the base destroy would leave that `update` listener behind
+        this._textureMatrix.destroy();
+        super.destroy(destroyPrograms);
     }
 }
