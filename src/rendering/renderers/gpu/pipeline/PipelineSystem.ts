@@ -439,10 +439,16 @@ export class PipelineSystem implements System
             },
             primitive: {
                 topology,
-                cullMode: state.cullMode,
+                // The winding is stated once, through `frontFace`, and the back is always the culled
+                // side — the same split WebGL uses, where `gl.frontFace` carries `clockwiseFrontFace`
+                // and `gl.cullFace` is left at its `BACK` default. Reading it out of `state.cullMode`
+                // instead folds the winding into *which side* is culled: the same triangles survive,
+                // but `@builtin(front_facing)` then reports the opposite of `gl_FrontFacing` for
+                // clockwise-wound geometry.
                 // Flip the winding when `flipY` inverted the projection (see setRenderTarget), so the two
-                // cancel and a front face stays a front face. The flag is part of the pipeline cache key.
-                frontFace: this._invertFrontFace ? 'cw' : 'ccw',
+                // cancel and a front face stays a front face. Both flags are in the pipeline cache key.
+                cullMode: state.culling ? 'back' : 'none',
+                frontFace: state.clockwiseFrontFace !== this._invertFrontFace ? 'cw' : 'ccw',
             },
             layout,
             multisample: {
