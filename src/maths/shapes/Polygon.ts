@@ -1,5 +1,5 @@
-import { getOrientationOfPoints } from '../../scene/graphics/shared/utils/getOrientationOfPoints';
 import { deprecation } from '../../utils/logging/deprecation';
+import { getOrientationOfPoints } from '../misc/getOrientationOfPoints';
 import { squaredDistanceToLineSegment } from '../misc/squaredDistanceToLineSegment';
 import { Rectangle } from './Rectangle';
 
@@ -320,7 +320,9 @@ export class Polygon implements ShapePrimitive
 
         // the stroke is built with the alignment flipped by the winding order, so the hit
         // area has to flip with it to stay on the same side of the edge as the drawn line
-        const alignedByWinding = ((alignment - 0.5) * getOrientationOfPoints(points)) + 0.5;
+        const alignedByWinding = alignment === 0.5
+            ? alignment
+            : ((alignment - 0.5) * getOrientationOfPoints(points)) + 0.5;
 
         const outerWidth = strokeWidth * alignedByWinding;
         const innerWidth = strokeWidth - outerWidth;
