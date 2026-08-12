@@ -458,6 +458,37 @@ describe('Ticker', () =>
             ticker.start();
         }));
 
+    it('should not reset lastTime when a listener triggers _requestIfNeeded', () =>
+    {
+        const ticker = new Ticker();
+
+        ticker.start();
+        // Simulate a first tick so lastTime is set
+        ticker.update(1000);
+
+        const lastTimeBefore = ticker.lastTime;
+
+        // Listener adds another listener during emit, which calls _startIfPossible -> _requestIfNeeded
+        const innerListener = jest.fn();
+        const outerListener = jest.fn(() =>
+        {
+            ticker.add(innerListener);
+        });
+
+        ticker.add(outerListener);
+
+        // Simulate next tick
+        ticker.update(1016);
+
+        // lastTime should reflect the update time (1016), not a performance.now() reset
+        expect(ticker.lastTime).toBe(1016);
+        expect(ticker.lastTime).not.toBe(lastTimeBefore);
+
+        ticker.remove(outerListener);
+        ticker.remove(innerListener);
+        ticker.destroy();
+    });
+
     describe('minFPS / maxFPS', () =>
     {
         it('should set minFPS independently when maxFPS is unlimited (0)', () =>
