@@ -62,6 +62,50 @@ describe('Geometry', () =>
         expect(buffer.data).toBeNull();
     });
 
+    it('should not destroy the index buffer when destroyBuffers is false', () =>
+    {
+        const indexBuffer = new Buffer({
+            data: new Uint16Array([0, 1, 2]),
+            usage: BufferUsage.INDEX,
+        });
+        const destroySpy = jest.spyOn(indexBuffer, 'destroy');
+
+        const geometry = new Geometry({
+            attributes: {
+                aPosition: [0, 0, 1, 0, 1, 1],
+            },
+            indexBuffer,
+        });
+
+        geometry.destroy(false);
+
+        expect(destroySpy).not.toHaveBeenCalled();
+        expect(indexBuffer.destroyed).toBe(false);
+        expect(indexBuffer.data).not.toBeNull();
+    });
+
+    it('should destroy the index buffer only once when destroyBuffers is true', () =>
+    {
+        const indexBuffer = new Buffer({
+            data: new Uint16Array([0, 1, 2]),
+            usage: BufferUsage.INDEX,
+        });
+        const destroySpy = jest.spyOn(indexBuffer, 'destroy');
+
+        const geometry = new Geometry({
+            attributes: {
+                aPosition: [0, 0, 1, 0, 1, 1],
+            },
+            indexBuffer,
+        });
+
+        geometry.destroy(true);
+
+        expect(destroySpy).toHaveBeenCalledTimes(1);
+        expect(indexBuffer.destroyed).toBe(true);
+        expect(indexBuffer.data).toBeNull();
+    });
+
     it('should set a cast data correctly', () =>
     {
         const buffer = new Buffer({
