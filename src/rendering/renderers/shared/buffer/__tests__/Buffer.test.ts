@@ -216,6 +216,62 @@ describe('Buffer', () =>
         expect(buffer._updateSize).toBe(2 * 4);
     });
 
+    it('unload should re-key the buffer and emit a change event', () =>
+    {
+        const buffer = new Buffer({
+            data: new Float32Array([1, 2, 3]),
+            usage: 1,
+        });
+
+        const startingId = buffer._resourceId;
+        const changeObserver = jest.fn();
+
+        buffer.on('change', changeObserver);
+
+        buffer.unload();
+
+        expect(buffer._resourceId).not.toBe(startingId);
+        expect(changeObserver).toHaveBeenCalledTimes(1);
+    });
+
+    it('destroy should only emit a single change event', () =>
+    {
+        const buffer = new Buffer({
+            data: new Float32Array([1, 2, 3]),
+            usage: 1,
+        });
+
+        const changeObserver = jest.fn();
+
+        buffer.on('change', changeObserver);
+
+        buffer.destroy();
+
+        expect(changeObserver).toHaveBeenCalledTimes(1);
+    });
+
+    itLocalOnly('should re-add listeners when a buffer is used again after unload', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const buffer = new Buffer({
+            data: new Float32Array([1, 2, 3]),
+            usage: 1,
+        });
+
+        renderer.buffer.updateBuffer(buffer);
+
+        expect(buffer.listenerCount('update')).toBe(1);
+
+        buffer.unload();
+
+        expect(buffer.listenerCount('update')).toBe(0);
+
+        renderer.buffer.updateBuffer(buffer);
+
+        expect(buffer.listenerCount('update')).toBe(1);
+    });
+
     itLocalOnly('should only add add listeners to buffer on first gpu init', async () =>
     {
         const renderer = (await getWebGPURenderer()) as WebGPURenderer;
