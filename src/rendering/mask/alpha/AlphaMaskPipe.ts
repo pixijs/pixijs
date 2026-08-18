@@ -107,10 +107,13 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
 
     private _renderer: Renderer;
     private _activeMaskStage: AlphaMaskData[] = [];
+    private _usedEffects: AlphaMaskEffect[] = [];
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+
+        renderer.runners.postrender.add(this);
     }
 
     public push(mask: Effect, maskedContainer: Container, instructionSet: InstructionSet): void
@@ -268,13 +271,33 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
                 TexturePool.returnTexture(maskData.filterTexture);
             }
 
-            BigPool.return(maskData.filterEffect);
+            // Returning the effect to the pool now would let the next mask in this frame
+            // reuse it, along with its MaskFilter's uniform buffer. WebGPU only reads that
+            // buffer when the frame's commands are submitted, so sharing it between masks
+            // would make every mask sample the last-written filter matrix (#12145).
+            this._usedEffects.push(maskData.filterEffect);
         }
+    }
+
+    public postrender(): void
+    {
+        const effects = this._usedEffects;
+
+        for (let i = 0; i < effects.length; i++)
+        {
+            BigPool.return(effects[i]);
+        }
+
+        effects.length = 0;
     }
 
     public destroy(): void
     {
+        this.postrender();
+
+        this._renderer.runners.postrender.remove(this);
         this._renderer = null;
         this._activeMaskStage = null;
+        this._usedEffects = null;
     }
 }
