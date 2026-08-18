@@ -2,13 +2,14 @@ import { Matrix } from '../../maths/matrix/Matrix';
 import { GlProgram } from '../../rendering/renderers/gl/shader/GlProgram';
 import { GpuProgram } from '../../rendering/renderers/gpu/shader/GpuProgram';
 import { UniformGroup } from '../../rendering/renderers/shared/shader/UniformGroup';
+import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { TextureMatrix } from '../../rendering/renderers/shared/texture/TextureMatrix';
+import { warn } from '../../utils/logging/warn';
 import { Filter } from '../Filter';
 import fragment from './mask.frag';
 import vertex from './mask.vert';
 import source from './mask.wgsl';
 
-import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { Sprite } from '../../scene/sprite/Sprite';
 import type { FilterOptions } from '../Filter';
 import type { FilterSystem } from '../FilterSystem';
@@ -95,8 +96,11 @@ export class MaskFilter extends Filter
     public setSprite(sprite: Sprite): void
     {
         this.sprite = sprite;
-        this._textureMatrix.texture = sprite.texture;
-        this.resources.uMaskTexture = sprite.texture.source;
+
+        const texture = this._getSafeTexture();
+
+        this._textureMatrix.texture = texture;
+        this.resources.uMaskTexture = texture.source;
     }
 
     set inverse(value: boolean)
@@ -126,17 +130,41 @@ export class MaskFilter extends Filter
         clearMode: boolean
     ): void
     {
+        const texture = this._getSafeTexture();
+
         // will trigger an update if the texture changed..
-        this._textureMatrix.texture = this.sprite.texture;
+        this._textureMatrix.texture = texture;
 
         filterManager.calculateSpriteMatrix(
             this.resources.filterUniforms.uniforms.uFilterMatrix as Matrix,
             this.sprite
         ).prepend(this._textureMatrix.mapCoord);
 
-        this.resources.uMaskTexture = this.sprite.texture.source;
+        this.resources.uMaskTexture = texture.source;
 
         filterManager.applyFilter(this, input, output, clearMode);
+    }
+
+    /**
+     * The sprite's texture, or `Texture.EMPTY` when that texture has been destroyed —
+     * a destroyed texture has no source left to sample, so the mask degrades to empty
+     * rather than crashing the render.
+     */
+    private _getSafeTexture(): Texture
+    {
+        const texture = this.sprite.texture;
+
+        if (texture.destroyed || !texture.source || texture.source.destroyed)
+        {
+            // #if _DEBUG
+            warn('[MaskFilter] The mask texture was destroyed while the mask is still in use. '
+                + 'Remove the mask before destroying its texture.');
+            // #endif
+
+            return Texture.EMPTY;
+        }
+
+        return texture;
     }
 
     public destroy(destroyPrograms = false): void

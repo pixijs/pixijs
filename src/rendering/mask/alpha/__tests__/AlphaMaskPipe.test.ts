@@ -1,6 +1,6 @@
 import { getWebGLRenderer } from '@test-utils';
-import { Texture, TextureSource } from '~/rendering';
-import { Container, Sprite } from '~/scene';
+import { AlphaMask, Texture, TextureSource } from '~/rendering';
+import { Container, Graphics, Sprite } from '~/scene';
 import { BigPool } from '~/utils/pool/PoolGroup';
 
 describe('AlphaMaskPipe', () =>
@@ -119,5 +119,87 @@ describe('AlphaMaskPipe', () =>
         renderer.destroy(true);
 
         expect(Texture.EMPTY.listenerCount('update')).toBe(listenersBefore);
+    });
+
+    // https://github.com/pixijs/pixijs/issues/12072
+    it('should survive a mask texture destroyed while still assigned to the mask sprite', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        const stage = new Container();
+        const content = new Sprite(Texture.WHITE);
+        const maskTexture = new Texture({ source: new TextureSource({ width: 16, height: 16 }) });
+        const mask = new Sprite(maskTexture);
+
+        stage.addChild(content, mask);
+        content.mask = mask;
+
+        renderer.render(stage);
+
+        // the mask sprite still uses this texture - pixi must degrade gracefully, not crash
+        maskTexture.destroy(true);
+
+        expect(() =>
+        {
+            renderer.render(stage);
+            renderer.render(stage);
+        }).not.toThrow();
+
+        renderer.destroy();
+    });
+
+    it('should survive a mask texture destroyed and replaced between frames', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        const stage = new Container();
+        const content = new Sprite(Texture.WHITE);
+        const maskTexture = new Texture({ source: new TextureSource({ width: 16, height: 16 }) });
+        const mask = new Sprite(maskTexture);
+
+        stage.addChild(content, mask);
+        content.mask = mask;
+
+        renderer.render(stage);
+
+        content.mask = null;
+        maskTexture.destroy(true);
+        mask.texture = new Texture({ source: new TextureSource({ width: 16, height: 16 }) });
+        content.mask = mask;
+
+        expect(() =>
+        {
+            renderer.render(stage);
+            renderer.render(stage);
+        }).not.toThrow();
+
+        renderer.destroy();
+    });
+
+    it('should not overwrite a user sprite texture when the pooled effect is reused to render a mask', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        const stage = new Container();
+        const content = new Sprite(Texture.WHITE);
+        const maskTexture = new Texture({ source: new TextureSource({ width: 16, height: 16 }) });
+        const mask = new Sprite(maskTexture);
+
+        stage.addChild(content, mask);
+        content.mask = mask;
+
+        renderer.render(stage); // sprite-mask path - the pooled effect pointed at the user sprite
+
+        const graphicsMask = new Graphics().rect(0, 0, 16, 16).fill(0xff0000);
+
+        stage.addChild(graphicsMask);
+        // a non-sprite AlphaMask renders the mask to a texture via the pooled effect's scratch sprite
+        content.mask = new AlphaMask({ mask: graphicsMask }) as unknown as Container;
+
+        renderer.render(stage);
+
+        expect(mask.texture).toBe(maskTexture);
+
+        renderer.destroy();
     });
 });
