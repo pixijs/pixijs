@@ -832,9 +832,21 @@ describe('GCSystem', () =>
 
     describe('lazy hash replacement', () =>
     {
+        // These tests rely on a fixed "now" to decide which resources are stale. Using the real
+        // performance.now() made them order-dependent: under a full-suite run, real elapsed time
+        // between marking a resource as recently-used and calling `run()` can vary with system
+        // load, occasionally pushing it past `maxUnusedTime`. Mocking the clock removes that variance.
+        let nowSpy: jest.SpyInstance;
+
         beforeEach(() =>
         {
             gcSystem.init({ gcActive: true, gcMaxUnusedTime: 1000, gcFrequency: 100 });
+            nowSpy = jest.spyOn(performance, 'now').mockReturnValue(1_000_000);
+        });
+
+        afterEach(() =>
+        {
+            nowSpy.mockRestore();
         });
 
         it('should set GC\'d entry to null instead of replacing hash (below threshold)', () =>

@@ -127,6 +127,7 @@ describe('Polygon', () =>
         {
             expect(polygon.strokeContains(-3, -3, 2)).toBe(false);
             expect(polygon.strokeContains(15, 0, 4)).toBe(false);
+            expect(polygon.strokeContains(0, 12, 3)).toBe(false);
             expect(polygon.strokeContains(0, 13, 3)).toBe(false);
         });
 
@@ -148,6 +149,48 @@ describe('Polygon', () =>
             expect(polygonClosePathFalse.strokeContains(0, 3, 1)).toBe(false);
             expect(polygonClosePathFalse.strokeContains(0, 5, 1)).toBe(false);
             expect(polygonClosePathFalse.strokeContains(0, 7, 1)).toBe(false);
+        });
+
+        describe('alignment', () =>
+        {
+            // the same square wound both ways, so the stroke has to land on the same side of
+            // the left edge (x = 0) in both cases
+            const clockwise: Polygon = new Polygon([0, 0, 100, 0, 100, 100, 0, 100]);
+            const counterClockwise: Polygon = new Polygon([0, 0, 0, 100, 100, 100, 100, 0]);
+            const polygons = [clockwise, counterClockwise];
+
+            test('centers the stroke on the edge by default', () =>
+            {
+                for (const polygon of polygons)
+                {
+                    expect(polygon.strokeContains(-10, 50, 20)).toBe(true);
+                    expect(polygon.strokeContains(10, 50, 20)).toBe(true);
+                    expect(polygon.strokeContains(-11, 50, 20)).toBe(false);
+                    expect(polygon.strokeContains(11, 50, 20)).toBe(false);
+                }
+            });
+
+            test('puts the stroke outside the polygon with alignment 0', () =>
+            {
+                for (const polygon of polygons)
+                {
+                    expect(polygon.strokeContains(-20, 50, 20, 0)).toBe(true);
+                    expect(polygon.strokeContains(-1, 50, 20, 0)).toBe(true);
+                    expect(polygon.strokeContains(-21, 50, 20, 0)).toBe(false);
+                    expect(polygon.strokeContains(1, 50, 20, 0)).toBe(false);
+                }
+            });
+
+            test('puts the stroke inside the polygon with alignment 1', () =>
+            {
+                for (const polygon of polygons)
+                {
+                    expect(polygon.strokeContains(20, 50, 20, 1)).toBe(true);
+                    expect(polygon.strokeContains(1, 50, 20, 1)).toBe(true);
+                    expect(polygon.strokeContains(21, 50, 20, 1)).toBe(false);
+                    expect(polygon.strokeContains(-1, 50, 20, 1)).toBe(false);
+                }
+            });
         });
 
         // Add additional tests as necessary

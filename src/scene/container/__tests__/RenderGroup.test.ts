@@ -675,5 +675,122 @@ describe('RenderGroup', () =>
 
         expect(child._updateFlags).toEqual(0b1111);
     });
+
+    describe('same-parent reorders', () =>
+    {
+        it('should not duplicate onRender containers when reordering via addChildAt', () =>
+        {
+            const container = new Container({ isRenderGroup: true });
+            const a = new Container();
+            const b = new Container();
+
+            a.onRender = jest.fn();
+
+            container.addChild(a, b);
+
+            expect(container.renderGroup['_onRenderContainers']).toEqual([a]);
+
+            container.addChildAt(a, 1);
+            container.addChildAt(a, 0);
+
+            expect(container.renderGroup['_onRenderContainers']).toEqual([a]);
+        });
+
+        it('should not duplicate onRender containers when reordering via setChildIndex', () =>
+        {
+            const container = new Container({ isRenderGroup: true });
+            const a = new Container();
+            const b = new Container();
+
+            a.onRender = jest.fn();
+
+            container.addChild(a, b);
+
+            container.setChildIndex(a, 1);
+            container.setChildIndex(a, 0);
+
+            expect(container.renderGroup['_onRenderContainers']).toEqual([a]);
+        });
+
+        it('should flag a render group as dirty and reorder children via addChildAt', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+
+            const container = new Container({ isRenderGroup: true });
+            const a = new Container();
+            const b = new Container();
+
+            const onRender = jest.fn();
+
+            a.onRender = onRender;
+
+            container.addChild(a, b);
+
+            renderer.render(container);
+
+            expect(container.renderGroup.structureDidChange).toBeFalse();
+
+            container.addChildAt(a, 1);
+
+            expect(container.renderGroup.structureDidChange).toBeTrue();
+            expect(container.children).toEqual([b, a]);
+
+            renderer.render(container);
+
+            expect(onRender).toHaveBeenCalledTimes(2);
+
+            renderer.destroy();
+        });
+
+        it('should unregister onRender via removeChild after reorders', () =>
+        {
+            const container = new Container({ isRenderGroup: true });
+            const a = new Container();
+            const b = new Container();
+
+            a.onRender = jest.fn();
+
+            container.addChild(a, b);
+
+            container.addChildAt(a, 1);
+            container.setChildIndex(a, 0);
+
+            container.removeChild(a);
+
+            expect(container.renderGroup['_onRenderContainers']).toEqual([]);
+        });
+    });
+
+    it('removeOnRender should leave the list unchanged when the container is not registered', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        BigPool.getPool(RenderGroup).clear();
+
+        const container = new Container({ isRenderGroup: true });
+
+        const a = new Container();
+        const b = new Container();
+        const c = new Container();
+
+        a.onRender = () => { /* noop */ };
+        b.onRender = () => { /* noop */ };
+        c.onRender = () => { /* noop */ };
+
+        container.addChild(a);
+        container.addChild(b);
+        // `c` is intentionally never parented under `container`
+
+        renderer.render(container);
+
+        const before = [...container.renderGroup['_onRenderContainers']];
+
+        // `c` was never registered in this renderGroup; this should be a no-op
+        container.renderGroup.removeOnRender(c);
+
+        expect(container.renderGroup['_onRenderContainers']).toEqual(before);
+
+        renderer.destroy();
+    });
 });
 

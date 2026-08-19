@@ -273,6 +273,9 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
             this._context.destroy(options);
         }
 
+        this._context?.off('update', this.onViewUpdate, this);
+        this._context?.off('unload', this.unload, this);
+
         (this._ownedContext as null) = null;
         this._context = null;
 
