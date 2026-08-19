@@ -27,12 +27,15 @@ const tempBounds = new Bounds();
 /** @internal */
 class AlphaMaskEffect extends FilterEffect implements PoolItem
 {
+    /** the sprite the pooled filter is parked on between uses */
+    private readonly _placeholderSprite = new Sprite(Texture.EMPTY);
+
     constructor()
     {
         super();
 
         this.filters = [new MaskFilter({
-            sprite: new Sprite(Texture.EMPTY),
+            sprite: this._placeholderSprite,
             inverse: false,
             resolution: 'inherit',
             antialias: 'inherit'
@@ -46,7 +49,7 @@ class AlphaMaskEffect extends FilterEffect implements PoolItem
 
     set sprite(value: Sprite)
     {
-        (this.filters[0] as MaskFilter).sprite = value;
+        (this.filters[0] as MaskFilter).setSprite(value);
     }
 
     get inverse(): boolean
@@ -67,6 +70,19 @@ class AlphaMaskEffect extends FilterEffect implements PoolItem
     set channel(value: MaskChannel)
     {
         (this.filters[0] as MaskFilter).channel = value;
+    }
+
+    /**
+     * Called by {@link BigPool} when the pipe returns the effect: parks the filter
+     * on the empty placeholder so a pooled effect keeps no bindings to the last
+     * mask it applied. Without this, the pooled filter pins the mask sprite and
+     * its texture for as long as the effect sits in the pool, and destroying that
+     * texture's source hits a bind group subscription the user cannot release.
+     */
+    public reset(): void
+    {
+        this._placeholderSprite.texture = Texture.EMPTY;
+        this.sprite = this._placeholderSprite;
     }
 
     public init: () => void;
