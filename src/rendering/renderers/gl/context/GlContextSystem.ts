@@ -174,7 +174,6 @@ export class GlContextSystem implements System<ContextSystemOptions>
     public canvas: ICanvas;
 
     private _renderer: WebGLRenderer;
-    private _contextLossForced: boolean;
 
     /** @param renderer - The renderer this System works for. */
     constructor(renderer: WebGLRenderer)
@@ -400,19 +399,19 @@ export class GlContextSystem implements System<ContextSystemOptions>
     {
         event.preventDefault();
 
-        // only restore if we purposefully nuked it
-        if (this._contextLossForced)
+        // Restore the context after this event has exited.
+        // v8 previously gated this behind `_contextLossForced`  to avoid resurrecting
+        // a context mid-teardown — but destroy() removes the webglcontextlost listener *before*
+        // calling loseContext(), so that guard is redundant. Restoring on ANY loss (GPU crash, an
+        // app calling WEBGL_lose_context.loseContext() directly, or forceContextLoss()) is required
+        // because the browser never auto-restores an API-triggered loss (matches v7 behaviour).
+        setTimeout(() =>
         {
-            this._contextLossForced = false;
-            // Restore the context after this event has exited
-            setTimeout(() =>
+            if (this.gl.isContextLost())
             {
-                if (this.gl.isContextLost())
-                {
-                    this.extensions.loseContext?.restoreContext();
-                }
-            }, 0);
-        }
+                this.extensions.loseContext?.restoreContext();
+            }
+        }, 0);
     }
 
     /** Handles a restored webgl context. */
@@ -447,7 +446,6 @@ export class GlContextSystem implements System<ContextSystemOptions>
     public forceContextLoss(): void
     {
         this.extensions.loseContext?.loseContext();
-        this._contextLossForced = true;
     }
     /**
      * Validate context.
