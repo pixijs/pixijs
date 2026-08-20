@@ -29,26 +29,34 @@ const subImports = [
     ['./particle-container', './lib/scene/particle-container'],
 ];
 
+interface ExportEntry
+{
+    /**
+     * Declarations for TypeScript 6 and above, which declares the WebGPU globals in its own
+     * lib.dom - pulling in `@webgpu/types` on top of those is a duplicate declaration error.
+     * Must be listed before `types`, conditions are matched in order.
+     */
+    'types@>=6.0'?: string;
+    types?: string;
+    default: string;
+}
+
 interface ExportField
 {
-    import: {
-        default: string;
-        types?: string;
-    };
-    require: {
-        default: string;
-        types?: string;
-    };
+    import: ExportEntry;
+    require: ExportEntry;
 }
 
 const exportFields: Record<string, ExportField> = {
     '.': {
         import: {
-            types: './lib/index.d.ts',
+            'types@>=6.0': './lib/index.ts6.d.ts',
+            types: './lib/index.legacy.d.ts',
             default: './lib/index.mjs',
         },
         require: {
-            types: './lib/index.d.ts',
+            'types@>=6.0': './lib/index.ts6.d.ts',
+            types: './lib/index.legacy.d.ts',
             default: './lib/index.js',
         },
     },

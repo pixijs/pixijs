@@ -59,5 +59,37 @@ function copyShaders()
     }
 }
 
+/**
+ * Write the two version-specific entry points that wrap lib/index.d.ts.
+ *
+ * lib/index.d.ts itself carries no ambient WebGPU globals, because TypeScript 6
+ * declares them in its own lib.dom and would report them as duplicates. Instead
+ * each entry brings in what its TypeScript version is missing:
+ *
+ * - TypeScript < 6 gets the `@webgpu/types` reference, as before.
+ * - TypeScript >= 6 gets the `getContext('webgpu')` overload it lacks.
+ *
+ * package.json points at these through the `types@>=6.0` export condition and
+ * the `typesVersions` field.
+ */
+function writeVersionedEntries()
+{
+    const src = path.join(process.cwd(), './types');
+    const lib = path.join(process.cwd(), './lib');
+
+    fs.copyFileSync(`${src}/WebGPUCanvas.d.ts`, `${lib}/WebGPUCanvas.d.ts`);
+
+    fs.writeFileSync(
+        `${lib}/index.legacy.d.ts`,
+        '/// <reference types="@webgpu/types" />\nexport * from \'./index\';\n'
+    );
+
+    fs.writeFileSync(
+        `${lib}/index.ts6.d.ts`,
+        '/// <reference path="./WebGPUCanvas.d.ts" />\nexport * from \'./index\';\n'
+    );
+}
+
 addMixinReferencePaths();
 copyShaders();
+writeVersionedEntries();

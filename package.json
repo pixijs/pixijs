@@ -19,7 +19,14 @@
   ],
   "main": "lib/index.js",
   "module": "lib/index.mjs",
-  "types": "lib/index.d.ts",
+  "types": "lib/index.legacy.d.ts",
+  "typesVersions": {
+    ">=6.0": {
+      "*": [
+        "lib/index.ts6.d.ts"
+      ]
+    }
+  },
   "files": [
     "lib",
     "dist",
@@ -42,6 +49,7 @@
     "test:visual": "node ./scripts/test.mts visual",
     "test:unit": "node ./scripts/test.mts unit",
     "test:types": "node ./scripts/test.mts types",
+    "test:dts": "node ./scripts/test.mts dts",
     "test:lint": "node ./scripts/test.mts lint",
     "lint": "node ./scripts/test.mts lint --fix",
     "release": "node ./scripts/release.mts"
@@ -216,11 +224,13 @@
   "exports": {
     ".": {
       "import": {
-        "types": "./lib/index.d.ts",
+        "types@>=6.0": "./lib/index.ts6.d.ts",
+        "types": "./lib/index.legacy.d.ts",
         "default": "./lib/index.mjs"
       },
       "require": {
-        "types": "./lib/index.d.ts",
+        "types@>=6.0": "./lib/index.ts6.d.ts",
+        "types": "./lib/index.legacy.d.ts",
         "default": "./lib/index.js"
       }
     },
