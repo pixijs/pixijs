@@ -2,6 +2,7 @@ import { RenderTarget } from '../../../shared/renderTarget/RenderTarget';
 import { TextureSource } from '../../../shared/texture/sources/TextureSource';
 import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
 
+import type { TEXTURE_FORMATS } from '../../../shared/texture/const';
 import type { WebGPURenderer } from '../../WebGPURenderer';
 
 let renderer: WebGPURenderer;
@@ -183,5 +184,103 @@ describeLocalOnly('PipelineSystem color target count cache', () =>
         // sharing a bucket would hand one pass a GPURenderPipeline built for the
         // other's attachment layout -> WebGPU 'incompatible render pipeline' error
         expect(mrtCache).not.toBe(depthOnlyCache);
+    });
+});
+
+describeLocalOnly('PipelineSystem bundle descriptor', () =>
+{
+    const colorTexture = () => new TextureSource({ width: 16, height: 16, format: 'bgra8unorm' });
+    const depthStencilTarget = (format: TEXTURE_FORMATS) => new RenderTarget({
+        colorTextures: [colorTexture()],
+        depthStencilTexture: new TextureSource({ width: 16, height: 16, format }),
+    });
+
+    it('mirrors a read-only depth attachment onto the bundle descriptor', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const writableTarget = depthStencilTarget('depth24plus-stencil8');
+        const readOnlyTarget = depthStencilTarget('depth24plus-stencil8');
+
+        readOnlyTarget.depthStencilAttachment.depthReadOnly = true;
+
+        renderer.pipeline.setRenderTarget(writableTarget);
+        const writableDescriptor = renderer.pipeline.getBundleDescriptor();
+        const writableKey = renderer.pipeline.bundleStateKey;
+
+        expect(writableDescriptor.depthReadOnly).toBeFalsy();
+        expect(writableDescriptor.stencilReadOnly).toBeFalsy();
+
+        renderer.pipeline.setRenderTarget(readOnlyTarget);
+        const readOnlyDescriptor = renderer.pipeline.getBundleDescriptor();
+
+        // WebGPU rejects a bundle executed in a read-only pass unless the bundle promised the same,
+        // so the descriptor has to carry the flag the pass will be built with
+        expect(readOnlyDescriptor.depthReadOnly).toBe(true);
+        // ...and the stencil aspect follows depth by default, exactly as the pass derives it
+        expect(readOnlyDescriptor.stencilReadOnly).toBe(true);
+
+        // the two are not interchangeable: their pipelines bake different depth writes
+        expect(renderer.pipeline.bundleStateKey).not.toBe(writableKey);
+    });
+
+    it('keeps stencil writable when the target asks for a read-only depth aspect only', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const target = depthStencilTarget('depth24plus-stencil8');
+
+        target.depthStencilAttachment.depthReadOnly = true;
+        target.depthStencilAttachment.stencilReadOnly = false;
+
+        renderer.pipeline.setRenderTarget(target);
+        const descriptor = renderer.pipeline.getBundleDescriptor();
+
+        expect(descriptor.depthReadOnly).toBe(true);
+        expect(descriptor.stencilReadOnly).toBeFalsy();
+    });
+
+    it('tracks a read-only stencil aspect independently of depth', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const target = depthStencilTarget('depth24plus-stencil8');
+
+        // the attachment lets stencil go read-only on its own, and GpuRenderTargetAdaptor builds
+        // the pass that way — so a bundle that inherited the flag from depth instead would be
+        // recorded without the promise, and every executeBundles into that pass would fail
+        target.depthStencilAttachment.stencilReadOnly = true;
+
+        renderer.pipeline.setRenderTarget(target);
+        const descriptor = renderer.pipeline.getBundleDescriptor();
+
+        expect(descriptor.stencilReadOnly).toBe(true);
+        expect(descriptor.depthReadOnly).toBeFalsy();
+    });
+
+    it('never marks an aspect the format does not have as read-only', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const depthOnlyTarget = depthStencilTarget('depth24plus');
+
+        depthOnlyTarget.depthStencilAttachment.depthReadOnly = true;
+
+        renderer.pipeline.setRenderTarget(depthOnlyTarget);
+        const depthOnlyDescriptor = renderer.pipeline.getBundleDescriptor();
+
+        expect(depthOnlyDescriptor.depthStencilFormat).toBe('depth24plus');
+        expect(depthOnlyDescriptor.depthReadOnly).toBe(true);
+        // the stencil default follows depth, but this format has no stencil aspect to promise
+        expect(depthOnlyDescriptor.stencilReadOnly).toBeFalsy();
+
+        const colorOnlyTarget = new RenderTarget({ colorTextures: [colorTexture()] });
+
+        renderer.pipeline.setRenderTarget(colorOnlyTarget);
+        const colorOnlyDescriptor = renderer.pipeline.getBundleDescriptor();
+
+        expect(colorOnlyDescriptor.depthStencilFormat).toBeUndefined();
+        expect(colorOnlyDescriptor.depthReadOnly).toBeFalsy();
+        expect(colorOnlyDescriptor.stencilReadOnly).toBeFalsy();
     });
 });
