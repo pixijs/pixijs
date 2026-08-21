@@ -360,7 +360,6 @@ export class Geometry extends EventEmitter<{
 
         this.unload();
 
-        this.indexBuffer?.destroy();
         (this.attributes as null) = null;
         (this.buffers as null) = null;
         (this.indexBuffer as null) = null;

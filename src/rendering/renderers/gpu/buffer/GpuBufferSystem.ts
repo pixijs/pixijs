@@ -1,7 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { type GPUData } from '../../../../scene/view/ViewContainer';
 import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
-import { uid } from '../../../../utils/data/uid';
 import { fastCopy } from '../../shared/buffer/utils/fastCopy';
 
 import type { Buffer } from '../../shared/buffer/Buffer';
@@ -112,7 +111,6 @@ export class GpuBufferSystem implements System
         const gpuBuffer = this._gpu.device.createBuffer(buffer.descriptor);
 
         buffer._updateID = 0;
-        buffer._resourceId = uid('resource');
 
         if (buffer.data)
         {
