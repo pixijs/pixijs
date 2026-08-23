@@ -647,6 +647,10 @@ export abstract class AbstractText<
      */
     public override destroy(options: DestroyOptions = false): void
     {
+        // detach from the style so a shared style does not keep a reference
+        // to this destroyed instance (issue #12049)
+        this._style?.off('update', this.onViewUpdate, this);
+
         super.destroy(options);
 
         (this as any).owner = null;
