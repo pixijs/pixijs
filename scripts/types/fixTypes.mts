@@ -60,17 +60,19 @@ function copyShaders()
 }
 
 /**
- * Write the two version-specific entry points that wrap lib/index.d.ts.
+ * Ship the WebGPU declarations both TypeScript versions need.
  *
- * lib/index.d.ts itself carries no ambient WebGPU globals, because TypeScript 6
- * declares them in its own lib.dom and would report them as duplicates. Instead
- * each entry brings in what its TypeScript version is missing:
+ * The library is built with TypeScript 6, which declares the WebGPU types in
+ * its own lib.dom, so `lib/index.d.ts` is the modern entry point and carries
+ * only the canvas overloads TypeScript 6 is missing (see WebGPUCanvas.d.ts).
  *
- * - TypeScript < 6 gets the `@webgpu/types` reference, as before.
- * - TypeScript >= 6 gets the `getContext('webgpu')` overload it lacks.
+ * TypeScript 5 has no WebGPU types at all, so it gets a wrapper entry that
+ * pulls in `@webgpu/types` on top - the overloads it declares are identical to
+ * the ones in WebGPUCanvas.d.ts, so the two merge without conflict.
  *
- * package.json points at these through the `types@>=6.0` export condition and
- * the `typesVersions` field.
+ * package.json points TypeScript 6 and above at `lib/index.d.ts` through the
+ * `types@>=6.0` export condition and the `typesVersions` field; everything
+ * older falls back to `lib/index.legacy.d.ts`.
  */
 function writeVersionedEntries()
 {
@@ -79,14 +81,17 @@ function writeVersionedEntries()
 
     fs.copyFileSync(`${src}/WebGPUCanvas.d.ts`, `${lib}/WebGPUCanvas.d.ts`);
 
+    const filePath = `${lib}/index.d.ts`;
+    const contents = fs.readFileSync(filePath, 'utf8');
+
+    if (!contents.includes('/// <reference path="./WebGPUCanvas.d.ts" />'))
+    {
+        fs.writeFileSync(filePath, `/// <reference path="./WebGPUCanvas.d.ts" />\n${contents}`);
+    }
+
     fs.writeFileSync(
         `${lib}/index.legacy.d.ts`,
         '/// <reference types="@webgpu/types" />\nexport * from \'./index\';\n'
-    );
-
-    fs.writeFileSync(
-        `${lib}/index.ts6.d.ts`,
-        '/// <reference path="./WebGPUCanvas.d.ts" />\nexport * from \'./index\';\n'
     );
 }
 

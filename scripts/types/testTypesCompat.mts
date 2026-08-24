@@ -3,11 +3,12 @@
  * -----------------------------------------------------------------
  * Type declaration compatibility checks.
  *
- * PixiJS ships two entry points for its declarations: `lib/index.legacy.d.ts`
- * pulls in `@webgpu/types` for TypeScript 5, and `lib/index.ts6.d.ts` relies on
- * the WebGPU types built into TypeScript 6's own lib.dom. Getting either one
- * wrong is invisible to the unit and visual suites - it only shows up in a
- * consuming project - so this compiles a small fixture against both compilers.
+ * PixiJS is built with TypeScript 6, which declares the WebGPU types in its own
+ * lib.dom, so `lib/index.d.ts` carries no `@webgpu/types` reference. Consumers
+ * still on TypeScript 5 get `lib/index.legacy.d.ts`, which adds that reference
+ * back. Getting either one wrong is invisible to the unit and visual suites -
+ * it only shows up in a consuming project - so this compiles a small fixture
+ * against both compilers.
  *
  * The fixture resolves `pixi.js` through a symlink into node_modules, so the
  * package `exports` map (and its `types@>=6.0` condition) is exercised the way a
@@ -20,8 +21,8 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import { spawn } from '../utils/spawn.mts';
 
-/** The TypeScript 6 release the declarations are checked against */
-const ts6Version = '6.0.3';
+/** The TypeScript 5 release the legacy declarations are checked against */
+const ts5Version = '5.9.3';
 
 /** A TypeScript version to check the declarations against */
 interface Compiler
@@ -34,28 +35,56 @@ interface Compiler
     options?: Record<string, unknown>;
 }
 
+/** Where the pinned TypeScript 5 install lives, kept out of the repo's own node_modules */
+const ts5Dir = path.join(os.tmpdir(), `pixi-tsc-${ts5Version}`);
+const ts5Bin = path.join(ts5Dir, 'node_modules/typescript/bin/tsc');
+
 /**
- * TypeScript 6 is fetched through npx rather than installed as a devDependency: both packages
- * name their binary `tsc`, so having them side by side leaves node_modules/.bin/tsc pointing at
- * whichever npm linked last - which would silently build and type check the whole repo with the
- * wrong compiler.
+ * TypeScript 5 is installed into a directory of its own rather than as a devDependency: both
+ * packages name their binary `tsc`, so having them side by side leaves node_modules/.bin/tsc
+ * pointing at whichever npm linked last - which would silently build and type check the whole
+ * repo with the wrong compiler.
+ *
+ * It is invoked by path, not through `npx -p typescript@5.9.3 tsc`: npx will hand back the
+ * locally installed compiler instead of the one asked for, so that route can silently run the
+ * check against the wrong version.
  */
 const compilers: Compiler[] = [
-    { name: 'dts:ts5', command: ['node', 'node_modules/typescript/bin/tsc'] },
     {
         name: 'dts:ts6',
-        command: ['npx', '-y', '-p', `typescript@${ts6Version}`, 'tsc'],
+        command: ['node', 'node_modules/typescript/bin/tsc'],
         // node10 resolution is deprecated in TypeScript 6, but consumers still run it
         options: { ignoreDeprecations: '6.0' },
     },
+    { name: 'dts:ts5', command: ['node', ts5Bin] },
 ];
+
+/** Install the pinned TypeScript 5 compiler, and check it is the version that was asked for */
+async function ensureTs5()
+{
+    if (!fs.existsSync(ts5Bin))
+    {
+        console.log(`installing typescript@${ts5Version} to check the legacy declarations...`);
+        fs.mkdirSync(ts5Dir, { recursive: true });
+        await spawn('npm', ['install', '--prefix', ts5Dir, `typescript@${ts5Version}`, '--no-save', '--silent']);
+    }
+
+    const { version } = JSON.parse(
+        fs.readFileSync(path.join(ts5Dir, 'node_modules/typescript/package.json'), 'utf8')
+    );
+
+    if (version !== ts5Version)
+    {
+        throw new Error(`expected typescript@${ts5Version} in ${ts5Dir}, found ${version}`);
+    }
+}
 
 const root = process.cwd();
 
 /** Build the declarations if they are not there yet - the fixture compiles against real output */
 async function ensureLib()
 {
-    if (fs.existsSync(path.join(root, 'lib/index.ts6.d.ts'))) return;
+    if (fs.existsSync(path.join(root, 'lib/index.legacy.d.ts'))) return;
 
     console.log('lib declarations missing, building them first...');
     await spawn('node', ['./scripts/build.mts', '--lib', '--dev']);
@@ -111,28 +140,30 @@ function writeFixture(resolution: Resolution, compiler: Compiler): string
     }, null, 2));
 
     fs.writeFileSync(path.join(dir, 'use.ts'), [
-        `import type { Renderer, Texture } from 'pixi.js';`,
+        `import type { ICanvas, Renderer, Texture } from 'pixi.js';`,
         ``,
         `export const renderer: Renderer | null = null;`,
         `export const texture: Texture | null = null;`,
         ``,
-        `// the overload that HTMLCanvasElement must keep satisfying for ICanvas`,
-        `export const context = document.createElement('canvas').getContext('webgpu');`,
+        `// the overloads both canvases must keep satisfying for ICanvas`,
+        `export const canvas: ICanvas = document.createElement('canvas');`,
+        `export const offscreen: ICanvas = new OffscreenCanvas(1, 1);`,
+        `export const context = canvas.getContext('webgpu');`,
         ``,
     ].join('\n'));
 
     return dir;
 }
 
-/** The TypeScript 6 entry must not drag in the globals TypeScript 6 already declares */
-function checkTs6EntryIsClean()
+/** The main entry must not drag in the globals TypeScript 6 already declares */
+function checkMainEntryIsClean()
 {
-    const contents = fs.readFileSync(path.join(root, 'lib/index.ts6.d.ts'), 'utf8');
+    const contents = fs.readFileSync(path.join(root, 'lib/index.d.ts'), 'utf8');
 
     if (contents.includes('@webgpu/types'))
     {
         throw new Error(
-            'lib/index.ts6.d.ts references @webgpu/types - that conflicts with the WebGPU types '
+            'lib/index.d.ts references @webgpu/types - that conflicts with the WebGPU types '
             + 'built into TypeScript 6. The reference belongs in lib/index.legacy.d.ts only.'
         );
     }
@@ -141,7 +172,8 @@ function checkTs6EntryIsClean()
 async function main()
 {
     await ensureLib();
-    checkTs6EntryIsClean();
+    await ensureTs5();
+    checkMainEntryIsClean();
 
     const failures: string[] = [];
 

@@ -1,4 +1,3 @@
-// @ts-expect-error No types for fs-extra/esm
 import { readJSON } from 'fs-extra/esm';
 import path from 'path';
 import { bump } from './utils/bump.mts';

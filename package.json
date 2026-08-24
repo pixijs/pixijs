@@ -23,7 +23,7 @@
   "typesVersions": {
     ">=6.0": {
       "*": [
-        "lib/index.ts6.d.ts"
+        "lib/index.d.ts"
       ]
     }
   },
@@ -119,13 +119,13 @@
     "semver": "^7.6.3",
     "tree-kill": "^1.2.2",
     "ts-jest": "^26.0.0",
-    "typedoc": "^0.28.16",
+    "typedoc": "^0.28.20",
     "typedoc-plugin-ga": "^1.1.1",
     "typedoc-plugin-markdown": "^4.9.0",
     "typedoc-plugin-mdn-links": "^5.0.10",
     "typedoc-plugin-no-inherit": "^1.6.1",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.53.0"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.67.0"
   },
   "bundles": [
     {
@@ -224,12 +224,12 @@
   "exports": {
     ".": {
       "import": {
-        "types@>=6.0": "./lib/index.ts6.d.ts",
+        "types@>=6.0": "./lib/index.d.ts",
         "types": "./lib/index.legacy.d.ts",
         "default": "./lib/index.mjs"
       },
       "require": {
-        "types@>=6.0": "./lib/index.ts6.d.ts",
+        "types@>=6.0": "./lib/index.d.ts",
         "types": "./lib/index.legacy.d.ts",
         "default": "./lib/index.js"
       }
