@@ -210,6 +210,56 @@ describe('Text', () =>
 
             expect(style.fill).toBe(null);
         });
+
+        it('should remove the update listener from a shared style on destroy (no leak)', () =>
+        {
+            const style = new TextStyle({ fill: 'red' });
+
+            const text1 = new Text({ text: 'foo', style });
+            const text2 = new Text({ text: 'bar', style });
+
+            expect(style.listenerCount('update')).toEqual(2);
+
+            text1.destroy();
+
+            // Text must detach from the shared style so the destroyed instance
+            // can be garbage collected. #12049
+            expect(style.listenerCount('update')).toEqual(1);
+
+            text2.destroy();
+
+            expect(style.listenerCount('update')).toEqual(0);
+        });
+
+        it('should detach from the old style when assigning a new one', () =>
+        {
+            const styleA = new TextStyle({ fill: 'red' });
+            const styleB = new TextStyle({ fill: 'blue' });
+
+            const text = new Text({ text: 'foo', style: styleA });
+
+            expect(styleA.listenerCount('update')).toEqual(1);
+
+            text.style = styleB;
+
+            expect(styleA.listenerCount('update')).toEqual(0);
+            expect(styleB.listenerCount('update')).toEqual(1);
+        });
+
+        it('should remove the update listener from a shared style for BitmapText too (#12049)', () =>
+        {
+            const style = new TextStyle({ fontFamily: 'Arial' });
+
+            const text1 = new BitmapText({ text: 'foo', style });
+            const text2 = new BitmapText({ text: 'bar', style });
+
+            expect(style.listenerCount('update')).toEqual(2);
+
+            text1.destroy();
+            text2.destroy();
+
+            expect(style.listenerCount('update')).toEqual(0);
+        });
     });
 
     describe('text', () =>

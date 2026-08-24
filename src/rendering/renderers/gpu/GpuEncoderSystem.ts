@@ -1,5 +1,7 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { warn } from '../../../utils/logging/warn';
 import { type ShaderOverrides } from '../shared/shader/ShaderOverrides';
+import { RenderBundle } from './RenderBundle';
 
 import type { Rectangle } from '../../../maths/shapes/Rectangle';
 import type { Buffer } from '../shared/buffer/Buffer';
@@ -67,6 +69,15 @@ export class GpuEncoderSystem implements System
      * a correctly typed target — even while a bundle is being recorded.
      */
     private _passEncoder: GPURenderPassEncoder;
+    /**
+     * {@link PipelineSystem.bundleStateKey} as it was when {@link beginBundle} built the bundle
+     * encoder's descriptor, ready to stamp onto the {@link RenderBundle} that {@link endBundle}
+     * returns. Sampled at that moment so the stamp and the state the bundle actually baked cannot
+     * describe different render targets.
+     */
+    private _bundleStateKey: number;
+    /** The label passed to {@link beginBundle}, carried through to the finished bundle. */
+    private _bundleLabel: string;
 
     private readonly _renderer: WebGPURenderer;
 
@@ -120,9 +131,11 @@ export class GpuEncoderSystem implements System
      *
      * Render bundles allow pre-recording of draw commands that can be replayed multiple times
      * via {@link executeBundle}, reducing CPU overhead for repeated draw sequences.
+     * @param label - Optional debug label. Names the bundle in GPU captures and in the WebGPU
+     * validation errors it can raise when replayed, instead of `(unlabeled)`.
      * @throws If a render bundle is already being recorded.
      */
-    public beginBundle(): void
+    public beginBundle(label?: string): void
     {
         // While a bundle is recording, renderPassEncoder is swapped to the bundle encoder and no
         // longer matches the real pass. Equal references therefore mean no bundle is active.
@@ -133,7 +146,13 @@ export class GpuEncoderSystem implements System
 
         this._clearCache();
 
-        const descriptor = this._renderer.pipeline.getBundleDescriptor();
+        const pipeline = this._renderer.pipeline;
+        const descriptor = pipeline.getBundleDescriptor();
+
+        descriptor.label = label;
+
+        this._bundleStateKey = pipeline.bundleStateKey;
+        this._bundleLabel = label;
 
         // A bundle encoder exposes the same render/bind command API as the pass, so it stands in as
         // the write target while recording. The real pass stays in _passEncoder and is restored by
@@ -143,9 +162,10 @@ export class GpuEncoderSystem implements System
 
     /**
      * Finishes recording the current render bundle and restores the previous render pass encoder.
-     * @returns The recorded {@link GPURenderBundle} ready to be executed via {@link executeBundle}.
+     * @returns The recorded {@link RenderBundle}, ready to be executed via {@link executeBundle} and
+     * stamped with the pipeline state it baked so {@link isBundleValid} can vet it on later frames.
      */
-    public endBundle(): GPURenderBundle
+    public endBundle(): RenderBundle
     {
         const encoder = this.renderPassEncoder;
 
@@ -156,23 +176,89 @@ export class GpuEncoderSystem implements System
             throw new Error('endBundle called without an active render bundle.');
         }
 
-        const bundle = encoder.finish();
+        // the label goes on the bundle as well as on its encoder: WebGPU names the bundle, not the
+        // encoder, in the validation error executeBundles raises
+        const gpuBundle = encoder.finish({ label: this._bundleLabel });
 
         this.renderPassEncoder = this._passEncoder;
         this._clearCache();
 
-        return bundle;
+        return new RenderBundle(gpuBundle, this._bundleStateKey, this._bundleLabel);
     }
 
     /**
-     * Replays a previously recorded render bundle on the current render pass.
-     * The bound state cache is cleared since the bundle may set its own pipeline, bind groups, and buffers.
-     * @param bundle - The render bundle to execute.
+     * Checks whether a recorded bundle can still be replayed against the render target that is
+     * bound now.
+     *
+     * A bundle permanently bakes the attachment state it was recorded with — color format(s),
+     * color target count, depth/stencil format, sample count — and WebGPU rejects the entire
+     * command buffer if any of it differs at execute time. It also bakes the front-face winding of
+     * its pipelines, which WebGPU does *not* validate: once the target's {@link RenderTarget.flipY}
+     * parity changes, replaying silently renders geometry inside out.
+     *
+     * Ask before replaying rather than after: only the caller owns the draw commands, so only the
+     * caller can re-record. A missing bundle reports `false`, so `!isBundleValid(bundles[i])` reads
+     * correctly on the first frame, before anything has been recorded.
+     * @param bundle - The bundle to check, as returned by {@link endBundle}.
+     * @returns `true` if the bundle is safe to execute right now, `false` if it must be re-recorded.
      */
-    public executeBundle(bundle: GPURenderBundle): void
+    public isBundleValid(bundle: RenderBundle): boolean
     {
+        return bundle?.stateKey === this._renderer.pipeline.bundleStateKey;
+    }
+
+    /**
+     * Replays previously recorded render bundles on the current render pass.
+     * The bound state cache is cleared since a bundle may set its own pipeline, bind groups, and buffers.
+     *
+     * Pass a whole run of bundles rather than calling this once per bundle: WebGPU resets the pass
+     * state after every call, so N calls cost N cache clears and N trips through the binding layer
+     * for exactly the same result.
+     *
+     * Every bundle must have been recorded against a matching render target — check with
+     * {@link isBundleValid} first and re-record if it says no, as Pixi cannot rebuild your draw
+     * commands for you.
+     * @param bundle - The render bundle to execute, or a run of them to execute in one call.
+     */
+    public executeBundle(bundle: RenderBundle | RenderBundle[]): void
+    {
+        const gpuBundles: GPURenderBundle[] = [];
+
+        if (Array.isArray(bundle))
+        {
+            for (let i = 0; i < bundle.length; i++)
+            {
+                gpuBundles[i] = this._getGpuBundle(bundle[i]);
+            }
+        }
+        else
+        {
+            gpuBundles[0] = this._getGpuBundle(bundle);
+        }
+
         this._clearCache();
-        this._passEncoder.executeBundles([bundle]);
+        this._passEncoder.executeBundles(gpuBundles);
+    }
+
+    /**
+     * Unwraps a bundle for {@link executeBundle}, complaining first if it no longer matches the
+     * bound render target — the winding half of that mismatch is invisible otherwise, since WebGPU
+     * validates attachments but not front-face order.
+     * @param bundle - The bundle being executed.
+     * @returns The native bundle to hand to `executeBundles`.
+     */
+    private _getGpuBundle(bundle: RenderBundle): GPURenderBundle
+    {
+        // #if _DEBUG
+        if (!this.isBundleValid(bundle))
+        {
+            warn(`Render bundle ${bundle?.label ?? '(unlabeled)'} was recorded against a different render `
+                + 'target state. Re-record it — replaying it will either be rejected by WebGPU or draw '
+                + 'with the wrong winding. Check encoder.isBundleValid(bundle) before executing.');
+        }
+        // #endif
+
+        return bundle.gpuBundle;
     }
 
     public setViewport(viewport: Rectangle): void
