@@ -19,11 +19,11 @@
   ],
   "main": "lib/index.js",
   "module": "lib/index.mjs",
-  "types": "lib/index.legacy.d.ts",
+  "types": "lib/index.d.ts",
   "typesVersions": {
-    ">=6.0": {
+    "<6.0": {
       "*": [
-        "lib/index.d.ts"
+        "lib/index.legacy.d.ts"
       ]
     }
   },
@@ -224,13 +224,13 @@
   "exports": {
     ".": {
       "import": {
-        "types@>=6.0": "./lib/index.d.ts",
-        "types": "./lib/index.legacy.d.ts",
+        "types@<6.0": "./lib/index.legacy.d.ts",
+        "types": "./lib/index.d.ts",
         "default": "./lib/index.mjs"
       },
       "require": {
-        "types@>=6.0": "./lib/index.d.ts",
-        "types": "./lib/index.legacy.d.ts",
+        "types@<6.0": "./lib/index.legacy.d.ts",
+        "types": "./lib/index.d.ts",
         "default": "./lib/index.js"
       }
     },

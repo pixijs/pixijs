@@ -70,9 +70,9 @@ function copyShaders()
  * pulls in `@webgpu/types` on top - the overloads it declares are identical to
  * the ones in WebGPUCanvas.d.ts, so the two merge without conflict.
  *
- * package.json points TypeScript 6 and above at `lib/index.d.ts` through the
- * `types@>=6.0` export condition and the `typesVersions` field; everything
- * older falls back to `lib/index.legacy.d.ts`.
+ * package.json points TypeScript 5 at `lib/index.legacy.d.ts` through the
+ * `types@<6.0` export condition and the `typesVersions` field; TypeScript 6 and
+ * above get `lib/index.d.ts`, the default.
  */
 function writeVersionedEntries()
 {

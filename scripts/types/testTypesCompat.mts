@@ -11,7 +11,7 @@
  * against both compilers.
  *
  * The fixture resolves `pixi.js` through a symlink into node_modules, so the
- * package `exports` map (and its `types@>=6.0` condition) is exercised the way a
+ * package `exports` map (and its `types@<6.0` condition) is exercised the way a
  * real consumer would hit it, rather than by pointing at a file path.
  * -----------------------------------------------------------------
  */
@@ -93,7 +93,7 @@ async function ensureLib()
 /**
  * A module resolution mode to check the declarations under. Which entry point a consumer
  * ends up with depends on this: `bundler` and `node16` go through the `exports` map and its
- * `types@>=6.0` condition, while `node10` goes through the root `types` field and
+ * `types@<6.0` condition, while `node10` goes through the root `types` field and
  * `typesVersions`. Both routes have to land on the right declarations.
  *
  * `node16` is deliberately not covered: pixi's CommonJS declarations import `earcut`, which is

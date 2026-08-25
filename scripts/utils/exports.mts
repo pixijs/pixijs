@@ -31,12 +31,13 @@ const subImports = [
 interface ExportEntry
 {
     /**
-     * The declarations the library is built against. TypeScript 6 and above declare the
-     * WebGPU globals in their own lib.dom, so these carry no `@webgpu/types` reference -
-     * pulling that in on top would be a duplicate declaration error. TypeScript 5 falls
-     * through to `types` instead. Must be listed first, conditions are matched in order.
+     * The declarations for TypeScript 5, which has no WebGPU types of its own, so these
+     * pull in `@webgpu/types`. TypeScript 6 and above declare the WebGPU globals in their
+     * own lib.dom - pulling that in on top would be a duplicate declaration error - so
+     * they fall through to `types`, the declarations the library is built against. Must be
+     * listed first, conditions are matched in order.
      */
-    'types@>=6.0'?: string;
+    'types@<6.0'?: string;
     types?: string;
     default: string;
 }
@@ -50,13 +51,13 @@ interface ExportField
 const exportFields: Record<string, ExportField> = {
     '.': {
         import: {
-            'types@>=6.0': './lib/index.d.ts',
-            types: './lib/index.legacy.d.ts',
+            'types@<6.0': './lib/index.legacy.d.ts',
+            types: './lib/index.d.ts',
             default: './lib/index.mjs',
         },
         require: {
-            'types@>=6.0': './lib/index.d.ts',
-            types: './lib/index.legacy.d.ts',
+            'types@<6.0': './lib/index.legacy.d.ts',
+            types: './lib/index.d.ts',
             default: './lib/index.js',
         },
     },
