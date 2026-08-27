@@ -43,6 +43,14 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 
     private readonly _batchersByInstructionSet: Record<number, Record<string, Batcher>> = Object.create(null);
 
+    /**
+     * Batchers released by destroyed instruction sets, pooled for reuse by new
+     * ones (keyed by batcher name). Reusing a batcher reuses its geometry and
+     * the underlying GPU buffers across frames, instead of allocating fresh
+     * ones for every rebuilt scene.
+     */
+    private readonly _batcherPool: Record<string, Batcher[]> = Object.create(null);
+
     private _adaptor: BatcherAdaptor;
 
     /** A record of all active batchers, keyed by their names */
@@ -52,6 +60,9 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
     private _activeBatch: Batcher;
 
     public static _availableBatchers: Record<string, new (options: BatcherOptions) => Batcher> = Object.create(null);
+
+    /** How many released batchers to keep per batcher name for reuse. */
+    private static readonly _maxPooledBatchers = 64;
 
     public static getBatcher(name: string, maxTextures: number): Batcher
     {
@@ -73,7 +84,7 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         if (!batchers)
         {
             batchers = this._batchersByInstructionSet[instructionSet.uid] = Object.create(null);
-            batchers.default ||= new DefaultBatcher({
+            batchers.default ||= this._batcherPool.default?.pop() ?? new DefaultBatcher({
                 maxTextures: this.renderer.limits.maxBatchableTextures,
             });
         }
@@ -99,7 +110,8 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
             if (!batch)
             {
                 batch = this._activeBatches[batchableObject.batcherName]
-                    = BatcherPipe.getBatcher(batchableObject.batcherName, this.renderer.limits.maxBatchableTextures);
+                    = this._batcherPool[batchableObject.batcherName]?.pop()
+                        ?? BatcherPipe.getBatcher(batchableObject.batcherName, this.renderer.limits.maxBatchableTextures);
                 batch.begin();
             }
 
@@ -149,6 +161,47 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         }
     }
 
+    /**
+     * Called when an instruction set is destroyed: returns its batchers to the
+     * pool so future instruction sets reuse them (geometry, buffers and all)
+     * rather than allocating new ones every frame.
+     * @param instructionSet - the destroyed instruction set
+     */
+    public destroyInstructionSet(instructionSet: InstructionSet)
+    {
+        // the pipe itself may already have been destroyed (renderer torn down
+        // before the scene) - nothing to release then
+        if (!this._batcherPool) return;
+
+        const batchers = this._batchersByInstructionSet[instructionSet.uid];
+
+        if (!batchers) return;
+
+        delete this._batchersByInstructionSet[instructionSet.uid];
+
+        // _activeBatches may still point at this record; drop it so the pipe's
+        // own destroy() cannot double-destroy pooled batchers
+        if (this._activeBatches === batchers)
+        {
+            this._activeBatches = Object.create(null);
+        }
+
+        for (const name in batchers)
+        {
+            const batcher = batchers[name];
+            const pool = (this._batcherPool[name] ??= []);
+
+            if (pool.length < BatcherPipe._maxPooledBatchers)
+            {
+                pool.push(batcher);
+            }
+            else
+            {
+                batcher.destroy();
+            }
+        }
+    }
+
     public execute(batch: Batch)
     {
         if (batch.action === 'startBatch')
@@ -176,6 +229,18 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         }
 
         this._activeBatches = null;
+
+        for (const name in this._batcherPool)
+        {
+            const pool = this._batcherPool[name];
+
+            for (let i = 0; i < pool.length; i++)
+            {
+                pool[i].destroy();
+            }
+        }
+
+        (this._batcherPool as null) = null;
     }
 }
 

@@ -13,6 +13,15 @@ import type { BindResource } from './shader/BindResource';
 import type { GpuProgram } from './shader/GpuProgram';
 import type { WebGPURenderer } from './WebGPURenderer';
 
+interface BindGroupCacheEntry
+{
+    gpuBindGroup: GPUBindGroup;
+    /** the pixi Buffers behind buffer-backed resources, for cache revalidation */
+    srcBuffers: Buffer[] | null;
+    /** the GPUBuffer each srcBuffer resolved to when this bind group was created */
+    gpuBuffers: GPUBuffer[] | null;
+}
+
 /**
  * This manages the WebGPU bind groups. this is how data is bound to a shader when rendering
  * @category rendering
@@ -30,7 +39,7 @@ export class BindGroupSystem implements System
 
     private readonly _renderer: WebGPURenderer;
 
-    private _hash: Record<string, GPUBindGroup> = Object.create(null);
+    private _hash: Record<string, BindGroupCacheEntry> = Object.create(null);
     private _gpu: GPU;
 
     constructor(renderer: WebGPURenderer)
@@ -52,17 +61,50 @@ export class BindGroupSystem implements System
         // Bit shift combines layoutKey and groupIndex into single number (groupIndex < 16)
         const key = `${bindGroup._key}:${(program._layoutKey << 4) | groupIndex}`;
 
-        const gpuBindGroup = this._hash[key] || this._createBindGroup(key, bindGroup, program, groupIndex);
+        let entry = this._hash[key];
 
-        return gpuBindGroup;
+        // the key tracks resource ids, but not the identity of the GPUBuffer
+        // behind a buffer-backed resource - that can change (buffer resize, or
+        // an unloaded buffer being re-created), leaving a cached GPUBindGroup
+        // pointing at the old GPUBuffer. Revalidate before using the cache.
+        // (This also touches the buffers, so actively bound buffers are never
+        // treated as unused by the GC.)
+        if (entry && !this._validate(entry)) entry = null;
+
+        entry = entry || this._createBindGroup(key, bindGroup, program, groupIndex);
+
+        return entry.gpuBindGroup;
     }
 
-    private _createBindGroup(key: string, group: BindGroup, program: GpuProgram, groupIndex: number): GPUBindGroup
+    private _validate(entry: BindGroupCacheEntry): boolean
+    {
+        const { srcBuffers, gpuBuffers } = entry;
+
+        if (!srcBuffers) return true;
+
+        const bufferSystem = this._renderer.buffer;
+
+        for (let i = 0; i < srcBuffers.length; i++)
+        {
+            if (bufferSystem.getGPUBuffer(srcBuffers[i]) !== gpuBuffers[i]) return false;
+        }
+
+        return true;
+    }
+
+    private _createBindGroup(key: string, group: BindGroup, program: GpuProgram, groupIndex: number): BindGroupCacheEntry
     {
         const device = this._gpu.device;
         const groupLayout = program.layout[groupIndex];
         const entries: GPUBindGroupEntry[] = [];
         const renderer = this._renderer;
+        let srcBuffers: Buffer[] = null;
+        let gpuBuffers: GPUBuffer[] = null;
+        const trackBuffer = (buffer: Buffer, gpuBuffer: GPUBuffer) =>
+        {
+            (srcBuffers ??= []).push(buffer);
+            (gpuBuffers ??= []).push(gpuBuffer);
+        };
 
         for (const j in groupLayout)
         {
@@ -87,9 +129,11 @@ export class BindGroupSystem implements System
                 renderer.ubo.updateUniformGroup(uniformGroup as UniformGroup);
 
                 const buffer = uniformGroup.buffer;
+                const gpuBuffer = renderer.buffer.getGPUBuffer(buffer);
 
+                trackBuffer(buffer, gpuBuffer);
                 gpuResource = {
-                    buffer: renderer.buffer.getGPUBuffer(buffer),
+                    buffer: gpuBuffer,
                     offset: 0,
                     size: buffer.descriptor.size,
                 };
@@ -97,9 +141,11 @@ export class BindGroupSystem implements System
             else if (resource._resourceType === 'buffer')
             {
                 const buffer = resource as Buffer;
+                const gpuBuffer = renderer.buffer.getGPUBuffer(buffer);
 
+                trackBuffer(buffer, gpuBuffer);
                 gpuResource = {
-                    buffer: renderer.buffer.getGPUBuffer(buffer),
+                    buffer: gpuBuffer,
                     offset: 0,
                     size: buffer.descriptor.size,
                 };
@@ -107,9 +153,11 @@ export class BindGroupSystem implements System
             else if (resource._resourceType === 'bufferResource')
             {
                 const bufferResource = resource as BufferResource;
+                const gpuBuffer = renderer.buffer.getGPUBuffer(bufferResource.buffer);
 
+                trackBuffer(bufferResource.buffer, gpuBuffer);
                 gpuResource = {
-                    buffer: renderer.buffer.getGPUBuffer(bufferResource.buffer),
+                    buffer: gpuBuffer,
                     offset: bufferResource.offset,
                     size: bufferResource.size ?? bufferResource.buffer.descriptor.size,
                 };
@@ -146,9 +194,11 @@ export class BindGroupSystem implements System
             entries,
         });
 
-        this._hash[key] = gpuBindGroup;
+        const entry: BindGroupCacheEntry = { gpuBindGroup, srcBuffers, gpuBuffers };
 
-        return gpuBindGroup;
+        this._hash[key] = entry;
+
+        return entry;
     }
 
     public destroy(): void

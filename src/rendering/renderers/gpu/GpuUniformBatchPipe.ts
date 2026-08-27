@@ -169,8 +169,9 @@ export class GpuUniformBatchPipe
             );
         }
 
-        // TODO make a system that will que up all commands in to one array?
-        this._renderer.gpu.device.queue.submit([commandEncoder.finish()]);
+        // fused into the frame's queue.submit (same execution order: renderEnd
+        // precedes postrender, and array order within a submit is queue order)
+        this._renderer.encoder.submitBeforeFrame(commandEncoder.finish());
     }
 
     public destroy()

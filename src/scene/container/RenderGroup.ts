@@ -379,6 +379,8 @@ export class RenderGroup implements Instruction
     {
         this.disableCacheAsTexture();
 
+        this.instructionSet?.destroy();
+
         this.renderGroupParent = null;
         this.root = null;
         (this.childrenRenderablesToUpdate as any) = null;

@@ -41,6 +41,17 @@ export class InstructionSet
      */
     public destroy()
     {
+        // let every pipe that holds per-instruction-set state (keyed by this
+        // uid) release it - e.g. BatcherPipe returns its batchers (and their
+        // GPU buffers) to a pool for reuse instead of leaking them
+        if (this.renderPipes)
+        {
+            for (const i in this.renderPipes)
+            {
+                this.renderPipes[i].destroyInstructionSet?.(this);
+            }
+        }
+
         this.instructions.length = 0;
         this.renderables.length = 0;
 
