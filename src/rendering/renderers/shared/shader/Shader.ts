@@ -214,6 +214,31 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
     public readonly compatibleRenderers: number;
     /** */
     public groups: Record<number, BindGroup>;
+    /**
+     * A cached array of the group indices in `groups`, lazily rebuilt when the map changes.
+     * The GPU encoder iterates this instead of the map itself, since enumerating the group
+     * map with `for-in` allocates a fresh key list on every draw call.
+     *
+     * Invalidated by {@link addResource} when it inserts a new group. Group indices that
+     * already exist must be re-resourced via the BindGroup's own setResource rather than by
+     * assigning `shader.groups[i]` to a fresh group, or this cache goes stale.
+     *
+     * The renderer's adapters do assign `shader.groups[i]` directly; those assignments are
+     * safe because they overwrite indices the constructor already created, run before the
+     * first draw (which triggers this cache), and are constant per shader — the key set is
+     * frozen after the first frame. Do not add a brand-new index this way after a draw.
+     * @internal
+     */
+    public get _groupKeyCache(): number[]
+    {
+        if (!this._groupKeyCacheValue)
+        {
+            this._groupKeyCacheValue = Object.keys(this.groups ?? {}).map(Number);
+        }
+
+        return this._groupKeyCacheValue;
+    }
+    private _groupKeyCacheValue: number[] = null;
     /** A record of the resources used by the shader. */
     public resources: Record<string, any>;
     /**
@@ -424,6 +449,9 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
         {
             this.groups[groupIndex] = new BindGroup();
             this._ownedBindGroups.push(this.groups[groupIndex]);
+
+            // the group set changed — drop the cached key list so the encoder re-enumerates
+            this._groupKeyCacheValue = null;
         }
     }
 
@@ -486,6 +514,7 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
 
         this.resources = null;
         this.groups = null;
+        this._groupKeyCacheValue = null;
 
         (this._overrides as null) = null;
     }

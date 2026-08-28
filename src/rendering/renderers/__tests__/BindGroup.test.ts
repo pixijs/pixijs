@@ -193,6 +193,70 @@ describe('BindGroup', () =>
         expect(bufferResource._gcLastUsed).toBe(123);
     });
 
+    it('_touch should re-enumerate resources after a new slot is added (key cache invalidation)', () =>
+    {
+        const buffer = new Buffer({
+            data: new Float32Array(64),
+            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
+        });
+
+        const bufferResource = new BufferResource({
+            buffer,
+            offset: 0,
+            size: 128,
+        });
+
+        const bindGroup = new BindGroup({
+            0: bufferResource,
+        });
+
+        // warm the key list cache
+        bindGroup._touch(1, 1);
+        expect(bufferResource._gcLastUsed).toBe(1);
+
+        // adding a resource at a new index must invalidate the cached key list
+        const buffer2 = new Buffer({
+            data: new Float32Array(64),
+            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
+        });
+
+        const bufferResource2 = new BufferResource({
+            buffer: buffer2,
+            offset: 0,
+            size: 128,
+        });
+
+        bindGroup.setResource(bufferResource2, 1);
+
+        bindGroup._touch(2, 2);
+
+        // both slots touched — the key cache was rebuilt rather than reused stale keys
+        expect(bufferResource2._gcLastUsed).toBe(2);
+        expect(buffer._gcLastUsed).toBe(2);
+    });
+
+    it('destroy should clear the cached key list so consumers stop indexing stale keys', () =>
+    {
+        const buffer = new Buffer({
+            data: new Float32Array(64),
+            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
+        });
+
+        const bindGroup = new BindGroup({ 0: buffer });
+
+        // warm the key list cache
+        expect(bindGroup._resourceKeys).toEqual(['0']);
+
+        bindGroup.destroy();
+
+        // a stale cache would still return ['0'] and make _key/_touch index into the
+        // now-null resources map (the original `for-in null` was a silent no-op)
+        expect(bindGroup.resources).toBeNull();
+        expect(bindGroup._resourceKeys).toEqual([]);
+        expect(() => bindGroup._key).not.toThrow();
+        expect(() => bindGroup._touch(0, 0)).not.toThrow();
+    });
+
     it('should let have a unique id for a bind group, no clashes', () =>
     {
         resetUids();

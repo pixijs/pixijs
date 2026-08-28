@@ -64,6 +64,13 @@ export class GpuEncoderSystem implements System
     private _boundIndexBuffer: Buffer;
     private _boundPipeline: GPURenderPipeline;
     /**
+     * Cached key list per cached {@link PipelineSystem.getBufferNamesToBind} result. The pipeline
+     * reuses the same null-prototype map for a given (geometry, program), so a key list cached in a
+     * WeakMap is stable and collected with the map. Iterating it avoids re-enumerating the map (and
+     * the per-bind `parseInt`) on every draw call.
+     */
+    private readonly _bufferKeys = new WeakMap<Record<string, string>, number[]>();
+    /**
      * The real render pass encoder. Unlike {@link renderPassEncoder}, this is never swapped out for
      * a bundle encoder, so pass-level commands (viewport, stencil, executeBundles, end) always have
      * a correctly typed target — even while a bundle is being recorded.
@@ -365,9 +372,20 @@ export class GpuEncoderSystem implements System
         // essentially only binding a single time for any buffers that are interleaved.
         const buffersToBind = this._renderer.pipeline.getBufferNamesToBind(geometry, program);
 
-        for (const i in buffersToBind)
+        // `buffersToBind` is reused per (geometry, program) by the pipeline's cache, so a key list
+        // cached in a WeakMap is stable. Iterating indices avoids re-enumerating the null-prototype
+        // map (and the per-bind `parseInt`) on every draw call.
+        let bufferKeys = this._bufferKeys.get(buffersToBind);
+
+        if (!bufferKeys)
         {
-            this._setVertexBuffer(parseInt(i, 10), geometry.attributes[buffersToBind[i]].buffer);
+            bufferKeys = Object.keys(buffersToBind).map(Number);
+            this._bufferKeys.set(buffersToBind, bufferKeys);
+        }
+
+        for (let i = 0; i < bufferKeys.length; i++)
+        {
+            this._setVertexBuffer(bufferKeys[i], geometry.attributes[buffersToBind[bufferKeys[i]]].buffer);
         }
 
         if (geometry.indexBuffer)
@@ -379,15 +397,20 @@ export class GpuEncoderSystem implements System
     private _setShaderBindGroups(shader: Shader, skipSync?: boolean)
     {
         const program = shader.gpuProgram;
+        // iterate the cached key list instead of `for-in` over the group map, which
+        // re-enumerates (and allocates) on every draw call
+        const groupKeys = shader._groupKeyCache;
 
-        for (const i in shader.groups)
+        for (let i = 0; i < groupKeys.length; i++)
         {
+            const groupIndex = groupKeys[i];
+
             // resources that only exist for the other backend (e.g. GL-fallback uniforms,
             // parked in group 99 by Shader.from) have no entry in this program's layout —
             // there is nothing to sync or bind for them
-            if (!program.layout[i as unknown as number]) continue;
+            if (!program.layout[groupIndex]) continue;
 
-            const bindGroup = shader.groups[i] as BindGroup;
+            const bindGroup = shader.groups[groupIndex] as BindGroup;
 
             // update any uniforms?
             if (!skipSync)
@@ -395,15 +418,18 @@ export class GpuEncoderSystem implements System
                 this._syncBindGroup(bindGroup);
             }
 
-            this.setBindGroup(i as unknown as number, bindGroup, program);
+            this.setBindGroup(groupIndex, bindGroup, program);
         }
     }
 
     private _syncBindGroup(bindGroup: BindGroup)
     {
-        for (const j in bindGroup.resources)
+        const resources = bindGroup.resources;
+        const resourceKeys = bindGroup._resourceKeys;
+
+        for (let i = 0; i < resourceKeys.length; i++)
         {
-            const resource = bindGroup.resources[j];
+            const resource = resources[resourceKeys[i]];
 
             // a destroyed buffer-like resource leaves a null slot (see BindGroup.onResourceChange)
             if (!resource) continue;

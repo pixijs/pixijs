@@ -35,6 +35,9 @@ dist
 lib
 out
 
+# local perf/GC benchmark scripts and traces (see src/rendering/renderers/gpu/__tests__/GpuEncoderSystem.test.ts)
+.bench
+
 # jetBrains IDE ignores
 .idea
 

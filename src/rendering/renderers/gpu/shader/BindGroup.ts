@@ -36,6 +36,24 @@ export class BindGroup
     public resources: Record<string, BindResource> = Object.create(null);
 
     /**
+     * A cached array of the keys in `resources`, lazily rebuilt when the map changes.
+     * The GPU encoder iterates this instead of the null-prototype map itself, since
+     * enumerating that map with `for-in` allocates a fresh key list on every draw call.
+     * @internal
+     */
+    public get _resourceKeys(): string[]
+    {
+        if (!this._resourceKeysCache)
+        {
+            this._resourceKeysCache = Object.keys(this.resources ?? {});
+        }
+
+        return this._resourceKeysCache;
+    }
+
+    private _resourceKeysCache: string[] | null = null;
+
+    /**
      * A key used internally to match it up to a WebGPU BindGroup.
      * Lazily rebuilt from resource IDs when dirty.
      * @internal
@@ -47,12 +65,14 @@ export class BindGroup
             this._dirty = false;
 
             const keyParts = [];
-            let index = 0;
+            const keys = this._resourceKeys;
 
-            for (const i in this.resources)
+            for (let i = 0; i < keys.length; i++)
             {
                 // -1 marks a destroyed buffer-like resource's null slot
-                keyParts[index++] = this.resources[i] ? this.resources[i]._resourceId : -1;
+                const resource = this.resources[keys[i]];
+
+                keyParts[i] = resource ? resource._resourceId : -1;
             }
 
             this._keyValue = keyParts.join('|');
@@ -102,6 +122,7 @@ export class BindGroup
 
         this.resources[index] = resource;
         this._dirty = true;
+        this._resourceKeysCache = null;
     }
 
     /**
@@ -124,10 +145,11 @@ export class BindGroup
     public _touch(now: number, tick: number): void
     {
         const resources = this.resources;
+        const keys = this._resourceKeys;
 
-        for (const i in resources)
+        for (let i = 0; i < keys.length; i++)
         {
-            const resource = resources[i] as BindResource & GCable;
+            const resource = resources[keys[i]] as BindResource & GCable;
 
             if (!resource) continue;
 
@@ -149,6 +171,7 @@ export class BindGroup
         }
 
         this.resources = null;
+        this._resourceKeysCache = null;
     }
 
     protected onResourceChange(resource: BindResource)
@@ -160,14 +183,17 @@ export class BindGroup
         if (resource.destroyed)
         {
             const resources = this.resources;
+            const keys = this._resourceKeys;
 
-            for (const i in resources)
+            for (let i = 0; i < keys.length; i++)
             {
-                if (resources[i] === resource)
+                if (resources[keys[i]] === resource)
                 {
-                    resources[i] = null;
+                    resources[keys[i]] = null;
                 }
             }
+
+            this._resourceKeysCache = null;
 
             // #if _DEBUG
             warn(`[BindGroup] a '${resource._resourceType}' was destroyed while still bound to a shader. `
