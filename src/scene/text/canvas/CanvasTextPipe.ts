@@ -60,17 +60,19 @@ export class CanvasTextPipe implements RenderPipe<Text>
     public addRenderable(text: Text, instructionSet: InstructionSet)
     {
         const batchableText = this._getGpuText(text);
+        const resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
+        const needsTextureUpdate = !batchableText.texture
+            || batchableText.currentKey !== text.styleKey
+            || text._resolution !== resolution;
 
-        if (text._didTextUpdate)
+        if (needsTextureUpdate)
         {
-            const resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
+            // Keep the texture in sync with this renderer's GPU text
+            this._updateGpuText(text);
+        }
 
-            if (batchableText.currentKey !== text.styleKey || text._resolution !== resolution)
-            {
-                // If the text has changed, we need to update the GPU text
-                this._updateGpuText(text);
-            }
-
+        if (text._didTextUpdate || needsTextureUpdate)
+        {
             text._didTextUpdate = false;
 
             updateTextBounds(batchableText, text);
