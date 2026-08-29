@@ -92,6 +92,42 @@ describe('Text', () =>
         });
     });
 
+    describe('rendering', () =>
+    {
+        it('should render when moved to a second renderer', async () =>
+        {
+            const rendererA = await getWebGLRenderer({ width: 64, height: 64 });
+            const text = new Text({ text: 'hello' });
+            const layer = new Container();
+            const stageA = new Container();
+            const stageB = new Container();
+            let rendererB: Awaited<ReturnType<typeof getWebGLRenderer>> | undefined;
+
+            layer.addChild(text);
+            stageA.addChild(layer);
+
+            try
+            {
+                rendererA.render(stageA);
+                stageA.removeChild(layer);
+                stageB.addChild(layer);
+
+                rendererB = await getWebGLRenderer({ width: 64, height: 64 });
+
+                expect(() => rendererB.render(stageB)).not.toThrow();
+            }
+            finally
+            {
+                text.destroy();
+                layer.destroy();
+                stageA.destroy();
+                stageB.destroy();
+                rendererA.destroy();
+                rendererB?.destroy();
+            }
+        });
+    });
+
     describe('destroy', () =>
     {
         it('should call through to Sprite.destroy', () =>
