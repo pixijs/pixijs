@@ -28,6 +28,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
     {
         this._renderer = renderer;
         renderer.runners.resolutionChange.add(this);
+        renderer.runners.contextChange.add(this);
         this._managedTexts = new GCManagedHash({
             renderer,
             type: 'renderable',
@@ -43,6 +44,18 @@ export class CanvasTextPipe implements RenderPipe<Text>
             const text = this._managedTexts.items[key];
 
             if (text?._autoResolution) text.onViewUpdate();
+        }
+    }
+
+    /**
+     * Text textures are uploaded from pooled canvases that are cleared and reused straight after upload,
+     * so they cannot be re-uploaded after a context loss. Unload them and regenerate on the next render.
+     */
+    protected contextChange()
+    {
+        for (const key in this._managedTexts.items)
+        {
+            this._managedTexts.items[key]?.unload();
         }
     }
 

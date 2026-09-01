@@ -7,7 +7,7 @@ import { TextStyle } from '../TextStyle';
 import '../../graphics/init';
 import '../../text-bitmap/init';
 import '../init';
-import { getWebGLRenderer } from '@test-utils';
+import { getWebGLRenderer, loseAndRestoreContext } from '@test-utils';
 import { Point } from '~/maths';
 import { TextureSource } from '~/rendering/renderers/shared/texture/sources/TextureSource';
 
@@ -602,6 +602,30 @@ describe('Text', () =>
             });
 
             expect(text.height).toBeCloseTo(metrics.height, 0);
+        });
+    });
+
+    describe('context loss', () =>
+    {
+        it('should render the text again after the WebGL context is lost and restored', async () =>
+        {
+            const renderer = await getWebGLRenderer({ width: 64, height: 64 });
+            const text = new Text({ text: 'Hi', style: { fontSize: 40, fill: 'white' } });
+
+            renderer.render(text);
+
+            const before = renderer.extract.pixels(text).pixels;
+
+            expect(before.some((value) => value > 0)).toBe(true);
+
+            await loseAndRestoreContext(renderer);
+
+            renderer.render(text);
+
+            expect(renderer.extract.pixels(text).pixels).toEqual(before);
+
+            text.destroy();
+            renderer.destroy();
         });
     });
 });
