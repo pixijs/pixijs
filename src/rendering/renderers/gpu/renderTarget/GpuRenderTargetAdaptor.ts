@@ -490,39 +490,35 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
             if (colorTexture instanceof CanvasSource)
             {
-                if (!colorTexture._gpuContext)
+                const context = colorTexture._gpuContext ??= colorTexture.resource.getContext(
+                    'webgpu'
+                ) as unknown as GPUCanvasContext;
+
+                const alphaMode = colorTexture.transparent ? 'premultiplied' : 'opaque';
+                const canvasFormat = getCanvasContextFormat(colorTexture.format);
+
+                // configured every time, as a device replaced after a loss needs it configured again
+                try
                 {
-                    const context = colorTexture.resource.getContext(
-                        'webgpu'
-                    ) as unknown as GPUCanvasContext;
-
-                    const alphaMode = colorTexture.transparent ? 'premultiplied' : 'opaque';
-                    const canvasFormat = getCanvasContextFormat(colorTexture.format);
-
-                    try
-                    {
-                        context.configure({
-                            device: this._renderer.gpu.device,
-                            usage: GPUTextureUsage.TEXTURE_BINDING
-                                | GPUTextureUsage.COPY_DST
-                                | GPUTextureUsage.RENDER_ATTACHMENT
-                                | GPUTextureUsage.COPY_SRC,
-                            format: canvasFormat,
-                            alphaMode,
-                            ...(canvasFormat === 'rgba16float'
-                                ? { toneMapping: { mode: 'extended' } }
-                                : {}),
-                        });
-                    }
-                    catch (e)
-                    {
-                        console.error(e);
-                    }
-
-                    colorTexture._gpuContext = context;
+                    context.configure({
+                        device: this._renderer.gpu.device,
+                        usage: GPUTextureUsage.TEXTURE_BINDING
+                            | GPUTextureUsage.COPY_DST
+                            | GPUTextureUsage.RENDER_ATTACHMENT
+                            | GPUTextureUsage.COPY_SRC,
+                        format: canvasFormat,
+                        alphaMode,
+                        ...(canvasFormat === 'rgba16float'
+                            ? { toneMapping: { mode: 'extended' } }
+                            : {}),
+                    });
+                }
+                catch (e)
+                {
+                    console.error(e);
                 }
 
-                gpuRenderTarget.contexts[i] = colorTexture._gpuContext;
+                gpuRenderTarget.contexts[i] = context;
             }
 
             gpuRenderTarget.msaa = colorTexture.source.antialias;

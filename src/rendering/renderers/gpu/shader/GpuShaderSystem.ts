@@ -32,11 +32,12 @@ export class GpuShaderSystem
 
     private _gpu: GPU;
 
-    private readonly _gpuProgramData: Record<number, GPUProgramData> = Object.create(null);
+    private _gpuProgramData: Record<number, GPUProgramData> = Object.create(null);
 
     protected contextChange(gpu: GPU): void
     {
         this._gpu = gpu;
+        this._gpuProgramData = Object.create(null);
     }
 
     public getProgramData(program: GpuProgram)
