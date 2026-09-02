@@ -26,6 +26,20 @@ import type { SharedRendererOptions } from './SharedSystems';
 import type { System, SystemConstructor } from './System';
 
 /**
+ * An async hook a renderer awaits while it initialises, after the environment extensions load and
+ * before it creates its systems and pipes. Registered as a `WebGLLoader`, `WebGPULoader` or
+ * `CanvasLoader` extension, it lets a package `import()` backend-specific systems and pipes and
+ * register them in time for the renderer to pick them up.
+ * @category rendering
+ * @advanced
+ */
+export interface RendererLoader
+{
+    /** Called once per renderer init. The renderer waits for the returned promise before adding its systems. */
+    load(): Promise<unknown>;
+}
+
+/**
  * The configuration for the renderer.
  * This is used to define the systems and render pipes that will be used by the renderer.
  * @category rendering
@@ -39,6 +53,8 @@ export interface RendererConfig
     systems: {name: string, value: SystemConstructor}[];
     renderPipes: {name: string, value: PipeConstructor}[];
     renderPipeAdaptors: {name: string, value: any}[];
+    /** Async hooks awaited during `init`, after the environment extensions load and before systems are added. */
+    loaders?: {name: string, value: RendererLoader}[];
 }
 
 /**
@@ -282,6 +298,11 @@ export class AbstractRenderer<
         const skip = options.skipExtensionImports === true ? true : options.manageImports === false;
 
         await loadEnvironmentExtensions(skip);
+
+        if (!skip && this.config.loaders)
+        {
+            await Promise.all(this.config.loaders.map((loader) => loader.value.load()));
+        }
 
         this._addSystems(this.config.systems);
         this._addPipes(this.config.renderPipes, this.config.renderPipeAdaptors);

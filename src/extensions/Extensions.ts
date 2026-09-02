@@ -14,6 +14,21 @@ enum ExtensionType
     WebGLPipesAdaptor = 'webgl-pipes-adaptor',
     /** extensions that are registered as WebGL render systems */
     WebGLSystem = 'webgl-system',
+    /**
+     * An async hook awaited while a WebGL renderer initialises, after the environment extensions load
+     * and before the renderer creates its systems and pipes. Use it to `import()` WebGL-only systems and
+     * pipes so they stay out of the main bundle. Skipped when `skipExtensionImports` is true.
+     * A loader needs a `name`; the renderer dedupes loaders by it.
+     * @example
+     * ```ts
+     * extensions.add({
+     *     extension: { type: ExtensionType.WebGLLoader, name: 'my-plugin' },
+     *     // the module registers its WebGL systems and pipes with `extensions.add` on import
+     *     load: () => import('./gl/init'),
+     * });
+     * ```
+     */
+    WebGLLoader = 'webgl-loader',
 
     /** extensions that are registered as WebGPU render pipes */
     WebGPUPipes = 'webgpu-pipes',
@@ -21,6 +36,13 @@ enum ExtensionType
     WebGPUPipesAdaptor = 'webgpu-pipes-adaptor',
     /** extensions that are registered as WebGPU render systems */
     WebGPUSystem = 'webgpu-system',
+    /**
+     * An async hook awaited while a WebGPU renderer initialises, after the environment extensions load
+     * and before the renderer creates its systems and pipes. Use it to `import()` WebGPU-only systems and
+     * pipes so they stay out of the main bundle. Skipped when `skipExtensionImports` is true.
+     * A loader needs a `name`; the renderer dedupes loaders by it.
+     */
+    WebGPULoader = 'webgpu-loader',
 
     /** extensions that are registered as Canvas render pipes */
     CanvasSystem = 'canvas-system',
@@ -28,6 +50,13 @@ enum ExtensionType
     CanvasPipesAdaptor = 'canvas-pipes-adaptor',
     /** extensions that are registered as Canvas render systems */
     CanvasPipes = 'canvas-pipes',
+    /**
+     * An async hook awaited while a Canvas renderer initialises, after the environment extensions load
+     * and before the renderer creates its systems and pipes. Use it to `import()` Canvas-only systems and
+     * pipes so they stay out of the main bundle. Skipped when `skipExtensionImports` is true.
+     * A loader needs a `name`; the renderer dedupes loaders by it.
+     */
+    CanvasLoader = 'canvas-loader',
 
     /** extensions that combine the other Asset extensions */
     Asset = 'asset',
