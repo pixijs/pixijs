@@ -1,9 +1,17 @@
+import { Buffer } from '../../shared/buffer/Buffer';
+import { BufferResource } from '../../shared/buffer/BufferResource';
+import { BufferUsage } from '../../shared/buffer/const';
 import { RenderTarget } from '../../shared/renderTarget/RenderTarget';
+import { Shader } from '../../shared/shader/Shader';
 import { TextureSource } from '../../shared/texture/sources/TextureSource';
+import { GpuEncoderSystem } from '../GpuEncoderSystem';
 import { RenderBundle } from '../RenderBundle';
+import { BindGroup } from '../shader/BindGroup';
 import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
 
+import type { Geometry } from '../../shared/geometry/Geometry';
 import type { TEXTURE_FORMATS } from '../../shared/texture/const';
+import type { GpuProgram } from '../shader/GpuProgram';
 import type { WebGPURenderer } from '../WebGPURenderer';
 
 let renderer: WebGPURenderer;
@@ -194,5 +202,174 @@ describeLocalOnly('GpuEncoderSystem render bundles', () =>
         renderer.pipeline.setRenderTarget(readOnlyTarget);
 
         expect(renderer.encoder.isBundleValid(bundle)).toBe(false);
+    });
+});
+
+// --- key-list caching for pixijs#12151 (no WebGPU device needed, so these run in CI) ---
+// The `.bench/` scripts quantify the win; these tests pin the behaviour it depends on:
+// the null-prototype buffer/group maps are enumerated exactly once per map, not per draw.
+
+function stubRenderer(): { renderer: WebGPURenderer, getBufferNamesToBind: jest.Mock }
+{
+    const getBufferNamesToBind = jest.fn(() => ({}));
+
+    const renderer = {
+        pipeline: {
+            getBufferNamesToBind,
+            getPipeline: jest.fn(() => ({})),
+        },
+        buffer: { updateBuffer: (buffer: Buffer) => buffer },
+        ubo: { updateUniformGroup: jest.fn() },
+        gc: { now: 0 },
+        tick: 0,
+        bindGroup: { getBindGroup: jest.fn(() => ({})) },
+    } as unknown as WebGPURenderer;
+
+    return { renderer, getBufferNamesToBind };
+}
+
+describe('GpuEncoderSystem key-list caching', () =>
+{
+    it('enumerates a buffersToBind map exactly once across repeated draws', () =>
+    {
+        const { renderer, getBufferNamesToBind } = stubRenderer();
+        const encoder = new GpuEncoderSystem(renderer);
+
+        const setVertexBuffer = jest.fn();
+
+        (encoder as unknown as { renderPassEncoder: unknown }).renderPassEncoder = { setVertexBuffer };
+
+        // a null-prototype map with integer bind-location keys, shaped exactly like
+        // PipelineSystem.getBufferNamesToBind produces and reuses per (geometry, program)
+        let ownKeysCalls = 0;
+
+        const buffersToBind = new Proxy(Object.create(null) as Record<string, string>, {
+            ownKeys(target)
+            {
+                ownKeysCalls++;
+
+                return Reflect.ownKeys(target);
+            },
+        });
+
+        buffersToBind[0] = 'aPosition';
+        buffersToBind[1] = 'aUV';
+
+        getBufferNamesToBind.mockReturnValue(buffersToBind);
+
+        const bufferA = {} as Buffer;
+        const bufferB = {} as Buffer;
+        const geometry = {
+            attributes: { aPosition: { buffer: bufferA }, aUV: { buffer: bufferB } },
+            indexBuffer: null,
+        } as unknown as Geometry;
+        const program = {} as GpuProgram;
+
+        encoder.setGeometry(geometry, program);
+        encoder.setGeometry(geometry, program);
+
+        // the whole point of the fix: the cached key list, not the map, is iterated from
+        // the second draw on — one enumeration total, not one per draw
+        expect(ownKeysCalls).toBe(1);
+
+        // bind locations still resolve, in order, to the right buffers
+        expect(setVertexBuffer).toHaveBeenCalledWith(0, bufferA);
+        expect(setVertexBuffer).toHaveBeenCalledWith(1, bufferB);
+    });
+
+    it('keeps a separate cache entry per buffersToBind map', () =>
+    {
+        const { renderer, getBufferNamesToBind } = stubRenderer();
+        const encoder = new GpuEncoderSystem(renderer);
+
+        const setVertexBuffer = jest.fn();
+
+        (encoder as unknown as { renderPassEncoder: unknown }).renderPassEncoder = { setVertexBuffer };
+
+        const makeMap = () =>
+        {
+            let ownKeysCalls = 0;
+
+            const map = new Proxy(Object.create(null) as Record<string, string>, {
+                ownKeys(target)
+                {
+                    ownKeysCalls++;
+
+                    return Reflect.ownKeys(target);
+                },
+            });
+
+            map[0] = 'aPosition';
+
+            return { map, ownKeysCalls: () => ownKeysCalls };
+        };
+
+        const first = makeMap();
+        const second = makeMap();
+
+        getBufferNamesToBind
+            .mockReturnValueOnce(first.map)
+            .mockReturnValue(second.map);
+
+        const buffer = {} as Buffer;
+        const geometry = {
+            attributes: { aPosition: { buffer } },
+            indexBuffer: null,
+        } as unknown as Geometry;
+        const program = {} as GpuProgram;
+
+        encoder.setGeometry(geometry, program);
+        encoder.setGeometry(geometry, program); // cache hit on the first map
+        encoder.setGeometry(geometry, program); // second map → its own fresh enumeration
+
+        expect(first.ownKeysCalls()).toBe(1);
+        expect(second.ownKeysCalls()).toBe(1);
+        expect(setVertexBuffer).toHaveBeenCalledWith(0, buffer);
+    });
+
+    it('draws safely when a bound bind group has been destroyed (null resources)', () =>
+    {
+        const { renderer } = stubRenderer();
+        const encoder = new GpuEncoderSystem(renderer);
+
+        const setBindGroup = jest.fn();
+        const draw = jest.fn();
+
+        (encoder as unknown as { renderPassEncoder: unknown }).renderPassEncoder = {
+            setPipeline: jest.fn(),
+            setVertexBuffer: jest.fn(),
+            setBindGroup,
+            draw,
+        };
+
+        const buffer = new Buffer({
+            data: new Float32Array(64),
+            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
+        });
+        const bufferResource = new BufferResource({ buffer, offset: 0, size: 128 });
+
+        const bindGroup = new BindGroup({ 0: bufferResource });
+
+        expect(bindGroup._key).toBeTruthy(); // warm the key so _keyValue survives destroy
+
+        bindGroup.destroy();
+        expect(bindGroup.resources).toBeNull();
+
+        // build the shader through the groups overload: the destroyed bind group is passed
+        // straight through, and the fake gpuProgram's layout drives which groups get synced
+        const fakeGpuProgram = { layout: { 0: {} } } as unknown as GpuProgram;
+        const shader = new Shader({ groups: { 0: bindGroup }, gpuProgram: fakeGpuProgram, groupMap: {} });
+
+        const geometry = {
+            attributes: {},
+            indexBuffer: null,
+            vertexCount: 3,
+            instanceCount: 1,
+        } as unknown as Geometry;
+
+        // a stale _resourceKeys cache would index into the now-null resources map and throw here
+        expect(() => encoder.draw({ geometry, shader })).not.toThrow();
+        expect(draw).toHaveBeenCalled();
+        expect(setBindGroup).toHaveBeenCalled();
     });
 });

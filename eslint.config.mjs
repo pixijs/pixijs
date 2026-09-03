@@ -12,6 +12,7 @@ export default tseslint.config(
     ...config,
     {
         ignores: [
+            '.bench',
             '.s3_uploads',
             '.context',
             'out',
