@@ -21,7 +21,7 @@ For the long-form description and trigger keywords of every skill, see [referenc
 | Skill | Load when... |
 |---|---|
 | [pixijs-application](../pixijs-application/SKILL.md) | Creating or configuring a PixiJS `Application`, calling `app.init()`, accessing `app.stage`/`renderer`/`canvas`/`screen`, resize/ticker plugins, `app.destroy()`. |
-| [pixijs-core-concepts](../pixijs-core-concepts/SKILL.md) | Understanding the renderer pipeline, choosing WebGL/WebGPU/Canvas, render loop internals, systems and pipes. |
+| [pixijs-core-concepts](../pixijs-core-concepts/SKILL.md) | Understanding the renderer pipeline, choosing WebGL/WebGPU/Canvas, render loop internals, systems and pipes. Rendering into a `RenderTexture`/`RenderTarget`, `flipY`, `mipLevel`, `renderTarget.bind`/`push`/`pop`, `copyDepthTexture`, depth-only targets. |
 | [pixijs-create](../pixijs-create/SKILL.md) | Scaffolding a new project with the `create-pixi` CLI (bundler-vite, creation-web, framework-react templates). |
 | [pixijs-environments](../pixijs-environments/SKILL.md) | Running PixiJS in Web Workers, Node/SSR, or strict-CSP contexts (`DOMAdapter`, `WebWorkerAdapter`, `pixi.js/unsafe-eval`). |
 | [pixijs-migration-v8](../pixijs-migration-v8/SKILL.md) | Upgrading from v7 to v8 or fixing v7 patterns (`beginFill`/`endFill`, `@pixi/*` packages, `BaseTexture`, `DisplayObject`). |
@@ -33,7 +33,7 @@ For the long-form description and trigger keywords of every skill, see [referenc
 |---|---|
 | [pixijs-scene-container](../pixijs-scene-container/SKILL.md) | Working with `Container`: `addChild`/`removeChild`, transforms, `zIndex`, bounds, `toGlobal`/`toLocal`, `destroy`. |
 | [pixijs-scene-sprite](../pixijs-scene-sprite/SKILL.md) | Drawing images: `Sprite`, `AnimatedSprite`, `NineSliceSprite`, `TilingSprite`. |
-| [pixijs-scene-graphics](../pixijs-scene-graphics/SKILL.md) | Drawing vector shapes or paths: `Graphics`, `GraphicsContext`, `fill`/`stroke`, `FillGradient`, SVG. |
+| [pixijs-scene-graphics](../pixijs-scene-graphics/SKILL.md) | Drawing vector shapes or paths: `Graphics`, `GraphicsContext`, `fill`/`stroke`, `FillGradient`, `FillPattern`, `textureSpace`, texture and pattern fills, SVG import (`svg()`, gradients). |
 | [pixijs-scene-text](../pixijs-scene-text/SKILL.md) | Rendering text: `Text`, `BitmapText`, `HTMLText`, `SplitText`, `TextStyle`. |
 | [pixijs-scene-mesh](../pixijs-scene-mesh/SKILL.md) | Custom geometry: `Mesh`, `MeshSimple`, `MeshPlane`, `MeshRope`, `PerspectiveMesh`. |
 | [pixijs-scene-particle-container](../pixijs-scene-particle-container/SKILL.md) | Rendering thousands of lightweight sprites: `ParticleContainer`, `Particle`, `dynamicProperties`. |
@@ -48,7 +48,7 @@ For the long-form description and trigger keywords of every skill, see [referenc
 | [pixijs-assets](../pixijs-assets/SKILL.md) | Loading resources: `Assets.init`, `Assets.load`, bundles, manifests, spritesheets, caching. |
 | [pixijs-color](../pixijs-color/SKILL.md) | Creating or converting colors: `Color` class, hex/rgb/hsl, `tint`, `premultiply`. |
 | [pixijs-events](../pixijs-events/SKILL.md) | Handling pointer/mouse/touch/wheel input: `eventMode`, `FederatedEvent`, `hitArea`, `cursor`, drag. |
-| [pixijs-math](../pixijs-math/SKILL.md) | Points, vectors, matrices, shapes, hit testing: `Point`, `Matrix`, `Rectangle`, `toGlobal`/`toLocal`. |
+| [pixijs-math](../pixijs-math/SKILL.md) | Points, vectors, matrices, shapes, hit testing: `Point`, `Matrix`, `Rectangle`, `Polygon`, `Triangle`, `strokeContains`, `containsRect`, `toGlobal`/`toLocal`. |
 | [pixijs-ticker](../pixijs-ticker/SKILL.md) | Per-frame logic or controlling the render loop: `Ticker`, `deltaTime`, `UPDATE_PRIORITY`, `maxFPS`. |
 
 ### Advanced
@@ -57,9 +57,9 @@ For the long-form description and trigger keywords of every skill, see [referenc
 |---|---|
 | [pixijs-accessibility](../pixijs-accessibility/SKILL.md) | Screen reader or keyboard navigation: `AccessibilitySystem`, `accessibleTitle`, `tabIndex`. |
 | [pixijs-blend-modes](../pixijs-blend-modes/SKILL.md) | Compositing with blend modes: `add`, `multiply`, `screen`, `overlay`, `pixi.js/advanced-blend-modes`. |
-| [pixijs-custom-rendering](../pixijs-custom-rendering/SKILL.md) | Writing custom shaders, uniforms, or batchers: `Shader.from`, `GlProgram`/`GpuProgram`, `UniformGroup`, custom `Filter`. |
+| [pixijs-custom-rendering](../pixijs-custom-rendering/SKILL.md) | Writing custom shaders, uniforms, or batchers: `Shader.from`, `GlProgram`/`GpuProgram`, `UniformGroup`, custom `Filter`. WGSL `override` constants, `gpuLayout`, `TextureView`/depth sampling, `Buffer.update`, `Geometry.vertexCount`, WebGPU render bundles. |
 | [pixijs-filters](../pixijs-filters/SKILL.md) | Applying visual effects: `BlurFilter`, `ColorMatrixFilter`, `DisplacementFilter`, `Filter.from`, `pixi-filters`. |
-| [pixijs-performance](../pixijs-performance/SKILL.md) | Profiling or optimizing FPS, draw calls, GPU memory: culling, `GCSystem`, `cacheAsTexture`, object pooling. |
+| [pixijs-performance](../pixijs-performance/SKILL.md) | Profiling or optimizing FPS, draw calls, GPU memory: culling, `GCSystem`, `cacheAsTexture`, object pooling, transient MSAA render textures, render bundles. |
 
 ## Fallback: canonical PixiJS docs
 

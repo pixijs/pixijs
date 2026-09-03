@@ -66,6 +66,7 @@ These extension types are mainly used internally and are typically not required 
 - `ExtensionType.TextureSource`: A type of extension that will be used to auto-detect a resource type E.g `VideoSource`
 - `ExtensionType.ShapeBuilder`: A type of extension for building and triangulating custom shapes used in graphics.
 - `ExtensionType.Batcher`: A type of extension for creating custom batchers used in rendering.
+- `ExtensionType.TextureUploaderWebGL`, `ExtensionType.TextureUploaderWebGPU`: Register texture uploaders by name for custom `TextureSource` types, e.g. the `'html'` uploaders added by `pixi.js/html-source`.
 
 ## Creating Extensions
 

@@ -77,6 +77,18 @@ renderer.render({
 
 The `container` property is the scene root to draw. `target` is a separate property that specifies a render destination (e.g., a {@link RenderTexture}).
 
+### Flipping the output (advanced)
+
+By default a texture render is stored in PixiJS's Y-down orientation, which the 2D pipeline samples upright but 3D UV conventions read upside down. Pass `flipY: true` to invert the Y orientation of the render. Back-face culling stays correct because the winding order flips together with the projection. The default is `false` and leaves existing renders unchanged on both WebGL and WebGPU.
+
+```ts
+renderer.render({
+    container: scene3d,
+    target: renderTexture,
+    flipY: true,
+});
+```
+
 ## Rendering to mip levels (advanced)
 
 When rendering to a texture-backed target, you can specify `mipLevel` to render into a specific mip level of the target's underlying texture storage. Most applications won't need this; it's useful for custom LOD (level of detail) systems or manual mipmap generation.
@@ -100,6 +112,126 @@ renderer.render({
 ```
 
 If your `target` is a {@link Texture} with a `frame` (e.g. an atlas sub-texture), that frame is interpreted in **mip 0** pixel space and is scaled/clamped when rendering to `mipLevel > 0`.
+
+## Render targets (advanced)
+
+Every texture you render to gets a {@link RenderTarget} behind the scenes. Create one yourself when you need multiple color attachments, an explicit depth or stencil texture, or per-attachment load and store behavior.
+
+```ts
+import { RenderTarget, TextureSource } from 'pixi.js';
+
+const color = new TextureSource({ width: 512, height: 512 });
+const depth = new TextureSource({ width: 512, height: 512, format: 'depth24plus-stencil8' });
+
+const target = new RenderTarget({
+    colorAttachments: [{ texture: color, loadOp: 'clear', clearValue: [0, 0, 0, 1] }],
+    depthStencilAttachment: { texture: depth, depthLoadOp: 'clear', depthClearValue: 1 },
+});
+
+renderer.render({ container, target });
+```
+
+The attachment objects mirror the WebGPU render pass descriptors, with `texture` in place of `view`. The `clear` option you pass to `render()` overrides the attachments' load ops for that call. The older `colorTextures`, `depth`, `stencil`, and `depthStencilTexture` options still work and are converted to attachments internally.
+
+### Depth-only targets
+
+Pass `colorTextures: 0` with `depth: true`, or hand a depth-format `TextureSource` to `depthStencilTexture`. Rendering directly to a depth-format `TextureSource` also works; PixiJS wraps it in a depth-only target.
+
+```ts
+const shadowMap = new RenderTarget({ width: 1024, height: 1024, colorTextures: 0, depth: true });
+```
+
+Supported depth and stencil formats are `stencil8`, `depth16unorm`, `depth24plus`, `depth24plus-stencil8`, `depth32float`, and `depth32float-stencil8`. A depth-only format cannot be used for stencil masks.
+
+### Binding targets directly
+
+Custom rendering code binds surfaces through `renderer.renderTarget`. Pass an options object; the positional form is deprecated since 8.20.0 and warns once.
+
+```ts
+import { CLEAR } from 'pixi.js';
+
+// bind: replaces the current binding
+renderer.renderTarget.bind({ target: renderTexture, clear: true, clearColor: [0, 0, 0, 0] });
+
+// push/pop: save and restore the previous binding
+renderer.renderTarget.push({ target: scratch, clear: CLEAR.COLOR, mipLevel: 1 });
+// ... draw ...
+renderer.renderTarget.pop(); // returns the restored RenderTarget, throws if the stack is empty
+
+// capture and replay a binding without clearing it
+const saved = renderer.renderTarget.getBindState();
+renderer.renderTarget.bind({ target: scratch, clear: true });
+renderer.renderTarget.bind(saved);
+```
+
+Available options are `target`, `clear`, `clearColor`, `frame` (in mip 0 pixel space), `mipLevel`, `layer`, and `flipY`. Binding the same target again with no clear reuses the open render pass and only updates the viewport.
+
+### Copying between targets
+
+```ts
+// copy color pixels from any texture, canvas, or render target into a texture
+renderer.renderTarget.copyToTexture(source, destTexture, { x: 0, y: 0 }, { width: 256, height: 256 }, { x: 0, y: 0 });
+
+// copy the depth attachment into a depth-format texture (WebGL2 and WebGPU)
+renderer.renderTarget.copyDepthTexture(sourceTarget, destDepthTexture, { x: 0, y: 0 }, { width: 256, height: 256 });
+
+// then render into the destination without clearing the copied depth
+renderer.render({ container, target: destTarget, clear: CLEAR.COLOR });
+```
+
+`copyDepthTexture` warns and does nothing when the source has no depth attachment or the destination texture is not a depth or stencil format. Clear only the color buffer afterwards, or the copied depth is lost.
+
+When writing 3D code that needs to know the resolved winding of the current target, read `renderer.renderTarget.frontFaceInverted` instead of deriving it from `flipY`, `isRoot`, and the backend.
+
+## WebGPU-only features (advanced)
+
+These have no effect on the WebGL renderer. Branch on `renderer.name === 'webgpu'` before relying on them.
+
+### Shader override constants
+
+WGSL `override` declarations can be set per shader without recompiling the source. Values are baked into the pipeline, so each distinct set of overrides creates a separate pipeline. Keep the number of combinations small.
+
+```ts
+import { Shader } from 'pixi.js';
+
+const shader = Shader.from({
+    gpu: { vertex: { source, entryPoint: 'vsMain' }, fragment: { source, entryPoint: 'fsMain' } },
+    resources: { uniforms },
+    overrides: { BLUR_STEPS: 8 },
+});
+```
+
+Browsers without pipeline constant support (Safari) get the values substituted into the source instead. `renderer.limits.supportsOverrideConstants` reports which path is in use.
+
+### Render bundles
+
+A render bundle records a sequence of draw calls once and replays them on later frames, cutting CPU cost for static content drawn through `renderer.encoder`. A bundle bakes the render target it was recorded against, so check it before replaying and re-record when the check fails.
+
+```ts
+let bundle;
+
+if (!bundle || !renderer.encoder.isBundleValid(bundle)) {
+    renderer.encoder.beginBundle('static-props');
+    renderer.encoder.draw({ geometry, shader, state });
+    bundle = renderer.encoder.endBundle();
+}
+
+renderer.encoder.executeBundle(bundle);
+```
+
+Pass an array to `executeBundle` to replay several bundles in one call.
+
+### Transient MSAA render textures
+
+An antialiased render texture that is drawn in a single pass and never loaded back can mark its multisample buffer as scratch memory. Set `transient: true` when creating it; PixiJS then discards the MSAA buffer at the end of the pass, and tile-based GPUs skip allocating it entirely where the browser supports `GPUTextureUsage.TRANSIENT_ATTACHMENT`. Do not set it on a texture that is rendered into again with `clear: false`, or on one used with filters.
+
+```ts
+import { RenderTexture } from 'pixi.js';
+
+const rt = RenderTexture.create({ width: 1024, height: 1024, antialias: true, transient: true });
+```
+
+`renderer.device.extensions.transientAttachment` reports whether the usage bit is available.
 
 ## Resizing the renderer
 
@@ -159,3 +291,9 @@ This removes all `EventEmitter` listeners attached to the renderer and nullifies
 - {@link GenerateTextureSystem}
 - {@link RenderTexture}
 - {@link Texture}
+- {@link RenderTarget}
+- {@link RenderTargetSystem}
+- {@link TextureView}
+- {@link ShaderOverrides}
+- {@link GpuEncoderSystem}
+- {@link RenderBundle}

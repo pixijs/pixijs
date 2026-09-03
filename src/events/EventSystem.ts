@@ -400,7 +400,7 @@ export class EventSystem implements System<EventSystemOptions>
 
     /**
      * The DOM element to which the root event listeners are bound. This is automatically set to
-     * the renderer's {@link Renderer#view view}.
+     * the renderer's {@link AbstractRenderer#canvas canvas}.
      */
     public domElement: HTMLElement = null;
 

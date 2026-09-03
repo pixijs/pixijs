@@ -103,6 +103,14 @@ const rect = new Rectangle(10, 10, 100, 50);
 rect.contains(20, 20); // true
 ```
 
+`containsRect(other)` is true when `other` lies fully inside, including when it shares the right or bottom edge or occupies exactly the same space. A rectangle with zero width or height contains nothing.
+
+```ts
+const outer = new Rectangle(0, 0, 100, 100);
+outer.containsRect(new Rectangle(50, 50, 50, 50)); // true, flush with the right and bottom edges
+outer.containsRect(outer.clone()); // true
+```
+
 ### `Circle`
 
 Defined by `x`, `y` (center) and `radius`.
@@ -134,6 +142,14 @@ import { Polygon } from 'pixi.js';
 
 const polygon = new Polygon([0, 0, 100, 0, 100, 100, 0, 100]);
 polygon.contains(50, 50); // true
+```
+
+`strokeContains(x, y, width, alignment)` tests the outline instead of the interior. The stroke is split by `alignment` the same way `Graphics.stroke()` draws it: `0.5` centers it on the edge, `1` keeps it inside the polygon, `0` pushes it outside, whatever the winding order of the points.
+
+```ts
+const square = new Polygon([0, 0, 100, 0, 100, 100, 0, 100]);
+square.strokeContains(-5, 50, 20); // true, a centered 20px stroke reaches 10px outside
+square.strokeContains(-5, 50, 20, 1); // false, an inner stroke stays inside
 ```
 
 ### `RoundedRectangle`
@@ -193,7 +209,6 @@ console.log(p.magnitude()); // 5
 
 | Method                       | Description                                           |
 | ---------------------------- | ----------------------------------------------------- |
-| `containsRect(other)`        | Returns true if this rectangle fully contains another. |
 | `equals(other)`              | Checks if all properties are equal.                   |
 | `intersection(other[, out])` | Returns a rectangle representing the overlap area.    |
 | `union(other[, out])`        | Returns a rectangle encompassing both rectangles.     |

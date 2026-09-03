@@ -71,6 +71,8 @@ let shape = new Graphics().svg(`
 `);
 ```
 
+The parser handles `<path>`, `<rect>`, `<circle>`, `<ellipse>`, `<line>`, `<polygon>`, `<polyline>`, and `<g>`, styled by `fill`, `stroke`, `stroke-width`, `fill-opacity`, `stroke-opacity`, and `opacity` from attributes or inline `style`. Fills and strokes can reference `<linearGradient>` and `<radialGradient>` definitions with `url(#id)`. Unsupported elements such as `<text>`, `<image>`, `<use>`, `<clipPath>`, `<mask>`, and `<style>` are skipped with a console warning, and `transform` attributes are ignored. See the [SVG guide](../../../assets/__docs__/svg.mdx) for the full feature table.
+
 ## GraphicsContext
 
 `GraphicsContext` is the core of the PixiJS graphics model. It holds all drawing commands and styles, allowing the same shape data to be reused by multiple `Graphics` instances:
@@ -102,14 +104,15 @@ function update() {
 
 ### Destroying a GraphicsContext
 
-Destroying a `GraphicsContext` also destroys all `Graphics` instances that share it.
+Destroying a `GraphicsContext` does not destroy the `Graphics` objects that share it, but it leaves them with a destroyed context, so they no longer update or render correctly. Only destroy a shared context after every `Graphics` using it is gone. Destroying a `Graphics` object detaches it from its context, so a long-lived shared context does not hold on to destroyed instances.
 
 ```ts
 const context = new GraphicsContext().circle(100, 100, 50).fill('red');
 const shapeA = new Graphics(context);
 const shapeB = new Graphics(context); // Shares the same geometry
 
-shapeA.destroy({ context: true }); // Destroys both shapeA and shapeB
+shapeA.destroy(); // shapeB keeps rendering
+shapeB.destroy({ context: true }); // last user: destroy the context too
 ```
 
 ## Creating holes

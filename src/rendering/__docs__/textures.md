@@ -81,13 +81,17 @@ texture.source.unload();
 
 PixiJS supports multiple `TextureSource` types depending on the input data:
 
-| Type                  | Description                                                       |
-| --------------------- | ----------------------------------------------------------------- |
-| **ImageSource**       | HTMLImageElement, ImageBitmap, SVGs, VideoFrame                   |
-| **CanvasSource**      | HTMLCanvasElement or OffscreenCanvas                              |
-| **VideoSource**       | HTMLVideoElement with optional auto-play and update FPS           |
-| **BufferImageSource** | TypedArray or ArrayBuffer with explicit width, height, and format |
-| **CompressedSource**  | Array of compressed mipmaps (Uint8Array\[])                       |
+| Type                   | Description                                                                                     |
+| ---------------------- | ----------------------------------------------------------------------------------------------- |
+| **ImageSource**        | HTMLImageElement, ImageBitmap, SVGs, VideoFrame                                                 |
+| **CanvasSource**       | HTMLCanvasElement or OffscreenCanvas                                                            |
+| **VideoSource**        | HTMLVideoElement with optional auto-play and update FPS                                         |
+| **BufferImageSource**  | TypedArray or ArrayBuffer with explicit width, height, and format                               |
+| **CompressedSource**   | Array of compressed mipmaps (Uint8Array\[])                                                     |
+| **HTMLSource**         | A live DOM element rendered through the experimental HTML-in-Canvas API (`pixi.js/html-source`) |
+| **ElementImageSource** | An immutable `ElementImage` snapshot of a DOM element (`pixi.js/html-source`)                   |
+
+`HTMLSource` and `ElementImageSource` are experimental and only register when you import `pixi.js/html-source`. See the [HTML Source guide](../../html-source/__docs__/html-source.md).
 
 ## Texture properties
 
@@ -111,11 +115,30 @@ Key properties on `TextureSource`:
 - `alphaMode`: How alpha is interpreted on upload.
 - `wrapMode` / `scaleMode`: Sampling behavior outside bounds or when scaled.
 - `autoGenerateMipmaps`: Whether to generate mipmaps on upload.
+- `transient`: WebGPU only. Marks an antialiased render texture's multisample buffer as single-pass scratch memory. Set at creation time.
 
 ```ts
 texture.source.scaleMode = 'linear';
 texture.source.wrapMode = 'repeat';
 ```
+
+## Depth textures and texture views (advanced)
+
+A `TextureSource` with a depth or stencil format (`depth24plus`, `depth24plus-stencil8`, `depth32float`, and so on) can be attached to a {@link RenderTarget} and, on WebGPU, sampled in a shader. To sample only the depth aspect, wrap the source in a {@link TextureView} and pass it as a shader resource:
+
+```ts
+import { Shader, TextureSource, TextureView } from 'pixi.js';
+
+const depth = new TextureSource({ width: 512, height: 512, format: 'depth24plus-stencil8' });
+const depthView = new TextureView(depth, { aspect: 'depth-only' });
+
+const shader = Shader.from({
+    gpu: { vertex, fragment },
+    resources: { uDepthTexture: depthView },
+});
+```
+
+Declare the binding as `texture_depth_2d` in WGSL and read it with `textureLoad`. Bind the render target with `depthReadOnly: true` on its depth attachment while sampling. On WebGL a `TextureView` binds the underlying source and the view descriptor is ignored.
 
 ---
 
@@ -125,3 +148,4 @@ texture.source.wrapMode = 'repeat';
 - {@link TextureSource}
 - {@link TextureStyle}
 - {@link RenderTexture}
+- {@link TextureView}

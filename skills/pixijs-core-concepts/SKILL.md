@@ -1,6 +1,6 @@
 ---
 name: pixijs-core-concepts
-description: "Use this skill when understanding how PixiJS v8 renders frames: the systems-and-pipes renderer, the render loop, and how the library adapts to different environments. Covers WebGLRenderer/WebGPURenderer/CanvasRenderer selection, renderer.render() pipeline, environment detection, and pointers to per-topic deep dives. Triggers on: renderer, WebGL, WebGPU, Canvas, render loop, render pipeline, systems, environments, autoDetectRenderer, WebGLLoader, WebGPULoader, CanvasLoader."
+description: "Use this skill when understanding how PixiJS v8 renders frames: the systems-and-pipes renderer, the render loop, and how the library adapts to different environments. Covers WebGLRenderer/WebGPURenderer/CanvasRenderer selection, renderer.render() pipeline, environment detection, rendering into RenderTextures and RenderTargets (flipY, mipLevel, layer, bind/push/pop, copyDepthTexture), and pointers to per-topic deep dives. Triggers on: renderer, WebGL, WebGPU, Canvas, render loop, render pipeline, systems, environments, autoDetectRenderer, RenderTexture, RenderTarget, render to texture, flipY, mipLevel, renderTarget.bind, copyToTexture, copyDepthTexture, depth-only, WebGLLoader, WebGPULoader, CanvasLoader."
 license: MIT
 ---
 
@@ -41,6 +41,7 @@ For deep dives into any single topic, open the corresponding reference file. Non
 - **Need manual control over when rendering happens?** Set `autoStart: false` and call `app.renderer.render(app.stage)` from your own loop. See `references/render-loop.md`.
 - **Integrating with a physics library?** Add your update at `UPDATE_PRIORITY.HIGH` so physics runs before the render at `LOW`. See `references/render-loop.md`.
 - **Writing a custom renderable?** Implement a `RenderPipe`. See `pixijs-custom-rendering` skill.
+- **Rendering into a texture or a custom render target?** Pass `target` to `renderer.render()`, or build a `RenderTarget` with explicit color and depth attachments. See `references/renderers.md`.
 - **Running under strict CSP?** Import `'pixi.js/unsafe-eval'`. See the `pixijs-environments` skill.
 
 ## Quick concepts

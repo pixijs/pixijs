@@ -12,7 +12,7 @@ Create and configure a PixiJS v8 `Application`. Covers `new Application()` + asy
 ### pixijs-core-concepts
 How PixiJS v8 renders frames: the systems-and-pipes renderer, the render loop, and how the library adapts to different environments. Covers `WebGLRenderer`/`WebGPURenderer`/`CanvasRenderer` selection, `renderer.render()` pipeline, environment detection, and pointers to per-topic deep dives.
 
-**Triggers:** renderer, WebGL, WebGPU, Canvas, render loop, render pipeline, systems, environments, autoDetectRenderer, WebGLLoader, WebGPULoader, CanvasLoader.
+**Triggers:** renderer, WebGL, WebGPU, Canvas, render loop, render pipeline, systems, environments, autoDetectRenderer, RenderTexture, RenderTarget, render to texture, flipY, mipLevel, layer, renderTarget.bind, push, pop, getBindState, copyToTexture, copyDepthTexture, depth-only, frontFaceInverted, GpuExtensions, WebGLLoader, WebGPULoader, CanvasLoader.
 
 ### pixijs-create
 Scaffold a new PixiJS v8 project with the `create-pixi` CLI. Covers npm/yarn/pnpm/bun create commands, interactive vs non-interactive flows, available template presets (bundler-vite, bundler-webpack, bundler-esbuild, bundler-import-map, creation-web, framework-react, extension-default), Node version requirements, and post-scaffold dev flow.
@@ -32,7 +32,7 @@ Upgrade a PixiJS project from v7 to v8 or diagnose broken v7 code after an upgra
 ### pixijs-scene-core-concepts
 The PixiJS v8 scene graph as a whole: how containers, leaves, transforms, and render order fit together. Covers leaf vs container distinction, local/world coordinates, culling, render groups, sortable children, masking, `RenderLayer`, and which leaf skill covers which display object.
 
-**Triggers:** scene graph, display list, Container, Sprite, Graphics, Text, Mesh, ParticleContainer, DOMContainer, GifSprite, masking, render group, RenderLayer, world transform.
+**Triggers:** scene graph, display list, Container, Sprite, Graphics, Text, Mesh, ParticleContainer, DOMContainer, GifSprite, masking, mask texture destroyed, MaskFilter, render group, RenderLayer, world transform.
 
 ## Scene Objects
 
@@ -54,12 +54,12 @@ Display animated GIFs. Covers the `pixi.js/gif` side-effect import, `Assets.load
 ### pixijs-html-source
 Render live HTML/DOM elements or frozen snapshots as PixiJS v8 textures via the HTML-in-Canvas browser APIs. Experimental: requires a browser that supports the HTML-in-Canvas spec (the API must be enabled, or the texture uploader throws on first render). Covers the `pixi.js/html-source` side-effect import, feature detection with `canvas.requestPaint`, `HTMLSource` for a live repainting element (`autoLayout`/`autoUpdate`/`autoRequestPaint`, `requestPaint`, `isReady`, the direct-child-of-canvas + `layoutsubtree` rule), `ElementImageSource` for an immutable `captureElementImage()` snapshot (`autoClose`, ready immediately), using the source on a `Sprite`/`Texture`/`Mesh`, and fallback-only auto-detection via `Texture.from`.
 
-**Triggers:** HTMLSource, ElementImageSource, pixi.js/html-source, requestPaint, captureElementImage, ElementImage, layoutsubtree, autoRequestPaint, autoClose, HTML in canvas, render DOM to texture, HTMLSourceCanvas, experimental.
+**Triggers:** HTMLSource, ElementImageSource, pixi.js/html-source, requestPaint, captureElementImage, ElementImage, layoutsubtree, autoRequestPaint, autoClose, HTML in canvas, HTML-in-Canvas, render DOM to texture, render HTML to texture, HTMLSourceCanvas, texElementImage2D, copyElementImageToTexture, Chromium 150, experimental.
 
 ### pixijs-scene-graphics
 Draw vector shapes and paths. Covers the `Graphics` shape-then-fill API (`rect`/`circle`/`ellipse`/`poly`/`roundRect`/`star`), path methods (`moveTo`/`lineTo`/`bezierCurveTo`/`arc`), `fill`/`stroke`/`cut`, `FillGradient`, `FillPattern`, `GraphicsContext` sharing, SVG markup.
 
-**Triggers:** Graphics, GraphicsContext, rect, circle, poly, roundRect, fill, stroke, cut, FillGradient, FillPattern, moveTo, bezierCurveTo, svg.
+**Triggers:** Graphics, GraphicsContext, rect, circle, poly, roundRect, fill, stroke, cut, FillGradient, FillPattern, FillPatternOptions, textureSpace, pattern fill, texture fill, spritesheet fill, radialGradient, linearGradient, svg gradient, moveTo, bezierCurveTo, svg.
 
 ### pixijs-scene-mesh
 Render custom geometry. Covers `Mesh` with `MeshGeometry` (positions, uvs, indices, topology), `MeshSimple` for per-frame vertex animation, `MeshPlane` for subdivided deformation, `MeshRope` for path-following textures, `PerspectiveMesh` for 2.5D corners.
@@ -69,7 +69,7 @@ Render custom geometry. Covers `Mesh` with `MeshGeometry` (positions, uvs, indic
 ### pixijs-scene-particle-container
 Render thousands of lightweight sprites. Covers `ParticleContainer` with `Particle` instances, `addParticle`/`removeParticle`, `particleChildren` array, `dynamicProperties` (vertex, position, rotation, uvs, color), `boundsArea`, `roundPixels`, `update`.
 
-**Triggers:** ParticleContainer, Particle, IParticle, addParticle, particleChildren, dynamicProperties, boundsArea, particle effects.
+**Triggers:** ParticleContainer, Particle, IParticle, addParticle, particleChildren, dynamicProperties, boundsArea, particle effects, particle alpha, particle tint, fade particles.
 
 ### pixijs-scene-sprite
 Draw images. Covers `Sprite` with `anchor`/`tint`/`texture`, `AnimatedSprite` for frame animation, `NineSliceSprite` for resizable UI panels, `TilingSprite` for scrolling/repeating backgrounds.
@@ -86,7 +86,7 @@ Render text. Covers `Text` for canvas-quality styled labels, `BitmapText` for ch
 ### pixijs-assets
 Load and manage resources. Covers `Assets.init`, `Assets.load`/`add`/`unload`, bundles, manifests, background loading, `onProgress`, caching, spritesheets, compressed textures, SVG as texture or Graphics, resolution detection.
 
-**Triggers:** Assets, Assets.load, Assets.init, loadBundle, manifest, backgroundLoad, Spritesheet, Cache, LoadOptions, unload.
+**Triggers:** Assets, Assets.load, Assets.init, loadBundle, manifest, backgroundLoad, Spritesheet, Cache, LoadOptions, unload, svg, loadSvg, parseAsGraphicsContext, svg gradient.
 
 ### pixijs-color
 Create, convert, or manipulate colors. Covers `Color` class input formats (hex, CSS names, RGB/HSL objects, arrays, `Uint8Array`), conversion methods (`toHex`, `toNumber`, `toArray`, `toRgba`), component access, `setAlpha`/`multiply`/`premultiply`, `Color.shared` singleton.
@@ -96,12 +96,12 @@ Create, convert, or manipulate colors. Covers `Color` class input formats (hex, 
 ### pixijs-events
 Handle pointer, mouse, touch, or wheel input. Covers `eventMode` (none, passive, auto, static, dynamic), `FederatedEvent` types, propagation and capture phase, `hitArea`, `interactiveChildren`, `cursor` and `cursorStyles`, global move events for drag, `eventFeatures` config.
 
-**Triggers:** eventMode, FederatedPointerEvent, pointerdown, click, tap, globalpointermove, drag, hitArea, cursor, stopPropagation.
+**Triggers:** eventMode, FederatedPointerEvent, pointerdown, click, tap, globalpointermove, drag, hitArea, cursor, stopPropagation, persistentDeviceId.
 
 ### pixijs-math
 Coordinates, vectors, matrices, shapes, and hit testing. Covers `Point`/`ObservablePoint`, `Matrix` (2D affine, decompose, apply), shapes (`Rectangle`, `Circle`, `Ellipse`, `Polygon`, `RoundedRectangle`, `Triangle`), `toGlobal`/`toLocal`, `PointData` types, `DEG_TO_RAD`, and `pixi.js/math-extras` vector helpers.
 
-**Triggers:** Point, ObservablePoint, Matrix, Rectangle, Circle, Polygon, toGlobal, toLocal, hitArea, math-extras, DEG_TO_RAD, PointData.
+**Triggers:** Point, ObservablePoint, Matrix, Rectangle, Circle, Polygon, Triangle, RoundedRectangle, strokeContains, containsRect, intersects, isClockwise, winding order, stroke hit test, toGlobal, toLocal, hitArea, math-extras, DEG_TO_RAD, PointData.
 
 ### pixijs-ticker
 Run per-frame logic or control the render loop. Covers `Ticker.add`/`addOnce`/`remove`, `deltaTime` vs `deltaMS` vs `elapsedMS`, `UPDATE_PRIORITY` ordering, `maxFPS`/`minFPS` capping, speed scaling, `Ticker.shared` vs new instances, per-object `onRender` hook, manual rendering.
@@ -123,7 +123,7 @@ Composite display objects with blend modes. Covers standard modes (`normal`, `ad
 ### pixijs-custom-rendering
 Write custom shaders, uniforms, or batchers. Covers `Shader.from({gl, gpu, resources})`, `GlProgram`/`GpuProgram`, `UniformGroup` with typed uniforms (`f32`, `vec2`, `mat4x4`), UBO mode, textures as resources, custom `Filter`, custom `Batcher` via extensions.
 
-**Triggers:** Shader, GlProgram, GpuProgram, UniformGroup, Batcher, Filter, GLSL, WGSL, UBO, uniform, custom shader.
+**Triggers:** Shader, GlProgram, GpuProgram, UniformGroup, Batcher, Filter, GLSL, WGSL, UBO, uniform, custom shader, override, ShaderOverrides, gpuLayout, bind group layout, extractStructAndGroups, generateGpuLayoutGroups, TextureView, depth texture, texture_depth_2d, depthReadOnly, Buffer.update, vertexCount, getSize, clockwiseFrontFace, cullMode, render bundle, beginBundle, endBundle, executeBundle, isBundleValid, RenderBundle, encoder.draw, RenderContainer.
 
 ### pixijs-filters
 Apply visual effects to containers via the filter pipeline. Covers built-in filters (`AlphaFilter`, `BlurFilter`, `ColorMatrixFilter`, `DisplacementFilter`, `NoiseFilter`), custom `Filter.from()` with GLSL/WGSL, options (`resolution`, `padding`, `antialias`, `blendRequired`), `filterArea` optimization, `pixi-filters` community package.
@@ -133,4 +133,4 @@ Apply visual effects to containers via the filter pipeline. Covers built-in filt
 ### pixijs-performance
 Profile or optimize a PixiJS v8 app for FPS, draw calls, or GPU memory. Covers destroy patterns (`cacheAsTexture(false)`, `releaseGlobalResources`), `GCSystem` and `TextureGCSystem`, `PrepareSystem`, object pooling, batching rules, `BitmapText` for dynamic text, culling (`Culler`, `CullerPlugin`, `cullable`, `cullArea`), resolution/antialias tradeoffs.
 
-**Triggers:** FPS, jank, draw calls, batching, object pool, GCSystem, PrepareSystem, Culler, cacheAsTexture, memory leak, destroy patterns.
+**Triggers:** FPS, jank, draw calls, batching, object pool, GCSystem, PrepareSystem, Culler, cacheAsTexture, memory leak, destroy patterns, render bundle, transient, MSAA, TRANSIENT_ATTACHMENT, Buffer.update, WebGPU performance.

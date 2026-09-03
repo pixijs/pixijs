@@ -139,7 +139,7 @@ const ptInOther = child.toLocal(new Point(10, 10), other);
 
 ### Shapes and hit testing
 
-Rectangle, Circle, Ellipse, Polygon, RoundedRectangle, and Triangle all implement `contains(x, y)` for point-in-shape tests, plus `getBounds(out?)` and `strokeContains(x, y, width, alignment?)`. They can be used as `hitArea` on containers for custom interaction regions.
+Rectangle, Circle, Ellipse, Polygon, RoundedRectangle, and Triangle all implement `contains(x, y)` for point-in-shape tests, plus `getBounds(out?)` and `strokeContains(x, y, width, alignment?)` (`Triangle` ignores `alignment` and always tests a centered stroke). They can be used as `hitArea` on containers for custom interaction regions.
 
 ```ts
 import { Rectangle, Circle, Polygon, Container } from "pixi.js";
@@ -156,6 +156,8 @@ rect.isEmpty(); // false (Rectangle.EMPTY returns a fresh empty rect)
 // Native Rectangle-to-Rectangle methods (no math-extras needed)
 const other = new Rectangle(50, 50, 100, 100);
 rect.containsRect(other); // true if `other` is fully inside `rect`
+rect.containsRect(new Rectangle(100, 0, 100, 100)); // true: a flush right edge counts
+rect.containsRect(rect.clone()); // true: identical rects contain each other
 rect.intersects(other); // boolean: do they overlap at all?
 rect.intersects(other, matrix); // overlap after transforming `other`
 
@@ -233,6 +235,12 @@ poly.isClockwise(); // shoelace winding test (useful for SVG hole detection)
 const outer = new Polygon([0, 0, 100, 0, 100, 100, 0, 100]);
 const hole = new Polygon([25, 25, 75, 25, 75, 75, 25, 75]);
 outer.containsPolygon(hole); // true
+
+// Stroke hit test follows the drawn stroke: alignment 1 = inside, 0.5 = centered,
+// 0 = outside, independent of winding order
+outer.strokeContains(-5, 50, 20); // true (centered stroke extends 10px outward)
+outer.strokeContains(-5, 50, 20, 1); // false (inner stroke stays inside)
+outer.strokeContains(5, 50, 20, 0); // false (outer stroke stays outside)
 ```
 
 ### Constants

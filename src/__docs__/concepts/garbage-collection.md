@@ -44,23 +44,20 @@ texture.source.unload();
 
 This is particularly useful for applications that dynamically load large numbers of textures and require precise memory control.
 
-## Automatic Texture Garbage Collection with `TextureGCSystem`
+## Automatic Garbage Collection with `GCSystem`
 
-PixiJS also includes the `TextureGCSystem`, a system that manages GPU texture memory. By default:
+PixiJS also includes the `GCSystem`, which unloads GPU resources (textures, buffers, graphics geometry, and other renderables) that have not been used recently. By default:
 
-- **Removes textures unused for 3600 frames** (~60 seconds at 60 FPS, ~120 seconds at 30 FPS).
-- **Checks every 600 frames** (~10 seconds at 60 FPS) for unused textures.
+- **Unloads resources unused for 60 seconds** (`gcMaxUnusedTime: 60000`).
+- **Checks every 30 seconds** (`gcFrequency: 30000`).
 
-> [!NOTE]
-> These thresholds are frame-based, not time-based. If your app runs at a lower frame rate, textures will persist longer before being collected.
+Resources that are still bound each frame are stamped as in use and are never collected mid-render. Unloaded resources are recreated automatically the next time they are drawn.
 
-### Customizing `TextureGCSystem`
+### Customizing `GCSystem`
 
-You can adjust the behavior of `TextureGCSystem` to suit your application:
-
-- **`textureGCActive`**: Enable or disable garbage collection. Default: `true`.
-- **`textureGCMaxIdle`**: Maximum idle frames before texture cleanup. Default: `3600` frames.
-- **`textureGCCheckCountMax`**: Frequency of garbage collection checks (in frames). Default: `600` frames.
+- **`gcActive`**: Enable or disable garbage collection. Default: `true`.
+- **`gcMaxUnusedTime`**: Idle time in milliseconds before a resource is unloaded. Default: `60000`.
+- **`gcFrequency`**: How often the collector runs, in milliseconds. Default: `30000`.
 
 Example configuration:
 
@@ -70,11 +67,14 @@ import { Application } from 'pixi.js';
 const app = new Application();
 
 await app.init({
-  textureGCActive: true, // Enable texture garbage collection
-  textureGCMaxIdle: 7200, // 2 hours idle time
-  textureGCCheckCountMax: 1200, // Check every 20 seconds at 60 FPS
+  gcActive: true,
+  gcMaxUnusedTime: 120000, // 2 minutes idle
+  gcFrequency: 60000, // check every minute
 });
 ```
+
+> [!NOTE]
+> The older `textureGCActive`, `textureGCMaxIdle`, and `textureGCCheckCountMax` options are deprecated since 8.15.0. They were frame-based; the `gc*` options are time-based.
 
 ## Best Practices
 

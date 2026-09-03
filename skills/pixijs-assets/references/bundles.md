@@ -66,7 +66,7 @@ Assets.addBundle("main", [{ alias: "hero", src: "hero.png" }]);
 Assets.addBundle("bossArea", [{ alias: "hero", src: "hero.png" }]);
 ```
 
-If two bundles declare the same alias with the same `src`, the underlying texture is loaded once and shared. Unloading one bundle does not evict the shared asset if the other bundle still references it.
+If two bundles declare the same alias with the same `src`, the underlying texture is loaded once and shared. There is no reference counting: unloading either bundle destroys the shared texture and removes it from the cache, and the other bundle's alias stays invalid until you load that bundle again. Make sure nothing on the scene still uses the shared asset before unloading.
 
 ### Bundle IDs
 

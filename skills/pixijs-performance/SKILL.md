@@ -1,6 +1,6 @@
 ---
 name: pixijs-performance
-description: "Use this skill when profiling or optimizing a PixiJS v8 app for FPS, draw calls, or GPU memory. Covers destroy patterns (cacheAsTexture(false), releaseGlobalResources), GCSystem and TextureGCSystem, PrepareSystem, object pooling, batching rules, BitmapText for dynamic text, culling (Culler, CullerPlugin, cullable, cullArea), resolution/antialias tradeoffs. Triggers on: FPS, jank, draw calls, batching, object pool, GCSystem, PrepareSystem, Culler, cacheAsTexture, memory leak, destroy patterns."
+description: "Use this skill when profiling or optimizing a PixiJS v8 app for FPS, draw calls, or GPU memory. Covers destroy patterns (cacheAsTexture(false), releaseGlobalResources), GCSystem and TextureGCSystem, PrepareSystem, object pooling, batching rules, BitmapText for dynamic text, culling (Culler, CullerPlugin, cullable, cullArea), resolution/antialias tradeoffs, WebGPU-only wins (transient MSAA render textures, render bundles, partial buffer updates). Triggers on: FPS, jank, draw calls, batching, object pool, GCSystem, PrepareSystem, Culler, cacheAsTexture, memory leak, destroy patterns, render bundle, transient, MSAA, Buffer.update, WebGPU performance."
 license: MIT
 ---
 
@@ -126,9 +126,18 @@ app.start();
 **Tradeoffs:**
 
 - Uses GPU memory for the cached texture (larger containers = more memory)
-- Max texture size is GPU-dependent (typically 4096x4096; check `renderer.texture.maxTextureSize`)
+- Max texture size is GPU-dependent (typically 4096x4096 or larger). No PixiJS property exposes it (`renderer.limits` only reports texture-unit counts), so query the backend directly
 - Must call `updateCacheTexture()` after modifying children
 - Combining with masks is fragile (see the masking skill)
+
+```ts
+import type { WebGLRenderer, WebGPURenderer } from "pixi.js";
+
+// Available after renderer/app init on both backends
+const maxTextureSize = renderer.name === "webgpu"
+  ? (renderer as WebGPURenderer).gpu.device.limits.maxTextureDimension2D
+  : (renderer as WebGLRenderer).gl.getParameter(WebGL2RenderingContext.MAX_TEXTURE_SIZE);
+```
 
 ```ts
 import { Container, Sprite } from "pixi.js";
@@ -337,6 +346,20 @@ await app.init({
 ```
 
 `resolution: 2` quadruples the pixel count. On mobile, this can halve frame rate. Profile to find the right balance.
+
+### WebGPU-only optimizations
+
+```ts
+import { RenderTexture } from "pixi.js";
+
+// single-pass antialiased render texture: discard the MSAA buffer at end of pass
+const rt = RenderTexture.create({ width: 1024, height: 1024, antialias: true, transient: true });
+
+// upload only the changed byte range of a large buffer (also works on WebGL)
+buffer.update(changedBytes, offsetBytes);
+```
+
+`transient: true` tells WebGPU the multisample buffer is scratch memory: it is discarded instead of written back, and tile-based GPUs skip allocating it when `renderer.device.extensions.transientAttachment` is true. Only use it on textures rendered in a single pass and never re-entered with `clear: false` or wrapped by a filter. For static custom draw sequences, record a render bundle once and replay it each frame; see the `pixijs-custom-rendering` skill.
 
 ### Stagger bulk texture destruction
 

@@ -32,6 +32,26 @@ const label = new Text({
 });
 ```
 
+## Sharing a style
+
+One `TextStyle` instance can drive many text objects. Each text object listens to the style's `update` event, so editing the style re-renders all of them.
+
+```ts
+const style = new TextStyle({ fontSize: 24, fill: '#ffffff' });
+
+const title = new Text({ text: 'Title', style });
+const score = new BitmapText({ text: 'Score: 0', style });
+
+style.fontSize = 32; // both re-render
+```
+
+Destroying a text object detaches it from the style and leaves the style alive for the others. Pass `style: true` (or `true`) to `destroy()` only when nothing else uses the style, because that destroys the shared instance for everyone.
+
+```ts
+title.destroy(); // detaches from `style`; `score` keeps using it
+title.destroy({ style: true }); // also destroys `style` (breaks `score`)
+```
+
 ## Fill and stroke
 
 Fills and strokes work the same way as in the `Graphics` class. See [Graphics fills](../graphics/graphics-fill.md) for details.
@@ -59,8 +79,8 @@ const fill = new FillGradient({
 });
 
 // Using a pattern
-const txt = await Assets.load<Texture>('https://pixijs.com/assets/bg_scene_rotate.jpg');
-const fill = new FillPattern(txt, 'repeat');
+const texture = await Assets.load<Texture>('https://pixijs.com/assets/bg_scene_rotate.jpg');
+const fill = new FillPattern({ texture, repetition: 'repeat' });
 
 // Use the fill in a TextStyle
 const style = new TextStyle({
