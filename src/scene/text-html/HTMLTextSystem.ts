@@ -110,6 +110,19 @@ export class HTMLTextSystem implements System
         return this._activeTextures[textKey]?.usageCount ?? null;
     }
 
+    /**
+     * Clears all active texture references without returning them to the pool.
+     * This is used when the WebGL context is lost and restored, as the GPU textures
+     * are already invalidated and new ones need to be created.
+     */
+    public clearActiveTextures()
+    {
+        for (const key in this._activeTextures)
+        {
+            this._activeTextures[key] = null;
+        }
+    }
+
     private _increaseReferenceCount(textKey: string)
     {
         this._activeTextures[textKey].usageCount++;
