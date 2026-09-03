@@ -7,6 +7,7 @@ import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { GlobalResourceRegistry } from '../../../../utils/pool/GlobalResourceRegistry';
 import { EventEmitter } from '../../../../utils/utils';
 import { CLEAR } from '../../gl/const';
+import { CanvasSource } from '../texture/sources/CanvasSource';
 import { SystemRunner } from './SystemRunner';
 
 import type { ColorSource, RgbaArray } from '../../../../color/Color';
@@ -21,6 +22,7 @@ import type { GenerateTextureOptions, GenerateTextureSystem } from '../extract/G
 import type { PipeConstructor } from '../instructions/RenderPipe';
 import type { RenderSurface } from '../renderTarget/RenderTargetSystem';
 import type { Texture } from '../texture/Texture';
+import type { CanvasView, CanvasViewOptions } from '../view/CanvasView';
 import type { ViewSystem, ViewSystemDestroyOptions } from '../view/ViewSystem';
 import type { SharedRendererOptions } from './SharedSystems';
 import type { System, SystemConstructor } from './System';
@@ -92,8 +94,11 @@ export interface RenderOptions extends ClearOptions
 export interface ClearOptions
 {
     /**
-     * The render target to render. if this target is a canvas and  you are using the WebGL renderer,
-     * please ensure you have set `multiView` to `true` on renderer.
+     * The render target to render to. This can be a canvas, a texture, or a render target.
+     *
+     * When targeting a canvas other than the renderer's own, set `multiView: true` in the
+     * renderer options if you are using the WebGL renderer. The WebGPU renderer supports
+     * rendering to multiple canvases without any extra options.
      */
     target?: RenderSurface;
     /** The color to clear with. */
@@ -144,7 +149,9 @@ const defaultRunners = [
     'render',
     'update',
     'postrender',
-    'prerender'
+    'prerender',
+    'viewAdded',
+    'viewRemoved'
 ] as const;
 
 type DefaultRunners = typeof defaultRunners[number];
@@ -362,17 +369,36 @@ export class AbstractRenderer<
 
         options.target ||= this.view.renderTarget;
 
-        // TODO: we should eventually fix events so that it can handle multiple canvas elements
         if (options.target === this.view.renderTarget)
         {
+            // main view fast path: skip the per-frame getRenderTarget lookup. The main view's
+            // color texture is always a canvas, so it always takes the screen-like defaults.
             // TODO get rid of this
             this._lastObjectRendered = options.container;
-
             options.clearColor ??= this.background.colorRgba;
             options.clear ??= this.background.clearBeforeRender;
         }
+        else
+        {
+            const renderer = this as unknown as Renderer;
+            const renderTarget = renderer.renderTarget.getRenderTarget(options.target);
 
-        if (options.clearColor)
+            if (renderTarget === this.view.renderTarget)
+            {
+                // TODO get rid of this
+                this._lastObjectRendered = options.container;
+            }
+
+            // canvas-backed targets behave like screens, so they get the background defaults;
+            // texture targets keep their explicit clear semantics
+            if (renderTarget.colorTexture instanceof CanvasSource)
+            {
+                options.clearColor ??= this.background.colorRgba;
+                options.clear ??= this.background.clearBeforeRender;
+            }
+        }
+
+        if (options.clearColor !== undefined && options.clearColor !== null)
         {
             const isRGBAArray = Array.isArray(options.clearColor) && options.clearColor.length === 4;
 
@@ -434,7 +460,9 @@ export class AbstractRenderer<
         const renderer = this as unknown as Renderer;
 
         options.target ||= renderer.renderTarget.renderTarget;
-        options.clearColor ||= this.background.colorRgba;
+        // ??= (not ||=) so an explicit clearColor of 0 (opaque black) is honored, matching render()'s
+        // guard; ||= would treat the falsy 0 as absent and clear to the background instead.
+        options.clearColor ??= this.background.colorRgba;
         options.clear ??= CLEAR.ALL;
 
         const { clear, clearColor, target, mipLevel, layer } = options;
@@ -442,6 +470,10 @@ export class AbstractRenderer<
         Color.shared.setValue(clearColor ?? this.background.colorRgba);
 
         renderer.renderTarget.clear(target, clear, Color.shared.toArray() as RgbaArray, mipLevel ?? 0, layer ?? 0);
+
+        // when rendering goes through an intermediate surface (WebGL multiView), the result
+        // still needs presenting to the target canvas - same hook the render loop uses
+        renderer.renderTarget.presentRenderSurface(target);
     }
 
     /** The resolution / device pixel ratio of the renderer. */
@@ -515,6 +547,36 @@ export class AbstractRenderer<
     get screen(): Rectangle
     {
         return this.view.screen;
+    }
+
+    /**
+     * The views the renderer presents to. The main view is always at index 0.
+     * @advanced
+     */
+    get views(): readonly CanvasView[]
+    {
+        return this.view.views;
+    }
+
+    /**
+     * Registers an additional canvas with the renderer so it can be presented to (multiView).
+     * @param options - The options describing the view to register.
+     * @returns The registered view.
+     * @advanced
+     */
+    public addView(options: CanvasViewOptions): CanvasView
+    {
+        return this.view.addView(options);
+    }
+
+    /**
+     * Removes a previously registered view. Does nothing if the view is not registered.
+     * @param view - The view to remove.
+     * @advanced
+     */
+    public removeView(view: CanvasView): void
+    {
+        this.view.removeView(view);
     }
 
     /**

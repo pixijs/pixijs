@@ -68,6 +68,32 @@ describe('AccessibilitySystem', () =>
         renderer.destroy();
     });
 
+    it('builds the main overlay on tab even when enabledByDefault is false', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const system = new AccessibilitySystem(renderer);
+
+        // the canonical "accessibility off until Tab" config: participation must be decoupled from
+        // activation timing, so the main view is still registered and the overlay builds on Tab
+        system.init({
+            accessibilityOptions: {
+                enabledByDefault: false,
+                activateOnTab: true,
+            },
+        });
+
+        expect(system.isActive).toBe(false);
+        expect(system.div).toBeNull();
+
+        system['_onKeyDown'](new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
+
+        expect(system.isActive).toBe(true);
+        expect(system['_tracker'].mainView).not.toBeNull();
+        expect(system.div).toBeInstanceOf(HTMLElement);
+
+        renderer.destroy();
+    });
+
     it('should not crash when scene graph contains Containers without children', async () =>
     {
         class CompleteContainer extends Container
@@ -176,8 +202,6 @@ describe('AccessibilitySystem', () =>
             }
         });
 
-        system['_isRunningTests'] = true;
-
         const stage = new Container();
 
         // Create an accessible button
@@ -192,6 +216,7 @@ describe('AccessibilitySystem', () =>
         stage.addChild(myButton);
 
         renderer.render(stage);
+        system.prerender({ container: stage, target: renderer.view.renderTarget });
         system.postrender();
 
         expect(myButton._accessibleDiv.tagName).toBe('BUTTON');
@@ -202,6 +227,7 @@ describe('AccessibilitySystem', () =>
         // Disable the button's accessibility behaviour
         myButton.accessible = false;
         renderer.render(stage);
+        system.prerender({ container: stage, target: renderer.view.renderTarget });
         system.postrender();
 
         // Create a H1 accessible element in a later frame
@@ -213,6 +239,7 @@ describe('AccessibilitySystem', () =>
         stage.addChild(myHeading);
 
         renderer.render(stage);
+        system.prerender({ container: stage, target: renderer.view.renderTarget });
         system.postrender();
 
         // Assert that it did not reuse the <button> and instead created a <h1>
@@ -237,8 +264,6 @@ describe('AccessibilitySystem', () =>
             }
         });
 
-        system['_isRunningTests'] = true;
-
         const stage = new Container();
 
         // Create an accessible button
@@ -253,6 +278,7 @@ describe('AccessibilitySystem', () =>
         stage.addChild(myButton1);
 
         renderer.render(stage);
+        system.prerender({ container: stage, target: renderer.view.renderTarget });
         system.postrender();
 
         expect(myButton1._accessibleDiv.tabIndex).toBe(2);
@@ -262,6 +288,7 @@ describe('AccessibilitySystem', () =>
         // Disable the button's accessibility behaviour
         myButton1.accessible = false;
         renderer.render(stage);
+        system.prerender({ container: stage, target: renderer.view.renderTarget });
         system.postrender();
 
         // Create a new accessible button with different metadata
@@ -274,6 +301,7 @@ describe('AccessibilitySystem', () =>
         stage.addChild(myButton2);
 
         renderer.render(stage);
+        system.prerender({ container: stage, target: renderer.view.renderTarget });
         system.postrender();
 
         // Assert that we don't carry over metadata from myButton1

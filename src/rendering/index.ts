@@ -235,6 +235,8 @@ export * from './renderers/shared/texture/utils/getSupportedTextureFormats';
 export * from './renderers/shared/texture/utils/textureFrom';
 export * from './renderers/shared/utils/createIdFromString';
 export * from './renderers/shared/utils/parseFunctionBody';
+export * from './renderers/shared/view/CanvasView';
 export * from './renderers/shared/view/View';
 export * from './renderers/shared/view/ViewSystem';
+export * from './renderers/shared/view/ViewTracker';
 export * from './renderers/types';

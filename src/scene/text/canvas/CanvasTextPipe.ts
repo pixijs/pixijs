@@ -76,6 +76,8 @@ export class CanvasTextPipe implements RenderPipe<Text>
             updateTextBounds(batchableText, text);
         }
 
+        batchableText.roundPixels = (this._renderer._roundPixels | text._roundPixels) as 0 | 1;
+
         this._renderer.renderPipes.batch.addToBatch(batchableText, instructionSet);
     }
 
@@ -114,7 +116,6 @@ export class CanvasTextPipe implements RenderPipe<Text>
         batchableText.renderable = text;
         batchableText.transform = text.groupTransform;
         batchableText.bounds = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
-        batchableText.roundPixels = (this._renderer._roundPixels | text._roundPixels) as 0 | 1;
 
         text._gpuData[this._renderer.uid] = batchableText;
         this._managedTexts.add(text);

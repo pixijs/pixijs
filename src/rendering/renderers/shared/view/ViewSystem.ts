@@ -2,15 +2,20 @@ import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
-import { type RendererOptions } from '../../types';
+import { warn } from '../../../../utils/logging/warn';
+import { type Renderer, type RendererOptions } from '../../types';
 import { RenderTarget } from '../renderTarget/RenderTarget';
+import { CanvasSource } from '../texture/sources/CanvasSource';
 import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
+import { CanvasView } from './CanvasView';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { TypeOrBool } from '../../../../scene/container/destroyTypes';
+import type { RenderSurface } from '../renderTarget/RenderTargetSystem';
+import type { RenderOptions } from '../system/AbstractRenderer';
 import type { System } from '../system/System';
-import type { CanvasSource } from '../texture/sources/CanvasSource';
 import type { Texture } from '../texture/Texture';
+import type { CanvasViewOptions } from './CanvasView';
 
 /**
  * Options passed to the ViewSystem
@@ -37,7 +42,7 @@ export interface ViewSystemOptions
      */
     view?: ICanvas;
     /**
-     * Resizes renderer view in CSS pixels to allow for resolutions other than 1.
+     * Resizes canvas view in CSS pixels to allow for resolutions other than 1.
      *
      * This is only supported for HTMLCanvasElement
      * and will be ignored if the canvas is an OffscreenCanvas.
@@ -111,6 +116,45 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
     /** The texture that is used to draw the canvas to the screen. */
     public texture: Texture<CanvasSource>;
 
+    private readonly _renderer: Renderer;
+
+    /** The registered views, with the main view always at index 0. */
+    private readonly _views: CanvasView[] = [];
+
+    /**
+     * Maps each view's {@link CanvasSource} to its {@link CanvasView} so {@link viewForTarget} can
+     * resolve a canvas-backed target in O(1). Kept in sync with {@link _views} at every add/remove.
+     */
+    private readonly _viewBySource = new Map<CanvasSource, CanvasView>();
+    /** Per-view source 'destroy' handlers, kept so removeView/destroy can detach them and not leak listeners. */
+    private readonly _viewDestroyHandlers: Map<CanvasView, () => void> = new Map();
+
+    /** The on-screen view the current frame renders to, resolved at prerender. */
+    private _activeView: CanvasView | null = null;
+
+    /** The renderer's `_roundPixels` flag saved at prerender and restored at postrender. */
+    private _savedRoundPixels: 0 | 1 = 0;
+
+    constructor(renderer: Renderer)
+    {
+        this._renderer = renderer;
+    }
+
+    /** The views the renderer presents to. The main view is always at index 0. */
+    public get views(): readonly CanvasView[]
+    {
+        return this._views;
+    }
+
+    /**
+     * The on-screen view this frame renders to, resolved at prerender before the WebGL back buffer
+     * swaps `options.target`. Null for offscreen / RenderTexture targets.
+     */
+    public get activeView(): CanvasView | null
+    {
+        return this._activeView;
+    }
+
     /**
      * Whether CSS dimensions of canvas view should be resized to screen dimensions automatically.
      * This is only supported for HTMLCanvasElement and will be ignored if the canvas is an OffscreenCanvas.
@@ -182,8 +226,36 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
             isRoot: true,
         });
 
+        // register so `render({ target: renderer.canvas })` and `getRenderTarget(canvas)`
+        // resolve to this render target instead of creating a duplicate
+        this._renderer.renderTarget.registerRenderTarget(this.canvas, this.renderTarget);
+        this._renderer.renderTarget.registerRenderTarget(this.texture.source, this.renderTarget);
+
         this.texture.source.transparent = (options as RendererOptions).backgroundAlpha < 1;
         this.resolution = options.resolution;
+
+        const rendererOptions = options as RendererOptions;
+
+        // automatic main-view registration. Per-canvas systems (events, accessibility, DOM) are
+        // already constructed by the time init() runs and have subscribed to the viewAdded runner,
+        // so emitting here lets them set up their state for the main canvas. The main view always
+        // participates in every per-canvas system, matching the hardcoded events/dom flags; the
+        // accessibility module's enabledByDefault/activateOnTab still control activation timing.
+        const mainView = new CanvasView({
+            canvas: this.canvas,
+            source: this.texture.source,
+            renderTarget: this.renderTarget,
+            isMain: true,
+            events: true,
+            accessibility: true,
+            dom: true,
+            eventFeatures: rendererOptions.eventFeatures,
+            roundPixels: this._renderer.roundPixels,
+        });
+
+        this._views.push(mainView);
+        this._viewBySource.set(mainView.source, mainView);
+        this._renderer.runners.viewAdded.emit(mainView);
     }
 
     /**
@@ -198,6 +270,187 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
 
         this.screen.width = this.texture.frame.width;
         this.screen.height = this.texture.frame.height;
+    }
+
+    /**
+     * Registers an additional canvas with the renderer so it can be presented to (multiView).
+     *
+     * The canvas is given a {@link CanvasSource}-backed render target if it does not already have
+     * one, and the resolved resolution / autoDensity are applied to that source so secondary canvases
+     * can be retina. A disconnected canvas is not rejected here; the app layer warns about that.
+     * @param options - The options describing the view to register.
+     * @returns The registered view.
+     * @advanced
+     */
+    public addView(options: CanvasViewOptions): CanvasView
+    {
+        const resolution = options.resolution ?? this.resolution;
+        const autoDensity = options.autoDensity ?? this.autoDensity;
+        const canvas = options.canvas ?? DOMAdapter.get().createCanvas();
+
+        const renderTarget = this._renderer.renderTarget.getRenderTarget(canvas);
+        const source = renderTarget.colorTexture;
+
+        if (!(source instanceof CanvasSource))
+        {
+            throw new Error('ViewSystem.addView: the target render surface is not canvas-backed');
+        }
+
+        // one canvas can back only one view; a duplicate would clobber _viewBySource (keyed by source)
+        // and orphan the sibling on removeView. Return the existing view, matching Application.addView.
+        const existingView = this._viewBySource.get(source);
+
+        if (existingView)
+        {
+            // #if _DEBUG
+            warn('ViewSystem.addView: that canvas already backs a view. Each view needs its own canvas.');
+            // #endif
+
+            return existingView;
+        }
+
+        // apply the resolved view settings to a freshly created source so secondary canvases
+        // can present at their own resolution / density
+        source.autoDensity = autoDensity;
+
+        // antialias / transparent must be latched onto the source before resize and the first
+        // render so WebGPU MSAA and the canvas alphaMode are picked up at lazy gpu init
+        const antialias = options.antialias ?? this.antialias;
+        const transparent = options.transparent ?? (this._renderer.background.alpha < 1);
+
+        source.antialias = antialias;
+        source.transparent = transparent;
+
+        // if the user already rendered directly to this canvas, its gpu render target was created and
+        // cached before the flags above were latched, so lazy gpu init never reads them (no MSAA, stale
+        // alphaMode). Drop the cached gpu render target so the next render re-inits with the new flags.
+        if (this._renderer.renderTarget.hasGpuRenderTarget(renderTarget))
+        {
+            this._renderer.renderTarget.invalidateGpuRenderTarget(renderTarget);
+        }
+
+        source.resize(source.width, source.height, resolution);
+
+        const view = new CanvasView({
+            canvas,
+            source,
+            renderTarget,
+            isMain: false,
+            events: options.events ?? true,
+            accessibility: options.accessibility ?? true,
+            dom: options.dom ?? true,
+            eventFeatures: options.eventFeatures,
+            roundPixels: options.roundPixels ?? this._renderer.roundPixels,
+        });
+
+        // store the handler so removeView/destroy can detach it; an inline arrow would leak one listener
+        // (and a retained CanvasView closure) per add/remove cycle on a surviving user canvas
+        const onSourceDestroy = (): void => this.removeView(view);
+
+        source.once('destroy', onSourceDestroy);
+        this._viewDestroyHandlers.set(view, onSourceDestroy);
+
+        this._views.push(view);
+        this._viewBySource.set(source, view);
+        this._renderer.runners.viewAdded.emit(view);
+
+        return view;
+    }
+
+    /**
+     * Removes a previously registered view. Does nothing if the view is not registered.
+     *
+     * The user's canvas and its source are not destroyed here.
+     * @param view - The view to remove.
+     * @advanced
+     */
+    public removeView(view: CanvasView): void
+    {
+        // the main view lives for the renderer's lifetime (its render target is never released and its
+        // EventsTicker listener is only torn down by the full destroy() path); removing it would fire
+        // viewRemoved while leaking the ticker listener and pinning the old element
+        if (view.isMain)
+        {
+            // #if _DEBUG
+            warn('ViewSystem.removeView: the main view cannot be removed; it is torn down only by destroy().');
+            // #endif
+
+            return;
+        }
+
+        const index = this._views.indexOf(view);
+
+        if (index === -1) return;
+
+        this._views.splice(index, 1);
+        this._viewBySource.delete(view.source);
+
+        // detach the source 'destroy' listener so a surviving user canvas does not retain the removed view
+        const onSourceDestroy = this._viewDestroyHandlers.get(view);
+
+        if (onSourceDestroy)
+        {
+            view.source.off('destroy', onSourceDestroy);
+            this._viewDestroyHandlers.delete(view);
+        }
+
+        // free the GPU render target and evict the render-target hashes for a secondary canvas
+        // without destroying the user's CanvasSource. The main view is never released.
+        if (!view.isMain)
+        {
+            this._renderer.renderTarget.releaseRenderTarget(view.canvas);
+        }
+
+        this._renderer.runners.viewRemoved.emit(view);
+    }
+
+    /**
+     * Resolves the on-screen view this frame renders to and applies its per-view roundPixels to the
+     * renderer. Runs before the WebGL back buffer swaps `options.target` in `renderStart`, so the
+     * original target is still reliable here. The saved roundPixels is restored in {@link postrender}.
+     * @param options - the options the renderer was called with
+     */
+    public prerender(options: RenderOptions): void
+    {
+        this._activeView = options.target ? this.viewForTarget(options.target) : (this._views[0] ?? null);
+        this._savedRoundPixels = this._renderer._roundPixels;
+
+        if (this._activeView)
+        {
+            this._renderer._roundPixels = this._activeView.roundPixels ? 1 : 0;
+        }
+    }
+
+    /** Restores the renderer's roundPixels saved in {@link prerender}. */
+    public postrender(): void
+    {
+        this._renderer._roundPixels = this._savedRoundPixels;
+    }
+
+    /**
+     * Maps a `render()` call's target to a registered view.
+     *
+     * Returns the main view for the main render target, the matching view for a canvas-backed
+     * target, or null for offscreen / texture targets. Read this in a `prerender` hook: the back
+     * buffer swaps `options.target` in `renderStart`, so the original target is only reliable before then.
+     * @param target - The render surface the render targeted.
+     * @returns The matching view, or null when the target is not a registered on-screen canvas.
+     * @internal
+     */
+    public viewForTarget(target: RenderSurface): CanvasView | null
+    {
+        // main view fast path - the renderer's own render target, no lookup needed
+        if (target === this.renderTarget)
+        {
+            return this._views[0] ?? null;
+        }
+
+        const source = this._renderer.renderTarget.getRenderTarget(target).colorTexture;
+
+        // only canvas-backed targets map to a view; texture targets are skipped
+        if (!(source instanceof CanvasSource)) return null;
+
+        return this._viewBySource.get(source) ?? null;
     }
 
     /**
@@ -216,6 +469,20 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         {
             this.canvas.parentNode.removeChild(this.canvas);
         }
+
+        // tear down per-view state in reverse so subscribers (events, accessibility, DOM) can
+        // clean up; don't destroy the users' canvases here
+        for (let i = this._views.length - 1; i >= 0; i--)
+        {
+            this._renderer.runners.viewRemoved.emit(this._views[i]);
+        }
+
+        this._views.length = 0;
+        this._viewBySource.clear();
+
+        // detach any remaining source 'destroy' listeners; a user-supplied canvas can outlive the renderer
+        this._viewDestroyHandlers.forEach((handler, view) => view.source?.off('destroy', handler));
+        this._viewDestroyHandlers.clear();
 
         this.texture.destroy();
 

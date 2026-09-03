@@ -107,6 +107,37 @@ If your `target` is a {@link Texture} with a `frame` (e.g. an atlas sub-texture)
 renderer.resize(window.innerWidth, window.innerHeight);
 ```
 
+## Rendering to multiple canvases (multiView)
+
+A single renderer can present to more than one canvas. The renderer's own canvas is registered
+automatically as the main view at `renderer.views[0]`. Register extra canvases with
+{@link AbstractRenderer#addView | renderer.addView}, then target them in `render()`:
+
+```ts
+const view = renderer.addView({ canvas: secondCanvas });
+
+renderer.render({ container: sceneA }); // draws to the main canvas
+renderer.render({ container: sceneB, target: secondCanvas }); // draws to secondCanvas
+
+renderer.removeView(view); // stop tracking it (does not destroy your canvas)
+```
+
+`addView` accepts a canvas plus per-view participation flags: `resolution`, `autoDensity`, `events`,
+`accessibility`, `dom`, and `eventFeatures`. Each defaults to the renderer's init setting (events and dom
+default to `true`), so secondary canvases can be retina and get their own events, DOM overlays, and
+accessibility.
+
+Views also accept per-view `antialias` (defaults to the renderer's `antialias`), `transparent` (canvas
+alpha; defaults to the renderer's background alpha being less than 1), and `roundPixels` (defaults to the
+renderer's `roundPixels`). On WebGPU, `antialias` and `transparent` configure each secondary canvas surface
+independently (MSAA and alphaMode); on WebGL they're context-global, fixed when the renderer is created, so
+secondary views share the renderer's settings.
+
+> [!NOTE]
+> `renderer.addView` is the low-level primitive. When using an {@link Application}, prefer
+> {@link Application#addView}, which wraps it and adds `stage`, `clearColor`, `resizeTo`, and `enabled`.
+> WebGL requires `multiView: true` at init for additional views; the WebGPU renderer needs no such option.
+
 ## Generating textures
 
 Create textures from any display object with `generateTexture()`:
@@ -155,6 +186,8 @@ This removes all `EventEmitter` listeners attached to the renderer and nullifies
 - {@link WebGPURenderer}
 - {@link CanvasRenderer}
 - {@link autoDetectRenderer}
+- {@link CanvasView}
+  - {@link CanvasViewOptions}
 - {@link ExtractSystem}
 - {@link GenerateTextureSystem}
 - {@link RenderTexture}

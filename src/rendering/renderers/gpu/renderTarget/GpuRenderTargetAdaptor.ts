@@ -441,6 +441,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         renderTarget: RenderTarget,
         clear: CLEAR_OR_BOOL = true,
         clearColor?: RgbaArray,
+        standalone = false,
         viewport?: Rectangle,
         mipLevel = 0,
         layer = 0
@@ -448,14 +449,16 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
     {
         if (!clear) return;
 
-        const { gpu, encoder } = this._renderer;
+        const { gpu } = this._renderer;
 
         const device = gpu.device;
 
-        const standAlone = encoder.commandEncoder === null;
-
-        if (standAlone)
+        if (standalone)
         {
+            // a standalone clear with no bound target (a fresh renderer's no-target clear()) has nothing
+            // to draw to; WebGPU draws directly per-target, so there is no current pass to clear either
+            if (!renderTarget) return;
+
             const commandEncoder = device.createCommandEncoder();
             const renderPassDescriptor = this.getDescriptor(renderTarget, clear, clearColor, mipLevel, layer);
 
@@ -490,37 +493,36 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
             if (colorTexture instanceof CanvasSource)
             {
-                if (!colorTexture._gpuContext)
+                // reuse the cached context handle, but always (re)configure it: destroyGpuRenderTarget
+                // unconfigures on release (e.g. removeView), so a re-registered canvas needs a fresh
+                // configuration, and reconfiguring an already-configured context is a legal no-op swap
+                const context = colorTexture._gpuContext
+                    ?? colorTexture.resource.getContext('webgpu') as unknown as GPUCanvasContext;
+
+                const alphaMode = colorTexture.transparent ? 'premultiplied' : 'opaque';
+                const canvasFormat = getCanvasContextFormat(colorTexture.format);
+
+                try
                 {
-                    const context = colorTexture.resource.getContext(
-                        'webgpu'
-                    ) as unknown as GPUCanvasContext;
-
-                    const alphaMode = colorTexture.transparent ? 'premultiplied' : 'opaque';
-                    const canvasFormat = getCanvasContextFormat(colorTexture.format);
-
-                    try
-                    {
-                        context.configure({
-                            device: this._renderer.gpu.device,
-                            usage: GPUTextureUsage.TEXTURE_BINDING
-                                | GPUTextureUsage.COPY_DST
-                                | GPUTextureUsage.RENDER_ATTACHMENT
-                                | GPUTextureUsage.COPY_SRC,
-                            format: canvasFormat,
-                            alphaMode,
-                            ...(canvasFormat === 'rgba16float'
-                                ? { toneMapping: { mode: 'extended' } }
-                                : {}),
-                        });
-                    }
-                    catch (e)
-                    {
-                        console.error(e);
-                    }
-
-                    colorTexture._gpuContext = context;
+                    context.configure({
+                        device: this._renderer.gpu.device,
+                        usage: GPUTextureUsage.TEXTURE_BINDING
+                            | GPUTextureUsage.COPY_DST
+                            | GPUTextureUsage.RENDER_ATTACHMENT
+                            | GPUTextureUsage.COPY_SRC,
+                        format: canvasFormat,
+                        alphaMode,
+                        ...(canvasFormat === 'rgba16float'
+                            ? { toneMapping: { mode: 'extended' } }
+                            : {}),
+                    });
                 }
+                catch (e)
+                {
+                    console.error(e);
+                }
+
+                colorTexture._gpuContext = context;
 
                 gpuRenderTarget.contexts[i] = colorTexture._gpuContext;
             }

@@ -90,6 +90,47 @@ app.queueResize();
 app.cancelResize();
 ```
 
+### Multiple canvases (multiView)
+
+One {@link Application} can drive several canvases from a single renderer. Initialize with `multiView: true`
+(required for WebGL; the WebGPU renderer ignores it), then add a {@link RenderView} per extra canvas with
+{@link Application#addView}. Every view has its own `stage`, optional `clearColor`, optional `resizeTo`, and
+an `enabled` flag, and is rendered automatically each frame alongside the primary view. Events, DOM
+containers, and accessibility all work independently per canvas.
+
+The application's main canvas is wrapped automatically as {@link Application#primaryView}, which is always
+`app.views[0]` and whose `stage` is the same container as `app.stage`. Views you add follow it in `app.views`.
+
+```ts
+const app = new Application();
+
+await app.init({ multiView: true });
+document.body.appendChild(app.canvas); // the primary view renders app.stage here
+
+// add a second canvas with its own scene
+const minimapCanvas = document.querySelector('#minimap');
+const minimap = app.addView({ canvas: minimapCanvas, clearColor: 0x222222 });
+
+minimap.stage.addChild(mapSprite);
+
+// app.views // [app.primaryView, minimap]
+// app.removeView(minimap) // stop rendering it (the primary view cannot be removed)
+```
+
+If you omit `canvas`, a fresh one is created but not attached to the DOM; append `view.canvas` yourself so
+events, DOM overlays, and accessibility work. Toggle `view.enabled` to cheaply pause a view without removing it.
+
+`app.addView` wraps the renderer's lower-level {@link AbstractRenderer#addView | renderer.addView} primitive,
+which registers a canvas with the renderer for per-canvas events, accessibility, and DOM, and exposes
+`renderer.views`. The application layer adds the scene-level concerns on top: `stage`, `clearColor`,
+`resizeTo`, and `enabled`. Reach for `renderer.addView` directly only when working with a bare renderer (no
+`Application`).
+
+Views also accept per-view `antialias`, `transparent` (canvas alpha), and `roundPixels`. On WebGPU,
+`antialias` and `transparent` configure each secondary canvas surface independently (MSAA and alphaMode);
+on WebGL they're context-global, fixed when the renderer is created, so secondary views share the
+renderer's settings.
+
 ---
 
 ## ApplicationOptions reference
@@ -118,7 +159,7 @@ The `.init()` method accepts a `Partial<ApplicationOptions>` object:
 | `height`                 | `number`                            | `600`       | Height of the renderer in pixels.                                                                                  |
 | `width`                  | `number`                            | `800`       | Width of the renderer in pixels.                                                                                   |
 | `hello`                  | `boolean`                           | `false`     | Log renderer info and version to the console.                                                                      |
-| `multiView`              | `boolean`                           | `false`     | Enable multi-canvas rendering.                                                                                     |
+| `multiView`              | `boolean`                           | `false`     | Enable rendering to multiple canvases from one renderer (WebGL; WebGPU needs no option). Events work per canvas.   |
 | `premultipliedAlpha`     | `boolean`                           | `true`      | Assume alpha is premultiplied in color buffers.                                                                    |
 | `preserveDrawingBuffer`  | `boolean`                           | `false`     | Preserve buffer between frames. Needed for `toDataURL`.                                                            |
 | `resolution`             | `number`                            | `1`         | Pixel ratio for rendering. Set to `window.devicePixelRatio` for crisp output on high-DPI screens. Use with `autoDensity: true`. |
@@ -259,6 +300,8 @@ await app.init({
   - {@link WebGPUOptions}
   - {@link CanvasOptions}
   - {@link SharedRendererOptions}
+- {@link RenderView}
+  - {@link RenderViewOptions}
 - {@link TickerPlugin}
 - {@link ResizePlugin}
 - {@link CullerPlugin}

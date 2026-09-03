@@ -62,8 +62,21 @@ export interface ContextSystemOptions
     preferWebGLVersion?: 1 | 2;
 
     /**
-     * Whether to enable multi-view rendering. Set to true when rendering to multiple
-     * canvases on the dom.
+     * Whether to enable multi-view rendering, where one renderer drives multiple canvases.
+     * Set to true when rendering to multiple canvases on the dom.
+     *
+     * Pass each extra canvas as the `target` of a render call to draw to it:
+     * ```js
+     * renderer.render({ container: sceneA, target: canvasA });
+     * renderer.render({ container: sceneB, target: canvasB });
+     * ```
+     * Rendering to a `target` only draws to that canvas. To also give a secondary
+     * canvas its own interaction, accessibility, and DOM overlays, register it with
+     * `renderer.addView({ canvas })` (or `app.addView(...)` at the application layer).
+     * Each registered canvas then hit-tests against the container last rendered to it.
+     *
+     * This option only exists on the WebGL renderer; the WebGPU renderer can always
+     * render to multiple canvases and ignores this option.
      * @default false
      */
     multiView: boolean;
@@ -211,8 +224,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
     {
         options = { ...GlContextSystem.defaultOptions, ...options };
 
-        // TODO add to options
-        let multiView = this.multiView = options.multiView;
+        let multiView = options.multiView;
 
         if (options.context && multiView)
         {
@@ -221,6 +233,8 @@ export class GlContextSystem implements System<ContextSystemOptions>
 
             multiView = false;
         }
+
+        this.multiView = multiView;
 
         if (multiView)
         {
@@ -269,10 +283,12 @@ export class GlContextSystem implements System<ContextSystemOptions>
 
         const { canvas } = this;
 
+        // grow-only: the shared context canvas must fit the largest target on each axis,
+        // and resizing a WebGL canvas clears its drawing buffer, so never shrink it
         if (canvas.width < targetCanvas.width || canvas.height < targetCanvas.height)
         {
-            canvas.width = Math.max(targetCanvas.width, targetCanvas.width);
-            canvas.height = Math.max(targetCanvas.height, targetCanvas.height);
+            canvas.width = Math.max(canvas.width, targetCanvas.width);
+            canvas.height = Math.max(canvas.height, targetCanvas.height);
         }
     }
 
@@ -293,7 +309,9 @@ export class GlContextSystem implements System<ContextSystemOptions>
 
         this._renderer.runners.contextChange.emit(gl);
 
-        const element = this._renderer.view.canvas;
+        // context loss events fire on the canvas that owns the context, which under
+        // multiView (or with a user-provided context) is not necessarily the view canvas
+        const element = gl.canvas as ICanvas;
 
         (element as any).addEventListener('webglcontextlost', this.handleContextLost, false);
         element.addEventListener('webglcontextrestored', this.handleContextRestored, false);
@@ -424,15 +442,15 @@ export class GlContextSystem implements System<ContextSystemOptions>
 
     public destroy(): void
     {
-        const element = this._renderer.view.canvas;
+        const element = this.gl?.canvas as ICanvas | undefined;
 
         this._renderer = null;
 
         // remove listeners
-        (element as any).removeEventListener('webglcontextlost', this.handleContextLost);
-        element.removeEventListener('webglcontextrestored', this.handleContextRestored);
+        (element as any)?.removeEventListener('webglcontextlost', this.handleContextLost);
+        element?.removeEventListener('webglcontextrestored', this.handleContextRestored);
 
-        this.gl.useProgram(null);
+        this.gl?.useProgram(null);
 
         this.extensions.loseContext?.loseContext();
     }

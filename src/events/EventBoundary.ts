@@ -1383,6 +1383,26 @@ export class EventBoundary
     }
 
     /**
+     * Resets the tracking state for a pointer whose gesture was cancelled (e.g. an OS-level
+     * `pointercancel`/`touchcancel`). Clears the pointer's press targets and over targets so a
+     * cancelled gesture leaves no phantom press behind. Does nothing - and does not lazily allocate
+     * an entry - if the boundary has never tracked the pointer.
+     * @param pointerId - The pointer whose tracking data to reset.
+     */
+    public resetTrackingData(pointerId: number): void
+    {
+        const trackingData = this.mappingState.trackingData[pointerId];
+
+        if (!trackingData)
+        {
+            return;
+        }
+
+        trackingData.pressTargetsByButton = {};
+        trackingData.overTargets = null;
+    }
+
+    /**
      * @param id - The pointer ID.
      * @returns The tracking data stored for the given pointer. If no data exists, a blank
      *  state will be created.

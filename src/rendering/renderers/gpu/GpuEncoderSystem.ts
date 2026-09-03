@@ -38,7 +38,9 @@ export class GpuEncoderSystem implements System
         priority: 1
     } as const;
 
-    public commandEncoder: GPUCommandEncoder;
+    // starts null so a clear before the first render (or between frames, where postrender nulls it) is
+    // recognised as standalone; a live encoder is only present during a render pass
+    public commandEncoder: GPUCommandEncoder = null;
     /**
      * The active command target that draws and state are recorded into. This is the live render
      * pass during normal rendering, or a {@link GPURenderBundleEncoder} while a render bundle is

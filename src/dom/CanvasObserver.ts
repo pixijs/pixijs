@@ -2,10 +2,16 @@ import { type Renderer } from '../rendering/renderers/types';
 import { UPDATE_PRIORITY } from '../ticker/const';
 import { Ticker } from '../ticker/Ticker';
 
+import type { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
+
 /**
  * CanvasObserver class synchronizes the DOM element's transform with the canvas size and position.
  * It uses ResizeObserver for efficient updates and requestAnimationFrame for fallback.
  * This ensures that the DOM element is always correctly positioned and scaled relative to the canvas.
+ *
+ * By default it tracks the renderer's main canvas. Passing a `source` binds it to that
+ * canvas source instead, so a single renderer can keep overlays in sync with each of the
+ * canvases it renders to under multiView.
  * @internal
  */
 export class CanvasObserver
@@ -20,6 +26,8 @@ export class CanvasObserver
     private readonly _domElement: HTMLElement;
     /** The renderer instance that this observer is associated with. */
     private readonly _renderer: Renderer;
+    /** The canvas source backing a secondary view, or null when tracking the main canvas. */
+    private _source: TextureSource | null;
     /** The last scale values applied to the DOM element, used to avoid unnecessary updates. */
     private _lastScaleX: number;
     /** The last scale values applied to the DOM element, used to avoid unnecessary updates. */
@@ -27,15 +35,24 @@ export class CanvasObserver
     /** A flag to indicate whether the observer is attached to the Ticker for continuous updates. */
     private _tickerAttached = false;
 
-    constructor(options: { domElement: HTMLElement; renderer: Renderer })
+    constructor(options: { domElement: HTMLElement; renderer: Renderer; source?: TextureSource })
     {
         this._domElement = options.domElement;
         this._renderer = options.renderer;
+        this._source = options.source ?? null;
+
+        const canvas = (this._source?.resource ?? this._renderer.canvas) as HTMLCanvasElement;
 
         // We need to ensure that the canvas is not an OffscreenCanvas
-        if (globalThis.OffscreenCanvas && this._renderer.canvas instanceof OffscreenCanvas) return;
-        this._canvas = this._renderer.canvas;
+        if (globalThis.OffscreenCanvas && canvas instanceof OffscreenCanvas) return;
+        this._canvas = canvas;
         this._attachObserver();
+    }
+
+    /** A secondary view follows its own source resolution; the main view follows the renderer. */
+    private get _resolution(): number
+    {
+        return this._source?.resolution ?? this._renderer.resolution;
     }
 
     /** The canvas element that this CanvasObserver is associated with. */
@@ -47,6 +64,10 @@ export class CanvasObserver
     /** Attaches the DOM element to the canvas parent if it is not already attached. */
     public ensureAttached()
     {
+        // _canvas is undefined for an OffscreenCanvas-backed view (the constructor returns early),
+        // so guard before dereferencing it, mirroring updateTranslation()
+        if (!this._canvas) return;
+
         if (!this._domElement.parentNode && this._canvas.parentNode)
         {
             this._canvas.parentNode.appendChild(this._domElement);
@@ -66,8 +87,8 @@ export class CanvasObserver
         const contentWidth = this._canvas.width;
         const contentHeight = this._canvas.height;
 
-        const sx = (rect.width / contentWidth) * this._renderer.resolution;
-        const sy = (rect.height / contentHeight) * this._renderer.resolution;
+        const sx = (rect.width / contentWidth) * this._resolution;
+        const sy = (rect.height / contentHeight) * this._resolution;
         const tx = rect.left;
         const ty = rect.top;
 
@@ -102,8 +123,8 @@ export class CanvasObserver
 
                     const contentWidth = this.canvas.width;
                     const contentHeight = this.canvas.height;
-                    const sx = (entry.contentRect.width / contentWidth) * this._renderer.resolution;
-                    const sy = (entry.contentRect.height / contentHeight) * this._renderer.resolution;
+                    const sx = (entry.contentRect.width / contentWidth) * this._resolution;
+                    const sy = (entry.contentRect.height / contentHeight) * this._resolution;
 
                     // Only refetch position if scale actually changed
                     const needsUpdate = this._lastScaleX !== sx || this._lastScaleY !== sy;
@@ -121,6 +142,7 @@ export class CanvasObserver
         else if (!this._tickerAttached)
         {
             Ticker.shared.add(this.updateTranslation, this, UPDATE_PRIORITY.HIGH);
+            this._tickerAttached = true;
         }
     }
 
@@ -134,11 +156,13 @@ export class CanvasObserver
         }
         else if (this._tickerAttached)
         {
-            Ticker.shared.remove(this.updateTranslation);
+            // must pass the same context the add used, or TickerListener.match won't find the listener
+            Ticker.shared.remove(this.updateTranslation, this);
         }
 
         (this._domElement as null) = null;
         (this._renderer as null) = null;
+        this._source = null;
         this._canvas = null;
         this._tickerAttached = false;
         this._lastTransform = '';
