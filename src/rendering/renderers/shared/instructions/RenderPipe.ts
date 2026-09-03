@@ -119,6 +119,12 @@ export interface BatchPipe
      * @param instructionSet - the instruction set currently being built
      */
     break: (instructionSet: InstructionSet) => void;
+    /**
+     * Called when an instruction set is destroyed, so the pipe can release
+     * (and possibly recycle) any state it keyed to that instruction set.
+     * @param instructionSet - the instruction set being destroyed
+     */
+    destroyInstructionSet?: (instructionSet: InstructionSet) => void;
 }
 
 /**

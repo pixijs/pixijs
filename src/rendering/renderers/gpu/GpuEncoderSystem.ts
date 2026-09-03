@@ -39,6 +39,9 @@ export class GpuEncoderSystem implements System
     } as const;
 
     public commandEncoder: GPUCommandEncoder;
+
+    /** command buffers to submit ahead of this frame's own, in the frame's queue.submit call */
+    private readonly _preFrameCommandBuffers: GPUCommandBuffer[] = [];
     /**
      * The active command target that draws and state are recorded into. This is the live render
      * pass during normal rendering, or a {@link GPURenderBundleEncoder} while a render bundle is
@@ -505,11 +508,42 @@ export class GpuEncoderSystem implements System
         }
     }
 
+    /**
+     * Queues a command buffer to be submitted immediately before this frame's
+     * command buffer, in the same `queue.submit` call. Execution order is
+     * identical to submitting it directly at the call site (submits execute in
+     * queue order, and array order within a submit is queue order), but the
+     * driver only sees one submission per frame.
+     * @param commandBuffer - the command buffer to submit before the frame's own
+     */
+    public submitBeforeFrame(commandBuffer: GPUCommandBuffer): void
+    {
+        // outside a frame there is nothing to piggyback on - submit directly
+        if (!this.commandEncoder)
+        {
+            this._gpu.device.queue.submit([commandBuffer]);
+
+            return;
+        }
+
+        this._preFrameCommandBuffers.push(commandBuffer);
+    }
+
     public postrender()
     {
         this.finishRenderPass();
 
-        this._gpu.device.queue.submit([this.commandEncoder.finish()]);
+        if (this._preFrameCommandBuffers.length)
+        {
+            // one submit for [uploads..., frame]: array order is queue order,
+            // identical to submitting them separately, minus a driver round trip
+            this._gpu.device.queue.submit([...this._preFrameCommandBuffers, this.commandEncoder.finish()]);
+            this._preFrameCommandBuffers.length = 0;
+        }
+        else
+        {
+            this._gpu.device.queue.submit([this.commandEncoder.finish()]);
+        }
 
         this._resolveCommandFinished();
 
