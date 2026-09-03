@@ -161,7 +161,7 @@ extensions.add(
 );
 ```
 
-Loader names are unique per backend; a second loader registered under the same name is ignored. Loaders are skipped when the renderer is created with `skipExtensionImports: true`, so custom builds must import the backend modules themselves.
+Loader names are unique per backend; a second loader registered under the same name is ignored. Loaders run concurrently, so don't rely on one plugin's module evaluating before another's; the systems and pipes they register are ordered by their own `priority`. Loaders are skipped when the renderer is created with `skipExtensionImports: true`, so custom builds must import the backend modules themselves.
 
 ### Application plugins
 

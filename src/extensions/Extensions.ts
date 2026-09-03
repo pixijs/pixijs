@@ -44,11 +44,11 @@ enum ExtensionType
      */
     WebGPULoader = 'webgpu-loader',
 
-    /** extensions that are registered as Canvas render pipes */
+    /** extensions that are registered as Canvas render systems */
     CanvasSystem = 'canvas-system',
     /** extensions that are registered as Canvas render pipes adaptors */
     CanvasPipesAdaptor = 'canvas-pipes-adaptor',
-    /** extensions that are registered as Canvas render systems */
+    /** extensions that are registered as Canvas render pipes */
     CanvasPipes = 'canvas-pipes',
     /**
      * An async hook awaited while a Canvas renderer initialises, after the environment extensions load

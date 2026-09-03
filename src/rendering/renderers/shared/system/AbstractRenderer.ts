@@ -29,7 +29,8 @@ import type { System, SystemConstructor } from './System';
  * An async hook a renderer awaits while it initialises, after the environment extensions load and
  * before it creates its systems and pipes. Registered as a `WebGLLoader`, `WebGPULoader` or
  * `CanvasLoader` extension, it lets a package `import()` backend-specific systems and pipes and
- * register them in time for the renderer to pick them up.
+ * register them in time for the renderer to pick them up. Loaders for a backend run concurrently;
+ * the systems and pipes they register are ordered by their own `priority`, not by which loader finished first.
  * @category rendering
  * @advanced
  */

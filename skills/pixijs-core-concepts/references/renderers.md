@@ -78,7 +78,7 @@ extensions.add({
 });
 ```
 
-Loader names are unique per backend; a second loader with the same name is ignored. `skipExtensionImports: true` skips loaders too, so custom builds import backend modules directly.
+Loader names are unique per backend; a second loader with the same name is ignored. Loaders run concurrently; registered systems and pipes are ordered by their own `priority`, not by loader completion. `skipExtensionImports: true` skips loaders too, so custom builds import backend modules directly.
 
 ### Direct renderer construction
 
