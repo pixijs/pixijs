@@ -492,7 +492,8 @@ export abstract class Batcher
         let batch = getBatchFromPool();
         let textureBatch = batch.textures;
 
-        textureBatch.clear();
+        // batch.textures will return null if PixiOverlay is updated rapidly (>10x/sec)
+        if ( textureBatch ) textureBatch.clear();
 
         const firstElement = elements[this.elementStart];
         let blendMode = getAdjustedBlendModeBlend(firstElement.blendMode, firstElement.texture._source);
