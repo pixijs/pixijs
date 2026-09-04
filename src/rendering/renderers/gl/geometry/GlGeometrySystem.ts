@@ -433,8 +433,9 @@ export class GlGeometrySystem implements System
     /**
      * Draws the currently bound geometry.
      * @param topology - The type primitive to render.
-     * @param size - The number of elements to be rendered. If not specified, all vertices after the
-     *  starting vertex will be drawn.
+     * @param size - The number of elements to be rendered. If not specified, an indexed geometry
+     *  falls back to {@link Geometry.indexCount} and then to its whole index buffer, and a
+     *  non-indexed one to {@link Geometry.vertexCount}.
      * @param start - The starting vertex in the geometry to start drawing from. If not specified,
      *  drawing will start from the first vertex.
      * @param instanceCount - The number of instances of the set of elements to execute. If not specified,
@@ -454,16 +455,16 @@ export class GlGeometrySystem implements System
         {
             const byteSize = geometry.indexBuffer.data.BYTES_PER_ELEMENT;
             const glType = byteSize === 2 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
+            const count = size || geometry.indexCount || geometry.indexBuffer.data.length;
+            const byteOffset = (start || 0) * byteSize;
 
             if (instanceCount !== 1)
             {
-                /* eslint-disable max-len */
-                gl.drawElementsInstanced(glTopology, size || geometry.indexBuffer.data.length, glType, (start || 0) * byteSize, instanceCount);
-                /* eslint-enable max-len */
+                gl.drawElementsInstanced(glTopology, count, glType, byteOffset, instanceCount);
             }
             else
             {
-                gl.drawElements(glTopology, size || geometry.indexBuffer.data.length, glType, (start || 0) * byteSize);
+                gl.drawElements(glTopology, count, glType, byteOffset);
             }
         }
         else if (instanceCount !== 1)
