@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { GCManagedHash } from '../../../utils/data/GCManagedHash';
 import { updateTextBounds } from '../utils/updateTextBounds';
 import { BatchableText } from './BatchableText';
@@ -28,12 +29,35 @@ export class CanvasTextPipe implements RenderPipe<Text>
     {
         this._renderer = renderer;
         renderer.runners.resolutionChange.add(this);
+        renderer.runners.contextChange.add(this);
         this._managedTexts = new GCManagedHash({
             renderer,
             type: 'renderable',
             onUnload: this.onTextUnload.bind(this),
             name: 'canvasText'
         });
+    }
+
+    protected contextChange()
+    {
+        this._renderer.canvasText.clearActiveTextures();
+
+        for (const key in this._managedTexts.items)
+        {
+            const text = this._managedTexts.items[key];
+
+            if (!text) continue;
+
+            const gpuData = text._gpuData[this._renderer.uid];
+
+            if (gpuData)
+            {
+                gpuData.currentKey = '--';
+                gpuData.texture = Texture.EMPTY;
+            }
+
+            text.onViewUpdate();
+        }
     }
 
     protected resolutionChange()

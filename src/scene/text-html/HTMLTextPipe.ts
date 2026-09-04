@@ -32,12 +32,37 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     {
         this._renderer = renderer;
         renderer.runners.resolutionChange.add(this);
+        renderer.runners.contextChange.add(this);
         this._managedTexts = new GCManagedHash({
             renderer,
             type: 'renderable',
             onUnload: this.onTextUnload.bind(this),
             name: 'htmlText'
         });
+    }
+
+    protected contextChange()
+    {
+        this._renderer.htmlText.clearActiveTextures();
+
+        for (const key in this._managedTexts.items)
+        {
+            const text = this._managedTexts.items[key];
+
+            if (!text) continue;
+
+            const gpuData = text._gpuData[this._renderer.uid];
+
+            if (gpuData)
+            {
+                gpuData.currentKey = '--';
+                gpuData.texture = Texture.EMPTY;
+                gpuData.texturePromise = null;
+                gpuData.generatingTexture = false;
+            }
+
+            text.onViewUpdate();
+        }
     }
 
     protected resolutionChange()
@@ -117,6 +142,8 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
         htmlText._resolution = htmlText._autoResolution ? this._renderer.resolution : htmlText.resolution;
 
+        const expectedKey = htmlText.styleKey;
+
         let texturePromise = this._renderer.htmlText.getTexturePromise(htmlText);
 
         if (oldTexturePromise)
@@ -132,7 +159,17 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         batchableHTMLText.texturePromise = texturePromise;
         batchableHTMLText.currentKey = htmlText.styleKey;
 
-        batchableHTMLText.texture = await texturePromise;
+        const texture = await texturePromise;
+
+        // If a context loss reset this while we were awaiting, discard the stale texture
+        if (batchableHTMLText.currentKey === '--' && expectedKey !== '--')
+        {
+            batchableHTMLText.generatingTexture = false;
+
+            return;
+        }
+
+        batchableHTMLText.texture = texture;
 
         // need a rerender...
         const renderGroup = htmlText.renderGroup || htmlText.parentRenderGroup;

@@ -240,6 +240,14 @@ export abstract class AbstractTextSystem implements System
         }
     }
 
+    public clearActiveTextures()
+    {
+        for (const key in this._activeTextures)
+        {
+            this._activeTextures[key] = null;
+        }
+    }
+
     /**
      * Gets the current reference count for a texture associated with a text key.
      * @param textKey - The unique key identifying the text style configuration

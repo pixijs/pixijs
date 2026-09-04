@@ -224,6 +224,14 @@ export class HTMLTextSystem implements System
         return texture;
     }
 
+    public clearActiveTextures()
+    {
+        for (const key in this._activeTextures)
+        {
+            this._activeTextures[key] = null;
+        }
+    }
+
     public returnTexturePromise(texturePromise: Promise<Texture>)
     {
         texturePromise.then((texture) =>
