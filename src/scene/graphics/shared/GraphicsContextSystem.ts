@@ -279,7 +279,7 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
 
         const drawBatches = batcher.batches;
 
-        for (let i = 0; i < drawBatches.length; i++)
+        for (let i = 0; i < batcher.batchIndex; i++)
         {
             const batch = drawBatches[i];
 
