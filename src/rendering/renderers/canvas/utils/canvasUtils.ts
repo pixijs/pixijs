@@ -302,10 +302,13 @@ export const canvasUtils = {
         canvas.height = Math.ceil(outHeight);
 
         context.save();
-        context.fillStyle = Color.shared.setValue(color).toHex();
-        context.fillRect(0, 0, outWidth, outHeight);
 
-        context.globalCompositeOperation = 'multiply';
+        if (color !== 0xFFFFFF)
+        {
+            context.fillStyle = Color.shared.setValue(color).toHex();
+            context.fillRect(0, 0, outWidth, outHeight);
+            context.globalCompositeOperation = 'multiply';
+        }
 
         const source = canvasUtils.getCanvasSource(texture);
 
@@ -333,6 +336,14 @@ export const canvasUtils = {
             crop.width,
             crop.height
         );
+
+        // A white tint is a direct copy; blending over white changes translucent colors.
+        if (color === 0xFFFFFF)
+        {
+            context.restore();
+
+            return;
+        }
 
         context.globalCompositeOperation = 'destination-atop';
         context.drawImage(
