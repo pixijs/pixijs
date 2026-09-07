@@ -83,7 +83,10 @@ export interface GeometryDescriptor
     /** the topology of the geometry, defaults to 'triangle-list' */
     topology?: Topology;
 
+    /** the number of instances to draw, defaults to 1. See {@link Geometry.instanceCount} */
     instanceCount?: number;
+    /** the number of indices to draw, defaults to 0 - the whole index buffer. See {@link Geometry.indexCount} */
+    indexCount?: number;
 }
 function ensureIsAttribute(attribute: AttributeOption): Attribute
 {
@@ -168,6 +171,19 @@ export class Geometry extends EventEmitter<{
     /** the instance count of the geometry to draw */
     public instanceCount = 1;
 
+    /**
+     * The number of indices to draw, or `0` to draw the whole index buffer.
+     *
+     * Set this when a geometry only covers a prefix of an index buffer it shares with others - a
+     * pool of identical quads, say, where one buffer holds the six indices per quad for the largest
+     * batch and each geometry draws as many quads as it currently holds. A `size` passed to the
+     * draw call still wins, and a geometry with no index buffer ignores this entirely
+     * ({@link Geometry.vertexCount} drives those). Read at draw time only, so changing it never
+     * re-uploads or re-lays-out anything.
+     * @default 0
+     */
+    public indexCount = 0;
+
     private readonly _bounds: Bounds = new Bounds();
     private _boundsDirty = true;
 
@@ -197,6 +213,7 @@ export class Geometry extends EventEmitter<{
         }
 
         this.instanceCount = options.instanceCount ?? 1;
+        this.indexCount = options.indexCount ?? 0;
 
         if (indexBuffer)
         {

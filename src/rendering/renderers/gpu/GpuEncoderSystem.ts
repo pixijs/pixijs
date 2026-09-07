@@ -183,7 +183,7 @@ export class GpuEncoderSystem implements System
         this.renderPassEncoder = this._passEncoder;
         this._clearCache();
 
-        return new RenderBundle(gpuBundle, this._bundleStateKey, this._bundleLabel);
+        return new RenderBundle(gpuBundle, this._bundleStateKey, this._gpu.device, this._bundleLabel);
     }
 
     /**
@@ -204,7 +204,7 @@ export class GpuEncoderSystem implements System
      */
     public isBundleValid(bundle: RenderBundle): boolean
     {
-        return bundle?.stateKey === this._renderer.pipeline.bundleStateKey;
+        return bundle?.stateKey === this._renderer.pipeline.bundleStateKey && bundle.device === this._gpu.device;
     }
 
     /**
@@ -253,7 +253,7 @@ export class GpuEncoderSystem implements System
         if (!this.isBundleValid(bundle))
         {
             warn(`Render bundle ${bundle?.label ?? '(unlabeled)'} was recorded against a different render `
-                + 'target state. Re-record it — replaying it will either be rejected by WebGPU or draw '
+                + 'target state or on a lost device. Re-record it — replaying it will either be rejected by WebGPU or draw '
                 + 'with the wrong winding. Check encoder.isBundleValid(bundle) before executing.');
         }
         // #endif
@@ -438,7 +438,7 @@ export class GpuEncoderSystem implements System
         if (geometry.indexBuffer)
         {
             this.renderPassEncoder.drawIndexed(
-                size || geometry.indexBuffer.data.length,
+                size || geometry.indexCount || geometry.indexBuffer.data.length,
                 instanceCount ?? geometry.instanceCount,
                 start || 0,
                 baseVertex || 0,
