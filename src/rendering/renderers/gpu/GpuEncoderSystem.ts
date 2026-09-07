@@ -438,7 +438,7 @@ export class GpuEncoderSystem implements System
         if (geometry.indexBuffer)
         {
             this.renderPassEncoder.drawIndexed(
-                size || geometry.indexBuffer.data.length,
+                size || geometry.indexCount || geometry.indexBuffer.data.length,
                 instanceCount ?? geometry.instanceCount,
                 start || 0,
                 baseVertex || 0,
