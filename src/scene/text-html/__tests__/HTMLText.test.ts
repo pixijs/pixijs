@@ -1,6 +1,27 @@
 import { HTMLText } from '../HTMLText';
-import { getWebGLRenderer } from '@test-utils';
+import { getWebGLRenderer, loseAndRestoreContext, nextTick, waitForPendingHTMLText } from '@test-utils';
 import { TextureSource } from '~/rendering/renderers/shared/texture/sources/TextureSource';
+
+import type { WebGLRenderer } from '~/rendering/renderers/gl/WebGLRenderer';
+
+// generates the textures one after the other, so each text reuses the pooled render data of the previous one
+async function renderInSequence(renderer: WebGLRenderer, ...texts: HTMLText[]): Promise<void>
+{
+    for (const text of texts)
+    {
+        renderer.render(text);
+        await waitForPendingHTMLText(text, renderer);
+    }
+}
+
+function channelSum(pixels: Uint8ClampedArray, channel: number): number
+{
+    let sum = 0;
+
+    for (let i = channel; i < pixels.length; i += 4) sum += pixels[i];
+
+    return sum;
+}
 
 describe('HTMLText', () =>
 {
@@ -226,6 +247,70 @@ describe('HTMLText', () =>
 
             center.destroy();
             left.destroy();
+        });
+    });
+
+    describe('texture generation', () =>
+    {
+        it('should upload its texture before the pooled render data is reused by another HTMLText', async () =>
+        {
+            const renderer = await getWebGLRenderer({ width: 64, height: 64 });
+            const red = new HTMLText({ text: 'A', style: { fontSize: 40, fill: 'red' } });
+            const blue = new HTMLText({ text: 'B', style: { fontSize: 40, fill: 'blue' } });
+
+            await renderInSequence(renderer, red, blue);
+
+            const { pixels } = renderer.extract.pixels(red);
+
+            expect(channelSum(pixels, 0)).toBeGreaterThan(0);
+            expect(channelSum(pixels, 2)).toBe(0);
+
+            red.destroy();
+            blue.destroy();
+            renderer.destroy();
+        });
+
+        it('should not error when destroyed while its texture is generating', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+            const text = new HTMLText({ text: 'foo' });
+            const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+
+            renderer.render(text);
+
+            const generating = waitForPendingHTMLText(text, renderer);
+
+            text.destroy();
+            await generating;
+            await nextTick();
+
+            expect(errorSpy).not.toHaveBeenCalled();
+
+            errorSpy.mockRestore();
+            renderer.destroy();
+        });
+    });
+
+    describe('context loss', () =>
+    {
+        it('should keep its own content after the WebGL context is lost and restored', async () =>
+        {
+            const renderer = await getWebGLRenderer({ width: 64, height: 64 });
+            const red = new HTMLText({ text: 'A', style: { fontSize: 40, fill: 'red' } });
+            const blue = new HTMLText({ text: 'B', style: { fontSize: 40, fill: 'blue' } });
+
+            await renderInSequence(renderer, red, blue);
+            await loseAndRestoreContext(renderer);
+            await renderInSequence(renderer, red);
+
+            const { pixels } = renderer.extract.pixels(red);
+
+            expect(channelSum(pixels, 0)).toBeGreaterThan(0);
+            expect(channelSum(pixels, 2)).toBe(0);
+
+            red.destroy();
+            blue.destroy();
+            renderer.destroy();
         });
     });
 });
