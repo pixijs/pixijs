@@ -74,7 +74,8 @@ export class CanvasTextPipe implements RenderPipe<Text>
     {
         const batchableText = this._getGpuText(text);
 
-        if (text._didTextUpdate)
+        // also update when this renderer has no texture for the text yet, e.g. the text was first rendered elsewhere
+        if (text._didTextUpdate || batchableText.currentKey !== text.styleKey)
         {
             const resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
 

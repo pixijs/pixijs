@@ -60,6 +60,18 @@ describe('HTMLText', () =>
         text.destroy();
     });
 
+    it('should destroy a text whose gpu data was initialised but never rendered', async () =>
+    {
+        const text = new HTMLText({ text: 'foo' });
+        const renderer = await getWebGLRenderer();
+
+        renderer.renderPipes.htmlText.initGpuText(text);
+
+        expect(() => text.destroy()).not.toThrow();
+
+        renderer.destroy();
+    });
+
     it('should handle resolution changes after html text destruction', async () =>
     {
         const text = new HTMLText({ text: 'foo' });

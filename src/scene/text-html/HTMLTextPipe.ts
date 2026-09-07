@@ -84,7 +84,8 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     {
         const batchableHTMLText = this._getGpuText(htmlText);
 
-        if (htmlText._didTextUpdate)
+        // also update when this renderer has no texture for the text yet, e.g. the text was first rendered elsewhere
+        if (htmlText._didTextUpdate || batchableHTMLText.currentKey !== htmlText.styleKey)
         {
             const resolution = htmlText._autoResolution ? this._renderer.resolution : htmlText.resolution;
 
@@ -193,7 +194,8 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     {
         const gpuData = text._gpuData[this._renderer.uid];
 
-        if (!gpuData) return;
+        // nothing to release if no texture was ever requested for this renderer
+        if (!gpuData?.texturePromise) return;
 
         const { htmlText } = this._renderer;
 
