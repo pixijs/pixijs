@@ -7,7 +7,7 @@ import { TextStyle } from '../TextStyle';
 import '../../graphics/init';
 import '../../text-bitmap/init';
 import '../init';
-import { getWebGLRenderer, loseAndRestoreContext } from '@test-utils';
+import { getWebGLRenderer, getWebGPURenderer, itLocalOnly, loseAndRestoreContext, loseAndRestoreDevice } from '@test-utils';
 import { Point } from '~/maths';
 import { TextureSource } from '~/rendering/renderers/shared/texture/sources/TextureSource';
 
@@ -619,6 +619,27 @@ describe('Text', () =>
             expect(before.some((value) => value > 0)).toBe(true);
 
             await loseAndRestoreContext(renderer);
+
+            renderer.render(text);
+
+            expect(renderer.extract.pixels(text).pixels).toEqual(before);
+
+            text.destroy();
+            renderer.destroy();
+        });
+
+        itLocalOnly('should render the text again after the WebGPU device is lost', async () =>
+        {
+            const renderer = await getWebGPURenderer({ width: 64, height: 64 });
+            const text = new Text({ text: 'Hi', style: { fontSize: 40, fill: 'white' } });
+
+            renderer.render(text);
+
+            const before = renderer.extract.pixels(text).pixels;
+
+            expect(before.some((value) => value > 0)).toBe(true);
+
+            await loseAndRestoreDevice(renderer);
 
             renderer.render(text);
 

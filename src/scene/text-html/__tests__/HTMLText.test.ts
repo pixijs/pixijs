@@ -1,11 +1,19 @@
 import { HTMLText } from '../HTMLText';
-import { getWebGLRenderer, loseAndRestoreContext, nextTick, waitForPendingHTMLText } from '@test-utils';
+import {
+    getWebGLRenderer,
+    getWebGPURenderer,
+    itLocalOnly,
+    loseAndRestoreContext,
+    loseAndRestoreDevice,
+    nextTick,
+    waitForPendingHTMLText,
+} from '@test-utils';
 import { TextureSource } from '~/rendering/renderers/shared/texture/sources/TextureSource';
 
-import type { WebGLRenderer } from '~/rendering/renderers/gl/WebGLRenderer';
+import type { Renderer } from '~/rendering/renderers/types';
 
 // generates the textures one after the other, so each text reuses the pooled render data of the previous one
-async function renderInSequence(renderer: WebGLRenderer, ...texts: HTMLText[]): Promise<void>
+async function renderInSequence(renderer: Renderer, ...texts: HTMLText[]): Promise<void>
 {
     for (const text of texts)
     {
@@ -301,6 +309,26 @@ describe('HTMLText', () =>
 
             await renderInSequence(renderer, red, blue);
             await loseAndRestoreContext(renderer);
+            await renderInSequence(renderer, red);
+
+            const { pixels } = renderer.extract.pixels(red);
+
+            expect(channelSum(pixels, 0)).toBeGreaterThan(0);
+            expect(channelSum(pixels, 2)).toBe(0);
+
+            red.destroy();
+            blue.destroy();
+            renderer.destroy();
+        });
+
+        itLocalOnly('should keep its own content after the WebGPU device is lost', async () =>
+        {
+            const renderer = await getWebGPURenderer({ width: 64, height: 64 });
+            const red = new HTMLText({ text: 'A', style: { fontSize: 40, fill: 'red' } });
+            const blue = new HTMLText({ text: 'B', style: { fontSize: 40, fill: 'blue' } });
+
+            await renderInSequence(renderer, red, blue);
+            await loseAndRestoreDevice(renderer);
             await renderInSequence(renderer, red);
 
             const { pixels } = renderer.extract.pixels(red);

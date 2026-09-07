@@ -1,7 +1,7 @@
 import { RenderTarget } from '../../shared/renderTarget/RenderTarget';
 import { TextureSource } from '../../shared/texture/sources/TextureSource';
 import { RenderBundle } from '../RenderBundle';
-import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
+import { describeLocalOnly, getWebGPURenderer, loseAndRestoreDevice } from '@test-utils';
 
 import type { TEXTURE_FORMATS } from '../../shared/texture/const';
 import type { WebGPURenderer } from '../WebGPURenderer';
@@ -76,6 +76,18 @@ describeLocalOnly('GpuEncoderSystem render bundles', () =>
         const bundles: RenderBundle[] = [];
 
         expect(renderer.encoder.isBundleValid(bundles[0])).toBe(false);
+    });
+
+    it('invalidates a bundle recorded on a device that has since been lost', async () =>
+    {
+        renderer = await getWebGPURenderer();
+        const target = colorTarget();
+        const bundle = record(target);
+
+        await loseAndRestoreDevice(renderer);
+        renderer.pipeline.setRenderTarget(target);
+
+        expect(renderer.encoder.isBundleValid(bundle)).toBe(false);
     });
 
     it('invalidates a bundle when the sample count changes', async () =>

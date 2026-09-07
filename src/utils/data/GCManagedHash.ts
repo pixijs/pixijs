@@ -63,6 +63,7 @@ export class GCManagedHash<T extends GCable & { uid: number } & Pick<EventEmitte
 
         this._onUnload?.(item, ...args);
 
+        item.off('unload', this.remove, this);
         gpuData.destroy();
         item._gpuData[this._renderer.uid] = null;
         this.items[item.uid] = null;
