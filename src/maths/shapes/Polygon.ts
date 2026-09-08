@@ -1,4 +1,5 @@
 import { deprecation } from '../../utils/logging/deprecation';
+import { getOrientationOfPoints } from '../misc/getOrientationOfPoints';
 import { squaredDistanceToLineSegment } from '../misc/squaredDistanceToLineSegment';
 import { Rectangle } from './Rectangle';
 
@@ -315,11 +316,19 @@ export class Polygon implements ShapePrimitive
      */
     public strokeContains(x: number, y: number, strokeWidth: number, alignment = 0.5): boolean
     {
-        const strokeWidthSquared = strokeWidth * strokeWidth;
-        const rightWidthSquared = strokeWidthSquared * (1 - alignment);
-        const leftWidthSquared = strokeWidthSquared - rightWidthSquared;
-
         const { points } = this;
+
+        // the stroke is built with the alignment flipped by the winding order, so the hit
+        // area has to flip with it to stay on the same side of the edge as the drawn line
+        const alignedByWinding = alignment === 0.5
+            ? alignment
+            : ((alignment - 0.5) * getOrientationOfPoints(points)) + 0.5;
+
+        const outerWidth = strokeWidth * alignedByWinding;
+        const innerWidth = strokeWidth - outerWidth;
+        const outerWidthSquared = outerWidth * outerWidth;
+        const innerWidthSquared = innerWidth * innerWidth;
+
         const iterationLength = points.length - (this.closePath ? 0 : 2);
 
         for (let i = 0; i < iterationLength; i += 2)
@@ -333,7 +342,7 @@ export class Polygon implements ShapePrimitive
 
             const sign = Math.sign(((x2 - x1) * (y - y1)) - ((y2 - y1) * (x - x1)));
 
-            if (distanceSquared <= (sign < 0 ? leftWidthSquared : rightWidthSquared))
+            if (distanceSquared <= (sign < 0 ? outerWidthSquared : innerWidthSquared))
             {
                 return true;
             }

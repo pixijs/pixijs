@@ -27,12 +27,15 @@ const tempBounds = new Bounds();
 /** @internal */
 class AlphaMaskEffect extends FilterEffect implements PoolItem
 {
+    /** the sprite the pooled filter is parked on between uses */
+    private readonly _placeholderSprite = new Sprite(Texture.EMPTY);
+
     constructor()
     {
         super();
 
         this.filters = [new MaskFilter({
-            sprite: new Sprite(Texture.EMPTY),
+            sprite: this._placeholderSprite,
             inverse: false,
             resolution: 'inherit',
             antialias: 'inherit'
@@ -46,7 +49,7 @@ class AlphaMaskEffect extends FilterEffect implements PoolItem
 
     set sprite(value: Sprite)
     {
-        (this.filters[0] as MaskFilter).sprite = value;
+        (this.filters[0] as MaskFilter).setSprite(value);
     }
 
     get inverse(): boolean
@@ -67,6 +70,19 @@ class AlphaMaskEffect extends FilterEffect implements PoolItem
     set channel(value: MaskChannel)
     {
         (this.filters[0] as MaskFilter).channel = value;
+    }
+
+    /**
+     * Called by {@link BigPool} when the pipe returns the effect: parks the filter
+     * on the empty placeholder so a pooled effect keeps no bindings to the last
+     * mask it applied. Without this, the pooled filter pins the mask sprite and
+     * its texture for as long as the effect sits in the pool, and destroying that
+     * texture's source hits a bind group subscription the user cannot release.
+     */
+    public reset(): void
+    {
+        this._placeholderSprite.texture = Texture.EMPTY;
+        this.sprite = this._placeholderSprite;
     }
 
     public init: () => void;
@@ -107,10 +123,13 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
 
     private _renderer: Renderer;
     private _activeMaskStage: AlphaMaskData[] = [];
+    private _usedEffects: AlphaMaskEffect[] = [];
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+
+        renderer.runners.postrender.add(this);
     }
 
     public push(mask: Effect, maskedContainer: Container, instructionSet: InstructionSet): void
@@ -203,7 +222,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
                     colorTextureSource.antialias
                 );
 
-                renderer.renderTarget.push(filterTexture, true);
+                renderer.renderTarget.push({ target: filterTexture, clear: true });
 
                 renderer.globalUniforms.push({
                     offset: bounds,
@@ -268,13 +287,33 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
                 TexturePool.returnTexture(maskData.filterTexture);
             }
 
-            BigPool.return(maskData.filterEffect);
+            // Returning the effect to the pool now would let the next mask in this frame
+            // reuse it, along with its MaskFilter's uniform buffer. WebGPU only reads that
+            // buffer when the frame's commands are submitted, so sharing it between masks
+            // would make every mask sample the last-written filter matrix (#12145).
+            this._usedEffects.push(maskData.filterEffect);
         }
+    }
+
+    public postrender(): void
+    {
+        const effects = this._usedEffects;
+
+        for (let i = 0; i < effects.length; i++)
+        {
+            BigPool.return(effects[i]);
+        }
+
+        effects.length = 0;
     }
 
     public destroy(): void
     {
+        this.postrender();
+
+        this._renderer.runners.postrender.remove(this);
         this._renderer = null;
         this._activeMaskStage = null;
+        this._usedEffects = null;
     }
 }

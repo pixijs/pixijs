@@ -1,8 +1,10 @@
 import { DOMAdapter } from '../../../environment/adapter';
 import { ExtensionType } from '../../../extensions/Extensions';
+import { warn } from '../../../utils/logging/warn';
 
 import type { System } from '../shared/system/System';
 import type { GpuPowerPreference } from '../types';
+import type { GpuExtensions } from './GpuExtensions';
 import type { WebGPURenderer } from './WebGPURenderer';
 
 /**
@@ -81,8 +83,12 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
     /** The GPU device */
     public gpu: GPU;
 
+    /** Optional WebGPU capabilities probed at init. Mirrors `renderer.context.extensions` on the WebGL side. */
+    public extensions: GpuExtensions;
+
     private _renderer: WebGPURenderer;
     private _initPromise: Promise<void>;
+    private _options: GpuContextOptions;
 
     /**
      * @param {WebGPURenderer} renderer - The renderer this System works for.
@@ -96,15 +102,49 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
     {
         if (this._initPromise) return this._initPromise;
 
+        this._options = options;
         this._initPromise = (options.gpu ? Promise.resolve(options.gpu) : this._createDeviceAndAdaptor(options))
-            .then((gpu) =>
-            {
-                this.gpu = gpu;
-
-                this._renderer.runners.contextChange.emit(this.gpu);
-            });
+            .then((gpu) => this._setGpu(gpu));
 
         return this._initPromise;
+    }
+
+    private _setGpu(gpu: GPU): void
+    {
+        this.gpu = gpu;
+
+        this.extensions = {
+            transientAttachment:
+                typeof (GPUTextureUsage as { TRANSIENT_ATTACHMENT?: number }).TRANSIENT_ATTACHMENT === 'number',
+        };
+
+        // a shared device belongs to the engine that created it, so only restore our own
+        if (!this._options.gpu)
+        {
+            void gpu.device.lost
+                .then(() => this._restoreDevice())
+                .catch((e) => warn('WebGPU device was lost and could not be restored', e));
+        }
+
+        this._renderer.runners.contextChange.emit(this.gpu);
+    }
+
+    private async _restoreDevice(): Promise<void>
+    {
+        // the renderer was destroyed, so there is nothing to restore
+        if (!this._renderer) return;
+
+        const gpu = await this._createDeviceAndAdaptor(this._options);
+
+        // destroyed while the new device was being requested
+        if (!this._renderer)
+        {
+            gpu.device.destroy();
+
+            return;
+        }
+
+        this._setGpu(gpu);
     }
 
     /**
@@ -131,15 +171,24 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
             forceFallbackAdapter: options.forceFallbackAdapter,
         });
 
+        if (!adapter)
+        {
+            throw new Error('WebGPU not supported. No GPU adapter was returned by navigator.gpu.requestAdapter().');
+        }
+
         const requiredFeatures = [
             'texture-compression-bc',
             'texture-compression-astc',
             'texture-compression-etc2',
+            'indirect-first-instance',
         ].filter((feature) => adapter.features.has(feature)) as GPUFeatureName[];
 
-        // TODO and one of these!
         const device = await adapter.requestDevice({
-            requiredFeatures
+            requiredFeatures,
+            requiredLimits: {
+                maxSampledTexturesPerShaderStage: adapter.limits.maxSampledTexturesPerShaderStage,
+                maxSamplersPerShaderStage: adapter.limits.maxSamplersPerShaderStage,
+            },
         });
 
         return { adapter, device };
@@ -147,7 +196,13 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
 
     public destroy(): void
     {
+        if (!this._options?.gpu)
+        {
+            this.gpu?.device.destroy();
+        }
+
         this.gpu = null;
+        this.extensions = null;
         this._renderer = null;
     }
 }

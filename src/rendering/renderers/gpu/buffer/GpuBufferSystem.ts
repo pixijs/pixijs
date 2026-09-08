@@ -1,7 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { type GPUData } from '../../../../scene/view/ViewContainer';
 import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
-import { uid } from '../../../../utils/data/uid';
 import { fastCopy } from '../../shared/buffer/utils/fastCopy';
 
 import type { Buffer } from '../../shared/buffer/Buffer';
@@ -61,6 +60,7 @@ export class GpuBufferSystem implements System
     protected contextChange(gpu: GPU): void
     {
         this._gpu = gpu;
+        this.destroyAll();
     }
 
     public getGPUBuffer(buffer: Buffer): GPUBuffer
@@ -83,7 +83,10 @@ export class GpuBufferSystem implements System
 
             // make sure
             this._gpu.device.queue.writeBuffer(
-                gpuBuffer, 0, data.buffer, 0,
+                gpuBuffer,
+                buffer._updateOffset,
+                data.buffer,
+                data.byteOffset + buffer._updateOffset,
                 // round to the nearest 4 bytes
                 ((buffer._updateSize || data.byteLength) + 3) & ~3
             );
@@ -109,7 +112,6 @@ export class GpuBufferSystem implements System
         const gpuBuffer = this._gpu.device.createBuffer(buffer.descriptor);
 
         buffer._updateID = 0;
-        buffer._resourceId = uid('resource');
 
         if (buffer.data)
         {

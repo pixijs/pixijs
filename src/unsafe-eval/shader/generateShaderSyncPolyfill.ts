@@ -2,6 +2,7 @@ import { BufferResource } from '../../rendering/renderers/shared/buffer/BufferRe
 import { UniformGroup } from '../../rendering/renderers/shared/shader/UniformGroup';
 import { TextureSource } from '../../rendering/renderers/shared/texture/sources/TextureSource';
 import { TextureStyle } from '../../rendering/renderers/shared/texture/TextureStyle';
+import { TextureView } from '../../rendering/renderers/shared/texture/TextureView';
 
 import type { ShaderSyncData, ShaderSyncFunction } from '../../rendering/renderers/gl/shader/GlShaderSystem';
 import type { WebGLRenderer } from '../../rendering/renderers/gl/WebGLRenderer';
@@ -51,7 +52,7 @@ function syncShader(renderer: WebGLRenderer, shader: Shader, syncData: ShaderSyn
                     syncData.blockIndex++
                 );
             }
-            else if (resource instanceof TextureSource)
+            else if (resource instanceof TextureSource || resource instanceof TextureView)
             {
                 // TODO really we should not be binding the sampler here too
                 renderer.texture.bind(resource, syncData.textureCount);

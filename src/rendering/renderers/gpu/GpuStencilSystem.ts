@@ -63,7 +63,7 @@ export class GpuStencilSystem implements System
         const renderer = this._renderer;
 
         renderer.pipeline.setStencilMode(stencilMode);
-        renderer.encoder.renderPassEncoder.setStencilReference(stencilReference);
+        renderer.encoder.setStencilReference(stencilReference);
     }
 
     public destroy()

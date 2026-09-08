@@ -12,15 +12,15 @@ jobs:
         env:
             BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
               with:
                   ref: ${{ github.head_ref }}
 
+            # No node-version/npm-version overrides: the setup action pins Node 24.15
+            # because Node >=24.16 silently skips Electron's binary install, and this
+            # job's cache post-step would then poison Linux-node-modules-* for unit tests.
             - name: Setup Project
               uses: ./.github/actions/setup
-              with:
-                  node-version: 24
-                  npm-version: latest
 
             - name: Build Project
               run: npm run build

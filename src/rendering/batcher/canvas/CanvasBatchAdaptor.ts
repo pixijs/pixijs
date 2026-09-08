@@ -166,10 +166,17 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
                 );
             }
 
-            const drawX = applyRotateTransform ? 0 : dx;
-            const drawY = applyRotateTransform ? 0 : dy;
             const drawW = dw;
             const drawH = dh;
+
+            let drawX = applyRotateTransform ? 0 : dx;
+            let drawY = applyRotateTransform ? 0 : dy;
+
+            if (!applyRotateTransform && quad.roundPixels === 1)
+            {
+                drawX |= 0;
+                drawY |= 0;
+            }
 
             if (needsRepeat)
             {

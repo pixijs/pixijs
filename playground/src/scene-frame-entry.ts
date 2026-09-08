@@ -91,7 +91,7 @@ try
 
                 window.parent.postMessage(
                     { type: 'scene-result', bitmap },
-                    '*',
+                    window.location.origin,
                     [bitmap],
                 );
             }
@@ -106,5 +106,5 @@ catch (err: unknown)
 {
     const message = err instanceof Error ? err.message : String(err);
 
-    window.parent.postMessage({ type: 'scene-error', message }, '*');
+    window.parent.postMessage({ type: 'scene-error', message }, window.location.origin);
 }

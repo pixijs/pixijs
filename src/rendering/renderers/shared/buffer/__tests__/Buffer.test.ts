@@ -216,6 +216,62 @@ describe('Buffer', () =>
         expect(buffer._updateSize).toBe(2 * 4);
     });
 
+    it('unload should re-key the buffer and emit a change event', () =>
+    {
+        const buffer = new Buffer({
+            data: new Float32Array([1, 2, 3]),
+            usage: 1,
+        });
+
+        const startingId = buffer._resourceId;
+        const changeObserver = jest.fn();
+
+        buffer.on('change', changeObserver);
+
+        buffer.unload();
+
+        expect(buffer._resourceId).not.toBe(startingId);
+        expect(changeObserver).toHaveBeenCalledTimes(1);
+    });
+
+    it('destroy should only emit a single change event', () =>
+    {
+        const buffer = new Buffer({
+            data: new Float32Array([1, 2, 3]),
+            usage: 1,
+        });
+
+        const changeObserver = jest.fn();
+
+        buffer.on('change', changeObserver);
+
+        buffer.destroy();
+
+        expect(changeObserver).toHaveBeenCalledTimes(1);
+    });
+
+    itLocalOnly('should re-add listeners when a buffer is used again after unload', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const buffer = new Buffer({
+            data: new Float32Array([1, 2, 3]),
+            usage: 1,
+        });
+
+        renderer.buffer.updateBuffer(buffer);
+
+        expect(buffer.listenerCount('update')).toBe(1);
+
+        buffer.unload();
+
+        expect(buffer.listenerCount('update')).toBe(0);
+
+        renderer.buffer.updateBuffer(buffer);
+
+        expect(buffer.listenerCount('update')).toBe(1);
+    });
+
     itLocalOnly('should only add add listeners to buffer on first gpu init', async () =>
     {
         const renderer = (await getWebGPURenderer()) as WebGPURenderer;
@@ -232,5 +288,74 @@ describe('Buffer', () =>
         buffer.data = new Float32Array([1, 2, 3, 4]);
 
         expect(buffer.listenerCount('update')).toBe(1);
+    });
+
+    it('should use correct source offset in bufferSubData when updating with offset (WebGL)', async () =>
+    {
+        const data = new Float32Array([1, 2, 3, 4, 5, 6, 7, 8]);
+
+        const buffer = new Buffer({
+            data,
+            usage: 1,
+        });
+
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
+
+        // Initial full upload to create the GL buffer and prime byteLength
+        renderer.buffer.updateBuffer(buffer);
+
+        const gl = renderer.gl;
+        const spy = jest.spyOn(gl, 'bufferSubData');
+
+        // Partial update: 8 bytes (2 floats) starting at byte offset 8 (float index 2)
+        const offsetInBytes = 8;
+        const sizeInBytes = 8;
+
+        buffer.update(sizeInBytes, offsetInBytes);
+        renderer.buffer.updateBuffer(buffer);
+
+        expect(spy).toHaveBeenCalledWith(
+            expect.anything(), // glBuffer.type
+            offsetInBytes, // dest offset (bytes)
+            data, // source typed array
+            offsetInBytes / data.BYTES_PER_ELEMENT, // source offset (elements)
+            sizeInBytes / data.BYTES_PER_ELEMENT // length (elements)
+        );
+
+        spy.mockRestore();
+    });
+
+    itLocalOnly('should use correct source offset in writeBuffer when updating with offset (WebGPU)', async () =>
+    {
+        const data = new Float32Array([1, 2, 3, 4, 5, 6, 7, 8]);
+
+        const buffer = new Buffer({
+            data,
+            usage: 1,
+        });
+
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        // Initial full upload to create the GPU buffer
+        renderer.buffer.updateBuffer(buffer);
+
+        const spy = jest.spyOn(renderer.gpu.device.queue, 'writeBuffer');
+
+        // Partial update: 8 bytes (2 floats) starting at byte offset 8 (float index 2)
+        const offsetInBytes = 8;
+        const sizeInBytes = 8;
+
+        buffer.update(sizeInBytes, offsetInBytes);
+        renderer.buffer.updateBuffer(buffer);
+
+        expect(spy).toHaveBeenCalledWith(
+            expect.anything(), // gpuBuffer
+            offsetInBytes, // dest offset (bytes)
+            data.buffer, // source ArrayBuffer
+            data.byteOffset + offsetInBytes, // source offset (bytes)
+            ((sizeInBytes) + 3) & ~3 // size rounded to 4 bytes
+        );
+
+        spy.mockRestore();
     });
 });

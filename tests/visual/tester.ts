@@ -2,6 +2,7 @@ import { ensureDirSync, existsSync, readFileSync, writeFile } from 'fs-extra';
 import { dirname } from 'path';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
+import { waitForPendingHTMLText } from '@test-utils';
 import { Rectangle } from '~/maths';
 import { autoDetectRenderer } from '~/rendering';
 import { Container, Graphics } from '~/scene';
@@ -102,6 +103,7 @@ export async function renderTest(
     stage.addChild(scene);
 
     await createFunction(scene, renderer);
+    await waitForPendingHTMLText(stage, renderer);
 
     const testId = `${id}-${rendererType}`;
 

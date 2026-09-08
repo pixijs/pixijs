@@ -70,7 +70,7 @@ describe('detectVideoAlphaMode', () =>
         const renderTexture = RenderTexture.create({ width: 1, height: 1 });
 
         renderer.render({ container, target: renderTexture, clear: true });
-        renderer.renderTarget.bind(renderTexture);
+        renderer.renderTarget.bind({ target: renderTexture });
 
         const pixel = new Uint8Array([0x00, 0x40, 0x80, 0xFF]);
 

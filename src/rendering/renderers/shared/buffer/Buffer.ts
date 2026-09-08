@@ -99,7 +99,7 @@ export class Buffer extends EventEmitter<{
 }> implements BindResource, GPUDataOwner, GCable
 {
     /**
-     * emits when the underlying buffer has changed shape (i.e. resized)
+     * emits when the underlying buffer has changed shape (i.e. resized) or been unloaded,
      * letting the renderer know that it needs to discard the old buffer on the GPU and create a new one
      * @event change
      */
@@ -156,6 +156,9 @@ export class Buffer extends EventEmitter<{
 
     /** @internal */
     public _updateSize: number;
+
+    /** @internal */
+    public _updateOffset = 0;
 
     private _data: TypedArray;
 
@@ -261,6 +264,7 @@ export class Buffer extends EventEmitter<{
         this._updateID++;
 
         this._updateSize = (size * value.BYTES_PER_ELEMENT);
+        this._updateOffset = 0;
 
         // If the data hasn't changed, early return after emitting 'update'
         if (this._data === value)
@@ -301,10 +305,12 @@ export class Buffer extends EventEmitter<{
      * By default it will update the entire buffer. If you only want to update a subset of the buffer,
      * you can pass in the size of the buffer to update.
      * @param sizeInBytes - the new size of the buffer in bytes
+     * @param offsetInBytes - the offset to start updating from
      */
-    public update(sizeInBytes?: number): void
+    public update(sizeInBytes?: number, offsetInBytes?: number): void
     {
         this._updateSize = sizeInBytes ?? this._updateSize;
+        this._updateOffset = offsetInBytes || 0;
 
         this._updateID++;
 
@@ -321,6 +327,17 @@ export class Buffer extends EventEmitter<{
             this._gpuData[key]?.destroy();
         }
         this._gpuData = Object.create(null);
+
+        // re-key so cached bind groups referencing the destroyed GPU buffer rebuild on next
+        // use. This must happen after 'unload' — the buffer systems detach their 'change'
+        // listeners there, so this emit reaches only bind groups / buffer resources and the
+        // GPU buffer is recreated lazily rather than eagerly right after being freed.
+        // destroy() emits its own 'change', so skip re-keying on that path.
+        if (!this.destroyed)
+        {
+            this._resourceId = uid('resource');
+            this.emit('change', this);
+        }
     }
 
     /** Destroys the buffer */

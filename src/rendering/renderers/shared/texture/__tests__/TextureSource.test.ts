@@ -79,4 +79,29 @@ describe('TextureSource', () =>
         expect(eventSpy).toHaveBeenCalledWith('resize', textureSource);
         expect(eventSpy).toHaveBeenNthCalledWith(1, 'update', textureSource);
     });
+
+    it('should destroy the style it created itself', () =>
+    {
+        const source = new TextureSource();
+        const ownStyle = source.style;
+
+        source.destroy();
+
+        expect(ownStyle.destroyed).toBe(true);
+    });
+
+    it('should not destroy a shared style assigned from outside', () =>
+    {
+        // the TexturePool pattern: many sources share one style instance
+        const sourceA = new TextureSource();
+        const sourceB = new TextureSource();
+        const sharedStyle = sourceB.style;
+
+        sourceA.style = sharedStyle;
+        sourceA.destroy();
+
+        // the shared style must survive sourceA — sourceB still uses it
+        expect(sharedStyle.destroyed).toBe(false);
+        expect(sourceB.style).toBe(sharedStyle);
+    });
 });

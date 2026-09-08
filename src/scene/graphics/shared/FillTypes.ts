@@ -163,6 +163,9 @@ export interface FillStyle
      * Determines how texture coordinates are calculated across shapes.
      * - 'local': Texture coordinates are relative to each shape's bounds
      * - 'global': Texture coordinates are in world space
+     *
+     * > [!NOTE] {@link FillPattern} overrides this default to `'global'`, since a tiled
+     * > pattern is typically expected to repeat continuously across shapes.
      * @example
      * ```ts
      * // Local space - texture fits each shape independently

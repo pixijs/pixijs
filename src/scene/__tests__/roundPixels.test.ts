@@ -7,9 +7,10 @@ import { TilingSprite } from '../sprite-tiling/TilingSprite';
 import { QuadGeometry } from '../sprite-tiling/utils/QuadGeometry';
 import { Text } from '../text/Text';
 import { HTMLText } from '../text-html/HTMLText';
+import { getTexture } from '@test-utils';
 import { Application } from '~/app';
 import { Rectangle } from '~/maths';
-import { Texture, WebGLRenderer } from '~/rendering';
+import { CanvasRenderer, Texture, WebGLRenderer } from '~/rendering';
 
 import type { GlGraphicsAdaptor } from '../graphics/gl/GlGraphicsAdaptor';
 
@@ -190,5 +191,45 @@ describe('Round Pixels', () =>
 
         // this test covers mesh and tiling sprite (as mesh is used under the hood)
         expect(renderData.shader.resources.localUniforms.uniforms.uRound).toBe(1);
+    });
+
+    it('round pixels should round anchor offset (dx, dy) passed to canvas drawImage', async () =>
+    {
+        const renderer = new CanvasRenderer();
+
+        await renderer.init({
+            width: 200,
+            height: 200,
+            roundPixels: true,
+        });
+
+        const texture = getTexture({ width: 7, height: 7 });
+        const sprite = new Sprite({ texture });
+
+        sprite.anchor.set(0.3, 0.3);
+        sprite.x = 10.5;
+        sprite.y = 10.5;
+
+        const container = new Container();
+
+        container.addChild(sprite);
+
+        const ctx = renderer.canvas.getContext('2d') as CanvasRenderingContext2D;
+        const drawImageSpy = jest.spyOn(ctx, 'drawImage');
+
+        renderer.render({ container });
+
+        // drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh) — dx=index 5, dy=index 6
+        expect(drawImageSpy).toHaveBeenCalled();
+
+        const call = drawImageSpy.mock.calls[0] as number[];
+        const dx = call[5];
+        const dy = call[6];
+
+        // Without fix: dx = dy = -2.1 → fails; after fix: dx = dy = -2 → passes
+        expect(Number.isInteger(dx)).toBe(true);
+        expect(Number.isInteger(dy)).toBe(true);
+
+        renderer.destroy();
     });
 });

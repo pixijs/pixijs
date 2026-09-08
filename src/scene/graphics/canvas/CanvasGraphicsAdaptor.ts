@@ -26,6 +26,7 @@ const tempMatrix = new Matrix();
 const tempTextureMatrix = new Matrix();
 const tempGradientMatrix = new Matrix();
 const tempPatternMatrix = new Matrix();
+const tempUvMatrix = new Matrix();
 
 function fillTriangles(
     context: CrossPlatformCanvasRenderingContext2D,
@@ -225,7 +226,7 @@ function getCanvasStyle(
     {
         const pattern = canvasUtils.getTintedPattern(fill.texture, tint);
 
-        canvasUtils.applyPatternTransform(pattern, fill.transform);
+        canvasUtils.applyPatternTransform(pattern, fill.transform, false);
 
         return pattern;
     }
@@ -240,11 +241,37 @@ function getCanvasStyle(
         }
 
         const pattern = canvasUtils.getTintedPattern(texture, tint);
-        const patternMatrix = textureMatrix
-            ? tempPatternMatrix
-                .copyFrom(textureMatrix)
-                .scale(texture.source.pixelWidth, texture.source.pixelHeight)
-            : style.matrix;
+        let patternMatrix = style.matrix;
+
+        if (textureMatrix)
+        {
+            // getTintedPattern crops the texture to its frame (and un-rotates groupD8-rotated
+            // sub-textures), so the pattern content is the orig-oriented region starting at
+            // (0,0) - but textureMatrix maps into full-source coordinates. Map back through
+            // the texture's uvs into pattern pixel space.
+            const { resolution } = texture.source;
+
+            patternMatrix = tempPatternMatrix.copyFrom(textureMatrix);
+
+            if (texture.rotate)
+            {
+                const { uvs, orig } = texture;
+
+                patternMatrix
+                    .prepend(tempUvMatrix.set(
+                        uvs.x1 - uvs.x0, uvs.y1 - uvs.y0,
+                        uvs.x3 - uvs.x0, uvs.y3 - uvs.y0,
+                        uvs.x0, uvs.y0
+                    ).invert())
+                    .scale(orig.width * resolution, orig.height * resolution);
+            }
+            else
+            {
+                patternMatrix
+                    .scale(texture.source.pixelWidth, texture.source.pixelHeight)
+                    .translate(-texture.frame.x * resolution, -texture.frame.y * resolution);
+            }
+        }
 
         canvasUtils.applyPatternTransform(pattern, patternMatrix);
 

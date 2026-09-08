@@ -649,6 +649,32 @@ describe('GCSystem', () =>
             expect(context.myHash.key1).toBeNull();
         });
 
+        it('should call unload() before nulling the hash entry so listeners can still access the resource', () =>
+        {
+            const resource = createMockResource();
+
+            resource._gcData = {
+                type: 'resource',
+            };
+            resource._gcLastUsed = gcSystem.now - 2000;
+
+            const context = { myHash: { key1: resource } as Record<string, GCable | null> };
+            let hashEntryDuringUnload: GCable | null = null;
+
+            resource.unload = jest.fn(() =>
+            {
+                hashEntryDuringUnload = context.myHash.key1;
+            }) as any;
+
+            gcSystem.addResourceHash(context, 'myHash', 'resource');
+
+            gcSystem.run();
+
+            expect(resource.unload).toHaveBeenCalled();
+            expect(hashEntryDuringUnload).toBe(resource);
+            expect(context.myHash.key1).toBeNull();
+        });
+
         it('should keep recently used resources in hash', () =>
         {
             const resource = createMockResource();
@@ -806,9 +832,21 @@ describe('GCSystem', () =>
 
     describe('lazy hash replacement', () =>
     {
+        // These tests rely on a fixed "now" to decide which resources are stale. Using the real
+        // performance.now() made them order-dependent: under a full-suite run, real elapsed time
+        // between marking a resource as recently-used and calling `run()` can vary with system
+        // load, occasionally pushing it past `maxUnusedTime`. Mocking the clock removes that variance.
+        let nowSpy: jest.SpyInstance;
+
         beforeEach(() =>
         {
             gcSystem.init({ gcActive: true, gcMaxUnusedTime: 1000, gcFrequency: 100 });
+            nowSpy = jest.spyOn(performance, 'now').mockReturnValue(1_000_000);
+        });
+
+        afterEach(() =>
+        {
+            nowSpy.mockRestore();
         });
 
         it('should set GC\'d entry to null instead of replacing hash (below threshold)', () =>

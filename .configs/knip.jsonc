@@ -46,7 +46,6 @@
         // Transitive dep of typedoc; used directly in typedoc-plugin-stackblitz
         "@gerrit0/mini-shiki",
         // Used in build script
-        "dts-bundle-generator",
-        "tsc-silent"
+        "dts-bundle-generator"
     ]
 }

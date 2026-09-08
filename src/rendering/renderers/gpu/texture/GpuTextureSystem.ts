@@ -1,5 +1,5 @@
 import { DOMAdapter } from '../../../../environment/adapter';
-import { ExtensionType } from '../../../../extensions/Extensions';
+import { extensions, ExtensionType } from '../../../../extensions/Extensions';
 import { type GPUData } from '../../../../scene/view/ViewContainer';
 import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
 import { UniformGroup } from '../../shared/shader/UniformGroup';
@@ -30,6 +30,7 @@ export class GPUTextureGpuData implements GPUData
 {
     public gpuTexture: GPUTexture;
     public textureView: GPUTextureView = null;
+    public textureViews: Record<string, GPUTextureView> = Object.create(null);
 
     constructor(gpuTexture: GPUTexture)
     {
@@ -41,8 +42,23 @@ export class GPUTextureGpuData implements GPUData
     {
         this.gpuTexture.destroy();
         this.textureView = null;
+        this.textureViews = null;
         this.gpuTexture = null;
     }
+}
+
+/**
+ * Builds a cache key covering every view-affecting field of a GPUTextureViewDescriptor —
+ * two descriptors selecting different subresources (mips, layers, aspects, formats) must
+ * never share a cached GPUTextureView. Only runs when bind groups / pass descriptors are
+ * (re)built, never per draw.
+ * @param viewDescriptor
+ */
+function getViewDescriptorKey(viewDescriptor: GPUTextureViewDescriptor): string
+{
+    return `${viewDescriptor.format || ''}.${viewDescriptor.dimension || ''}.${viewDescriptor.aspect || ''}.`
+        + `${viewDescriptor.baseMipLevel || 0}.${viewDescriptor.mipLevelCount || ''}.`
+        + `${viewDescriptor.baseArrayLayer || 0}.${viewDescriptor.arrayLayerCount || ''}`;
 }
 
 /**
@@ -59,6 +75,14 @@ export class GpuTextureSystem implements System, CanvasGenerator
         ],
         name: 'texture',
     } as const;
+
+    /**
+     * Optional uploaders registered via {@link ExtensionType.TextureUploaderWebGPU}. Each entry is
+     * merged into {@link _uploads} at construction time, so import order matters: register the
+     * extension before creating the renderer.
+     * @internal
+     */
+    public static readonly uploadExtensions: Record<string, GpuTextureUploader> = Object.create(null);
 
     protected CONTEXT_UID: number;
     private _gpuSamplers: Record<string, GPUSampler> = Object.create(null);
@@ -93,6 +117,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             buffer: gpuUploadBufferImageResource,
             video: gpuUploadVideoResource,
             compressed: gpuUploadCompressedTextureResource,
+            ...GpuTextureSystem.uploadExtensions,
         };
 
         this._uploads = {
@@ -104,6 +129,11 @@ export class GpuTextureSystem implements System, CanvasGenerator
     protected contextChange(gpu: GPU): void
     {
         this._gpu = gpu;
+
+        // everything created by the previous device died with it
+        this._managedTextures.removeAll();
+        this._gpuSamplers = Object.create(null);
+        this._mipmapGenerator = null;
     }
 
     /**
@@ -125,12 +155,32 @@ export class GpuTextureSystem implements System, CanvasGenerator
             source.mipLevelCount = Math.floor(Math.log2(biggestDimension)) + 1;
         }
 
-        let usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST;
+        let usage: number;
 
-        if (source.uploadMethodId !== 'compressed')
+        if (source.sampleCount > 1)
         {
-            usage |= GPUTextureUsage.RENDER_ATTACHMENT;
-            usage |= GPUTextureUsage.COPY_SRC;
+            // MSAA textures are only rendered into and resolved — never sampled, uploaded, or
+            // copied — so they need RENDER_ATTACHMENT alone.
+            usage = GPUTextureUsage.RENDER_ATTACHMENT;
+
+            // TRANSIENT_ATTACHMENT goes on top only when the source is marked transient AND the
+            // browser exposes the bit. Mixing transient with any later loadOp:'load' is a spec
+            // violation, so callers must opt in via `transient: true` (pixi sets this for the
+            // canvas-root MSAA buffer; not for RenderTexture MSAA, which can be rebound by filters).
+            if (source.transient && this._renderer.device.extensions.transientAttachment)
+            {
+                usage |= (GPUTextureUsage as { TRANSIENT_ATTACHMENT: number }).TRANSIENT_ATTACHMENT;
+            }
+        }
+        else
+        {
+            usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST;
+
+            if (source.uploadMethodId !== 'compressed')
+            {
+                usage |= GPUTextureUsage.RENDER_ATTACHMENT;
+                usage |= GPUTextureUsage.COPY_SRC;
+            }
         }
 
         const blockData = blockDataMap[source.format] || { blockBytes: 4, blockWidth: 1, blockHeight: 1 };
@@ -140,6 +190,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
         const textureDescriptor: GPUTextureDescriptor = {
             label: source.label,
+            // WebGPU cube textures are 2D textures with 6 array layers and a cube view.
             size: { width, height, depthOrArrayLayers: source.arrayLayerCount },
             format: source.format,
             sampleCount: source.sampleCount,
@@ -271,7 +322,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
         return this._bindGroupHash[texture.uid];
     }
 
-    public getTextureView(texture: BindableTexture)
+    public getTextureView(texture: BindableTexture, viewDescriptor?: GPUTextureViewDescriptor)
     {
         const source = texture.source;
 
@@ -284,9 +335,53 @@ export class GpuTextureSystem implements System, CanvasGenerator
             gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
         }
 
-        gpuData.textureView ||= gpuData.gpuTexture.createView({ dimension: source.viewDimension });
+        const descriptorKey = viewDescriptor ? getViewDescriptorKey(viewDescriptor) : 0;
 
-        return gpuData.textureView;
+        gpuData.textureViews[descriptorKey] ||= gpuData.gpuTexture.createView({
+            dimension: source.viewDimension,
+            ...viewDescriptor
+        });
+
+        return gpuData.textureViews[descriptorKey];
+    }
+
+    public getTextureRenderTargetView(
+        texture: BindableTexture,
+        mipLevel = 0,
+        layer = 0,
+        viewDescriptor?: GPUTextureViewDescriptor
+    )
+    {
+        const source = texture.source;
+
+        source._gcLastUsed = this._renderer.gc.now;
+        let gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
+
+        if (!gpuData)
+        {
+            this.initSource(source);
+            gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
+        }
+
+        // numeric fast path for the common case; explicit descriptors get the full string key.
+        // (+1 keeps mip 0 / layer 0 distinct from the default bind view at key 0)
+        let descriptorKey: string | number = (layer * (source.mipLevelCount || 1)) + mipLevel + 1;
+
+        if (viewDescriptor)
+        {
+            descriptorKey = `${descriptorKey}.${getViewDescriptorKey(viewDescriptor)}`;
+        }
+
+        gpuData.textureViews[descriptorKey] ||= gpuData.gpuTexture.createView({
+            dimension: '2d',
+            baseMipLevel: mipLevel,
+            mipLevelCount: 1,
+            baseArrayLayer: layer,
+            arrayLayerCount: 1,
+            ...viewDescriptor
+        });
+
+        return gpuData.textureViews[descriptorKey];
     }
 
     public generateCanvas(texture: Texture): ICanvas
@@ -368,3 +463,5 @@ export class GpuTextureSystem implements System, CanvasGenerator
         this._bindGroupHash = null;
     }
 }
+
+extensions.handleByMap(ExtensionType.TextureUploaderWebGPU, GpuTextureSystem.uploadExtensions);

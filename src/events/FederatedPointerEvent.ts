@@ -128,6 +128,12 @@ export class FederatedPointerEvent extends FederatedMouseEvent implements Pointe
      */
     public twist: number;
 
+    /**
+     * A unique identifier for the pointing device generating the event, that persists across events.
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/persistentDeviceId
+     */
+    public persistentDeviceId = 0;
+
     /** This is the number of clicks that occurs in 200ms/click of each other. */
     public detail: number;
 

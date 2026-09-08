@@ -1,0 +1,119 @@
+name: Sync Skills
+
+# One-way sync of `skills/` from this repo to pixijs/pixijs-skills.
+# The mirror tracks the latest STABLE release: on every non-prerelease
+# GitHub release the skills/ folder is read from the release tag and pushed
+# to pixijs-skills, keeping the mirror in lockstep with the npm package
+# (which bundles skills/ at the same tag). Prereleases are ignored.
+#
+# Use workflow_dispatch for manual / out-of-band syncs (e.g. an urgent skill
+# fix from dev ahead of a release); source_ref defaults to dev there.
+#
+# The standalone repo retains its own README, plugin configs, assets, etc.;
+# only the `skills/` folder is overwritten.
+#
+# Auth: a GitHub App (installed on pixijs/pixijs-skills with `contents: write`)
+# mints a short-lived token per run. Requires two repository secrets:
+#   SKILLS_SYNC_APP_ID          - the App's numeric ID
+#   SKILLS_SYNC_APP_PRIVATE_KEY - the App's private key (.pem contents)
+#
+# The target branch (default `main`) must already exist in pixijs-skills;
+# the checkout step fails fast if the ref is not found.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: 'Ref in pixijs to read skills/ from (tag or branch)'
+        required: false
+        default: 'dev'
+      target_ref:
+        description: 'Branch in pixijs-skills to sync into'
+        required: false
+        default: 'main'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-skills
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    # Stable releases only; manual dispatch is always allowed.
+    if: github.event_name == 'workflow_dispatch' || github.event.release.prerelease == false
+    runs-on: ubuntu-22.04
+    env:
+      TARGET_REPO: pixijs/pixijs-skills
+      SOURCE_REF: ${{ github.event_name == 'release' && github.event.release.tag_name || github.event.inputs.source_ref || 'dev' }}
+      TARGET_REF: ${{ github.event.inputs.target_ref || 'main' }}
+    steps:
+      - name: Validate refs
+        run: |
+          for ref in "${SOURCE_REF}" "${TARGET_REF}"; do
+            if ! [[ "${ref}" =~ ^[A-Za-z0-9._/-]+$ ]] || [[ "${ref}" == -* ]]; then
+              echo "Invalid ref: ${ref}"
+              exit 1
+            fi
+          done
+
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.SKILLS_SYNC_APP_ID }}
+          private-key: ${{ secrets.SKILLS_SYNC_APP_PRIVATE_KEY }}
+          owner: pixijs
+          repositories: pixijs-skills
+
+      - name: Checkout pixijs (source)
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ env.SOURCE_REF }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout pixijs-skills (target)
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ env.TARGET_REPO }}
+          ref: ${{ env.TARGET_REF }}
+          token: ${{ steps.app-token.outputs.token }}
+          path: target
+          fetch-depth: 1
+
+      - name: Replace skills folder
+        run: |
+          rm -rf target/skills
+          cp -R source/skills target/skills
+
+      - name: Detect changes
+        id: diff
+        working-directory: target
+        run: |
+          if [[ -z "$(git status --porcelain skills)" ]]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push
+        if: steps.diff.outputs.changed == 'true'
+        working-directory: target
+        env:
+          SOURCE_REPO: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          ACTOR_ID: ${{ github.actor_id }}
+        run: |
+          SYNC_SHA="$(git -C "${GITHUB_WORKSPACE}/source" rev-parse HEAD)"
+          git config user.name "${ACTOR}"
+          git config user.email "${ACTOR_ID}+${ACTOR}@users.noreply.github.com"
+          git add skills
+          git commit -m "chore: sync skills from ${SOURCE_REPO}@${SOURCE_REF} (${SYNC_SHA:0:7})
+
+          Source: https://github.com/${SOURCE_REPO}/commit/${SYNC_SHA}"
+          git push origin "${TARGET_REF}"

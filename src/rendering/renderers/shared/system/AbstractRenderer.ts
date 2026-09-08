@@ -26,6 +26,21 @@ import type { SharedRendererOptions } from './SharedSystems';
 import type { System, SystemConstructor } from './System';
 
 /**
+ * An async hook a renderer awaits while it initialises, after the environment extensions load and
+ * before it creates its systems and pipes. Registered as a `WebGLLoader`, `WebGPULoader` or
+ * `CanvasLoader` extension, it lets a package `import()` backend-specific systems and pipes and
+ * register them in time for the renderer to pick them up. Loaders for a backend run concurrently;
+ * the systems and pipes they register are ordered by their own `priority`, not by which loader finished first.
+ * @category rendering
+ * @advanced
+ */
+export interface RendererLoader
+{
+    /** Called once per renderer init. The renderer waits for the returned promise before adding its systems. */
+    load(): Promise<unknown>;
+}
+
+/**
  * The configuration for the renderer.
  * This is used to define the systems and render pipes that will be used by the renderer.
  * @category rendering
@@ -39,6 +54,8 @@ export interface RendererConfig
     systems: {name: string, value: SystemConstructor}[];
     renderPipes: {name: string, value: PipeConstructor}[];
     renderPipeAdaptors: {name: string, value: any}[];
+    /** Async hooks awaited during `init`, after the environment extensions load and before systems are added. */
+    loaders?: {name: string, value: RendererLoader}[];
 }
 
 /**
@@ -52,6 +69,19 @@ export interface RenderOptions extends ClearOptions
     container: Container;
     /** the transform to apply to the container. */
     transform?: Matrix;
+    /**
+     * Opt-in toggle that inverts the render's Y orientation. Defaults to `false` — a no-op, so existing
+     * renders are unchanged on both WebGL and WebGPU.
+     *
+     * Set `flipY: true` to invert the automatic orientation: when rendering to a texture this stores the
+     * capture in screen orientation (the un-flipped result 3D geometry UVs expect), removing the need to
+     * flip at sample time on every consuming material.
+     *
+     * The projection flip and the winding/cull inversion flip together, so back-face culling of 3D content
+     * rendered into the texture stays correct.
+     * @default false
+     */
+    flipY?: boolean;
 }
 
 /**
@@ -269,6 +299,11 @@ export class AbstractRenderer<
         const skip = options.skipExtensionImports === true ? true : options.manageImports === false;
 
         await loadEnvironmentExtensions(skip);
+
+        if (!skip && this.config.loaders)
+        {
+            await Promise.all(this.config.loaders.map((loader) => loader.value.load()));
+        }
 
         this._addSystems(this.config.systems);
         this._addPipes(this.config.renderPipes, this.config.renderPipeAdaptors);

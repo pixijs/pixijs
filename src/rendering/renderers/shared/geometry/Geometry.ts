@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import { Bounds } from '../../../../scene/container/bounds/Bounds';
 import { uid } from '../../../../utils/data/uid';
+import { deprecation } from '../../../../utils/logging/deprecation';
 import { type GlGeometryGpuData } from '../../gl/geometry/GlGeometrySystem';
 import { type GPUDataOwner } from '../../types';
 import { Buffer } from '../buffer/Buffer';
@@ -82,7 +83,10 @@ export interface GeometryDescriptor
     /** the topology of the geometry, defaults to 'triangle-list' */
     topology?: Topology;
 
+    /** the number of instances to draw, defaults to 1. See {@link Geometry.instanceCount} */
     instanceCount?: number;
+    /** the number of indices to draw, defaults to 0 - the whole index buffer. See {@link Geometry.indexCount} */
+    indexCount?: number;
 }
 function ensureIsAttribute(attribute: AttributeOption): Attribute
 {
@@ -167,8 +171,24 @@ export class Geometry extends EventEmitter<{
     /** the instance count of the geometry to draw */
     public instanceCount = 1;
 
+    /**
+     * The number of indices to draw, or `0` to draw the whole index buffer.
+     *
+     * Set this when a geometry only covers a prefix of an index buffer it shares with others - a
+     * pool of identical quads, say, where one buffer holds the six indices per quad for the largest
+     * batch and each geometry draws as many quads as it currently holds. A `size` passed to the
+     * draw call still wins, and a geometry with no index buffer ignores this entirely
+     * ({@link Geometry.vertexCount} drives those). Read at draw time only, so changing it never
+     * re-uploads or re-lays-out anything.
+     * @default 0
+     */
+    public indexCount = 0;
+
     private readonly _bounds: Bounds = new Bounds();
     private _boundsDirty = true;
+
+    private _vertexCount = 0;
+    private _vertexCountDirty = true;
 
     /**
      * Create a new instance of a geometry
@@ -193,6 +213,7 @@ export class Geometry extends EventEmitter<{
         }
 
         this.instanceCount = options.instanceCount ?? 1;
+        this.indexCount = options.indexCount ?? 0;
 
         if (indexBuffer)
         {
@@ -205,6 +226,7 @@ export class Geometry extends EventEmitter<{
     protected onBufferUpdate(): void
     {
         this._boundsDirty = true;
+        this._vertexCountDirty = true;
         this.emit('update', this);
     }
 
@@ -238,21 +260,47 @@ export class Geometry extends EventEmitter<{
     }
 
     /**
+     * The number of vertices in this geometry, derived from the first non-instanced attribute.
+     * The value is cached and only recalculated when the geometry's buffers or attributes change.
+     */
+    get vertexCount(): number
+    {
+        if (!this._vertexCountDirty) return this._vertexCount;
+
+        this._vertexCountDirty = false;
+
+        const attributes = this.attributes;
+
+        for (const i in attributes)
+        {
+            const attribute = attributes[i];
+
+            if (attribute.instance) continue;
+
+            const buffer = attribute.buffer;
+
+            this._vertexCount = (buffer.data as TypedArray).length / ((attribute.stride / 4) || attribute.size);
+
+            return this._vertexCount;
+        }
+
+        this._vertexCount = 0;
+
+        return 0;
+    }
+
+    /**
      * Used to figure out how many vertices there are in this geometry
      * @returns the number of vertices in the geometry
+     * @deprecated since 8.20.0, use {@link Geometry.vertexCount} instead
      */
     public getSize(): number
     {
-        for (const i in this.attributes)
-        {
-            const attribute = this.attributes[i];
-            const buffer = attribute.buffer;
+        // #if _DEBUG
+        deprecation('8.20.0', 'Geometry.getSize is deprecated, please use Geometry.vertexCount instead.');
+        // #endif
 
-            // TODO use SIZE again like v7..
-            return (buffer.data as any).length / ((attribute.stride / 4) || attribute.size);
-        }
-
-        return 0;
+        return this.vertexCount;
     }
 
     /**
@@ -276,6 +324,8 @@ export class Geometry extends EventEmitter<{
             attribute.buffer.on('change', this.onBufferUpdate, this);
         }
         this.attributes[name] = attribute;
+
+        this._vertexCountDirty = true;
     }
 
     /**
@@ -327,7 +377,6 @@ export class Geometry extends EventEmitter<{
 
         this.unload();
 
-        this.indexBuffer?.destroy();
         (this.attributes as null) = null;
         (this.buffers as null) = null;
         (this.indexBuffer as null) = null;

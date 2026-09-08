@@ -16,3 +16,4 @@
 /// <reference path="../src/scene/particle-container/ParticleMixins.d.ts" />
 /// <reference path="../src/math-extras/MathExtraMixins.d.ts" />
 /// <reference path="../src/filters/FilterMixins.d.ts" />
+/// <reference path="../src/html-source/HTMLSourceMixins.d.ts" />

@@ -43,6 +43,7 @@ export * from './events';
 export * from './extensions';
 export * from './filters';
 export * from './gif';
+export * from './html-source';
 export * from './math-extras';
 export * from './maths';
 export * from './prepare';

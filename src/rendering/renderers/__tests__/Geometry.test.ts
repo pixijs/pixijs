@@ -62,6 +62,50 @@ describe('Geometry', () =>
         expect(buffer.data).toBeNull();
     });
 
+    it('should not destroy the index buffer when destroyBuffers is false', () =>
+    {
+        const indexBuffer = new Buffer({
+            data: new Uint16Array([0, 1, 2]),
+            usage: BufferUsage.INDEX,
+        });
+        const destroySpy = jest.spyOn(indexBuffer, 'destroy');
+
+        const geometry = new Geometry({
+            attributes: {
+                aPosition: [0, 0, 1, 0, 1, 1],
+            },
+            indexBuffer,
+        });
+
+        geometry.destroy(false);
+
+        expect(destroySpy).not.toHaveBeenCalled();
+        expect(indexBuffer.destroyed).toBe(false);
+        expect(indexBuffer.data).not.toBeNull();
+    });
+
+    it('should destroy the index buffer only once when destroyBuffers is true', () =>
+    {
+        const indexBuffer = new Buffer({
+            data: new Uint16Array([0, 1, 2]),
+            usage: BufferUsage.INDEX,
+        });
+        const destroySpy = jest.spyOn(indexBuffer, 'destroy');
+
+        const geometry = new Geometry({
+            attributes: {
+                aPosition: [0, 0, 1, 0, 1, 1],
+            },
+            indexBuffer,
+        });
+
+        geometry.destroy(true);
+
+        expect(destroySpy).toHaveBeenCalledTimes(1);
+        expect(indexBuffer.destroyed).toBe(true);
+        expect(indexBuffer.data).toBeNull();
+    });
+
     it('should set a cast data correctly', () =>
     {
         const buffer = new Buffer({
@@ -178,6 +222,130 @@ describe('Geometry', () =>
         geometry.attributes.aPosition.buffer.data = new Float32Array([0, 1, 2, 3, 4, 5]);
 
         expect(geometry['_boundsDirty']).toEqual(true);
+    });
+
+    it('should return correct vertexCount for a simple geometry', () =>
+    {
+        const geometry = new Geometry({
+            attributes: {
+                aPosition: {
+                    buffer: new Buffer({
+                        data: new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]),
+                        usage: 1,
+                    }),
+                    format: 'float32x2',
+                    stride: 2 * 4,
+                    offset: 0,
+                }
+            }
+        });
+
+        expect(geometry.vertexCount).toEqual(4);
+    });
+
+    it('should cache vertexCount and invalidate on buffer update', () =>
+    {
+        const geometry = new Geometry({
+            attributes: {
+                aPosition: {
+                    buffer: new Buffer({
+                        data: new Float32Array([0, 0, 1, 0, 1, 1]),
+                        usage: 1,
+                    }),
+                    format: 'float32x2',
+                    stride: 2 * 4,
+                    offset: 0,
+                }
+            }
+        });
+
+        expect(geometry.vertexCount).toEqual(3);
+        expect(geometry['_vertexCountDirty']).toEqual(false);
+
+        geometry.attributes.aPosition.buffer.data = new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]);
+
+        expect(geometry['_vertexCountDirty']).toEqual(true);
+        expect(geometry.vertexCount).toEqual(4);
+    });
+
+    it('should skip instanced attributes when calculating vertexCount', () =>
+    {
+        const geometry = new Geometry({
+            attributes: {
+                aOffset: {
+                    buffer: new Buffer({
+                        data: new Float32Array([10, 20, 30, 40, 50, 60]),
+                        usage: 1,
+                    }),
+                    format: 'float32x2',
+                    stride: 2 * 4,
+                    offset: 0,
+                    instance: true,
+                },
+                aPosition: {
+                    buffer: new Buffer({
+                        data: new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]),
+                        usage: 1,
+                    }),
+                    format: 'float32x2',
+                    stride: 2 * 4,
+                    offset: 0,
+                },
+            }
+        });
+
+        expect(geometry.vertexCount).toEqual(4);
+    });
+
+    it('should return 0 vertexCount when there are no non-instanced attributes', () =>
+    {
+        const geometry = new Geometry({
+            attributes: {
+                aOffset: {
+                    buffer: new Buffer({
+                        data: new Float32Array([10, 20]),
+                        usage: 1,
+                    }),
+                    format: 'float32x2',
+                    stride: 2 * 4,
+                    offset: 0,
+                    instance: true,
+                },
+            }
+        });
+
+        expect(geometry.vertexCount).toEqual(0);
+    });
+
+    it('should invalidate vertexCount when a new attribute is added', () =>
+    {
+        const geometry = new Geometry({
+            attributes: {
+                aPosition: {
+                    buffer: new Buffer({
+                        data: new Float32Array([0, 0, 1, 0, 1, 1]),
+                        usage: 1,
+                    }),
+                    format: 'float32x2',
+                    stride: 2 * 4,
+                    offset: 0,
+                },
+            }
+        });
+
+        expect(geometry.vertexCount).toEqual(3);
+
+        geometry.addAttribute('aUv', {
+            buffer: new Buffer({
+                data: new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]),
+                usage: 1,
+            }),
+            format: 'float32x2',
+            stride: 2 * 4,
+            offset: 0,
+        });
+
+        expect(geometry['_vertexCountDirty']).toEqual(true);
     });
 
     it('should preserve VAO cache when binding same geometry with multiple programs', async () =>

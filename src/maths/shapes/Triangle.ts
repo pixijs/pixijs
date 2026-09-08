@@ -196,7 +196,7 @@ export class Triangle implements ShapePrimitive
 
         const { x, x2, x3, y, y2, y3 } = this;
 
-        if (squaredDistanceToLineSegment(pointX, pointY, x, y, x2, y3) <= halfStrokeWidthSquared
+        if (squaredDistanceToLineSegment(pointX, pointY, x, y, x2, y2) <= halfStrokeWidthSquared
             || squaredDistanceToLineSegment(pointX, pointY, x2, y2, x3, y3) <= halfStrokeWidthSquared
             || squaredDistanceToLineSegment(pointX, pointY, x3, y3, x, y) <= halfStrokeWidthSquared)
         {

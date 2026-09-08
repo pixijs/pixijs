@@ -11,7 +11,6 @@ export class GpuRenderTarget
     public msaaTextures: TextureSource[] = [];
     public msaa: boolean;
     public msaaSamples = 1;
-    public colorTargetCount: number;
     public width: number;
     public height: number;
     public descriptor: GPURenderPassDescriptor;
