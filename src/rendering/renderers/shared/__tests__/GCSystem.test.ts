@@ -511,6 +511,41 @@ describe('GCSystem', () =>
             expect(isTracked(c)).toBe(true);
             expect(managedResources).toHaveLength(3);
         });
+
+        it('should re-register a collected resource whose unload listener touched it', () =>
+        {
+            const [a] = addStaleThenFresh();
+
+            // Any use during unload (a bind, an upload) stamps the last-used time
+            a.on('unload', () =>
+            {
+                a._gcLastUsed = gcSystem.now;
+            });
+
+            gcSystem.run();
+            gcSystem.addResource(a, 'resource');
+
+            expect(a.unloadCount).toBe(1);
+            expect(isTracked(a)).toBe(true);
+            expect(managedResources).toHaveLength(3);
+        });
+
+        it('should unload a resource while it is still tracked, then clear both sentinels', () =>
+        {
+            const [a] = addStaleThenFresh();
+            let trackedDuringUnload = false;
+
+            a.on('unload', () =>
+            {
+                trackedDuringUnload = isTracked(a);
+            });
+
+            gcSystem.run();
+
+            expect(trackedDuringUnload).toBe(true);
+            expect(a._gcData).toBeNull();
+            expect(a._gcLastUsed).toBe(-1);
+        });
     });
 
     describe('addResourceHash', () =>

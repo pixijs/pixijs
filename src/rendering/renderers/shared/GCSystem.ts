@@ -399,11 +399,11 @@ export class GCSystem implements System<GCSystemOptions>
 
         if (isRecentlyUsed || !resource.autoGarbageCollect) return;
 
-        // Stop tracking before unloading: unload() emits 'unload' synchronously, so the listener from
-        // addResource must be gone and the bookkeeping settled before any listener runs.
+        // Detach the GC's own listener so unload() cannot untrack the resource mid-unload, and untrack last:
+        // a listener that stamps _gcLastUsed during unload() must not be able to block re-registration.
         resource.off('unload', this.removeResource, this);
-        this.removeResource(resource);
         resource.unload();
+        this.removeResource(resource);
     }
 
     /**
