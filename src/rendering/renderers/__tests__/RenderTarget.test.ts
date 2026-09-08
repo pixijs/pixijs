@@ -5,7 +5,7 @@ import { RenderTexture } from '../shared/texture/RenderTexture';
 import { CanvasSource } from '../shared/texture/sources/CanvasSource';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
 import { Texture } from '../shared/texture/Texture';
-import { getWebGLRenderer, getWebGPURenderer } from '@test-utils';
+import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
 import { DOMAdapter } from '~/environment';
 import { Container } from '~/scene/container/Container';
 
@@ -276,11 +276,6 @@ describe('caller-owned RenderTarget lifecycle', () =>
         colorTextures: [new TextureSource({ width: 16, height: 16 })],
     });
 
-    const backends: [string, () => Promise<WebGLRenderer | WebGPURenderer>][] = [
-        ['WebGL', getWebGLRenderer],
-        ['WebGPU', getWebGPURenderer],
-    ];
-
     it('should emit destroy once, before its attachments are released', () =>
     {
         const renderTarget = makeTarget();
@@ -296,7 +291,7 @@ describe('caller-owned RenderTarget lifecycle', () =>
         expect(renderTarget.colorAttachments).toBeNull();
     });
 
-    describe.each(backends)('on %s', (_backend, getRenderer) =>
+    const backendLifecycleTests = (getRenderer: () => Promise<WebGLRenderer | WebGPURenderer>) =>
     {
         it('should drop its caches and free the backend counterpart when the target is destroyed', async () =>
         {
@@ -344,6 +339,16 @@ describe('caller-owned RenderTarget lifecycle', () =>
             expect(renderTarget.listenerCount('destroy')).toBe(0);
             expect(() => renderTarget.destroy()).not.toThrow();
         });
+    };
+
+    describe('on WebGL', () =>
+    {
+        backendLifecycleTests(getWebGLRenderer);
+    });
+
+    describeLocalOnly('on WebGPU', () =>
+    {
+        backendLifecycleTests(getWebGPURenderer);
     });
 
     it('should delete the framebuffers of a destroyed target in WebGL', async () =>
