@@ -21,13 +21,11 @@ export interface ExtractedAttributeData extends Omit<Attribute, 'buffer'>
  * @private
  * @param {WebGLProgram} [program] - the WebGL program
  * @param {WebGLRenderingContext} [gl] - the WebGL context
- * @param sortAttributes
  * @returns {object} the attribute data for this program
  */
 export function extractAttributesFromGlProgram(
     program: WebGLProgram,
-    gl: WebGLRenderingContextBase,
-    sortAttributes = false
+    gl: WebGLRenderingContextBase
 ): Record<string, ExtractedAttributeData>
 {
     const attributes: {[key: string]: ExtractedAttributeData} = {};
@@ -58,25 +56,11 @@ export function extractAttributesFromGlProgram(
 
     const keys = Object.keys(attributes);
 
-    if (sortAttributes)
+    // use the GL-assigned attribute locations; setting them with bindAttribLocation
+    // renders blank (no GL error) on some Adreno/ANGLE WebGL1 drivers
+    for (let i = 0; i < keys.length; i++)
     {
-        keys.sort((a, b) => (a > b) ? 1 : -1); // eslint-disable-line no-confusing-arrow
-
-        for (let i = 0; i < keys.length; i++)
-        {
-            attributes[keys[i]].location = i;
-
-            gl.bindAttribLocation(program, i, keys[i]);
-        }
-
-        gl.linkProgram(program);
-    }
-    else
-    {
-        for (let i = 0; i < keys.length; i++)
-        {
-            attributes[keys[i]].location = gl.getAttribLocation(program, keys[i]);
-        }
+        attributes[keys[i]].location = gl.getAttribLocation(program, keys[i]);
     }
 
     return attributes;
