@@ -28,6 +28,14 @@ function backdate(entries: { _gcLastUsed: number }[]): void
     }
 }
 
+// the GC schedules its clean pass through the renderer's scheduler; fire that task directly
+function runCleanPass(): void
+{
+    const id = renderer.gc['_collectionsHandler'];
+
+    renderer.scheduler['_tasks'].find((task) => task.id === id).func(0);
+}
+
 describeLocalOnly('BindGroupSystem cache sweep', () =>
 {
     it('re-stamps entries on a cache hit instead of growing the cache', async () =>
@@ -132,5 +140,34 @@ describeLocalOnly('BindGroupSystem cache sweep', () =>
         renderer.gc.run();
 
         expect(liveEntries()).toHaveLength(0);
+    });
+
+    it('compacts swept slots out of the hash on the GC clean pass', async () =>
+    {
+        renderer = await getWebGPURenderer();
+
+        const registration = renderer.gc['_managedCollections'].find((entry) => entry.context === renderer.bindGroup);
+
+        expect(registration).toMatchObject({ collection: '_hash', type: 'hash' });
+
+        const sprite = new Sprite({ texture: getTexture() });
+
+        renderer.render(sprite);
+
+        const keys = Object.keys(renderer.bindGroup['_hash']);
+
+        backdate(liveEntries());
+        renderer.gc.run();
+
+        // the sweep only nulls slots; the keys stay until the clean pass rebuilds the hash
+        expect(Object.keys(renderer.bindGroup['_hash'])).toEqual(keys);
+
+        runCleanPass();
+
+        expect(Object.keys(renderer.bindGroup['_hash'])).toHaveLength(0);
+
+        renderer.render(sprite);
+
+        expect(liveEntries()).toHaveLength(keys.length);
     });
 });

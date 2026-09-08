@@ -69,9 +69,11 @@ export class BindGroupSystem implements System
     {
         this._renderer = renderer;
 
-        // the GC reads the hash off this system by name on every sweep, so replacing the object in
-        // contextChange or nulling it in destroy needs no re-registration
+        // the sweep nulls idle slots and the periodic clean pass compacts the nulls away; both read
+        // the hash off this system by name, so replacing the object in contextChange or nulling it
+        // in destroy needs no re-registration
         renderer.gc.addResourceHash(this, '_hash', 'resource');
+        renderer.gc.addCollection(this, '_hash', 'hash');
     }
 
     protected contextChange(gpu: GPU): void
