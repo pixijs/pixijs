@@ -32,7 +32,8 @@ export function generateBlurProgram(horizontal: boolean, kernelSize: number)
         const kernelIndex = i < halfLength ? i : (kernelSize - i - 1);
         const kernelValue = kernel[kernelIndex].toString();
 
-        blurSamplingSource[i] = `finalColor += textureSample(uTexture, uSampler, offset${i}) * ${kernelValue};`;
+        blurSamplingSource[i] = `finalColor += textureSample(uTexture, uSampler,
+            clamp(offset${i}, gfu.uInputClamp.xy, gfu.uInputClamp.zw)) * ${kernelValue};`;
     }
 
     const blurStruct = blurStructSource.join('\n');
@@ -57,4 +58,3 @@ export function generateBlurProgram(horizontal: boolean, kernelSize: number)
         },
     });
 }
-
