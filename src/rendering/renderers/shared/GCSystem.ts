@@ -365,16 +365,13 @@ export class GCSystem implements System<GCSystemOptions>
             this.runOnHash(hashEntry, now);
         }
 
-        let writeIndex = 0;
-
-        for (let i = 0; i < this._managedResources.length; i++)
+        // Unloading a resource can synchronously unload other tracked resources (a GraphicsContext takes its
+        // dependent Graphics with it), each of which untracks itself through removeResource. Sweeping a
+        // snapshot keeps those removals from disturbing the walk.
+        for (const resource of this._managedResources.slice())
         {
-            const resource = this._managedResources[i];
-
-            writeIndex = this.runOnResource(resource, now, writeIndex);
+            if (resource._gcData) this.runOnResource(resource, now);
         }
-
-        this._managedResources.length = writeIndex;
     }
 
     protected updateRenderableGCTick(renderable: Renderable & GCable, now: number): void
@@ -390,34 +387,23 @@ export class GCSystem implements System<GCSystemOptions>
         }
     }
 
-    protected runOnResource(resource: GCableEventEmitter, now: number, writeIndex: number): number
+    protected runOnResource(resource: GCableEventEmitter, now: number): void
     {
-        const gcData = resource._gcData;
-
         // special case for renderables as we do not check every frame if they are being used
-        if (gcData.type === 'renderable')
+        if (resource._gcData.type === 'renderable')
         {
             this.updateRenderableGCTick(resource as Renderable, now);
         }
 
         const isRecentlyUsed = now - resource._gcLastUsed < this.maxUnusedTime;
 
-        if (isRecentlyUsed || !resource.autoGarbageCollect)
-        {
-            this._managedResources[writeIndex] = resource;
-            gcData.index = writeIndex;
-            writeIndex++;
-        }
-        else
-        {
-            // Call the cleanup function
-            resource.unload();
-            resource._gcData = null;
-            resource._gcLastUsed = -1;
-            resource.off('unload', this.removeResource, this);
-        }
+        if (isRecentlyUsed || !resource.autoGarbageCollect) return;
 
-        return writeIndex;
+        // Stop tracking before unloading: unload() emits 'unload' synchronously, so the listener from
+        // addResource must be gone and the bookkeeping settled before any listener runs.
+        resource.off('unload', this.removeResource, this);
+        this.removeResource(resource);
+        resource.unload();
     }
 
     /**

@@ -1,8 +1,8 @@
 import { GCSystem } from '../GCSystem';
-import { type NOOP } from '~/utils';
+import { EventEmitter, type NOOP } from '~/utils';
 
 import type { Renderer } from '../../types';
-import type { GCable, GCSystemOptions } from '../GCSystem';
+import type { GCable, GCData, GCSystemOptions } from '../GCSystem';
 
 // Mock resource that implements GCable interface
 function createMockResource(options: Partial<GCable> = {}): GCable & { once: jest.Mock; off: jest.Mock; unload: jest.Mock }
@@ -405,6 +405,111 @@ describe('GCSystem', () =>
             gcSystem.run();
 
             expect(resource.off).toHaveBeenCalledWith('unload', gcSystem.removeResource, gcSystem);
+        });
+    });
+
+    describe('run with resources that emit unload', () =>
+    {
+        type UnloadingResource = EventEmitter & GCable & { unloadCount: number };
+
+        // Mirrors TextureSource, Buffer and Geometry: unload() emits 'unload' synchronously, which fires the
+        // listener the GC registered in addResource while the sweep is still walking the array.
+        function createUnloadingResource(): UnloadingResource
+        {
+            const resource: UnloadingResource = Object.assign(new EventEmitter(), {
+                _gpuData: {},
+                _gcLastUsed: -1,
+                _gcData: null as GCData | null,
+                autoGarbageCollect: true,
+                unloadCount: 0,
+                unload: () =>
+                {
+                    resource.unloadCount++;
+                    resource.emit('unload', resource);
+                },
+            });
+
+            return resource;
+        }
+
+        let nowSpy: jest.SpyInstance;
+        let managedResources: GCable[];
+
+        function isTracked(resource: GCable): boolean
+        {
+            return !!resource._gcData && managedResources[resource._gcData.index] === resource;
+        }
+
+        function addStaleThenFresh(): [UnloadingResource, UnloadingResource, UnloadingResource]
+        {
+            const a = createUnloadingResource();
+            const b = createUnloadingResource();
+            const c = createUnloadingResource();
+
+            gcSystem.addResource(a, 'resource');
+            gcSystem.addResource(b, 'resource');
+            gcSystem.addResource(c, 'resource');
+            a._gcLastUsed = gcSystem.now - 2000;
+
+            return [a, b, c];
+        }
+
+        beforeEach(() =>
+        {
+            nowSpy = jest.spyOn(performance, 'now').mockReturnValue(1_000_000);
+            gcSystem.init({ gcActive: true, gcMaxUnusedTime: 1000, gcFrequency: 100 });
+            managedResources = (gcSystem as any)._managedResources;
+        });
+
+        afterEach(() =>
+        {
+            nowSpy.mockRestore();
+        });
+
+        it('should keep tracking the resources after a stale one whose unload event fires mid-sweep', () =>
+        {
+            const [a, b, c] = addStaleThenFresh();
+
+            gcSystem.run();
+
+            expect(a.unloadCount).toBe(1);
+            expect(a._gcData).toBeNull();
+            expect(a.listenerCount('unload')).toBe(0);
+            expect(isTracked(b)).toBe(true);
+            expect(isTracked(c)).toBe(true);
+            expect(managedResources).toHaveLength(2);
+        });
+
+        it('should survive an unload that cascades into another tracked resource', () =>
+        {
+            const [a, b, c] = addStaleThenFresh();
+
+            // Like a Graphics listening to its GraphicsContext: unloading a takes b down with it
+            a.on('unload', () => b.unload());
+
+            expect(() => gcSystem.run()).not.toThrow();
+
+            expect(a.unloadCount).toBe(1);
+            expect(b.unloadCount).toBe(1);
+            expect(a._gcData).toBeNull();
+            expect(b._gcData).toBeNull();
+            expect(isTracked(c)).toBe(true);
+            expect(managedResources).toHaveLength(1);
+        });
+
+        it('should re-register a collected resource and leave a still-tracked one alone', () =>
+        {
+            const [a, b, c] = addStaleThenFresh();
+
+            gcSystem.run();
+
+            gcSystem.addResource(a, 'resource');
+            gcSystem.addResource(c, 'resource');
+
+            expect(isTracked(a)).toBe(true);
+            expect(isTracked(b)).toBe(true);
+            expect(isTracked(c)).toBe(true);
+            expect(managedResources).toHaveLength(3);
         });
     });
 
