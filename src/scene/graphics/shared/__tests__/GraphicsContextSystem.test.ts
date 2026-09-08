@@ -1,9 +1,65 @@
+import { Sprite } from '../../../sprite/Sprite';
+import { Graphics } from '../Graphics';
 import { GraphicsContext } from '../GraphicsContext';
 import { GraphicsContextSystem } from '../GraphicsContextSystem';
 import { getWebGLRenderer } from '@test-utils';
+import { Texture } from '~/rendering';
 
 describe('GraphicsContextSystem', () =>
 {
+    it('should ignore inactive batches when pooled graphics data is reused', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const textures = Array.from({ length: (renderer.limits.maxBatchableTextures * 2) + 1 }, () =>
+        {
+            const canvas = document.createElement('canvas');
+
+            canvas.width = canvas.height = 2;
+
+            return Texture.from(canvas);
+        });
+        const createGraphics = (count: number) =>
+        {
+            const graphics = new Graphics();
+
+            graphics.context.batchMode = 'no-batch';
+            for (let i = 0; i < count; i++)
+            {
+                graphics.texture(textures[i], 0xffffff, i, 0, 2, 2);
+            }
+
+            return graphics;
+        };
+        const large = createGraphics(textures.length);
+
+        renderer.render(large);
+        large.destroy();
+
+        const small = createGraphics(1);
+
+        renderer.render(small);
+
+        // A sprite reuses one of the batches no longer needed by the smaller graphics.
+        const retiredTexture = textures[1];
+        const sprite = new Sprite(retiredTexture);
+
+        renderer.render(sprite);
+        sprite.destroy();
+        retiredTexture.destroy(true);
+        small.destroy();
+
+        const next = createGraphics(1);
+
+        expect(() => renderer.render(next)).not.toThrow();
+
+        next.destroy();
+        renderer.destroy();
+        textures.forEach((texture) =>
+        {
+            if (!texture.destroyed) texture.destroy(true);
+        });
+    });
+
     describe('ShapeBuildCommand', () =>
     {
         it('should successfully build shapes', async () =>
