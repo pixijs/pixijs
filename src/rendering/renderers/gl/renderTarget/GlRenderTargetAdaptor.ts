@@ -385,7 +385,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             gl.deleteRenderbuffer(renderBuffer);
         });
 
-        // emptied rather than nulled so a repeat destroy is a no-op
+        // stays an array so destroying the same target again finds nothing to delete
         gpuRenderTarget.msaaRenderBuffer.length = 0;
     }
 

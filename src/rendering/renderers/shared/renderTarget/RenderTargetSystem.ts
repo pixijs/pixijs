@@ -1059,7 +1059,7 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
 
         this._renderSurfaceToRenderTargetHash.clear();
 
-        // what the releases above left behind was built for caller-owned targets
+        // free the backend targets built for caller-owned surfaces, which the loop above leaves intact
         for (const gpuRenderTarget of Object.values(this._gpuRenderTargetHash))
         {
             if (gpuRenderTarget) this.adaptor.destroyGpuRenderTarget(gpuRenderTarget);
