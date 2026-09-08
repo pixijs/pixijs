@@ -458,6 +458,55 @@ describe('Ticker', () =>
             ticker.start();
         }));
 
+    it('should not skip next frame when a listener triggers _requestIfNeeded during tick with maxFPS', () =>
+    {
+        // When a listener calls ticker.add() mid-tick, _requestIfNeeded must not reset
+        // _lastFrame to performance.now(). In real browsers, performance.now() is ahead
+        // of the RAF timestamp, so a corrupted _lastFrame makes the next frame's delta
+        // too small (< _minElapsedMS), causing it to be skipped.
+        const mockNow = jest.spyOn(performance, 'now');
+        const ticker = new Ticker();
+
+        ticker.maxFPS = 60;
+
+        mockNow.mockReturnValue(1000);
+        ticker.start();
+
+        const innerListener = jest.fn();
+        const outerListener = jest.fn(() =>
+        {
+            ticker.add(innerListener);
+        });
+
+        const frameListener = jest.fn();
+
+        ticker.add(outerListener);
+        ticker.add(frameListener);
+
+        // Simulate RAF callbacks via the internal _tick method, which sets
+        // _requestId = null before calling update() - required to reach the bug path.
+        const rafCallback = (ticker as any)._tick;
+
+        // performance.now() ahead of RAF timestamp, as happens in real browsers
+        mockNow.mockReturnValue(1030);
+        rafCallback(1017);
+
+        expect(frameListener).toHaveBeenCalledTimes(1);
+        ticker.remove(outerListener);
+        frameListener.mockClear();
+
+        // Next frame 17ms later should not be skipped
+        mockNow.mockReturnValue(1047);
+        rafCallback(1034);
+
+        expect(frameListener).toHaveBeenCalledTimes(1);
+        expect(ticker.deltaTime).toBeGreaterThan(0.5);
+        expect(ticker.deltaTime).toBeLessThan(1.5);
+
+        mockNow.mockRestore();
+        ticker.destroy();
+    });
+
     describe('minFPS / maxFPS', () =>
     {
         it('should set minFPS independently when maxFPS is unlimited (0)', () =>
