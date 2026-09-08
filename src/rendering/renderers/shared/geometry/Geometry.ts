@@ -368,14 +368,21 @@ export class Geometry extends EventEmitter<{
     {
         this.emit('destroy', this);
 
-        this.removeAllListeners();
-
-        if (destroyBuffers)
+        // a buffer that outlives the geometry (shared, or destroyBuffers false) must not
+        // keep retaining and calling into it
+        for (const buffer of this.buffers)
         {
-            this.buffers.forEach((buffer) => buffer.destroy());
+            buffer.off('update', this.onBufferUpdate, this);
+            buffer.off('change', this.onBufferUpdate, this);
+
+            if (destroyBuffers) buffer.destroy();
         }
 
         this.unload();
+
+        // must come after unload() - the renderer geometry systems listen for 'unload'
+        // to delete their VAOs and release their managed-hash entry
+        this.removeAllListeners();
 
         (this.attributes as null) = null;
         (this.buffers as null) = null;

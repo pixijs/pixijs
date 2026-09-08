@@ -106,6 +106,77 @@ describe('Geometry', () =>
         expect(indexBuffer.data).toBeNull();
     });
 
+    it('should delete its VAOs and leave the managed hash when destroyed', async () =>
+    {
+        const geometry = getGeometry();
+
+        const program = getGlProgram();
+
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
+
+        renderer.geometry.bind(geometry, program);
+
+        const vao = geometry._gpuData[renderer.uid].vaoCache[program._key];
+        const deleteSpy = jest.spyOn(renderer.gl, 'deleteVertexArray');
+
+        expect(renderer.geometry._managedGeometries.items[geometry.uid]).toBe(geometry);
+
+        geometry.destroy();
+
+        expect(deleteSpy).toHaveBeenCalledWith(vao);
+        expect(renderer.geometry._managedGeometries.items[geometry.uid]).toBeNil();
+        expect(geometry._gpuData).toBeEmptyObject();
+    });
+
+    it('should emit unload after destroy when destroyed', () =>
+    {
+        const geometry = getGeometry();
+        const events: string[] = [];
+
+        geometry.once('destroy', () => events.push('destroy'));
+        geometry.once('unload', () => events.push('unload'));
+
+        geometry.destroy();
+
+        expect(events).toEqual(['destroy', 'unload']);
+        expect(geometry.eventNames()).toEqual([]);
+    });
+
+    it('should stop listening to surviving buffers when destroyed', () =>
+    {
+        const shared = new Buffer({
+            data: new Float32Array([0, 0, 1, 0, 1, 1]),
+            usage: BufferUsage.VERTEX,
+        });
+        const survivor = new Geometry({
+            attributes: {
+                aPosition: shared,
+            },
+        });
+        const geometry = new Geometry({
+            attributes: {
+                aPosition: shared,
+                aUv: [0, 0, 1, 0, 1, 1],
+            },
+            indexBuffer: [0, 1, 2],
+        });
+        const own = geometry.buffers[1];
+        const updateSpy = jest.fn();
+
+        survivor.on('update', updateSpy);
+
+        geometry.destroy(false);
+
+        expect(shared.listenerCount('update')).toBe(1);
+        expect(shared.listenerCount('change')).toBe(1);
+        expect(own.listenerCount('update')).toBe(0);
+        expect(own.listenerCount('change')).toBe(0);
+
+        shared.update();
+
+        expect(updateSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('should set a cast data correctly', () =>
     {
         const buffer = new Buffer({
