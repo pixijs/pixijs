@@ -128,6 +128,47 @@ describe('Geometry', () =>
         expect(geometry._gpuData).toBeEmptyObject();
     });
 
+    it('should reset the geometry system when the bound geometry is destroyed', async () =>
+    {
+        const geometry = getGeometry();
+
+        const program = getGlProgram();
+
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
+
+        renderer.geometry.bind(geometry, program);
+
+        const bindSpy = jest.spyOn(renderer.gl, 'bindVertexArray');
+
+        geometry.destroy();
+
+        expect(bindSpy).toHaveBeenCalledWith(null);
+        expect(renderer.geometry._activeVao).toBeNull();
+        expect(renderer.geometry['_activeGeometry']).toBeNull();
+    });
+
+    it('should keep the bound geometry when another geometry is destroyed', async () =>
+    {
+        const bound = getGeometry();
+        const other = getGeometry();
+
+        const program = getGlProgram();
+
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
+
+        renderer.geometry.bind(other, program);
+        renderer.geometry.bind(bound, program);
+
+        const vao = bound._gpuData[renderer.uid].vaoCache[program._key];
+        const bindSpy = jest.spyOn(renderer.gl, 'bindVertexArray');
+
+        other.destroy();
+
+        expect(bindSpy).not.toHaveBeenCalled();
+        expect(renderer.geometry._activeVao).toBe(vao);
+        expect(renderer.geometry['_activeGeometry']).toBe(bound);
+    });
+
     it('should emit unload after destroy when destroyed', () =>
     {
         const geometry = getGeometry();

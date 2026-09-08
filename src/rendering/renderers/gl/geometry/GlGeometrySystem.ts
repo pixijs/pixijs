@@ -327,7 +327,7 @@ export class GlGeometrySystem implements System
         {
             for (const i in vaoCache)
             {
-                if (this._activeVao !== vaoCache[i])
+                if (this._activeVao === vaoCache[i])
                 {
                     this.resetState();
                 }
