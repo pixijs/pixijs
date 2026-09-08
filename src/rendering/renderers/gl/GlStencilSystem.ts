@@ -171,6 +171,7 @@ export class GlStencilSystem implements System
         this._renderer.renderTarget.onRenderTargetChange.remove(this);
 
         (this._renderer as null) = null;
+        this._gl = null;
 
         this._activeRenderTarget = null;
         this._activeGpuRenderTarget = null;
