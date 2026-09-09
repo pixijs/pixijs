@@ -666,6 +666,20 @@ export class EventSystem implements System<EventSystemOptions>
         if (!this.features.move) return;
         this.rootBoundary.rootTarget = this.renderer.lastObjectRendered;
 
+        // If the pointer is over an overlapping DOM element (not the canvas) and no buttons are held
+        // (i.e. not dragging), skip processing to avoid spurious hover events on canvas objects.
+        let target = nativeEvent.target;
+
+        if (nativeEvent.composedPath && nativeEvent.composedPath().length > 0)
+        {
+            target = nativeEvent.composedPath()[0];
+        }
+
+        if (target && target !== this.domElement && ('buttons' in nativeEvent ? nativeEvent.buttons : 0) === 0)
+        {
+            return;
+        }
+
         EventsTicker.pointerMoved();
 
         const normalizedEvents = this._normalizeToPointerData(nativeEvent);
