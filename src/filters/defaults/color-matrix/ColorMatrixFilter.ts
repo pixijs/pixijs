@@ -1,55 +1,77 @@
-import { Color } from '../../../color/Color';
+import { Color, type ColorSource } from '../../../color';
 import { GlProgram } from '../../../rendering/renderers/gl/shader/GlProgram';
 import { GpuProgram } from '../../../rendering/renderers/gpu/shader/GpuProgram';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
+import { deprecation } from '../../../utils';
 import { Filter } from '../../Filter';
 import vertex from '../defaultFilter.vert';
 import fragment from './colorMatrixFilter.frag';
 import source from './colorMatrixFilter.wgsl';
 
-import type { ColorSource } from '../../../color/Color';
 import type { ArrayFixed } from '../../../utils/types';
 import type { FilterOptions } from '../../Filter';
 
 /**
  * 5x4 matrix for transforming RGBA color and alpha
+ *
+ * The rows are in order:
+ * - Red channel
+ * - Green channel
+ * - Blue channel
+ * - Alpha channel
+ *
+ * The columns are:
+ * - How much to multiply the red channel into this channel by
+ * - How much to multiply the green channel into this channel by
+ * - How much to multiply the blue channel into this channel by
+ * - How much to multiply the alpha channel into this channel by
+ * - How far to offset the row's channel
  * @category filters
  * @standard
  */
 export type ColorMatrix = ArrayFixed<number, 20>;
 
 /**
+ * Options for ColorMatrixFilter
+ * @category filters
+ * @standard
+ */
+export interface ColorMatrixFilterOptions extends FilterOptions
+{
+    /**
+     * The opacity value used to blend between the original and transformed colors.
+     * @see {@link ColorMatrixFilter.alpha}
+     */
+    alpha?: number;
+
+    /**
+     * The color transformation matrix.
+     * @see {@link ColorMatrixFilter.matrix}
+     */
+    matrix?: ColorMatrix;
+}
+
+/**
  * The ColorMatrixFilter class lets you apply color transformations to display objects using a 5x4 matrix.
  * The matrix transforms the RGBA color and alpha values of every pixel to produce a new set of values.
- *
- * The class provides convenient methods for common color adjustments like brightness, contrast, saturation,
- * and various photo filter effects.
  * @example
  * ```js
  * import { ColorMatrixFilter } from 'pixi.js';
  *
- * // Create a new color matrix filter
- * const colorMatrix = new ColorMatrixFilter();
+ * // Create a new color matrix filter with a matrix that swap the red channel to the blue and green channel
+ * // and the blue channel to the red. Keep alpha.
+ * const matrixFilter = new ColorMatrixFilter({
+ *      matrix: [
+ *          0, 0, 1, 0, 0,
+ *          1, 0, 0, 0, 0,
+ *          1, 0, 0, 0, 0,
+ *          0, 0, 0, 1, 0,
+ *      ]
+ * });
  *
  * // Apply it to a container
- * container.filters = [colorMatrix];
- *
- * // Adjust contrast
- * colorMatrix.contrast(2);
- *
- * // Chain multiple effects
- * colorMatrix
- *     .saturate(0.5)     // 50% saturation
- *     .brightness(1.2)    // 20% brighter
- *     .hue(90);          // 90 degree hue rotation
+ * container.filters = [matrixFilter];
  * ```
- *
- * Common use cases:
- * - Adjusting brightness, contrast, or saturation
- * - Applying color tints or color grading
- * - Creating photo filter effects (sepia, negative, etc.)
- * - Converting to grayscale
- * - Implementing dynamic day/night transitions
  * @author Clément Chenebault <clement@goodboydigital.com>
  * @category filters
  * @standard
@@ -57,23 +79,47 @@ export type ColorMatrix = ArrayFixed<number, 20>;
  */
 export class ColorMatrixFilter extends Filter
 {
-    constructor(options: FilterOptions = {})
+    /**
+     * Default options for the ColorMatrixFilter.
+     * @example
+     * ```ts
+     * ColorMatrixFilter.defaultOptions = {
+     *      matrix: [
+     *          0.5, 0, 1, 0, 0,
+     *          0, 0.5, 1, 0, 0,
+     *          0, 0, 0.5, 0, 0,
+     *          0, 0, 0, 0.5, 0
+     *      ]
+     * };
+     * // Use default options
+     * const filter = new ColorMatrixFilter(); // Uses a copy of the above defined matrix
+     * ```
+     */
+    public static defaultOptions: ColorMatrixFilterOptions = {
+        alpha: 1,
+        matrix: [
+            1, 0, 0, 0, 0,
+            0, 1, 0, 0, 0,
+            0, 0, 1, 0, 0,
+            0, 0, 0, 1, 0
+        ],
+    };
+    constructor(options?: ColorMatrixFilterOptions)
     {
+        const { matrix, alpha, ...rest } = {
+            ...ColorMatrixFilter.defaultOptions,
+            ...options,
+        };
         const colorMatrixUniforms = new UniformGroup({
             uColorMatrix: {
-                value: [
-                    1, 0, 0, 0, 0,
-                    0, 1, 0, 0, 0,
-                    0, 0, 1, 0, 0,
-                    0, 0, 0, 1, 0,
-                ],
+                value: matrix ?? [...ColorMatrixFilter.defaultOptions.matrix],
                 type: 'f32',
                 size: 20,
             },
             uAlpha: {
-                value: 1,
-                type: 'f32'
-            }
+                value: alpha,
+                type: 'f32',
+            },
         });
 
         const gpuProgram = GpuProgram.from({
@@ -90,112 +136,189 @@ export class ColorMatrixFilter extends Filter
         const glProgram = GlProgram.from({
             vertex,
             fragment,
-            name: 'color-matrix-filter'
+            name: 'color-matrix-filter',
         });
 
         super({
-            ...options,
+            ...rest,
             gpuProgram,
             glProgram,
             resources: {
-                colorMatrixUniforms
+                colorMatrixUniforms,
             },
         });
+    }
 
-        this.alpha = 1;
+    /**
+     * Multiplies two mat5x4's and stores the result in the first argument.
+     *
+     * All parameters must be different references.
+     * @private
+     * @param a - 5x4 matrix the first operand
+     * @param b - 5x4 matrix the second operand
+     * @param result - 5x4 matrix the receiving matrix
+     * @returns {ColorMatrix} 5x4 matrix
+     */
+    protected _multiply(
+        a: ColorMatrix,
+        b: ColorMatrix,
+        result: ColorMatrix = [
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+        ],
+    ): ColorMatrix
+    {
+        // Red Channel
+        result[0] = (a[0] * b[0]) + (a[1] * b[5]) + (a[2] * b[10]) + (a[3] * b[15]);
+        result[1] = (a[0] * b[1]) + (a[1] * b[6]) + (a[2] * b[11]) + (a[3] * b[16]);
+        result[2] = (a[0] * b[2]) + (a[1] * b[7]) + (a[2] * b[12]) + (a[3] * b[17]);
+        result[3] = (a[0] * b[3]) + (a[1] * b[8]) + (a[2] * b[13]) + (a[3] * b[18]);
+        result[4] = (a[0] * b[4]) + (a[1] * b[9]) + (a[2] * b[14]) + (a[3] * b[19]) + a[4];
+
+        // Green Channel
+        result[5] = (a[5] * b[0]) + (a[6] * b[5]) + (a[7] * b[10]) + (a[8] * b[15]);
+        result[6] = (a[5] * b[1]) + (a[6] * b[6]) + (a[7] * b[11]) + (a[8] * b[16]);
+        result[7] = (a[5] * b[2]) + (a[6] * b[7]) + (a[7] * b[12]) + (a[8] * b[17]);
+        result[8] = (a[5] * b[3]) + (a[6] * b[8]) + (a[7] * b[13]) + (a[8] * b[18]);
+        result[9] = (a[5] * b[4]) + (a[6] * b[9]) + (a[7] * b[14]) + (a[8] * b[19]) + a[9];
+
+        // Blue Channel
+        result[10] = (a[10] * b[0]) + (a[11] * b[5]) + (a[12] * b[10]) + (a[13] * b[15]);
+        result[11] = (a[10] * b[1]) + (a[11] * b[6]) + (a[12] * b[11]) + (a[13] * b[16]);
+        result[12] = (a[10] * b[2]) + (a[11] * b[7]) + (a[12] * b[12]) + (a[13] * b[17]);
+        result[13] = (a[10] * b[3]) + (a[11] * b[8]) + (a[12] * b[13]) + (a[13] * b[18]);
+        result[14] = (a[10] * b[4]) + (a[11] * b[9]) + (a[12] * b[14]) + (a[13] * b[19]) + a[14];
+
+        // Alpha Channel
+        result[15] = (a[15] * b[0]) + (a[16] * b[5]) + (a[17] * b[10]) + (a[18] * b[15]);
+        result[16] = (a[15] * b[1]) + (a[16] * b[6]) + (a[17] * b[11]) + (a[18] * b[16]);
+        result[17] = (a[15] * b[2]) + (a[16] * b[7]) + (a[17] * b[12]) + (a[18] * b[17]);
+        result[18] = (a[15] * b[3]) + (a[16] * b[8]) + (a[17] * b[13]) + (a[18] * b[18]);
+        result[19] = (a[15] * b[4]) + (a[16] * b[9]) + (a[17] * b[14]) + (a[18] * b[19]) + a[19];
+
+        return result;
+    }
+
+    /**
+     * Prepends the given {@link ColorMatrix} to the filter's matrix.
+     *
+     * Combines the two matrices by multiplying them together: `this = matrix * this`
+     *
+     * Creates a new array and assignes that to {@link matrix}.
+     * @param matrix - 5x4 matrix
+     * @returns `this` for chaining.
+     */
+    public prepend(matrix: ColorMatrix): this
+    {
+        this.matrix = this._multiply(matrix, this.matrix);
+
+        return this;
+    }
+
+    /**
+     * Appends the given {@link ColorMatrix} to the filter's matrix.
+     *
+     * Combines the two matrices by multiplying them together: `this = this * matrix`
+     *
+     * Creates a new array and assignes that to {@link matrix}.
+     * @param matrix - 5x4 matrix
+     * @returns `this` for chaining.
+     */
+    public append(matrix: ColorMatrix): this
+    {
+        this.matrix = this._multiply(this.matrix, matrix);
+
+        return this;
+    }
+
+    /**
+     * The current color transformation matrix of the filter.
+     *
+     * This 5x4 matrix transforms RGBA color and alpha values of each pixel. The matrix is stored
+     * as a 20-element array in row-major order.
+     * @type {ColorMatrix}
+     * @default ```js
+     * [
+     *     1, 0, 0, 0, 0,  // Red channel
+     *     0, 1, 0, 0, 0,  // Green channel
+     *     0, 0, 1, 0, 0,  // Blue channel
+     *     0, 0, 0, 1, 0   // Alpha channel
+     * ]
+     * ```
+     * @example
+     * ```ts
+     * const matrixFilter = new ColorMatrixFilter();
+     * // Get the current matrix
+     * const currentMatrix = matrixFilter.matrix;
+     * // Modify the matrix
+     * matrixFilter.matrix = [
+     *     1, 0, 0, 0, 0,
+     *     0, 1, 0, 0, 0,
+     *     0, 0, 1, 0, 0,
+     *     0, 0, 0, 1, 0
+     * ];
+     * ```
+     */
+    get matrix(): ColorMatrix
+    {
+        return this.resources.colorMatrixUniforms.uniforms.uColorMatrix;
+    }
+
+    set matrix(value: ColorMatrix)
+    {
+        this.resources.colorMatrixUniforms.uniforms.uColorMatrix = value;
+    }
+
+    /**
+     * The opacity value used to blend between the original and transformed colors.
+     *
+     * This value controls how much of the color transformation is applied:
+     * - `0` gives original color only (no effect)
+     * - `0.5` gives a 50% blend of original and transformed colors
+     * - `1` gives the fully transformed color (default)
+     * @default 1
+     */
+    get alpha(): number
+    {
+        return this.resources.colorMatrixUniforms.uniforms.uAlpha;
+    }
+
+    set alpha(value: number)
+    {
+        this.resources.colorMatrixUniforms.uniforms.uAlpha = value;
     }
 
     /**
      * Transforms current matrix and set the new one
      * @param {number[]} matrix - 5x4 matrix
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
-     *  just set the current matrix with matrix
+     *  just set the current matrix to matrix
+     * @private
      */
-    private _loadMatrix(matrix: ColorMatrix, multiply = false): void
+    protected _loadMatrix(matrix: ColorMatrix, multiply: boolean): void
     {
         if (multiply)
         {
-            const newMatrix = [...matrix] as ColorMatrix;
-
-            this._multiply(newMatrix, this.matrix, matrix);
-            this.resources.colorMatrixUniforms.uniforms.uColorMatrix = newMatrix;
+            this.append(matrix);
         }
         else
         {
-            this.resources.colorMatrixUniforms.uniforms.uColorMatrix = matrix;
+            this.matrix = matrix;
         }
-
-        // set the new matrix
 
         this.resources.colorMatrixUniforms.update();
     }
 
     /**
-     * Multiplies two mat5's
-     * @private
-     * @param out - 5x4 matrix the receiving matrix
-     * @param a - 5x4 matrix the first operand
-     * @param b - 5x4 matrix the second operand
-     * @returns {number[]} 5x4 matrix
+     * @param b
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.brightness instead
      */
-    private _multiply(out: ColorMatrix, a: ColorMatrix, b: ColorMatrix): ColorMatrix
+    public brightness(b: number, multiply = false): this
     {
-        // Red Channel
-        out[0] = (a[0] * b[0]) + (a[1] * b[5]) + (a[2] * b[10]) + (a[3] * b[15]);
-        out[1] = (a[0] * b[1]) + (a[1] * b[6]) + (a[2] * b[11]) + (a[3] * b[16]);
-        out[2] = (a[0] * b[2]) + (a[1] * b[7]) + (a[2] * b[12]) + (a[3] * b[17]);
-        out[3] = (a[0] * b[3]) + (a[1] * b[8]) + (a[2] * b[13]) + (a[3] * b[18]);
-        out[4] = (a[0] * b[4]) + (a[1] * b[9]) + (a[2] * b[14]) + (a[3] * b[19]) + a[4];
-
-        // Green Channel
-        out[5] = (a[5] * b[0]) + (a[6] * b[5]) + (a[7] * b[10]) + (a[8] * b[15]);
-        out[6] = (a[5] * b[1]) + (a[6] * b[6]) + (a[7] * b[11]) + (a[8] * b[16]);
-        out[7] = (a[5] * b[2]) + (a[6] * b[7]) + (a[7] * b[12]) + (a[8] * b[17]);
-        out[8] = (a[5] * b[3]) + (a[6] * b[8]) + (a[7] * b[13]) + (a[8] * b[18]);
-        out[9] = (a[5] * b[4]) + (a[6] * b[9]) + (a[7] * b[14]) + (a[8] * b[19]) + a[9];
-
-        // Blue Channel
-        out[10] = (a[10] * b[0]) + (a[11] * b[5]) + (a[12] * b[10]) + (a[13] * b[15]);
-        out[11] = (a[10] * b[1]) + (a[11] * b[6]) + (a[12] * b[11]) + (a[13] * b[16]);
-        out[12] = (a[10] * b[2]) + (a[11] * b[7]) + (a[12] * b[12]) + (a[13] * b[17]);
-        out[13] = (a[10] * b[3]) + (a[11] * b[8]) + (a[12] * b[13]) + (a[13] * b[18]);
-        out[14] = (a[10] * b[4]) + (a[11] * b[9]) + (a[12] * b[14]) + (a[13] * b[19]) + a[14];
-
-        // Alpha Channel
-        out[15] = (a[15] * b[0]) + (a[16] * b[5]) + (a[17] * b[10]) + (a[18] * b[15]);
-        out[16] = (a[15] * b[1]) + (a[16] * b[6]) + (a[17] * b[11]) + (a[18] * b[16]);
-        out[17] = (a[15] * b[2]) + (a[16] * b[7]) + (a[17] * b[12]) + (a[18] * b[17]);
-        out[18] = (a[15] * b[3]) + (a[16] * b[8]) + (a[17] * b[13]) + (a[18] * b[18]);
-        out[19] = (a[15] * b[4]) + (a[16] * b[9]) + (a[17] * b[14]) + (a[18] * b[19]) + a[19];
-
-        return out;
-    }
-
-    /**
-     * Adjusts the brightness of a display object.
-     *
-     * The brightness adjustment works by multiplying the RGB channels by a scalar value while keeping
-     * the alpha channel unchanged. Values below 1 darken the image, while values above 1 brighten it.
-     * @param b - The brightness multiplier to apply. Values between 0-1 darken the image (0 being black),
-     *           while values > 1 brighten it (2.0 would make it twice as bright)
-     * @param multiply - When true, the new matrix is multiplied with the current one instead of replacing it.
-     *                  This allows for cumulative effects when calling multiple color adjustments.
-     * @example
-     * ```ts
-     * // Create a new color matrix filter
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Darken the image to 50% brightness
-     * colorMatrix.brightness(0.5, false);
-     *
-     * // Chain with other effects by using multiply
-     * colorMatrix
-     *     .brightness(1.2, true)  // Brighten by 20%
-     *     .saturate(1.1, true);   // Increase saturation by 10%
-     * ```
-     */
-    public brightness(b: number, multiply: boolean): void
-    {
+        deprecation('8.18.0', 'ColorMatrixFilter.brightness has been moved to ColorTransformFilter.brightness');
         const matrix: ColorMatrix = [
             b, 0, 0, 0, 0,
             0, b, 0, 0, 0,
@@ -204,35 +327,18 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Sets each channel on the diagonal of the color matrix to apply a color tint.
-     *
-     * This method provides a way to tint display objects using the color matrix filter, similar to
-     * the tint property available on Sprites and other display objects. The tint is applied by
-     * scaling the RGB channels of each pixel.
-     * @param color - The color to use for tinting, this can be any valid color source.
-     * @param multiply - When true, the new tint matrix is multiplied with the current matrix instead
-     *                  of replacing it. This allows for combining tints with other color effects.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Apply a red tint
-     * colorMatrix.tint(0xff0000);
-     *
-     * // Layer a green tint on top of existing effects
-     * colorMatrix.tint('green', true);
-     *
-     * // Chain with other color adjustments
-     * colorMatrix
-     *     .tint('blue')       // Blue tint
-     *     .brightness(1.2, true) // Increase brightness
-     * ```
+     * @param color
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.tint instead
      */
-    public tint(color: ColorSource, multiply?: boolean): void
+    public tint(color: ColorSource, multiply = false): this
     {
+        deprecation('8.18.0', 'ColorMatrixFilter.tint has been moved to ColorTransformFilter.tint');
         const [r, g, b] = Color.shared.setValue(color).toArray();
         const matrix: ColorMatrix = [
             r, 0, 0, 0, 0,
@@ -242,34 +348,18 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Converts the display object to greyscale by applying a weighted matrix transformation.
-     *
-     * The greyscale effect works by setting equal RGB values for each pixel based on the scale parameter,
-     * effectively removing color information while preserving luminance.
-     * @param scale - The intensity of the greyscale effect. Value between 0-1, where:
-     *               - 0 produces black
-     *               - 0.5 produces 50% grey
-     *               - 1 produces white
-     * @param multiply - When true, the new matrix is multiplied with the current matrix instead of replacing it.
-     *                  This allows for cumulative effects when calling multiple color adjustments.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Convert to 50% grey
-     * colorMatrix.greyscale(0.5, false);
-     *
-     * // Chain with other effects
-     * colorMatrix
-     *     .greyscale(0.6, true)    // Add grey tint
-     *     .brightness(1.2, true);   // Brighten the result
-     * ```
+     * @param scale
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.greyscale instead
      */
-    public greyscale(scale: number, multiply: boolean): void
+    public greyscale(scale: number, multiply = false): this
     {
+        deprecation('8.18.0', 'ColorMatrixFilter.greyscale has been moved to ColorTransformFilter.greyscale');
         const matrix: ColorMatrix = [
             scale, scale, scale, 0, 0,
             scale, scale, scale, 0, 0,
@@ -278,60 +368,27 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Converts the display object to grayscale by applying a weighted matrix transformation.
-     *
-     * The grayscale effect works by setting equal RGB values for each pixel based on the scale parameter,
-     * effectively removing color information while preserving luminance.
-     * @param scale - The intensity of the grayscale effect. Value between 0-1, where:
-     *               - 0 produces black
-     *               - 0.5 produces 50% grey
-     *               - 1 produces white
-     * @param multiply - When true, the new matrix is multiplied with the current matrix instead of replacing it.
-     *                  This allows for cumulative effects when calling multiple color adjustments.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Convert to 50% grey
-     * colorMatrix.grayscale(0.5, false);
-     *
-     * // Chain with other effects
-     * colorMatrix
-     *     .grayscale(0.6, true)    // Add grey tint
-     *     .brightness(1.2, true);   // Brighten the result
-     * ```
+     * @param scale
+     * @param multiply
+     * @deprecated
      */
-    public grayscale(scale: number, multiply: boolean): void
+    public grayscale(scale: number, multiply = false): this
     {
-        this.greyscale(scale, multiply);
+        return this.greyscale(scale, multiply);
     }
 
     /**
-     * Converts the display object to pure black and white using a luminance-based threshold.
-     *
-     * This method applies a matrix transformation that removes all color information and reduces
-     * the image to just black and white values based on the luminance of each pixel. The transformation
-     * uses standard luminance weightings: 30% red, 60% green, and 10% blue.
-     * @param multiply - When true, the new matrix is multiplied with the current matrix instead of replacing it.
-     *                  This allows for cumulative effects when calling multiple color adjustments.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Convert to black and white
-     * colorMatrix.blackAndWhite(false);
-     *
-     * // Chain with other effects
-     * colorMatrix
-     *     .blackAndWhite(true)     // Apply B&W effect
-     *     .brightness(1.2, true);   // Then increase brightness
-     * ```
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.blackAndWhite instead
      */
-    public blackAndWhite(multiply: boolean): void
+    public blackAndWhite(multiply = false): this
     {
+        deprecation('8.18.0', 'ColorMatrixFilter.blackAndWhite has been moved to ColorTransformFilter.blackAndWhite');
         const matrix: ColorMatrix = [
             0.3, 0.6, 0.1, 0, 0,
             0.3, 0.6, 0.1, 0, 0,
@@ -340,38 +397,19 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Adjusts the hue of the display object by rotating the color values around the color wheel.
-     *
-     * This method uses an optimized matrix transformation that accurately rotates the RGB color space
-     * around its luminance axis. The implementation is based on RGB cube rotation in 3D space, providing
-     * better results than traditional matrices with magic luminance constants.
-     * @param rotation - The angle of rotation in degrees around the color wheel:
-     *                  - 0 = no change
-     *                  - 90 = rotate colors 90° clockwise
-     *                  - 180 = invert all colors
-     *                  - 270 = rotate colors 90° counter-clockwise
-     * @param multiply - When true, the new matrix is multiplied with the current matrix instead of replacing it.
-     *                  This allows for cumulative effects when calling multiple color adjustments.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Rotate hue by 90 degrees
-     * colorMatrix.hue(90, false);
-     *
-     * // Chain multiple color adjustments
-     * colorMatrix
-     *     .hue(45, true)          // Rotate colors by 45°
-     *     .saturate(1.2, true)    // Increase saturation
-     *     .brightness(1.1, true); // Slightly brighten
-     * ```
+     * @param rotation
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.hue instead
      */
-    public hue(rotation: number, multiply: boolean): void
+    public hue(rotation: number, multiply = false): this
     {
-        rotation = (rotation || 0) / 180 * Math.PI;
+        deprecation('8.18.0', 'ColorMatrixFilter.hue has been moved to ColorTransformFilter.hue');
+        rotation = ((rotation || 0) / 180) * Math.PI;
 
         const cosR = Math.cos(rotation);
         const sinR = Math.sin(rotation);
@@ -413,36 +451,18 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Adjusts the contrast of the display object by modifying the separation between dark and bright values.
-     *
-     * This method applies a matrix transformation that affects the difference between dark and light areas
-     * in the image. Increasing contrast makes shadows darker and highlights brighter, while decreasing
-     * contrast brings shadows up and highlights down, reducing the overall dynamic range.
-     * @param amount - The contrast adjustment value. Range is 0 to 1, where:
-     *                - 0 represents minimum contrast (flat gray)
-     *                - 0.5 represents normal contrast
-     *                - 1 represents maximum contrast
-     * @param multiply - When true, the new matrix is multiplied with the current matrix instead of replacing it.
-     *                  This allows for cumulative effects when calling multiple color adjustments.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Increase contrast by 50%
-     * colorMatrix.contrast(0.75, false);
-     *
-     * // Chain with other effects
-     * colorMatrix
-     *     .contrast(0.6, true)     // Boost contrast
-     *     .brightness(1.1, true)   // Slightly brighten
-     *     .saturate(1.2, true);    // Increase color intensity
-     * ```
+     * @param amount
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.contrast instead
      */
-    public contrast(amount: number, multiply: boolean): void
+    public contrast(amount: number, multiply = false): this
     {
+        deprecation('8.18.0', 'ColorMatrixFilter.contrast has been moved to ColorTransformFilter.contrast');
         const v = (amount || 0) + 1;
         const o = -0.5 * (v - 1);
 
@@ -454,38 +474,20 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Adjusts the saturation of the display object by modifying color separation.
-     *
-     * This method applies a matrix transformation that affects the intensity of colors.
-     * Increasing saturation makes colors more vivid and intense, while decreasing saturation
-     * moves colors toward grayscale.
-     * @param amount - The saturation adjustment value. Range is -1 to 1, where:
-     *                - -1 produces grayscale
-     *                - 0 represents no change
-     *                - 1 produces maximum saturation
-     * @param multiply - When true, the new matrix is multiplied with the current matrix instead of replacing it.
-     *                  This allows for cumulative effects when calling multiple color adjustments.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Double the saturation
-     * colorMatrix.saturate(1, false);
-     *
-     * // Chain with other effects
-     * colorMatrix
-     *     .saturate(0.5, true)     // Increase saturation by 50%
-     *     .brightness(1.1, true)    // Slightly brighten
-     *     .contrast(0.8, true);     // Reduce contrast
-     * ```
+     * @param amount
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.saturate instead
      */
-    public saturate(amount = 0, multiply?: boolean): void
+    public saturate(amount = 0, multiply = false): this
     {
-        const x = (amount * 2 / 3) + 1;
-        const y = ((x - 1) * -0.5);
+        deprecation('8.18.0', 'ColorMatrixFilter.saturate has been moved to ColorTransformFilter.saturate');
+        const x = ((amount * 2) / 3) + 1;
+        const y = (x - 1) * -0.5;
 
         const matrix: ColorMatrix = [
             x, y, y, 0, 0,
@@ -495,54 +497,26 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Completely removes color information from the display object, creating a grayscale version.
-     *
-     * This is a convenience method that calls `saturate(-1)` internally. The transformation preserves
-     * the luminance of the original image while removing all color information.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Convert image to grayscale
-     * colorMatrix.desaturate();
-     *
-     * // Can be chained with other effects
-     * colorMatrix
-     *     .desaturate()         // Remove all color
-     *     .brightness(1.2);     // Then increase brightness
-     * ```
+     * @param multiply
+     * @deprecated
      */
-    public desaturate(): void
+    public desaturate(multiply = false): this
     {
-        this.saturate(-1);
+        return this.saturate(-1, multiply);
     }
 
     /**
-     * Creates a negative effect by inverting all colors in the display object.
-     *
-     * This method applies a matrix transformation that inverts the RGB values of each pixel
-     * while preserving the alpha channel. The result is similar to a photographic negative.
-     * @param multiply - When true, the new matrix is multiplied with the current matrix instead of replacing it.
-     *                  This allows for cumulative effects when calling multiple color adjustments.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Create negative effect
-     * colorMatrix.negative(false);
-     *
-     * // Chain with other effects
-     * colorMatrix
-     *     .negative(true)       // Apply negative effect
-     *     .brightness(1.2, true) // Increase brightness
-     *     .contrast(0.8, true);  // Reduce contrast
-     * ```
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.negative instead
      */
-    public negative(multiply: boolean): void
+    public negative(multiply = false): this
     {
+        deprecation('8.18.0', 'ColorMatrixFilter.negative has been moved to ColorTransformFilter.negative');
         const matrix: ColorMatrix = [
             -1, 0, 0, 1, 0,
             0, -1, 0, 1, 0,
@@ -551,31 +525,17 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Applies a sepia tone effect to the display object, creating a warm brown tint reminiscent of vintage photographs.
-     *
-     * This method applies a matrix transformation that converts colors to various shades of brown while
-     * preserving the original luminance values.
-     * @param multiply - When true, the new matrix is multiplied with the current matrix instead of replacing it.
-     *                  This allows for cumulative effects when calling multiple color adjustments.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Apply sepia effect
-     * colorMatrix.sepia(false);
-     *
-     * // Chain with other effects
-     * colorMatrix
-     *     .sepia(true)           // Add sepia tone
-     *     .brightness(1.1, true)  // Slightly brighten
-     *     .contrast(0.9, true);   // Reduce contrast
-     * ```
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.sepia instead
      */
-    public sepia(multiply: boolean): void
+    public sepia(multiply = false): this
     {
+        deprecation('8.18.0', 'ColorMatrixFilter.sepia has been moved to ColorTransformFilter.sepia');
         const matrix: ColorMatrix = [
             0.393, 0.7689999, 0.18899999, 0, 0,
             0.349, 0.6859999, 0.16799999, 0, 0,
@@ -584,32 +544,17 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Applies a Technicolor-style effect that simulates the early color motion picture process.
-     *
-     * This method applies a matrix transformation that recreates the distinctive look of the
-     * Technicolor process. The effect produces highly
-     * saturated colors with a particular emphasis on reds, greens, and blues.
-     * @param multiply - When true, the new matrix is multiplied with the current matrix instead of replacing it.
-     *                  This allows for cumulative effects when calling multiple color adjustments.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Apply Technicolor effect
-     * colorMatrix.technicolor(false);
-     *
-     * // Chain with other effects
-     * colorMatrix
-     *     .technicolor(true)      // Add Technicolor effect
-     *     .contrast(1.1, true)    // Boost contrast
-     *     .brightness(0.9, true); // Slightly darken
-     * ```
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.technicolor instead
      */
-    public technicolor(multiply: boolean): void
+    public technicolor(multiply = false): this
     {
+        deprecation('8.18.0', 'ColorMatrixFilter.technicolor has been moved to ColorTransformFilter.technicolor');
         const matrix: ColorMatrix = [
             1.9125277891456083, -0.8545344976951645, -0.09155508482755585, 0, 0.046249425232852304,
             -0.3087833385928097, 1.7658908555458428, -0.10601743074722245, 0, -0.2758903984886823,
@@ -618,32 +563,17 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Applies a vintage Polaroid camera effect to the display object.
-     *
-     * This method applies a matrix transformation that simulates the distinctive look of
-     * Polaroid instant photographs, characterized by slightly enhanced contrast, subtle color shifts,
-     * and a warm overall tone.
-     * @param multiply - When true, the new matrix is multiplied with the current matrix instead of replacing it.
-     *                  This allows for cumulative effects when calling multiple color adjustments.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Apply Polaroid effect
-     * colorMatrix.polaroid(false);
-     *
-     * // Chain with other effects
-     * colorMatrix
-     *     .polaroid(true)         // Add Polaroid effect
-     *     .brightness(1.1, true)  // Slightly brighten
-     *     .contrast(1.1, true);   // Boost contrast
-     * ```
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.polaroid instead
      */
-    public polaroid(multiply: boolean): void
+    public polaroid(multiply = false): this
     {
+        deprecation('8.18.0', 'ColorMatrixFilter.polaroid has been moved to ColorTransformFilter.polaroid');
         const matrix: ColorMatrix = [
             1.438, -0.062, -0.062, 0, 0,
             -0.122, 1.378, -0.122, 0, 0,
@@ -652,31 +582,17 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Swaps the red and blue color channels in the display object.
-     *
-     * This method applies a matrix transformation that exchanges the red and blue color values
-     * while keeping the green channel and alpha unchanged.
-     * @param multiply - When true, the new matrix is multiplied with the current matrix instead of replacing it.
-     *                  This allows for cumulative effects when calling multiple color adjustments.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Swap red and blue channels
-     * colorMatrix.toBGR(false);
-     *
-     * // Chain with other effects
-     * colorMatrix
-     *     .toBGR(true)           // Swap R and B channels
-     *     .brightness(1.1, true)  // Slightly brighten
-     *     .contrast(0.9, true);   // Reduce contrast
-     * ```
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.toBGR instead
      */
-    public toBGR(multiply: boolean): void
+    public toBGR(multiply = false): this
     {
+        deprecation('8.18.0', 'ColorMatrixFilter.toBGR has been moved to ColorTransformFilter.toBGR');
         const matrix: ColorMatrix = [
             0, 0, 1, 0, 0,
             0, 1, 0, 0, 0,
@@ -685,32 +601,17 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Applies a Kodachrome color effect that simulates the iconic film stock.
-     *
-     * This method applies a matrix transformation that recreates the distinctive look of Kodachrome film,
-     * known for its rich, vibrant colors and excellent image preservation qualities. The effect emphasizes
-     * reds and blues while producing deep, true blacks.
-     * @param multiply - When true, the new matrix is multiplied with the current matrix instead of replacing it.
-     *                  This allows for cumulative effects when calling multiple color adjustments.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Apply Kodachrome effect
-     * colorMatrix.kodachrome(false);
-     *
-     * // Chain with other effects
-     * colorMatrix
-     *     .kodachrome(true)       // Add Kodachrome effect
-     *     .contrast(1.1, true)    // Boost contrast
-     *     .brightness(0.9, true); // Slightly darken
-     * ```
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.kodachrome instead
      */
-    public kodachrome(multiply: boolean): void
+    public kodachrome(multiply = false): this
     {
+        deprecation('8.18.0', 'ColorMatrixFilter.kodachrome has been moved to ColorTransformFilter.kodachrome');
         const matrix: ColorMatrix = [
             1.1285582396593525, -0.3967382283601348, -0.03992559172921793, 0, 0.24991995145868634,
             -0.16404339962244616, 1.0835251566291304, -0.05498805115633132, 0, 0.09698983488904393,
@@ -719,31 +620,17 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Applies a stylized brown-tinted effect to the display object.
-     *
-     * This method applies a matrix transformation that creates a rich, warm brown tone
-     * with enhanced contrast and subtle color shifts.
-     * @param multiply - When true, the new matrix is multiplied with the current matrix instead of replacing it.
-     *                  This allows for cumulative effects when calling multiple color adjustments.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Apply browni effect
-     * colorMatrix.browni(false);
-     *
-     * // Chain with other effects
-     * colorMatrix
-     *     .browni(true)          // Add brown tint
-     *     .brightness(1.1, true)  // Slightly brighten
-     *     .contrast(1.2, true);   // Boost contrast
-     * ```
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.browni instead
      */
-    public browni(multiply: boolean): void
+    public browni(multiply = false): this
     {
+        deprecation('8.18.0', 'ColorMatrixFilter.browni has been moved to ColorTransformFilter.browni');
         const matrix: ColorMatrix = [
             0.5997023498159715, 0.34553243048391263, -0.2708298674538042, 0, 0.1860075629647401,
             -0.037703249837783157, 0.8609577587992641, 0.15059552388459913, 0, -0.14497417640467167,
@@ -752,31 +639,17 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Applies a vintage photo effect that simulates old photography techniques.
-     *
-     * This method applies a matrix transformation that creates a nostalgic, aged look
-     * with muted colors, enhanced warmth, and subtle vignetting.
-     * @param multiply - When true, the new matrix is multiplied with the current matrix instead of replacing it.
-     *                  This allows for cumulative effects when calling multiple color adjustments.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Apply vintage effect
-     * colorMatrix.vintage(false);
-     *
-     * // Chain with other effects
-     * colorMatrix
-     *     .vintage(true)          // Add vintage look
-     *     .brightness(0.9, true)  // Slightly darken
-     *     .contrast(1.1, true);   // Boost contrast
-     * ```
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.vintage instead
      */
-    public vintage(multiply: boolean): void
+    public vintage(multiply = false): this
     {
+        deprecation('8.18.0', 'ColorMatrixFilter.vintage has been moved to ColorTransformFilter.vintage');
         const matrix: ColorMatrix = [
             0.6279345635605994, 0.3202183420819367, -0.03965408211312453, 0, 0.037848179746251466,
             0.02578397704808868, 0.6441188644374771, 0.03259127616149294, 0, 0.029265996770472907,
@@ -785,48 +658,27 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * We don't know exactly what it does, kind of gradient map, but funny to play with!
-     * @param desaturation - Tone values.
-     * @param toned - Tone values.
-     * @param lightColor - Tone values, example: `0xFFE580`
-     * @param darkColor - Tone values, example: `0xFFE580`
-     * @param multiply - if true, current matrix and matrix are multiplied. If false,
-     *  just set the current matrix with matrix
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Create sepia-like effect with custom colors
-     * colorMatrix.colorTone(
-     *     0.3,        // Moderate desaturation
-     *     0.2,        // Moderate toning
-     *     0xFFE580,   // Warm highlight color
-     *     0x338000,   // Dark green shadows
-     *     false
-     * );
-     *
-     * // Chain with other effects
-     * colorMatrix
-     *     .colorTone(0.2, 0.15, 0xFFE580, 0x338000, true)
-     *     .brightness(1.1, true);  // Slightly brighten
-     * ```
+     * @param desaturation
+     * @param toned
+     * @param lightColor
+     * @param darkColor
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.this instead
      */
     public colorTone(
-        desaturation: number,
-        toned: number,
-        lightColor: ColorSource,
-        darkColor: ColorSource,
-        multiply: boolean
-    ): void
+        desaturation = 0.2,
+        toned = 0.15,
+        lightColor: ColorSource = 0xffe580,
+        darkColor: ColorSource = 0x338000,
+        multiply = false,
+    ): this
     {
-        desaturation ||= 0.2;
-        toned ||= 0.15;
-        lightColor ||= 0xFFE580;
-        darkColor ||= 0x338000;
-
+        deprecation('8.18.0', 'ColorMatrixFilter.this has been moved to ColorTransformFilter.this');
         const temp = Color.shared;
         const [lR, lG, lB] = temp.setValue(lightColor).toArray();
         const [dR, dG, dB] = temp.setValue(darkColor).toArray();
@@ -839,71 +691,38 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Applies a night vision effect to the display object.
-     *
-     * This method applies a matrix transformation that simulates night vision by enhancing
-     * certain color channels while suppressing others, creating a green-tinted effect
-     * similar to night vision goggles.
-     * @param intensity - The intensity of the night effect (0-1):
-     *                   - 0 produces no effect
-     *                   - 0.1 produces a subtle night vision effect (default)
-     *                   - 1 produces maximum night vision effect
-     * @param multiply - When true, the new matrix is multiplied with the current matrix instead of replacing it.
-     *                  This allows for cumulative effects when calling multiple color adjustments.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Apply night vision effect
-     * colorMatrix.night(0.3, false);
-     *
-     * // Chain with other effects
-     * colorMatrix
-     *     .night(0.2, true)        // Add night vision
-     *     .brightness(1.1, true)    // Slightly brighten
-     *     .contrast(1.2, true);     // Boost contrast
-     * ```
+     * @param intensity
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.night instead
      */
-    public night(intensity: number, multiply: boolean): void
+    public night(intensity = 0.1, multiply = false): this
     {
-        intensity ||= 0.1;
-
+        deprecation('8.18.0', 'ColorMatrixFilter.night has been moved to ColorTransformFilter.night');
         const matrix: ColorMatrix = [
-            intensity * (-2.0), -intensity, 0, 0, 0,
+            intensity * -2.0, -intensity, 0, 0, 0,
             -intensity, 0, intensity, 0, 0,
             0, intensity, intensity * 2.0, 0, 0,
             0, 0, 0, 1, 0,
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Predator effect
-     *
-     * Erase the current matrix by setting a new independent one
-     * @param amount - how much the predator feels his future victim
-     * @param multiply - if true, current matrix and matrix are multiplied. If false,
-     *  just set the current matrix with matrix
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Apply thermal vision effect
-     * colorMatrix.predator(0.5, false);
-     *
-     * // Chain with other effects
-     * colorMatrix
-     *     .predator(0.3, true)      // Add thermal effect
-     *     .contrast(1.2, true)      // Boost contrast
-     *     .brightness(1.1, true);   // Slightly brighten
-     * ```
+     * @param amount
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.predator instead
      */
-    public predator(amount: number, multiply: boolean): void
+    public predator(amount: number, multiply = false): this
     {
+        deprecation('8.18.0', 'ColorMatrixFilter.predator has been moved to ColorTransformFilter.predator');
         const matrix: ColorMatrix = [
             // row 1
             11.224130630493164 * amount,
@@ -924,36 +743,25 @@ export class ColorMatrixFilter extends Filter
             0 * amount,
             0.8044459223747253 * amount,
             // row 4
-            0, 0, 0, 1, 0,
+            0,
+            0,
+            0,
+            1,
+            0,
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Applies a psychedelic color effect that creates dramatic color shifts.
-     *
-     * This method applies a matrix transformation that produces vibrant colors
-     * through channel mixing and amplification. Creates an effect reminiscent of
-     * color distortions in psychedelic art.
-     * @param multiply - When true, the new matrix is multiplied with the current matrix instead of replacing it.
-     *                  This allows for cumulative effects when calling multiple color adjustments.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Apply psychedelic effect
-     * colorMatrix.lsd(false);
-     *
-     * // Chain with other effects
-     * colorMatrix
-     *     .lsd(true)             // Add color distortion
-     *     .brightness(0.9, true)  // Slightly darken
-     *     .contrast(1.2, true);   // Boost contrast
-     * ```
+     * @param multiply
+     * @deprecated Use ColorMatrixFilter.lsd instead
      */
-    public lsd(multiply: boolean): void
+    public lsd(multiply = false): this
     {
+        deprecation('8.18.0', 'ColorMatrixFilter.lsd has been moved to ColorTransformFilter.lsd');
         const matrix: ColorMatrix = [
             2, -0.4, 0.5, 0, 0,
             -0.5, 2, -0.4, 0, 0,
@@ -962,103 +770,23 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+
+        return this;
     }
 
     /**
-     * Resets the color matrix filter to its default state.
-     *
-     * This method resets all color transformations by setting the matrix back to its identity state.
-     * The identity matrix leaves colors unchanged, effectively removing all previously applied effects.
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Apply some effects
-     * colorMatrix
-     *     .sepia(true)
-     *     .brightness(1.2, true);
-     *
-     * // Reset back to original colors
-     * colorMatrix.reset();
-     * ```
+     * @deprecated Use ColorTransformFilter.reset
      */
     public reset(): void
     {
-        const matrix: ColorMatrix = [
+        deprecation('8.18.0', 'ColorMatrixFilter.reset has been moved to ColorTransformFilter.reset');
+        this.alpha = 1;
+
+        this._loadMatrix([
             1, 0, 0, 0, 0,
             0, 1, 0, 0, 0,
             0, 0, 1, 0, 0,
-            0, 0, 0, 1, 0,
-        ];
-
-        this._loadMatrix(matrix, false);
-    }
-
-    /**
-     * The current color transformation matrix of the filter.
-     *
-     * This 5x4 matrix transforms RGBA color and alpha values of each pixel. The matrix is stored
-     * as a 20-element array in row-major order.
-     * @type {ColorMatrix}
-     * @default [
-     *     1, 0, 0, 0, 0,  // Red channel
-     *     0, 1, 0, 0, 0,  // Green channel
-     *     0, 0, 1, 0, 0,  // Blue channel
-     *     0, 0, 0, 1, 0   // Alpha channel
-     * ]
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     * // Get the current color matrix
-     * const currentMatrix = colorMatrix.matrix;
-     * // Modify the matrix
-     * colorMatrix.matrix = [
-     *     1, 0, 0, 0, 0,
-     *     0, 1, 0, 0, 0,
-     *     0, 0, 1, 0, 0,
-     *     0, 0, 0, 1, 0
-     * ];
-     */
-    get matrix(): ColorMatrix
-    {
-        return this.resources.colorMatrixUniforms.uniforms.uColorMatrix;
-    }
-
-    set matrix(value: ColorMatrix)
-    {
-        this.resources.colorMatrixUniforms.uniforms.uColorMatrix = value;
-    }
-
-    /**
-     * The opacity value used to blend between the original and transformed colors.
-     *
-     * This value controls how much of the color transformation is applied:
-     * - 0 = Original color only (no effect)
-     * - 0.5 = 50% blend of original and transformed colors
-     * - 1 = Fully transformed color (default)
-     * @default 1
-     * @example
-     * ```ts
-     * const colorMatrix = new ColorMatrixFilter();
-     *
-     * // Apply sepia at 50% strength
-     * colorMatrix.sepia(false);
-     * colorMatrix.alpha = 0.5;
-     *
-     * // Fade between effects
-     * colorMatrix
-     *     .saturate(1.5)      // Increase saturation
-     *     .contrast(1.2);     // Boost contrast
-     * colorMatrix.alpha = 0.7; // Apply at 70% strength
-     * ```
-     */
-    get alpha(): number
-    {
-        return this.resources.colorMatrixUniforms.uniforms.uAlpha;
-    }
-
-    set alpha(value: number)
-    {
-        this.resources.colorMatrixUniforms.uniforms.uAlpha = value;
+            0, 0, 0, 1, 0
+        ], false);
     }
 }
