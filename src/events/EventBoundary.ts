@@ -631,6 +631,16 @@ export class EventBoundary
             return (container as Renderable).containsPoint(tempLocalMapping) as boolean;
         }
 
+        // Fallback to bounds-based hit testing for containers with interactiveChildren = false.
+        // This allows plain Containers (which have no containsPoint) to still receive events
+        // when their children's hit testing is disabled.
+        if (!container.interactiveChildren && container.isInteractive())
+        {
+            const bounds = container.getBounds();
+
+            return bounds.containsPoint(location.x, location.y);
+        }
+
         // TODO: Should we hit test based on bounds?
 
         return false;
