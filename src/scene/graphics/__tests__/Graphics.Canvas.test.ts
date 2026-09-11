@@ -31,7 +31,15 @@ describe('Graphics Canvas rendering', () =>
 
             const context = renderer.canvas.getContext('2d') as CanvasRenderingContext2D;
 
-            expect(Array.from(context.getImageData(2, 2, 1, 1).data)).toEqual([32, 64, 96, 128]);
+            const pixel = context.getImageData(2, 2, 1, 1).data;
+            const expectedRgb = [32, 64, 96];
+
+            // Software Canvas gradient rasterization can vary by two RGB levels at half alpha.
+            for (let channel = 0; channel < expectedRgb.length; channel++)
+            {
+                expect(Math.abs(pixel[channel] - expectedRgb[channel])).toBeLessThanOrEqual(2);
+            }
+            expect(pixel[3]).toBe(128);
         }
         finally
         {
