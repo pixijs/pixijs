@@ -6,7 +6,7 @@ import { setUvs } from '../utils/setUvs';
 import '../init';
 import '../../mesh/init';
 import { getTexture, getWebGLRenderer } from '@test-utils';
-import { Point } from '~/maths';
+import { Point, Rectangle } from '~/maths';
 import { CanvasRenderer, ImageSource, Texture } from '~/rendering';
 
 import type { TextureSource } from '~/rendering';
@@ -298,6 +298,48 @@ describe('TilingSprite', () =>
 
     describe('Canvas rendering', () =>
     {
+        it.each([
+            { alpha: 0, tint: 0xFFFFFF, expected: [0, 0, 0, 0] },
+            { alpha: 128, tint: 0xFFFFFF, expected: [32, 64, 96, 128] },
+            { alpha: 255, tint: 0xFFFFFF, expected: [32, 64, 96, 255] },
+            { alpha: 255, tint: 0x808080, expected: [16, 32, 48, 255] },
+        ])('should render texture colors with alpha $alpha and tint $tint', async ({ alpha, tint, expected }) =>
+        {
+            const texCanvas = document.createElement('canvas');
+
+            texCanvas.width = 3;
+            texCanvas.height = 1;
+
+            const texCtx = texCanvas.getContext('2d');
+            const imageData = texCtx.createImageData(1, 1);
+
+            imageData.data.set([32, 64, 96, alpha]);
+            texCtx.fillStyle = '#ff0000';
+            texCtx.fillRect(0, 0, 3, 1);
+            texCtx.putImageData(imageData, 1, 0);
+
+            const texture = new Texture({
+                source: new ImageSource({ resource: texCanvas }),
+                frame: new Rectangle(1, 0, 1, 1),
+            });
+            const renderer = new CanvasRenderer();
+
+            await renderer.init({ width: 2, height: 2, backgroundAlpha: 0 });
+
+            const container = new Container();
+            const sprite = new TilingSprite({ texture, width: 2, height: 2, tint });
+
+            container.addChild(sprite);
+            renderer.render({ container });
+
+            const ctx = renderer.canvas.getContext('2d') as CanvasRenderingContext2D;
+
+            expect(Array.from(ctx.getImageData(1, 1, 1, 1).data)).toEqual(expected);
+
+            renderer.destroy();
+            container.destroy({ children: true, texture: true, textureSource: true });
+        });
+
         it('should respect tilePosition with resolution > 1', async () =>
         {
             const resolution = 2;
