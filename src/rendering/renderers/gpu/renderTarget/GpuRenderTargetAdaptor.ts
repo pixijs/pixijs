@@ -537,6 +537,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     width: 0,
                     height: 0,
                     sampleCount: 4,
+                    // WebGPU requires multisampled textures to have exactly 1 mip level, so this must never
+                    // inherit TextureSource.defaultOptions.autoGenerateMipmaps
+                    autoGenerateMipmaps: false,
                     transient: colorTexture.transient,
                     arrayLayerCount: colorTexture.arrayLayerCount,
                     format: colorTexture.format,
