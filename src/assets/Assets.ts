@@ -349,7 +349,7 @@ export class AssetsClass
      *                 {
      *                     alias: 'hero',
      *                     src: 'hero.{png,webp}',
-     *                     data: { scaleMode: SCALE_MODES.NEAREST }
+     *                     data: { scaleMode: 'nearest' }
      *                 },
      *                 {
      *                     alias: 'map',
@@ -547,8 +547,8 @@ export class AssetsClass
      *     alias: 'sprite',
      *     src: 'sprite.png',
      *     data: {
-     *         scaleMode: SCALE_MODES.NEAREST,
-     *         mipmap: MIPMAP_MODES.ON
+     *         scaleMode: 'nearest',
+     *         autoGenerateMipmaps: true
      *     }
      * });
      *
@@ -556,7 +556,7 @@ export class AssetsClass
      * const image = await Assets.load({
      *    alias: 'imageWithoutExtension',
      *    src: 'images/imageWithoutExtension',
-     *    parser: 'texture' // Use the JSON loader
+     *    parser: 'texture' // Use the texture loader
      * });
      * ```
      * @remarks
