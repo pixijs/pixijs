@@ -14,7 +14,7 @@ interface GPUCopyElementImageSource
 
 interface GPUCopyElementImageDestination
 {
-    destination: GPUImageCopyTextureTagged;
+    destination: GPUCopyExternalImageDestInfo;
     width?: number;
     height?: number;
 }
@@ -29,7 +29,7 @@ type CopyElementImageLegacy = (
     source: HTMLSourceResource,
     width: number,
     height: number,
-    destination: GPUImageCopyTextureTagged,
+    destination: GPUCopyExternalImageDestInfo,
 ) => void;
 
 interface GpuCopyElementImageQueue extends GPUQueue
@@ -73,7 +73,7 @@ export const gpuUploadHTMLResource: GpuTextureUploader<HTMLUploadableSource> & {
 
         const premultipliedAlpha = source.alphaMode === 'premultiply-alpha-on-upload';
 
-        const destination: GPUImageCopyTextureTagged = {
+        const destination: GPUCopyExternalImageDestInfo = {
             texture: gpuTexture,
             origin: { x: 0, y: 0, z: originZOverride },
             premultipliedAlpha,
