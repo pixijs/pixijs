@@ -1,6 +1,6 @@
 ---
 name: pixijs-core-concepts
-description: "Use this skill when understanding how PixiJS v8 renders frames: the systems-and-pipes renderer, the render loop, and how the library adapts to different environments. Covers WebGLRenderer/WebGPURenderer/CanvasRenderer selection, renderer.render() pipeline, environment detection, and pointers to per-topic deep dives. Triggers on: renderer, WebGL, WebGPU, Canvas, render loop, render pipeline, systems, environments, autoDetectRenderer."
+description: "Use this skill when understanding how PixiJS v8 renders frames: the systems-and-pipes renderer, the render loop, and how the library adapts to different environments. Covers WebGLRenderer/WebGPURenderer/CanvasRenderer selection, renderer.render() pipeline, environment detection, and pointers to per-topic deep dives. Triggers on: renderer, WebGL, WebGPU, Canvas, render loop, render pipeline, systems, environments, autoDetectRenderer, WebGLLoader, WebGPULoader, CanvasLoader."
 license: MIT
 ---
 
@@ -47,7 +47,7 @@ For deep dives into any single topic, open the corresponding reference file. Non
 
 ### Renderer = systems + pipes
 
-Each renderer is composed of `Systems` (lifecycle services: textures, buffers, state, filters, masks) and `RenderPipes` (per-renderable instruction builders: sprite, graphics, mesh, particle, text, tiling). Writing a custom renderable means implementing a `RenderPipe` and registering it via extensions.
+Each renderer is composed of `Systems` (lifecycle services: textures, buffers, state, filters, masks) and `RenderPipes` (per-renderable instruction builders: sprite, graphics, mesh, particle, text, tiling). Writing a custom renderable means implementing a `RenderPipe` and registering it via extensions. Backend-specific systems and pipes can be dynamic-imported through a renderer loader extension (`WebGLLoader`, `WebGPULoader`, `CanvasLoader`); see `references/renderers.md`.
 
 ### The render loop
 

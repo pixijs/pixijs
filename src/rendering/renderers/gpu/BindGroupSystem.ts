@@ -2,6 +2,7 @@ import { ExtensionType } from '../../../extensions/Extensions';
 
 import type { Buffer } from '../shared/buffer/Buffer';
 import type { BufferResource } from '../shared/buffer/BufferResource';
+import type { GCable } from '../shared/GCSystem';
 import type { UniformGroup } from '../shared/shader/UniformGroup';
 import type { System } from '../shared/system/System';
 import type { TextureSource } from '../shared/texture/sources/TextureSource';
@@ -12,6 +13,37 @@ import type { BindGroup } from './shader/BindGroup';
 import type { BindResource } from './shader/BindResource';
 import type { GpuProgram } from './shader/GpuProgram';
 import type { WebGPURenderer } from './WebGPURenderer';
+
+/**
+ * A cached native bind group, shaped so the renderer's GC can sweep it. Cache keys are built from
+ * resource ids that change whenever a resource is unloaded, resized or destroyed, so an entry that
+ * stops being requested can never be hit again and would otherwise live as long as the device.
+ * @internal
+ */
+class GpuBindGroupEntry implements GCable
+{
+    public gpuBindGroup: GPUBindGroup;
+    public _gcLastUsed: number;
+    public readonly autoGarbageCollect = true;
+    /** Part of the {@link GCable} contract; a cached bind group owns no per-renderer GPU data. */
+    public readonly _gpuData: GCable['_gpuData'] = null;
+
+    constructor(gpuBindGroup: GPUBindGroup, now: number)
+    {
+        this.gpuBindGroup = gpuBindGroup;
+        this._gcLastUsed = now;
+    }
+
+    /**
+     * Native bind groups have no destroy; dropping the reference is the whole release. Anything
+     * still holding the group (a recorded render bundle, a graphics batch) keeps it alive, and the
+     * next immediate-mode bind simply recreates the cache entry.
+     */
+    public unload(): void
+    {
+        this.gpuBindGroup = null;
+    }
+}
 
 /**
  * This manages the WebGPU bind groups. this is how data is bound to a shader when rendering
@@ -30,17 +62,24 @@ export class BindGroupSystem implements System
 
     private readonly _renderer: WebGPURenderer;
 
-    private _hash: Record<string, GPUBindGroup> = Object.create(null);
+    private _hash: Record<string, GpuBindGroupEntry> = Object.create(null);
     private _gpu: GPU;
 
     constructor(renderer: WebGPURenderer)
     {
         this._renderer = renderer;
+
+        // the sweep nulls idle slots and the periodic clean pass compacts the nulls away; both read
+        // the hash off this system by name, so replacing the object in contextChange or nulling it
+        // in destroy needs no re-registration
+        renderer.gc.addResourceHash(this, '_hash', 'resource');
+        renderer.gc.addCollection(this, '_hash', 'hash');
     }
 
     protected contextChange(gpu: GPU): void
     {
         this._gpu = gpu;
+        this._hash = Object.create(null);
     }
 
     public getBindGroup(bindGroup: BindGroup, program: GpuProgram, groupIndex: number): GPUBindGroup
@@ -51,10 +90,17 @@ export class BindGroupSystem implements System
         // even if they use the same resources.
         // Bit shift combines layoutKey and groupIndex into single number (groupIndex < 16)
         const key = `${bindGroup._key}:${(program._layoutKey << 4) | groupIndex}`;
+        const entry = this._hash[key];
 
-        const gpuBindGroup = this._hash[key] || this._createBindGroup(key, bindGroup, program, groupIndex);
+        // a swept slot holds null rather than being deleted, so this covers both kinds of miss
+        if (entry)
+        {
+            entry._gcLastUsed = this._renderer.gc.now;
 
-        return gpuBindGroup;
+            return entry.gpuBindGroup;
+        }
+
+        return this._createBindGroup(key, bindGroup, program, groupIndex);
     }
 
     private _createBindGroup(key: string, group: BindGroup, program: GpuProgram, groupIndex: number): GPUBindGroup
@@ -146,7 +192,7 @@ export class BindGroupSystem implements System
             entries,
         });
 
-        this._hash[key] = gpuBindGroup;
+        this._hash[key] = new GpuBindGroupEntry(gpuBindGroup, renderer.gc.now);
 
         return gpuBindGroup;
     }

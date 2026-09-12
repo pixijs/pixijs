@@ -1,8 +1,8 @@
 import { GCSystem } from '../GCSystem';
-import { type NOOP } from '~/utils';
+import { EventEmitter, type NOOP } from '~/utils';
 
 import type { Renderer } from '../../types';
-import type { GCable, GCSystemOptions } from '../GCSystem';
+import type { GCable, GCData, GCSystemOptions } from '../GCSystem';
 
 // Mock resource that implements GCable interface
 function createMockResource(options: Partial<GCable> = {}): GCable & { once: jest.Mock; off: jest.Mock; unload: jest.Mock }
@@ -405,6 +405,273 @@ describe('GCSystem', () =>
             gcSystem.run();
 
             expect(resource.off).toHaveBeenCalledWith('unload', gcSystem.removeResource, gcSystem);
+        });
+    });
+
+    describe('run with resources that emit unload', () =>
+    {
+        type UnloadingResource = EventEmitter & GCable & { unloadCount: number };
+
+        // Mirrors TextureSource, Buffer and Geometry: unload() emits 'unload' synchronously, which fires the
+        // listener the GC registered in addResource while the sweep is still walking the array.
+        function createUnloadingResource(): UnloadingResource
+        {
+            const resource: UnloadingResource = Object.assign(new EventEmitter(), {
+                _gpuData: {},
+                _gcLastUsed: -1,
+                _gcData: null as GCData | null,
+                autoGarbageCollect: true,
+                unloadCount: 0,
+                unload: () =>
+                {
+                    resource.unloadCount++;
+                    resource.emit('unload', resource);
+                },
+            });
+
+            return resource;
+        }
+
+        let nowSpy: jest.SpyInstance;
+        let managedResources: GCable[];
+
+        function isTracked(resource: GCable): boolean
+        {
+            return !!resource._gcData && managedResources[resource._gcData.index] === resource;
+        }
+
+        function addStaleThenFresh(): [UnloadingResource, UnloadingResource, UnloadingResource]
+        {
+            const a = createUnloadingResource();
+            const b = createUnloadingResource();
+            const c = createUnloadingResource();
+
+            gcSystem.addResource(a, 'resource');
+            gcSystem.addResource(b, 'resource');
+            gcSystem.addResource(c, 'resource');
+            a._gcLastUsed = gcSystem.now - 2000;
+
+            return [a, b, c];
+        }
+
+        beforeEach(() =>
+        {
+            nowSpy = jest.spyOn(performance, 'now').mockReturnValue(1_000_000);
+            gcSystem.init({ gcActive: true, gcMaxUnusedTime: 1000, gcFrequency: 100 });
+            managedResources = (gcSystem as any)._managedResources;
+        });
+
+        afterEach(() =>
+        {
+            nowSpy.mockRestore();
+        });
+
+        it('should keep tracking the resources after a stale one whose unload event fires mid-sweep', () =>
+        {
+            const [a, b, c] = addStaleThenFresh();
+
+            gcSystem.run();
+
+            expect(a.unloadCount).toBe(1);
+            expect(a._gcData).toBeNull();
+            expect(a.listenerCount('unload')).toBe(0);
+            expect(isTracked(b)).toBe(true);
+            expect(isTracked(c)).toBe(true);
+            expect(managedResources).toHaveLength(2);
+        });
+
+        it('should survive an unload that cascades into another tracked resource', () =>
+        {
+            const [a, b, c] = addStaleThenFresh();
+
+            // Like a Graphics listening to its GraphicsContext: unloading a takes b down with it
+            a.on('unload', () => b.unload());
+
+            expect(() => gcSystem.run()).not.toThrow();
+
+            expect(a.unloadCount).toBe(1);
+            expect(b.unloadCount).toBe(1);
+            expect(a._gcData).toBeNull();
+            expect(b._gcData).toBeNull();
+            expect(isTracked(c)).toBe(true);
+            expect(managedResources).toHaveLength(1);
+        });
+
+        it('should visit surviving entries once when unload removes earlier and later entries', () =>
+        {
+            const resources = Array.from({ length: 5 }, () => createUnloadingResource());
+            const [a, b, c, d, e] = resources;
+            const visit = jest.spyOn(gcSystem as any, 'runOnResource');
+
+            resources.forEach((resource) => gcSystem.addResource(resource, 'resource'));
+            c._gcLastUsed = gcSystem.now - 2000;
+            c.on('unload', () =>
+            {
+                a.unload();
+                b.unload();
+                d.unload();
+            });
+
+            gcSystem.run();
+
+            expect(visit.mock.calls.map(([resource]) => resource)).toEqual([a, b, c, e]);
+            expect(resources.map((resource) => resource.unloadCount)).toEqual([1, 1, 1, 1, 0]);
+            expect(managedResources).toEqual([e]);
+            expect(isTracked(e)).toBe(true);
+        });
+
+        it('should collect every stale entry without skipping the entries after removals', () =>
+        {
+            const resources = Array.from({ length: 8 }, () => createUnloadingResource());
+            const [first, , , , dependent] = resources;
+
+            resources.forEach((resource) =>
+            {
+                gcSystem.addResource(resource, 'resource');
+                resource._gcLastUsed = gcSystem.now - 2000;
+            });
+            first.on('unload', () => dependent.unload());
+
+            gcSystem.run();
+
+            expect(resources.map((resource) => resource.unloadCount)).toEqual(Array(8).fill(1));
+            expect(resources.every((resource) => resource._gcData === null)).toBe(true);
+            expect(managedResources).toHaveLength(0);
+        });
+
+        it('should defer new and re-registered resources until the next sweep', () =>
+        {
+            const [a, b, c] = addStaleThenFresh();
+            const added = createUnloadingResource();
+            const visit = jest.spyOn(gcSystem as any, 'runOnResource');
+
+            a.on('unload', () =>
+            {
+                b.unload();
+                gcSystem.addResource(b, 'resource');
+                gcSystem.addResource(added, 'resource');
+                b._gcLastUsed = gcSystem.now - 2000;
+                added._gcLastUsed = gcSystem.now - 2000;
+            });
+
+            gcSystem.run();
+
+            expect(visit.mock.calls.map(([resource]) => resource)).toEqual([a, c]);
+            expect(b.unloadCount).toBe(1);
+            expect(added.unloadCount).toBe(0);
+            expect(managedResources).toEqual([c, b, added]);
+            expect(managedResources.every(isTracked)).toBe(true);
+
+            gcSystem.run();
+
+            expect(b.unloadCount).toBe(2);
+            expect(added.unloadCount).toBe(1);
+            expect(managedResources).toEqual([c]);
+            expect(isTracked(c)).toBe(true);
+        });
+
+        it('should ignore a recursive sweep requested by an unload listener', () =>
+        {
+            const [a, b, c] = addStaleThenFresh();
+            const visit = jest.spyOn(gcSystem as any, 'runOnResource');
+
+            a.on('unload', () => gcSystem.run());
+
+            gcSystem.run();
+
+            expect(a.unloadCount).toBe(1);
+            expect(visit.mock.calls.map(([resource]) => resource)).toEqual([a, b, c]);
+            expect(managedResources).toEqual([b, c]);
+            expect(managedResources.every(isTracked)).toBe(true);
+        });
+
+        it('should compact removals and allow another sweep after an unload listener throws', () =>
+        {
+            const [a, b, c] = addStaleThenFresh();
+
+            a.once('unload', () =>
+            {
+                b.unload();
+                throw new Error('unload failed');
+            });
+
+            expect(() => gcSystem.run()).toThrow('unload failed');
+            expect(managedResources).toEqual([a, c]);
+            expect(managedResources.every(isTracked)).toBe(true);
+
+            gcSystem.removeResource(c);
+
+            expect(managedResources).toEqual([a]);
+
+            gcSystem.run();
+
+            expect(a.unloadCount).toBe(2);
+            expect(managedResources).toHaveLength(0);
+        });
+
+        it('should allow destruction during an unload after another entry was removed', () =>
+        {
+            const [a, b, c] = addStaleThenFresh();
+
+            a.on('unload', () =>
+            {
+                b.unload();
+                gcSystem.destroy();
+            });
+
+            expect(() => gcSystem.run()).not.toThrow();
+            expect(managedResources).toHaveLength(0);
+            expect(c.listenerCount('unload')).toBe(0);
+        });
+
+        it('should re-register a collected resource and leave a still-tracked one alone', () =>
+        {
+            const [a, b, c] = addStaleThenFresh();
+
+            gcSystem.run();
+
+            gcSystem.addResource(a, 'resource');
+            gcSystem.addResource(c, 'resource');
+
+            expect(isTracked(a)).toBe(true);
+            expect(isTracked(b)).toBe(true);
+            expect(isTracked(c)).toBe(true);
+            expect(managedResources).toHaveLength(3);
+        });
+
+        it('should re-register a collected resource whose unload listener touched it', () =>
+        {
+            const [a] = addStaleThenFresh();
+
+            // Any use during unload (a bind, an upload) stamps the last-used time
+            a.on('unload', () =>
+            {
+                a._gcLastUsed = gcSystem.now;
+            });
+
+            gcSystem.run();
+            gcSystem.addResource(a, 'resource');
+
+            expect(a.unloadCount).toBe(1);
+            expect(isTracked(a)).toBe(true);
+            expect(managedResources).toHaveLength(3);
+        });
+
+        it('should unload a resource while it is still tracked, then clear both sentinels', () =>
+        {
+            const [a] = addStaleThenFresh();
+            let trackedDuringUnload = false;
+
+            a.on('unload', () =>
+            {
+                trackedDuringUnload = isTracked(a);
+            });
+
+            gcSystem.run();
+
+            expect(trackedDuringUnload).toBe(true);
+            expect(a._gcData).toBeNull();
+            expect(a._gcLastUsed).toBe(-1);
         });
     });
 

@@ -213,9 +213,11 @@ export class HTMLTextSystem implements System
 
         if (textureStyle) texture.source.style = textureStyle;
 
+        // upload now, as the image and canvas go back to their pools and are reused by the next text
+        this._renderer?.texture.initSource(texture.source);
+
         if (this._createCanvas)
         {
-            this._renderer.texture.initSource(texture.source);
             CanvasPool.returnCanvasAndContext(canvasAndContext);
         }
 

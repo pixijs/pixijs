@@ -1,8 +1,9 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { STENCIL_MODES } from '../shared/state/const';
 
 import type { RenderTarget } from '../shared/renderTarget/RenderTarget';
+import type { STENCIL_MODES } from '../shared/state/const';
 import type { System } from '../shared/system/System';
+import type { GpuRenderTarget } from './renderTarget/GpuRenderTarget';
 import type { WebGPURenderer } from './WebGPURenderer';
 
 /**
@@ -22,12 +23,9 @@ export class GpuStencilSystem implements System
 
     private readonly _renderer: WebGPURenderer;
 
-    private _renderTargetStencilState: Record<number, {
-        stencilMode: STENCIL_MODES;
-        stencilReference: number;
-    }> = Object.create(null);
-
     private _activeRenderTarget: RenderTarget;
+    /** the backend counterpart of the active render target, which carries the stencil state being tracked */
+    private _activeGpuRenderTarget: GpuRenderTarget;
 
     constructor(renderer: WebGPURenderer)
     {
@@ -36,29 +34,30 @@ export class GpuStencilSystem implements System
         renderer.renderTarget.onRenderTargetChange.add(this);
     }
 
+    protected contextChange(): void
+    {
+        // the backend render targets were rebuilt with the device, so the stencil state starts over;
+        // the next setStencilMode picks up the rebuilt object, as no change event announces it
+        this._activeGpuRenderTarget = null;
+    }
+
     protected onRenderTargetChange(renderTarget: RenderTarget)
     {
-        let stencilState = this._renderTargetStencilState[renderTarget.uid];
-
-        if (!stencilState)
-        {
-            stencilState = this._renderTargetStencilState[renderTarget.uid] = {
-                stencilMode: STENCIL_MODES.DISABLED,
-                stencilReference: 0,
-            };
-        }
+        const gpuRenderTarget = this._renderer.renderTarget.getGpuRenderTarget(renderTarget);
 
         this._activeRenderTarget = renderTarget;
+        this._activeGpuRenderTarget = gpuRenderTarget;
 
-        this.setStencilMode(stencilState.stencilMode, stencilState.stencilReference);
+        this.setStencilMode(gpuRenderTarget.stencilMode, gpuRenderTarget.stencilReference);
     }
 
     public setStencilMode(stencilMode: STENCIL_MODES, stencilReference: number)
     {
-        const stencilState = this._renderTargetStencilState[this._activeRenderTarget.uid];
+        const gpuRenderTarget = this._activeGpuRenderTarget
+            ??= this._renderer.renderTarget.getGpuRenderTarget(this._activeRenderTarget);
 
-        stencilState.stencilMode = stencilMode;
-        stencilState.stencilReference = stencilReference;
+        gpuRenderTarget.stencilMode = stencilMode;
+        gpuRenderTarget.stencilReference = stencilReference;
 
         const renderer = this._renderer;
 
@@ -73,6 +72,6 @@ export class GpuStencilSystem implements System
         (this._renderer as null) = null;
 
         this._activeRenderTarget = null;
-        this._renderTargetStencilState = null;
+        this._activeGpuRenderTarget = null;
     }
 }

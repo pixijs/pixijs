@@ -28,6 +28,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
     {
         this._renderer = renderer;
         renderer.runners.resolutionChange.add(this);
+        renderer.runners.contextChange.add(this);
         this._managedTexts = new GCManagedHash({
             renderer,
             type: 'renderable',
@@ -46,6 +47,18 @@ export class CanvasTextPipe implements RenderPipe<Text>
         }
     }
 
+    /**
+     * Text textures are uploaded from pooled canvases that are cleared and reused straight after upload,
+     * so they cannot be re-uploaded after a context loss. Unload them and regenerate on the next render.
+     */
+    protected contextChange()
+    {
+        for (const key in this._managedTexts.items)
+        {
+            this._managedTexts.items[key]?.unload();
+        }
+    }
+
     public validateRenderable(text: Text): boolean
     {
         const gpuText = this._getGpuText(text);
@@ -61,7 +74,8 @@ export class CanvasTextPipe implements RenderPipe<Text>
     {
         const batchableText = this._getGpuText(text);
 
-        if (text._didTextUpdate)
+        // also update when this renderer has no texture for the text yet, e.g. the text was first rendered elsewhere
+        if (text._didTextUpdate || batchableText.currentKey !== text.styleKey)
         {
             const resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
 
