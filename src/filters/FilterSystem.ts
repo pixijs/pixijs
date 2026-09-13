@@ -347,12 +347,12 @@ export class FilterSystem implements System
 
         // set all the filter data
         // get a P02 texture from our pool...
-        filterData.outputRenderSurface = TexturePool.getOptimalTexture(
-            bounds.width,
-            bounds.height,
-            filterData.resolution,
-            filterData.antialias,
-        );
+        filterData.outputRenderSurface = TexturePool.getOptimalTexture({
+            width: bounds.width,
+            height: bounds.height,
+            resolution: filterData.resolution,
+            antialias: filterData.antialias,
+        });
 
         filterData.backTexture = Texture.EMPTY;
 
@@ -422,12 +422,11 @@ export class FilterSystem implements System
     {
         const backgroundResolution = lastRenderSurface.colorTexture.source._resolution;
 
-        const backTexture = TexturePool.getOptimalTexture(
-            bounds.width,
-            bounds.height,
-            backgroundResolution,
-            false,
-        );
+        const backTexture = TexturePool.getOptimalTexture({
+            width: bounds.width,
+            height: bounds.height,
+            resolution: backgroundResolution,
+        });
 
         let x = bounds.minX;
         let y = bounds.minY;
@@ -616,12 +615,12 @@ export class FilterSystem implements System
         /// ///
         // bind...
         // get a P02 texture from our pool...
-        filterData.inputTexture = TexturePool.getOptimalTexture(
-            bounds.width,
-            bounds.height,
-            filterData.resolution,
-            filterData.antialias,
-        );
+        filterData.inputTexture = TexturePool.getOptimalTexture({
+            width: bounds.width,
+            height: bounds.height,
+            resolution: filterData.resolution,
+            antialias: filterData.antialias,
+        });
 
         // Very cryptic, but important(!) moment.
         //
@@ -886,12 +885,11 @@ export class FilterSystem implements System
         {
             let flip = filterData.inputTexture;
 
-            const tempTexture = TexturePool.getOptimalTexture(
-                bounds.width,
-                bounds.height,
-                flip.source._resolution,
-                false
-            );
+            const tempTexture = TexturePool.getOptimalTexture({
+                width: bounds.width,
+                height: bounds.height,
+                resolution: flip.source._resolution,
+            });
 
             // get another texture that we will render the next filter too
             let flop = tempTexture;

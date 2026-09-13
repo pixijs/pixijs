@@ -52,14 +52,8 @@ export interface Text extends PixiMixins.Text, AbstractText<
 export interface CanvasTextOptions extends TextOptions
 {
     /**
-     * Optional texture style to use for the text texture. This allows fine control over
-     * how the text is rendered to a texture before being displayed.
-     *
-     * The texture style can affect:
-     * - Scale mode (nearest/linear)
-     * - Resolution
-     * - Format (rgb/rgba)
-     * - Alpha handling
+     * Optional texture style to use for the text texture. Only `scaleMode` is applied
+     * (`nearest` or `linear`) when the texture is requested from the pool.
      * @example
      * ```ts
      * const text = new Text({

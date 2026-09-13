@@ -3,6 +3,7 @@ import { TexturePool } from '../../../rendering/renderers/shared/texture/Texture
 import { Bounds } from '../../container/bounds/Bounds';
 
 import type { ICanvas } from '../../../environment/canvas/ICanvas';
+import type { SCALE_MODE } from '../../../rendering/renderers/shared/texture/const';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 
 const tempBounds = new Bounds();
@@ -15,6 +16,7 @@ const tempBounds = new Bounds();
  * @param height - the frame height of the texture
  * @param resolution - The resolution of the texture
  * @param autoGenerateMipmaps - Whether to generate mipmaps for the texture
+ * @param scaleMode - The scale mode of the texture
  * @returns - The texture
  * @internal
  */
@@ -23,7 +25,8 @@ export function getPo2TextureFromSource(
     width: number,
     height: number,
     resolution: number,
-    autoGenerateMipmaps = false
+    autoGenerateMipmaps = false,
+    scaleMode?: SCALE_MODE
 ): Texture
 {
     const bounds = tempBounds;
@@ -34,13 +37,13 @@ export function getPo2TextureFromSource(
     bounds.maxX = (image.width / resolution) | 0;
     bounds.maxY = (image.height / resolution) | 0;
 
-    const texture = TexturePool.getOptimalTexture(
-        bounds.width,
-        bounds.height,
+    const texture = TexturePool.getOptimalTexture({
+        width: bounds.width,
+        height: bounds.height,
         resolution,
-        false,
-        autoGenerateMipmaps
-    );
+        autoGenerateMipmaps,
+        scaleMode,
+    });
 
     texture.source.uploadMethodId = 'image';
     texture.source.resource = image;

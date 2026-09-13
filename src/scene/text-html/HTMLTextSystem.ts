@@ -208,10 +208,9 @@ export class HTMLTextSystem implements System
             image.width - uvSafeOffset,
             image.height - uvSafeOffset,
             resolution,
-            autoGenerateMipmaps
+            autoGenerateMipmaps,
+            textureStyle?.scaleMode
         );
-
-        if (textureStyle) texture.source.style = textureStyle;
 
         // upload now, as the image and canvas go back to their pools and are reused by the next text
         this._renderer?.texture.initSource(texture.source);
@@ -241,7 +240,7 @@ export class HTMLTextSystem implements System
 
     private _cleanUp(texture: Texture)
     {
-        TexturePool.returnTexture(texture, true);
+        TexturePool.returnTexture(texture);
         texture.source.resource = null;
         texture.source.uploadMethodId = 'unknown';
     }
