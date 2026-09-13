@@ -123,7 +123,7 @@ export class GCSystem implements System<GCSystemOptions>
     private _renderer: Renderer;
 
     /** Array of resources being tracked for garbage collection */
-    private readonly _managedResources: GCableEventEmitter[] = [];
+    private readonly _managedResources: (GCableEventEmitter | null)[] = [];
     private readonly _managedResourceHashes: GCResourceHashEntry[] = [];
     private readonly _managedCollections: {context: any, collection: string, type: 'hash' | 'array'}[] = [];
 
@@ -138,6 +138,7 @@ export class GCSystem implements System<GCSystemOptions>
     public now: number;
 
     private _ready = false;
+    private _running = false;
 
     /**
      * Creates a new GCSystem instance.
@@ -317,16 +318,25 @@ export class GCSystem implements System<GCSystemOptions>
         const index = gcData.index;
         const last = this._managedResources.length - 1;
 
-        // Swap with last element for O(1) removal
-        if (index !== last)
+        if (this._running)
         {
-            const lastResource = this._managedResources[last];
+            // Keep sweep indices stable when unload listeners remove other resources.
+            this._managedResources[index] = null;
+        }
+        else
+        {
+            // Swap with last element for O(1) removal outside a sweep.
+            if (index !== last)
+            {
+                const lastResource = this._managedResources[last];
 
-            this._managedResources[index] = lastResource;
-            lastResource._gcData.index = index;
+                this._managedResources[index] = lastResource;
+                lastResource._gcData.index = index;
+            }
+
+            this._managedResources.length--;
         }
 
-        this._managedResources.length--;
         resource._gcData = null;
         resource._gcLastUsed = -1;
     }
@@ -357,24 +367,55 @@ export class GCSystem implements System<GCSystemOptions>
      */
     public run(): void
     {
+        if (this._running) return;
+
         const now = performance.now();
         const managedResourceHashes = this._managedResourceHashes;
+        const managedResources = this._managedResources;
 
-        for (const hashEntry of managedResourceHashes)
+        this._running = true;
+
+        try
         {
-            this.runOnHash(hashEntry, now);
+            for (const hashEntry of managedResourceHashes)
+            {
+                this.runOnHash(hashEntry, now);
+            }
+
+            // Removals leave null slots until the sweep ends. Only visit the starting entries,
+            // so resources registered by unload listeners wait until the next sweep.
+            const length = managedResources.length;
+
+            for (let i = 0; i < length; i++)
+            {
+                const resource = managedResources[i];
+
+                if (resource) this.runOnResource(resource, now);
+            }
         }
-
-        let writeIndex = 0;
-
-        for (let i = 0; i < this._managedResources.length; i++)
+        finally
         {
-            const resource = this._managedResources[i];
+            // Compact without allocating, including when an unload listener throws.
+            let writeIndex = 0;
 
-            writeIndex = this.runOnResource(resource, now, writeIndex);
+            for (let i = 0; i < managedResources.length; i++)
+            {
+                const resource = managedResources[i];
+
+                if (!resource) continue;
+
+                if (writeIndex !== i)
+                {
+                    managedResources[writeIndex] = resource;
+                    resource._gcData.index = writeIndex;
+                }
+
+                writeIndex++;
+            }
+
+            managedResources.length = writeIndex;
+            this._running = false;
         }
-
-        this._managedResources.length = writeIndex;
     }
 
     protected updateRenderableGCTick(renderable: Renderable & GCable, now: number): void
@@ -390,34 +431,23 @@ export class GCSystem implements System<GCSystemOptions>
         }
     }
 
-    protected runOnResource(resource: GCableEventEmitter, now: number, writeIndex: number): number
+    protected runOnResource(resource: GCableEventEmitter, now: number): void
     {
-        const gcData = resource._gcData;
-
         // special case for renderables as we do not check every frame if they are being used
-        if (gcData.type === 'renderable')
+        if (resource._gcData.type === 'renderable')
         {
             this.updateRenderableGCTick(resource as Renderable, now);
         }
 
         const isRecentlyUsed = now - resource._gcLastUsed < this.maxUnusedTime;
 
-        if (isRecentlyUsed || !resource.autoGarbageCollect)
-        {
-            this._managedResources[writeIndex] = resource;
-            gcData.index = writeIndex;
-            writeIndex++;
-        }
-        else
-        {
-            // Call the cleanup function
-            resource.unload();
-            resource._gcData = null;
-            resource._gcLastUsed = -1;
-            resource.off('unload', this.removeResource, this);
-        }
+        if (isRecentlyUsed || !resource.autoGarbageCollect) return;
 
-        return writeIndex;
+        // Detach the GC's own listener so unload() cannot untrack the resource mid-unload, and untrack last:
+        // a listener that stamps _gcLastUsed during unload() must not be able to block re-registration.
+        resource.off('unload', this.removeResource, this);
+        resource.unload();
+        this.removeResource(resource);
     }
 
     /**
@@ -535,7 +565,7 @@ export class GCSystem implements System<GCSystemOptions>
 
         this._managedResources.forEach((resource) =>
         {
-            resource.off('unload', this.removeResource, this);
+            resource?.off('unload', this.removeResource, this);
         });
         this._managedResources.length = 0;
         this._managedResourceHashes.length = 0;

@@ -112,6 +112,87 @@ describe('BindGroup', () =>
         expect(bindGroupKey).not.toBe(bindGroup._key);
     });
 
+    it('should let a BindGroup know when a buffer is unloaded', () =>
+    {
+        const buffer = new Buffer({
+            data: new Float32Array(100),
+            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
+        });
+
+        const bindGroup = new BindGroup({
+            0: buffer,
+        });
+
+        const bindGroupKey = bindGroup._key;
+
+        buffer.unload();
+
+        expect(bindGroup._key).not.toBe(bindGroupKey);
+    });
+
+    it('should re-key when the buffer behind a uniform group is unloaded', () =>
+    {
+        const uniformGroup = new UniformGroup({
+            test: { value: 1, type: 'f32' },
+        });
+
+        const buffer = new Buffer({
+            data: new Float32Array(16),
+            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
+        });
+
+        uniformGroup.buffer = buffer;
+
+        const bindGroup = new BindGroup({
+            0: uniformGroup,
+        });
+
+        const bindGroupKey = bindGroup._key;
+
+        buffer.unload();
+
+        expect(bindGroup._key).not.toBe(bindGroupKey);
+    });
+
+    it('_touch should stamp the buffers behind uniform groups and buffer resources', () =>
+    {
+        const uniformGroup = new UniformGroup({
+            test: { value: 1, type: 'f32' },
+        });
+
+        const groupBuffer = new Buffer({
+            data: new Float32Array(16),
+            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
+        });
+
+        uniformGroup.buffer = groupBuffer;
+
+        const buffer = new Buffer({
+            data: new Float32Array(64),
+            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
+        });
+
+        const bufferResource = new BufferResource({
+            buffer,
+            offset: 0,
+            size: 128,
+        });
+
+        const bindGroup = new BindGroup({
+            0: uniformGroup,
+            1: bufferResource,
+        });
+
+        bindGroup._touch(123, 7);
+
+        expect(groupBuffer._gcLastUsed).toBe(123);
+        expect(buffer._gcLastUsed).toBe(123);
+
+        // the proxies delegate their own stamp straight through to the buffer
+        expect(uniformGroup._gcLastUsed).toBe(123);
+        expect(bufferResource._gcLastUsed).toBe(123);
+    });
+
     it('should let have a unique id for a bind group, no clashes', () =>
     {
         resetUids();

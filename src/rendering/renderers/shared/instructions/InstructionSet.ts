@@ -36,11 +36,20 @@ export class InstructionSet
     }
 
     /**
-     * Destroy the instruction set, clearing the instructions and renderables.
+     * Destroy the instruction set, clearing the instructions and renderables and notifying
+     * each render pipe so it can release any per-InstructionSet cached resources.
      * @internal
      */
     public destroy()
     {
+        if (this.renderPipes)
+        {
+            for (const i in this.renderPipes)
+            {
+                this.renderPipes[i].destroyInstructionSet?.(this);
+            }
+        }
+
         this.instructions.length = 0;
         this.renderables.length = 0;
 

@@ -18,6 +18,12 @@ const tempTextureMatrix = new Matrix();
 const tempRect = new Rectangle();
 
 /**
+ * Temporary matrix used for uv mapping calculations
+ * @internal
+ */
+const tempUvMatrix = new Matrix();
+
+/**
  * Generates a texture matrix for mapping textures onto shapes.
  * This function handles both local and global texture space mapping.
  *
@@ -45,7 +51,10 @@ export function generateTextureMatrix(out: Matrix, style: FillStyle | StrokeStyl
 
     if (style.textureSpace === 'local')
     {
-        // For local space, map texture to shape's bounds
+        // For local space, map texture to shape's bounds.
+        // NOTE: this maps the WHOLE texture source (not the frame) onto the shape, so
+        // atlas sub-textures show the full atlas here and the canvas renderer (whose
+        // patterns are frame-cropped) diverges. Use a style matrix to target the frame.
         const bounds = shape.getBounds(tempRect);
 
         if ((style as StrokeStyle).width)
@@ -72,6 +81,19 @@ export function generateTextureMatrix(out: Matrix, style: FillStyle | StrokeStyl
 
         textureMatrix.tx = (mTx * a1) + (mTy * c1) + textureMatrix.tx;
         textureMatrix.ty = (mTx * b1) + (mTy * d1) + textureMatrix.ty;
+    }
+    else if (style.texture.rotate)
+    {
+        // The sub-texture is rotated in its atlas (groupD8); the texture's uvs encode
+        // both the frame origin and the rotation, so map through them instead
+        const { uvs, orig } = style.texture;
+
+        textureMatrix.scale(1 / orig.width, 1 / orig.height);
+        textureMatrix.prepend(tempUvMatrix.set(
+            uvs.x1 - uvs.x0, uvs.y1 - uvs.y0,
+            uvs.x3 - uvs.x0, uvs.y3 - uvs.y0,
+            uvs.x0, uvs.y0
+        ));
     }
     else
     {

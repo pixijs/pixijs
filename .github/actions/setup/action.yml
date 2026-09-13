@@ -33,3 +33,8 @@ runs:
       if: steps.node-modules-cache.outputs.cache-hit != 'true'
       shell: bash
       run: npm ci
+    # A restored cache (or an interrupted install) can be missing Electron's binary,
+    # which fails every test job with "Electron failed to install correctly".
+    - name: Verify Electron
+      shell: bash
+      run: node -e "require('electron')" || node node_modules/electron/install.js

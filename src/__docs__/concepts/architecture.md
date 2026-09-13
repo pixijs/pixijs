@@ -46,6 +46,7 @@ An extension is any object with an `extension` metadata field that tells PixiJS 
 - `ExtensionType.WebGLSystem`, `ExtensionType.WebGPUSystem`, `ExtensionType.CanvasSystem`: Add systems to their respective renderers. These systems can vary widely in functionality, from managing textures to accessibility features.
 - `ExtensionType.WebGLPipes`, `ExtensionType.WebGPUPipes`, `ExtensionType.CanvasPipes`: Add a new rendering pipe. RenderPipes are specifically used to render Renderables like a Mesh
 - `ExtensionType.WebGLPipesAdaptor`, `ExtensionType.WebGPUPipesAdaptor`, `ExtensionType.CanvasPipesAdaptor`: Adapt rendering pipes for the respective renderers.
+- `ExtensionType.WebGLLoader`, `ExtensionType.WebGPULoader`, `ExtensionType.CanvasLoader`: Run an async hook while the matching renderer initialises, before it creates its systems and pipes. Plugins use these to `import()` backend-specific systems and pipes only for the renderer in use.
 
 ### Application
 

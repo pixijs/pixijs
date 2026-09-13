@@ -1,6 +1,6 @@
+import { getOrientationOfPoints } from '../../../../maths/misc/getOrientationOfPoints';
 import { Point } from '../../../../maths/point/Point';
 import { closePointEps, curveEps } from '../const';
-import { getOrientationOfPoints } from '../utils/getOrientationOfPoints';
 
 import type { StrokeAttributes } from '../FillTypes';
 

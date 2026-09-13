@@ -1,3 +1,4 @@
+import EventEmitter from 'eventemitter3';
 import { uid } from '../../../../utils/data/uid';
 import { createIdFromString } from '../utils/createIdFromString';
 import { UNIFORM_TYPES_MAP, UNIFORM_TYPES_VALUES, type UniformData } from './types';
@@ -85,8 +86,16 @@ export type UniformGroupOptions = {
  * @category rendering
  * @advanced
  */
-export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any> implements BindResource
+export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any> extends EventEmitter<{
+    change: BindResource,
+}> implements BindResource
 {
+    /**
+     * emits when the underlying buffer needs to be re-bound (it resized or was unloaded),
+     * letting cached bind groups know they must rebuild
+     * @event change
+     */
+
     /** The default options used by the uniform group. */
     public static defaultOptions: UniformGroupOptions = {
         /** if true the UniformGroup is handled as an Uniform buffer object. */
@@ -119,8 +128,7 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
     public uniforms: ExtractUniformObject<UNIFORMS>;
     /** true if it should be used as a uniform buffer object */
     public ubo: boolean;
-    /** an underlying buffer that will be uploaded to the GPU when using this UniformGroup */
-    public buffer?: Buffer;
+    private _buffer?: Buffer;
     /**
      * if true, then you are responsible for when the data is uploaded to the GPU.
      * otherwise, the data is reuploaded each frame.
@@ -149,6 +157,8 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
      */
     constructor(uniformStructures: UNIFORMS, options?: UniformGroupOptions)
     {
+        super();
+
         options = { ...UniformGroup.defaultOptions, ...options };
 
         this.uniformStructures = uniformStructures;
@@ -193,6 +203,51 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
         this._signature = createIdFromString(Object.keys(uniforms).map(
             (i) => `${i}-${(uniformStructures[i as keyof typeof uniformStructures] as UniformData).type}`
         ).join('-'), 'uniform-group');
+    }
+
+    /**
+     * an underlying buffer that will be uploaded to the GPU when using this UniformGroup.
+     * It is created lazily by the renderer's ubo system on first use.
+     */
+    get buffer(): Buffer | undefined
+    {
+        return this._buffer;
+    }
+
+    set buffer(value: Buffer | undefined)
+    {
+        if (this._buffer === value) return;
+
+        this._buffer?.off('change', this.onBufferChange, this);
+        this._buffer = value;
+        value?.on('change', this.onBufferChange, this);
+    }
+
+    /**
+     * The GC tracks this group's underlying buffer, not the group itself — a GC stamp on the
+     * group (see BindGroup._touch) must land on the buffer, or the GC collects it while
+     * cached bind groups still reference it.
+     * @internal
+     */
+    get _gcLastUsed(): number
+    {
+        return this._buffer?._gcLastUsed ?? -1;
+    }
+
+    set _gcLastUsed(value: number)
+    {
+        if (this._buffer) this._buffer._gcLastUsed = value;
+    }
+
+    /**
+     * Bind group keys are built from this group's _resourceId, not the buffer's — so when the
+     * buffer re-keys (it resized, or the GC unloaded its GPU copy), this group must re-key too,
+     * or cached GPUBindGroups keep referencing the destroyed GPU buffer.
+     */
+    protected onBufferChange(): void
+    {
+        this._resourceId = uid('resource');
+        this.emit('change', this);
     }
 
     /** Call this if you want the uniform groups data to be uploaded to the GPU only useful if `isStatic` is true. */

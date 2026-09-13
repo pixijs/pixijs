@@ -22,6 +22,7 @@ import { GpuTextureSystem } from './texture/GpuTextureSystem';
 
 import type { ICanvas } from '../../../environment/canvas/ICanvas';
 import type { PipeConstructor } from '../shared/instructions/RenderPipe';
+import type { RendererLoader } from '../shared/system/AbstractRenderer';
 import type { SharedRendererOptions } from '../shared/system/SharedSystems';
 import type { SystemConstructor } from '../shared/system/System';
 import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/system/utils/typeUtils';
@@ -49,10 +50,12 @@ const DefaultWebGPUAdapters = [GpuBatchAdaptor, GpuMeshAdapter, GpuGraphicsAdapt
 const systems: { name: string; value: SystemConstructor }[] = [];
 const renderPipes: { name: string; value: PipeConstructor }[] = [];
 const renderPipeAdaptors: { name: string; value: any }[] = [];
+const loaders: { name: string; value: RendererLoader }[] = [];
 
 extensions.handleByNamedList(ExtensionType.WebGPUSystem, systems);
 extensions.handleByNamedList(ExtensionType.WebGPUPipes, renderPipes);
 extensions.handleByNamedList(ExtensionType.WebGPUPipesAdaptor, renderPipeAdaptors);
+extensions.handleByNamedList(ExtensionType.WebGPULoader, loaders);
 
 // add all the default systems as well as any user defined ones from the extensions
 extensions.add(...DefaultWebGPUSystems, ...DefaultWebGPUPipes, ...DefaultWebGPUAdapters);
@@ -167,6 +170,7 @@ export class WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
             systems,
             renderPipes,
             renderPipeAdaptors,
+            loaders,
         };
 
         super(systemConfig);

@@ -26,9 +26,6 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
 
     private _renderer: Renderer;
 
-    // used when building and also when executing..
-    private _maskStackHash: Record<number, number> = {};
-
     private _maskHash = new WeakMap<StencilMask, {
         instructionsStart: number,
         instructionsLength: number,
@@ -94,10 +91,6 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         const instructionsLength = instructionSet.instructionSize - maskData.instructionsStart - 1;
 
         maskData.instructionsLength = instructionsLength;
-
-        const renderTargetUid = renderer.renderTarget.renderTarget.uid;
-
-        this._maskStackHash[renderTargetUid] ??= 0;
     }
 
     public pop(mask: Effect, _container: Container, instructionSet: InstructionSet): void
@@ -137,9 +130,9 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         const renderer = this._renderer;
 
         const gpuRenderer = renderer as WebGLRenderer | WebGPURenderer;
-        const renderTargetUid = renderer.renderTarget.renderTarget.uid;
+        const gpuRenderTarget = gpuRenderer.renderTarget.getGpuRenderTarget(gpuRenderer.renderTarget.renderTarget);
 
-        let maskStackIndex = this._maskStackHash[renderTargetUid] ??= 0;
+        let maskStackIndex = gpuRenderTarget.maskStackIndex;
 
         if (instruction.action === 'pushMaskBegin')
         {
@@ -196,13 +189,12 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
             gpuRenderer.colorMask.setMask(0xF);
         }
 
-        this._maskStackHash[renderTargetUid] = maskStackIndex;
+        gpuRenderTarget.maskStackIndex = maskStackIndex;
     }
 
     public destroy()
     {
         this._renderer = null;
-        this._maskStackHash = null;
         this._maskHash = null;
     }
 }

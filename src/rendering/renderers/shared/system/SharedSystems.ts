@@ -69,6 +69,7 @@ export interface SharedRendererOptions extends ExtractRendererOptions<typeof Sha
      * It is false by default, and means PixiJS will load all the default extensions, based
      * on the environment e.g browser/webworker.
      * If you set this to true, then you will need to manually import the systems and extensions you need.
+     * Renderer loader extensions (`WebGLLoader`, `WebGPULoader`, `CanvasLoader`) are skipped too.
      *
      * e.g.
      * ```js

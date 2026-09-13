@@ -12,7 +12,7 @@ Create and configure a PixiJS v8 `Application`. Covers `new Application()` + asy
 ### pixijs-core-concepts
 How PixiJS v8 renders frames: the systems-and-pipes renderer, the render loop, and how the library adapts to different environments. Covers `WebGLRenderer`/`WebGPURenderer`/`CanvasRenderer` selection, `renderer.render()` pipeline, environment detection, and pointers to per-topic deep dives.
 
-**Triggers:** renderer, WebGL, WebGPU, Canvas, render loop, render pipeline, systems, environments, autoDetectRenderer.
+**Triggers:** renderer, WebGL, WebGPU, Canvas, render loop, render pipeline, systems, environments, autoDetectRenderer, WebGLLoader, WebGPULoader, CanvasLoader.
 
 ### pixijs-create
 Scaffold a new PixiJS v8 project with the `create-pixi` CLI. Covers npm/yarn/pnpm/bun create commands, interactive vs non-interactive flows, available template presets (bundler-vite, bundler-webpack, bundler-esbuild, bundler-import-map, creation-web, framework-react, extension-default), Node version requirements, and post-scaffold dev flow.

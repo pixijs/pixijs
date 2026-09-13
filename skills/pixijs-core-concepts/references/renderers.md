@@ -65,6 +65,21 @@ Each renderer is composed of a fixed set of `System`s (lifecycle services: textu
 
 Writing a custom renderable means implementing a `RenderPipe`, a `BatchableX` class, and registering both via the extensions system. See `pixijs-custom-rendering`.
 
+### Lazy-loading backend-specific systems and pipes
+
+Systems and pipes that only one backend needs can stay out of the main bundle. Register a renderer loader (`ExtensionType.WebGLLoader`, `ExtensionType.WebGPULoader`, or `ExtensionType.CanvasLoader`) whose `load()` dynamic-imports the module that registers them. During `init`, the renderer awaits every loader for its own backend after the environment extensions load and before it creates its systems and pipes; loaders for other backends never run.
+
+```ts
+import { extensions, ExtensionType } from "pixi.js";
+
+extensions.add({
+  extension: { type: ExtensionType.WebGLLoader, name: "my-plugin" },
+  load: () => import("./gl/register"), // registers WebGL systems and pipes on import
+});
+```
+
+Loader names are unique per backend; a second loader with the same name is ignored. Loaders run concurrently; registered systems and pipes are ordered by their own `priority`, not by loader completion. `skipExtensionImports: true` skips loaders too, so custom builds import backend modules directly.
+
 ### Direct renderer construction
 
 ```ts

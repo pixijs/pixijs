@@ -143,6 +143,26 @@ const customPipe = {
 };
 ```
 
+#### Loading backend-specific code lazily
+
+A renderer loader is an async hook the renderer awaits while it initialises, after the environment extensions load and before it creates its systems and pipes. Use one to `import()` the systems and pipes that only one backend needs, so the other backends' code stays out of the main bundle. The imported module registers them with `extensions.add`, and the renderer picks them up once every loader for its backend has resolved.
+
+```ts
+// Each backend gets its own loader; only the loaders for the renderer in use run
+extensions.add(
+    {
+        extension: { type: ExtensionType.WebGLLoader, name: 'my-plugin' },
+        load: () => import('./gl/register'), // registers WebGL systems and pipes on import
+    },
+    {
+        extension: { type: ExtensionType.WebGPULoader, name: 'my-plugin' },
+        load: () => import('./gpu/register'),
+    },
+);
+```
+
+Loader names are unique per backend; a second loader registered under the same name is ignored. Loaders run concurrently, so don't rely on one plugin's module evaluating before another's; the systems and pipes they register are ordered by their own `priority`. Loaders are skipped when the renderer is created with `skipExtensionImports: true`, so custom builds must import the backend modules themselves.
+
 ### Application plugins
 
 Application plugins extend the core `Application` class. Plugins use static `init` and `destroy` methods. During `init`, `this` refers to the Application instance:
@@ -186,12 +206,15 @@ Plugins initialize in registration order and destroy in reverse order.
 - `ExtensionType.WebGLSystem`: WebGL systems
 - `ExtensionType.WebGLPipes`: WebGL render pipes
 - `ExtensionType.WebGLPipesAdaptor`: WebGL render pipe adaptors
+- `ExtensionType.WebGLLoader`: Async hooks awaited while a WebGL renderer initialises
 - `ExtensionType.WebGPUSystem`: WebGPU systems
 - `ExtensionType.WebGPUPipes`: WebGPU render pipes
 - `ExtensionType.WebGPUPipesAdaptor`: WebGPU render pipe adaptors
+- `ExtensionType.WebGPULoader`: Async hooks awaited while a WebGPU renderer initialises
 - `ExtensionType.CanvasSystem`: Canvas systems
 - `ExtensionType.CanvasPipes`: Canvas render pipes
 - `ExtensionType.CanvasPipesAdaptor`: Canvas render pipe adaptors
+- `ExtensionType.CanvasLoader`: Async hooks awaited while a Canvas renderer initialises
 
 ### Advanced features
 
@@ -211,6 +234,7 @@ These extension types are for specialized use cases. Most applications won't nee
 - See {@link Application} for application plugins
 - See {@link Assets} for the asset loading system
 - See {@link Renderer} for rendering extensions
+- See {@link RendererLoader} for the renderer loader interface
 - See {@link LoaderParser} for asset loader interface
 - See {@link ResolveURLParser} for URL resolution interface
 - See {@link CacheParser} for cache parser interface

@@ -99,7 +99,7 @@ export class Buffer extends EventEmitter<{
 }> implements BindResource, GPUDataOwner, GCable
 {
     /**
-     * emits when the underlying buffer has changed shape (i.e. resized)
+     * emits when the underlying buffer has changed shape (i.e. resized) or been unloaded,
      * letting the renderer know that it needs to discard the old buffer on the GPU and create a new one
      * @event change
      */
@@ -327,6 +327,17 @@ export class Buffer extends EventEmitter<{
             this._gpuData[key]?.destroy();
         }
         this._gpuData = Object.create(null);
+
+        // re-key so cached bind groups referencing the destroyed GPU buffer rebuild on next
+        // use. This must happen after 'unload' — the buffer systems detach their 'change'
+        // listeners there, so this emit reaches only bind groups / buffer resources and the
+        // GPU buffer is recreated lazily rather than eagerly right after being freed.
+        // destroy() emits its own 'change', so skip re-keying on that path.
+        if (!this.destroyed)
+        {
+            this._resourceId = uid('resource');
+            this.emit('change', this);
+        }
     }
 
     /** Destroys the buffer */

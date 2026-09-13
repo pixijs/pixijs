@@ -32,6 +32,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     {
         this._renderer = renderer;
         renderer.runners.resolutionChange.add(this);
+        renderer.runners.contextChange.add(this);
         this._managedTexts = new GCManagedHash({
             renderer,
             type: 'renderable',
@@ -53,6 +54,18 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         }
     }
 
+    /**
+     * HTMLText textures are uploaded from pooled images that are reused for the next text,
+     * so they cannot be re-uploaded after a context loss. Unload them and regenerate on the next render.
+     */
+    protected contextChange()
+    {
+        for (const key in this._managedTexts.items)
+        {
+            this._managedTexts.items[key]?.unload();
+        }
+    }
+
     public validateRenderable(htmlText: HTMLText): boolean
     {
         const gpuText = this._getGpuText(htmlText);
@@ -71,7 +84,8 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     {
         const batchableHTMLText = this._getGpuText(htmlText);
 
-        if (htmlText._didTextUpdate)
+        // also update when this renderer has no texture for the text yet, e.g. the text was first rendered elsewhere
+        if (htmlText._didTextUpdate || batchableHTMLText.currentKey !== htmlText.styleKey)
         {
             const resolution = htmlText._autoResolution ? this._renderer.resolution : htmlText.resolution;
 
@@ -132,7 +146,12 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         batchableHTMLText.texturePromise = texturePromise;
         batchableHTMLText.currentKey = htmlText.styleKey;
 
-        batchableHTMLText.texture = await texturePromise;
+        const texture = await texturePromise;
+
+        // the text was unloaded while generating, so this batchable has been discarded
+        if (!batchableHTMLText.renderable) return;
+
+        batchableHTMLText.texture = texture;
 
         // need a rerender...
         const renderGroup = htmlText.renderGroup || htmlText.parentRenderGroup;
@@ -175,7 +194,8 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     {
         const gpuData = text._gpuData[this._renderer.uid];
 
-        if (!gpuData) return;
+        // nothing to release if no texture was ever requested for this renderer
+        if (!gpuData?.texturePromise) return;
 
         const { htmlText } = this._renderer;
 

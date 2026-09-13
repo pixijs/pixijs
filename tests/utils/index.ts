@@ -7,4 +7,6 @@ export * from './getGlProgram';
 export * from './getRenderer';
 export * from './getTexture';
 export * from './localTest';
+export * from './loseContext';
 export * from './toArrayBuffer';
+export * from './waitForPendingHTMLText';

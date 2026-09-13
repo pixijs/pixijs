@@ -233,6 +233,7 @@ export class RoundedRectangle implements ShapePrimitive
         this.y = rectangle.y;
         this.width = rectangle.width;
         this.height = rectangle.height;
+        this.radius = rectangle.radius;
 
         return this;
     }
