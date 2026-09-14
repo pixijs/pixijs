@@ -348,7 +348,7 @@ export class GpuEncoderSystem implements System
         slot.program = program;
         slot.key = bindGroup._key;
 
-        bindGroup._touch(this._renderer.gc.now, this._renderer.tick);
+        bindGroup._touch(this._renderer.gc.now);
 
         const gpuBindGroup = this._renderer.bindGroup.getBindGroup(bindGroup, program, index);
 

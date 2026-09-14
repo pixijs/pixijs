@@ -22,8 +22,6 @@ export class TextureView extends EventEmitter<{
     public readonly _resourceType = 'textureView';
     /** Unique ID for this resource. */
     public readonly _resourceId: number = uid('resource');
-    /** Used for GC. */
-    public _touched = 0;
 
     /** The underlying texture source. */
     public readonly source: TextureSource;

@@ -45,12 +45,6 @@ export class BufferResource extends EventEmitter<{
     public readonly _resourceType = 'bufferResource';
 
     /**
-     * used internally to know if a uniform group was used in the last render pass
-     * @internal
-     */
-    public _touched = 0;
-
-    /**
      * the resource id used internally by the renderer to build bind group keys
      * @internal
      */
