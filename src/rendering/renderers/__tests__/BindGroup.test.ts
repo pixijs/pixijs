@@ -183,7 +183,7 @@ describe('BindGroup', () =>
             1: bufferResource,
         });
 
-        bindGroup._touch(123, 7);
+        bindGroup._touch(123);
 
         expect(groupBuffer._gcLastUsed).toBe(123);
         expect(buffer._gcLastUsed).toBe(123);
@@ -247,7 +247,7 @@ describe('BindGroup', () =>
         expect(bindGroup.resources[0]).toBeNull();
         expect(() => bindGroup._key).not.toThrow();
         expect(bindGroup._key).toBe('-1');
-        expect(() => bindGroup._touch(0, 0)).not.toThrow();
+        expect(() => bindGroup._touch(0)).not.toThrow();
     });
 
     it('should accept (and warn about) an already-destroyed resource without throwing', () =>
@@ -316,6 +316,6 @@ describe('BindGroup', () =>
         expect(bindGroup.resources[0]).toBeNull();
         expect(() => bindGroup._key).not.toThrow();
         expect(bindGroup._key).toBe('-1');
-        expect(() => bindGroup._touch(0, 0)).not.toThrow();
+        expect(() => bindGroup._touch(0)).not.toThrow();
     });
 });

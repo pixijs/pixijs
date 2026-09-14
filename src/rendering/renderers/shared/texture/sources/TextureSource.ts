@@ -254,12 +254,6 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public destroyed: boolean;
 
     /**
-     * Used by automatic texture Garbage Collection, stores last GC tick when it was bound
-     * @protected
-     */
-    public _touched = 0;
-
-    /**
      * Used by the batcher to build texture batches. faster to have the variable here!
      * @protected
      */

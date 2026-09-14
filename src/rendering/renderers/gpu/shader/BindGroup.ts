@@ -118,10 +118,9 @@ export class BindGroup
      * Used internally to 'touch' each resource, to ensure that the GC
      * knows that all resources in this bind group are still being used.
      * @param now - The current time in milliseconds.
-     * @param tick - The current tick.
      * @internal
      */
-    public _touch(now: number, tick: number): void
+    public _touch(now: number): void
     {
         const resources = this.resources;
 
@@ -132,7 +131,6 @@ export class BindGroup
             if (!resource) continue;
 
             resource._gcLastUsed = now;
-            resource._touched = tick;
         }
     }
 
