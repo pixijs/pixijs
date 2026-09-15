@@ -29,6 +29,8 @@ export const scene: TestScene = {
 
         // Borders sum to the full texture size, so the center source span collapses to 0.
         // The center (the stretched white cross) must still render instead of being dropped.
+        // The seam texels are white on both sides, so the GPU's blended seam and the canvas
+        // pipe's single seam texel produce the same pixels and all four snapshots match.
         const ns = new NineSliceSprite({
             texture: rt,
             leftWidth: 120,

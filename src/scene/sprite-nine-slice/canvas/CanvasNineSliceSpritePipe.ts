@@ -9,6 +9,22 @@ import type { RenderPipe } from '../../../rendering/renderers/shared/instruction
 import type { Renderer } from '../../../rendering/renderers/types';
 import type { NineSliceSprite } from '../NineSliceSprite';
 
+/** [start, size] spans for the 3 source and destination columns and rows, reused across draws. */
+const colsSrc = [[0, 0], [0, 0], [0, 0]];
+const rowsSrc = [[0, 0], [0, 0], [0, 0]];
+const colsDst = [[0, 0], [0, 0], [0, 0]];
+const rowsDst = [[0, 0], [0, 0], [0, 0]];
+
+function setSpans(spans: number[][], s0: number, n0: number, s1: number, n1: number, s2: number, n2: number): void
+{
+    spans[0][0] = s0;
+    spans[0][1] = n0;
+    spans[1][0] = s1;
+    spans[1][1] = n1;
+    spans[2][0] = s2;
+    spans[2][1] = n2;
+}
+
 /**
  * The NineSliceSpritePipe is a render pipe for rendering NineSliceSprites with Canvas2D.
  * @internal
@@ -165,40 +181,47 @@ export class CanvasNineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         const centerSrcW = sw - lw - rw;
         const centerSrcH = sh - tw - bw;
 
-        const centerSx = centerSrcW > 0 ? sx + lw : Math.min(Math.max(sx + lw, sx), sx + sw - 1);
+        const centerSx = centerSrcW > 0 ? sx + lw : Math.max(sx, Math.min(sx + lw, sx + sw - 1));
         const centerSw = centerSrcW > 0 ? centerSrcW : 1;
-        const centerSy = centerSrcH > 0 ? sy + tw : Math.min(Math.max(sy + tw, sy), sy + sh - 1);
+        const centerSy = centerSrcH > 0 ? sy + tw : Math.max(sy, Math.min(sy + tw, sy + sh - 1));
         const centerSh = centerSrcH > 0 ? centerSrcH : 1;
 
-        // Source and destination spans for the 3 columns and 3 rows: [start, size].
-        const colsSrc = [[sx, lw], [centerSx, centerSw], [sx + sw - rw, rw]];
-        const rowsSrc = [[sy, tw], [centerSy, centerSh], [sy + sh - bw, bw]];
-        const colsDst = [
-            [dx, destLeftWidth],
-            [dx + destLeftWidth, destCenterWidth],
-            [dx + width - destRightWidth, destRightWidth],
-        ];
-        const rowsDst = [
-            [dy, destTopHeight],
-            [dy + destTopHeight, destCenterHeight],
-            [dy + height - destBottomHeight, destBottomHeight],
-        ];
+        setSpans(colsSrc, sx, lw, centerSx, centerSw, sx + sw - rw, rw);
+        setSpans(rowsSrc, sy, tw, centerSy, centerSh, sy + sh - bw, bw);
+        setSpans(
+            colsDst,
+            dx, destLeftWidth,
+            dx + destLeftWidth, destCenterWidth,
+            dx + width - destRightWidth, destRightWidth,
+        );
+        setSpans(
+            rowsDst,
+            dy, destTopHeight,
+            dy + destTopHeight, destCenterHeight,
+            dy + height - destBottomHeight, destBottomHeight,
+        );
 
         for (let col = 0; col < 3; col++)
         {
-            const [sxx, sww] = colsSrc[col];
-            const [dxx, dww] = colsDst[col];
+            const dww = colsDst[col][1];
 
             if (dww <= 0) continue;
 
+            const sxx = colsSrc[col][0];
+            const sww = colsSrc[col][1];
+            const dxx = colsDst[col][0];
+
             for (let row = 0; row < 3; row++)
             {
-                const [syy, shh] = rowsSrc[row];
-                const [dyy, dhh] = rowsDst[row];
+                const dhh = rowsDst[row][1];
 
                 if (dhh <= 0) continue;
 
-                context.drawImage(finalSource, sxx, syy, sww, shh, dxx, dyy, dww, dhh);
+                context.drawImage(
+                    finalSource,
+                    sxx, rowsSrc[row][0], sww, rowsSrc[row][1],
+                    dxx, rowsDst[row][0], dww, dhh,
+                );
             }
         }
 
