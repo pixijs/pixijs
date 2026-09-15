@@ -295,5 +295,25 @@ describe('Graphics Bounds', () =>
             expect(g.context.containsPoint(new Point(205, 5))).toBe(true);
             expect(g.context.containsPoint(new Point(35, 45))).toBe(true);
         });
+
+        it('should hit every point inside an ellipse whose stroke is wider than the shape', () =>
+        {
+            const g = new Graphics().ellipse(50, 50, 10, 10).stroke({ width: 40, alignment: 1 });
+
+            expect(g.containsPoint(new Point(50, 50))).toBe(true);
+            expect(g.containsPoint(new Point(56, 50))).toBe(true);
+            expect(g.containsPoint(new Point(50, 59))).toBe(true);
+            expect(g.containsPoint(new Point(61, 50))).toBe(false);
+        });
+
+        it('should hit every point inside an ellipse whose stroke covers only its shorter axis', () =>
+        {
+            const g = new Graphics().ellipse(50, 50, 40, 10).stroke({ width: 30, alignment: 0.5 });
+
+            expect(g.containsPoint(new Point(50, 50))).toBe(true);
+            expect(g.containsPoint(new Point(70, 50))).toBe(true);
+            expect(g.containsPoint(new Point(104, 50))).toBe(true);
+            expect(g.containsPoint(new Point(106, 50))).toBe(false);
+        });
     });
 });
