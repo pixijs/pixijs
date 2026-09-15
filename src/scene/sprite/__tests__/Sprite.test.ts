@@ -3,7 +3,7 @@ import { NineSliceSprite } from '../../sprite-nine-slice/NineSliceSprite';
 import { Sprite } from '../Sprite';
 import { getTexture, getWebGLRenderer } from '@test-utils';
 import { Point, Rectangle } from '~/maths';
-import { RenderTexture, Texture, TextureSource } from '~/rendering';
+import { CanvasRenderer, ImageSource, RenderTexture, Texture, TextureSource } from '~/rendering';
 
 describe('Sprite', () =>
 {
@@ -383,6 +383,48 @@ describe('Sprite', () =>
             sprite.texture.source = texture.source;
 
             expect(renderer.renderPipes.sprite.validateRenderable(sprite)).toBe(true);
+        });
+    });
+
+    describe('Canvas rendering', () =>
+    {
+        it('should preserve translucent colors of a rotated frame', async () =>
+        {
+            const texCanvas = document.createElement('canvas');
+
+            texCanvas.width = 3;
+            texCanvas.height = 1;
+
+            const texCtx = texCanvas.getContext('2d');
+            const imageData = texCtx.createImageData(1, 1);
+
+            imageData.data.set([32, 64, 96, 128]);
+            texCtx.fillStyle = '#ff0000';
+            texCtx.fillRect(0, 0, 3, 1);
+            texCtx.putImageData(imageData, 1, 0);
+
+            // A rotated frame goes through the canvas tint helper even without a tint
+            const texture = new Texture({
+                source: new ImageSource({ resource: texCanvas }),
+                frame: new Rectangle(1, 0, 1, 1),
+                rotate: 2,
+            });
+            const renderer = new CanvasRenderer();
+
+            await renderer.init({ width: 2, height: 2, backgroundAlpha: 0 });
+
+            const sprite = new Sprite(texture);
+
+            sprite.setSize(2, 2);
+            renderer.render({ container: sprite });
+
+            const context = renderer.canvas.getContext('2d') as CanvasRenderingContext2D;
+
+            expect(Array.from(context.getImageData(1, 1, 1, 1).data)).toEqual([32, 64, 96, 128]);
+
+            renderer.destroy();
+            sprite.destroy();
+            texture.destroy(true);
         });
     });
 });

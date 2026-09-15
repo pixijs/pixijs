@@ -303,6 +303,7 @@ export const canvasUtils = {
 
         context.save();
 
+        // A white tint is a direct copy; multiplying over an opaque fill lightens translucent pixels.
         if (color !== 0xFFFFFF)
         {
             context.fillStyle = Color.shared.setValue(color).toHex();
@@ -337,26 +338,22 @@ export const canvasUtils = {
             crop.height
         );
 
-        // A white tint is a direct copy; blending over white changes translucent colors.
-        if (color === 0xFFFFFF)
+        if (color !== 0xFFFFFF)
         {
-            context.restore();
-
-            return;
+            context.globalCompositeOperation = 'destination-atop';
+            context.drawImage(
+                source,
+                crop.x,
+                crop.y,
+                crop.width,
+                crop.height,
+                0,
+                0,
+                crop.width,
+                crop.height
+            );
         }
 
-        context.globalCompositeOperation = 'destination-atop';
-        context.drawImage(
-            source,
-            crop.x,
-            crop.y,
-            crop.width,
-            crop.height,
-            0,
-            0,
-            crop.width,
-            crop.height
-        );
         context.restore();
     },
 
