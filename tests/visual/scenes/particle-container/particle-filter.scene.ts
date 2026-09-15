@@ -1,5 +1,5 @@
 import { Assets } from '~/assets';
-import { ColorMatrixFilter } from '~/filters';
+import { ColorTransformFilter } from '~/filters';
 import { Rectangle } from '~/maths';
 import { Particle, ParticleContainer } from '~/scene';
 
@@ -28,7 +28,7 @@ export const scene: TestScene = {
             particleContainer.addParticle(particle);
         }
 
-        const filter = new ColorMatrixFilter();
+        const filter = new ColorTransformFilter();
 
         filter.hue(90, true);
 
