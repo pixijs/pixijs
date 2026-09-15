@@ -118,6 +118,13 @@ export class TextureMatrix
         this.update();
     }
 
+    /** Releases the observed texture, removing the `update` listener from it. */
+    public destroy(): void
+    {
+        this._texture?.removeListener('update', this.update, this);
+        this._texture = null;
+    }
+
     /**
      * Multiplies uvs array to transform
      * @param uvs - mesh uvs

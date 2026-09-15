@@ -247,6 +247,29 @@ describe('Matrix', () =>
 
     describe('decompose', () =>
     {
+        it('should decompose a mirrored rotation into rotation and negative scale', () =>
+        {
+            const transform = new Transform();
+
+            for (const mirror of [[-1, 1], [1, -1]])
+            {
+                const matrix = new Matrix().rotate(Math.PI / 6).scale(mirror[0], mirror[1]);
+
+                matrix.decompose(transform);
+
+                expect(transform.rotation).not.toEqual(0);
+                expect(transform.skew.x).toEqual(0);
+                expect(transform.skew.y).toEqual(0);
+                expect(transform.scale.x).toBeCloseTo(-1, 3);
+                expect(transform.scale.y).toBeCloseTo(1, 3);
+
+                expect(transform.matrix.a).toBeCloseTo(matrix.a, 3);
+                expect(transform.matrix.b).toBeCloseTo(matrix.b, 3);
+                expect(transform.matrix.c).toBeCloseTo(matrix.c, 3);
+                expect(transform.matrix.d).toBeCloseTo(matrix.d, 3);
+            }
+        });
+
         it('should be the inverse of updateLocalTransform even when pivot is set', () =>
         {
             const matrix = new Matrix(0.01, 0.04, 0.04, 0.1, 2, 2);

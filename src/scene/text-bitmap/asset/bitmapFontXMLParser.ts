@@ -55,7 +55,11 @@ export const bitmapFontXMLParser = {
 
         const map: Record<string, string> = {};
 
-        data.baseLineOffset = data.lineHeight - parseInt(common.getAttribute('base'), 10);
+        const base = common.getAttribute('base');
+
+        // when `base` is missing, keep the offset at 0 (the AbstractBitmapFont default)
+        // rather than shifting the layout by a full line
+        data.baseLineOffset = base === null ? 0 : data.lineHeight - parseInt(base, 10);
 
         for (let i = 0; i < char.length; i++)
         {

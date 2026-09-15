@@ -39,6 +39,12 @@ export interface InstructionPipe<INSTRUCTION extends Instruction>
     /** Called just before the render starts giving the RenderPipes a chance to do any setup */
     renderStart?: () => void;
     /**
+     * Called when an InstructionSet is being destroyed. Pipes should release any per-InstructionSet
+     * cached resources they hold (for example, batchers keyed by `instructionSet.uid`).
+     * @param instructionSet - the instruction set being destroyed
+     */
+    destroyInstructionSet?: (instructionSet: InstructionSet) => void;
+    /**
      * Used by the effect pipes push and pop effects to the renderer. A push effect allows
      * the renderer to change its state to support the effect. A pop effect allows the renderer
      * to return to its previous state. An example of this would be the filter effect.

@@ -27,8 +27,13 @@ export interface StructsAndGroups
 }
 
 /**
- * @param wgsl
- * @internal
+ * Parses a WGSL shader source and extracts its `@group`/`@binding` declarations and the
+ * structs they reference. The result feeds {@link generateGpuLayoutGroups} to build a
+ * WebGPU bind group layout.
+ * @param wgsl - The WGSL shader source to parse.
+ * @returns The structs and `@group`/`@binding` groups found in the source.
+ * @category rendering
+ * @advanced
  */
 export function extractStructAndGroups(wgsl: string): StructsAndGroups
 {

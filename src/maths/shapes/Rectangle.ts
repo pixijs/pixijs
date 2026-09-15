@@ -783,9 +783,9 @@ export class Rectangle implements ShapePrimitive
      * const partial = new Rectangle(75, 75, 50, 50);
      * console.log(container.containsRect(partial)); // false
      *
-     * // Zero-area rectangles
+     * // Zero-area rectangles can't contain anything
      * const empty = new Rectangle(0, 0, 0, 100);
-     * console.log(container.containsRect(empty)); // false
+     * console.log(empty.containsRect(inner)); // false
      * ```
      * @param other - The Rectangle to check for containment
      * @returns True if other is fully contained within this Rectangle
@@ -803,8 +803,8 @@ export class Rectangle implements ShapePrimitive
 
         return x1 >= this.x && x1 < this.x + this.width
             && y1 >= this.y && y1 < this.y + this.height
-            && x2 >= this.x && x2 < this.x + this.width
-            && y2 >= this.y && y2 < this.y + this.height;
+            && x2 >= this.x && x2 <= this.x + this.width
+            && y2 >= this.y && y2 <= this.y + this.height;
     }
 
     /**

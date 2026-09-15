@@ -126,6 +126,7 @@ function generateUboSyncPolyfill(
     return (
         uniforms: UniformGroup,
         data: Float32Array,
+        _dataInt32: Int32Array | null,
         offset: number
     ) =>
     {

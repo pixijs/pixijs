@@ -45,12 +45,6 @@ export class BufferResource extends EventEmitter<{
     public readonly _resourceType = 'bufferResource';
 
     /**
-     * used internally to know if a uniform group was used in the last render pass
-     * @internal
-     */
-    public _touched = 0;
-
-    /**
      * the resource id used internally by the renderer to build bind group keys
      * @internal
      */
@@ -92,6 +86,22 @@ export class BufferResource extends EventEmitter<{
         this.size = size;
 
         this.buffer.on('change', this.onBufferChange, this);
+    }
+
+    /**
+     * The GC tracks the underlying buffer, not this resource — a GC stamp here (see
+     * BindGroup._touch) must land on the buffer, or the GC collects it while cached
+     * bind groups still reference it.
+     * @internal
+     */
+    get _gcLastUsed(): number
+    {
+        return this.buffer?._gcLastUsed ?? -1;
+    }
+
+    set _gcLastUsed(value: number)
+    {
+        if (this.buffer) this.buffer._gcLastUsed = value;
     }
 
     protected onBufferChange(): void

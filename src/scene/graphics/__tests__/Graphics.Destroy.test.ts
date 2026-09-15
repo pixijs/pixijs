@@ -103,6 +103,21 @@ describe('Graphics Destroy', () =>
         expect(spy).toHaveBeenCalled();
     });
 
+    it('should unregister from its own context when the context is preserved', () =>
+    {
+        const graphics = new Graphics();
+        const context = graphics.context;
+
+        expect(context.listenerCount('update')).toBe(1);
+        expect(context.listenerCount('unload')).toBe(1);
+
+        graphics.destroy({ context: false });
+
+        expect(context.destroyed).toBe(false);
+        expect(context.listenerCount('update')).toBe(0);
+        expect(context.listenerCount('unload')).toBe(0);
+    });
+
     it('should not destroy its context if its managed externally', async () =>
     {
         const context = new GraphicsContext();
@@ -114,8 +129,38 @@ describe('Graphics Destroy', () =>
 
         context.on('destroy', spy);
 
+        expect(context.listenerCount('update')).toBe(1);
+        expect(context.listenerCount('unload')).toBe(1);
+
         g.destroy();
 
         expect(spy).not.toHaveBeenCalled();
+        expect(context.listenerCount('update')).toBe(0);
+        expect(context.listenerCount('unload')).toBe(0);
+    });
+
+    it('should only unregister the destroyed graphics from a shared context', () =>
+    {
+        const context = new GraphicsContext();
+        const graphicsA = new Graphics(context);
+        const graphicsB = new Graphics(context);
+
+        expect(context.listenerCount('update')).toBe(2);
+        expect(context.listenerCount('unload')).toBe(2);
+
+        graphicsA.destroy();
+
+        expect(context.listenerCount('update')).toBe(1);
+        expect(context.listenerCount('unload')).toBe(1);
+
+        graphicsB.didViewUpdate = false;
+        context.rect(0, 0, 10, 10).fill(0xFF0000);
+
+        expect(graphicsB.didViewUpdate).toBe(true);
+
+        graphicsB.destroy();
+
+        expect(context.listenerCount('update')).toBe(0);
+        expect(context.listenerCount('unload')).toBe(0);
     });
 });

@@ -1,3 +1,5 @@
+import { Buffer } from '../../buffer/Buffer';
+import { BufferUsage } from '../../buffer/const';
 import { UniformGroup } from '../UniformGroup';
 
 describe('UniformGroup', () =>
@@ -73,5 +75,61 @@ describe('UniformGroup', () =>
         });
 
         expect(uniformGroup.uniforms.uActions).toEqual([1, 2, 3]);
+    });
+
+    it('should re-key and emit change when its buffer is unloaded', () =>
+    {
+        const uniformGroup = new UniformGroup({
+            uTest: { value: 1, type: 'f32' },
+        });
+
+        const buffer = new Buffer({
+            data: new Float32Array(4),
+            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
+        });
+
+        uniformGroup.buffer = buffer;
+
+        const startingId = uniformGroup._resourceId;
+        const changeObserver = jest.fn();
+
+        uniformGroup.on('change', changeObserver);
+
+        buffer.unload();
+
+        expect(uniformGroup._resourceId).not.toBe(startingId);
+        expect(changeObserver).toHaveBeenCalledTimes(1);
+    });
+
+    it('should stop listening to a buffer it no longer owns', () =>
+    {
+        const uniformGroup = new UniformGroup({
+            uTest: { value: 1, type: 'f32' },
+        });
+
+        const oldBuffer = new Buffer({
+            data: new Float32Array(4),
+            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
+        });
+
+        const newBuffer = new Buffer({
+            data: new Float32Array(4),
+            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
+        });
+
+        uniformGroup.buffer = oldBuffer;
+        uniformGroup.buffer = newBuffer;
+
+        const changeObserver = jest.fn();
+
+        uniformGroup.on('change', changeObserver);
+
+        oldBuffer.unload();
+
+        expect(changeObserver).not.toHaveBeenCalled();
+
+        newBuffer.unload();
+
+        expect(changeObserver).toHaveBeenCalledTimes(1);
     });
 });

@@ -4,6 +4,7 @@ import { STENCIL_MODES } from '../shared/state/const';
 
 import type { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import type { System } from '../shared/system/System';
+import type { GlRenderTarget } from './GlRenderTarget';
 import type { WebGLRenderer } from './WebGLRenderer';
 
 /**
@@ -21,6 +22,7 @@ export class GlStencilSystem implements System
         name: 'stencil',
     } as const;
 
+    private readonly _renderer: WebGLRenderer;
     private _gl: WebGLRenderingContext;
 
     private readonly _stencilCache = {
@@ -28,11 +30,6 @@ export class GlStencilSystem implements System
         stencilReference: 0,
         stencilMode: STENCIL_MODES.NONE,
     };
-
-    private _renderTargetStencilState: Record<number, {
-        stencilMode: STENCIL_MODES;
-        stencilReference: number;
-    }> = Object.create(null);
 
     private _stencilOpsMapping: {
         keep: number;
@@ -57,9 +54,13 @@ export class GlStencilSystem implements System
     };
 
     private _activeRenderTarget: RenderTarget;
+    /** the backend counterpart of the active render target, which carries the stencil state being tracked */
+    private _activeGpuRenderTarget: GlRenderTarget;
 
     constructor(renderer: WebGLRenderer)
     {
+        this._renderer = renderer;
+
         renderer.renderTarget.onRenderTargetChange.add(this);
     }
 
@@ -91,6 +92,10 @@ export class GlStencilSystem implements System
             'decrement-wrap': gl.DECR_WRAP,
         };
 
+        // the backend render targets were rebuilt with the context, so the stencil state starts over;
+        // the next setStencilMode picks up the rebuilt object, as no change event announces it
+        this._activeGpuRenderTarget = null;
+
         this.resetState();
     }
 
@@ -100,18 +105,12 @@ export class GlStencilSystem implements System
 
         this._activeRenderTarget = renderTarget;
 
-        let stencilState = this._renderTargetStencilState[renderTarget.uid];
+        const gpuRenderTarget = this._renderer.renderTarget.getGpuRenderTarget(renderTarget);
 
-        if (!stencilState)
-        {
-            stencilState = this._renderTargetStencilState[renderTarget.uid] = {
-                stencilMode: STENCIL_MODES.DISABLED,
-                stencilReference: 0,
-            };
-        }
+        this._activeGpuRenderTarget = gpuRenderTarget;
 
         // restore the current render targets stencil state..
-        this.setStencilMode(stencilState.stencilMode, stencilState.stencilReference);
+        this.setStencilMode(gpuRenderTarget.stencilMode, gpuRenderTarget.stencilReference);
     }
 
     public resetState()
@@ -124,7 +123,8 @@ export class GlStencilSystem implements System
 
     public setStencilMode(stencilMode: STENCIL_MODES, stencilReference: number)
     {
-        const stencilState = this._renderTargetStencilState[this._activeRenderTarget.uid];
+        const gpuRenderTarget = this._activeGpuRenderTarget
+            ??= this._renderer.renderTarget.getGpuRenderTarget(this._activeRenderTarget);
 
         const gl = this._gl;
         const mode = GpuStencilModesToPixi[stencilMode];
@@ -132,8 +132,8 @@ export class GlStencilSystem implements System
         const _stencilCache = this._stencilCache;
 
         // store the stencil state for restoration later, if a render target changes
-        stencilState.stencilMode = stencilMode;
-        stencilState.stencilReference = stencilReference;
+        gpuRenderTarget.stencilMode = stencilMode;
+        gpuRenderTarget.stencilReference = stencilReference;
 
         if (stencilMode === STENCIL_MODES.DISABLED)
         {
@@ -166,5 +166,14 @@ export class GlStencilSystem implements System
         }
     }
 
-    public destroy?: () => void;
+    public destroy()
+    {
+        this._renderer.renderTarget.onRenderTargetChange.remove(this);
+
+        (this._renderer as null) = null;
+        this._gl = null;
+
+        this._activeRenderTarget = null;
+        this._activeGpuRenderTarget = null;
+    }
 }

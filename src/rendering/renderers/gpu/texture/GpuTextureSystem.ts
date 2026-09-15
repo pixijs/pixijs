@@ -129,6 +129,11 @@ export class GpuTextureSystem implements System, CanvasGenerator
     protected contextChange(gpu: GPU): void
     {
         this._gpu = gpu;
+
+        // everything created by the previous device died with it
+        this._managedTextures.removeAll();
+        this._gpuSamplers = Object.create(null);
+        this._mipmapGenerator = null;
     }
 
     /**

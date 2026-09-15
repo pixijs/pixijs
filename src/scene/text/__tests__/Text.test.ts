@@ -7,7 +7,7 @@ import { TextStyle } from '../TextStyle';
 import '../../graphics/init';
 import '../../text-bitmap/init';
 import '../init';
-import { getWebGLRenderer } from '@test-utils';
+import { getWebGLRenderer, getWebGPURenderer, itLocalOnly, loseAndRestoreContext, loseAndRestoreDevice } from '@test-utils';
 import { Point } from '~/maths';
 import { TextureSource } from '~/rendering/renderers/shared/texture/sources/TextureSource';
 
@@ -209,6 +209,56 @@ describe('Text', () =>
             text2.destroy(true);
 
             expect(style.fill).toBe(null);
+        });
+
+        it('should remove the update listener from a shared style on destroy (no leak)', () =>
+        {
+            const style = new TextStyle({ fill: 'red' });
+
+            const text1 = new Text({ text: 'foo', style });
+            const text2 = new Text({ text: 'bar', style });
+
+            expect(style.listenerCount('update')).toEqual(2);
+
+            text1.destroy();
+
+            // Text must detach from the shared style so the destroyed instance
+            // can be garbage collected. #12049
+            expect(style.listenerCount('update')).toEqual(1);
+
+            text2.destroy();
+
+            expect(style.listenerCount('update')).toEqual(0);
+        });
+
+        it('should detach from the old style when assigning a new one', () =>
+        {
+            const styleA = new TextStyle({ fill: 'red' });
+            const styleB = new TextStyle({ fill: 'blue' });
+
+            const text = new Text({ text: 'foo', style: styleA });
+
+            expect(styleA.listenerCount('update')).toEqual(1);
+
+            text.style = styleB;
+
+            expect(styleA.listenerCount('update')).toEqual(0);
+            expect(styleB.listenerCount('update')).toEqual(1);
+        });
+
+        it('should remove the update listener from a shared style for BitmapText too (#12049)', () =>
+        {
+            const style = new TextStyle({ fontFamily: 'Arial' });
+
+            const text1 = new BitmapText({ text: 'foo', style });
+            const text2 = new BitmapText({ text: 'bar', style });
+
+            expect(style.listenerCount('update')).toEqual(2);
+
+            text1.destroy();
+            text2.destroy();
+
+            expect(style.listenerCount('update')).toEqual(0);
         });
     });
 
@@ -552,6 +602,51 @@ describe('Text', () =>
             });
 
             expect(text.height).toBeCloseTo(metrics.height, 0);
+        });
+    });
+
+    describe('context loss', () =>
+    {
+        it('should render the text again after the WebGL context is lost and restored', async () =>
+        {
+            const renderer = await getWebGLRenderer({ width: 64, height: 64 });
+            const text = new Text({ text: 'Hi', style: { fontSize: 40, fill: 'white' } });
+
+            renderer.render(text);
+
+            const before = renderer.extract.pixels(text).pixels;
+
+            expect(before.some((value) => value > 0)).toBe(true);
+
+            await loseAndRestoreContext(renderer);
+
+            renderer.render(text);
+
+            expect(renderer.extract.pixels(text).pixels).toEqual(before);
+
+            text.destroy();
+            renderer.destroy();
+        });
+
+        itLocalOnly('should render the text again after the WebGPU device is lost', async () =>
+        {
+            const renderer = await getWebGPURenderer({ width: 64, height: 64 });
+            const text = new Text({ text: 'Hi', style: { fontSize: 40, fill: 'white' } });
+
+            renderer.render(text);
+
+            const before = renderer.extract.pixels(text).pixels;
+
+            expect(before.some((value) => value > 0)).toBe(true);
+
+            await loseAndRestoreDevice(renderer);
+
+            renderer.render(text);
+
+            expect(renderer.extract.pixels(text).pixels).toEqual(before);
+
+            text.destroy();
+            renderer.destroy();
         });
     });
 });
