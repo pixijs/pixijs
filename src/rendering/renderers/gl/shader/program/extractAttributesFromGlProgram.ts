@@ -56,8 +56,9 @@ export function extractAttributesFromGlProgram(
 
     const keys = Object.keys(attributes);
 
-    // use the GL-assigned attribute locations; setting them with bindAttribLocation
-    // renders blank (no GL error) on some Adreno/ANGLE WebGL1 drivers
+    // always read the driver-assigned locations. Forcing them with bindAttribLocation + relink
+    // renders blank with no GL error on Adreno 3xx WebGL1 drivers, whose cached program binaries
+    // carry wrong bound attribute locations (Chromium gpu_driver_bug_list id 126, crbug.com/510637)
     for (let i = 0; i < keys.length; i++)
     {
         attributes[keys[i]].location = gl.getAttribLocation(program, keys[i]);
