@@ -95,7 +95,7 @@ export type FilterAntialias = 'on' | 'off' | 'inherit';
  * .2. The target is measured using getGlobalBounds
  * (recursively go through all children and figure out how big the object is)
  * <br>
- * .3. Get the closest Po2 Textures from the texture pool
+ * .3. Get power of two or screen sized textures from the texture pool
  * <br>
  * .4. Render the target to that texture
  * <br>

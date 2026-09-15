@@ -353,6 +353,46 @@ describe('Text', () =>
         });
     });
 
+    describe('textureStyle', () =>
+    {
+        it('should give the text a pooled texture with the requested scale mode', async () =>
+        {
+            const text = new Text({ text: 'foo', textureStyle: { scaleMode: 'nearest' } });
+            const renderer = await getWebGLRenderer();
+            const texture = renderer.canvasText.getTexture(text);
+
+            expect(texture.source.scaleMode).toBe('nearest');
+            // the pool keeps its own style on the texture, the text's style object is never attached
+            expect(texture.source.style).not.toBe(text.textureStyle);
+
+            renderer.canvasText.returnTexture(texture);
+            renderer.destroy();
+        });
+
+        it('should warn once when the texture style carries more than scaleMode', () =>
+        {
+            const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { /* capture */ });
+            const warnings = () => warnSpy.mock.calls.filter((args) => args.join(' ').includes('only scaleMode is applied'));
+
+            const plain = new Text({ text: 'foo', textureStyle: { scaleMode: 'nearest' } });
+
+            expect(warnings()).toHaveLength(0);
+
+            const first = new Text({ text: 'foo', textureStyle: { scaleMode: 'nearest', addressMode: 'repeat' } });
+
+            expect(warnings()).toHaveLength(1);
+
+            const second = new Text({ text: 'bar', textureStyle: { maxAnisotropy: 8 } });
+
+            expect(warnings()).toHaveLength(1);
+
+            warnSpy.mockRestore();
+            plain.destroy();
+            first.destroy();
+            second.destroy();
+        });
+    });
+
     describe('autoGenerateMipmaps', () =>
     {
         it('should accept autoGenerateMipmaps in constructor', () =>
