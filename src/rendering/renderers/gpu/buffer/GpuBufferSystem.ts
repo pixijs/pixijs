@@ -60,6 +60,7 @@ export class GpuBufferSystem implements System
     protected contextChange(gpu: GPU): void
     {
         this._gpu = gpu;
+        this.destroyAll();
     }
 
     public getGPUBuffer(buffer: Buffer): GPUBuffer

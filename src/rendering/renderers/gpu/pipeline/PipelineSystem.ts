@@ -222,7 +222,7 @@ export class PipelineSystem implements System
     private readonly _bindingNamesCache: Record<string, Record<string, string>> = Object.create(null);
 
     private _pipeCache: PipeHash = new Map();
-    private readonly _pipeStateCaches: Record<number, PipeHash> = Object.create(null);
+    private _pipeStateCaches: Record<number, PipeHash> = Object.create(null);
 
     private _gpu: GPU;
     private _stencilState: StencilState;
@@ -247,6 +247,8 @@ export class PipelineSystem implements System
     protected contextChange(gpu: GPU): void
     {
         this._gpu = gpu;
+        this._moduleCache = Object.create(null);
+        this._pipeStateCaches = Object.create(null);
         this.setStencilMode(STENCIL_MODES.DISABLED);
 
         this._updatePipeHash();
@@ -751,7 +753,7 @@ export class PipelineSystem implements System
         this._gpu = null;
         (this._renderer as null) = null;
         (this._bindingNamesCache as null) = null;
-        (this._pipeStateCaches as null) = null;
+        this._pipeStateCaches = null;
         (this._moduleCache as null) = null;
     }
 }

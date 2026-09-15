@@ -43,18 +43,22 @@ export class RenderBundle
      * render target — which is exactly what {@link GpuEncoderSystem.isBundleValid} does.
      */
     public readonly stateKey: number;
+    /** The device the bundle was recorded on. A bundle cannot be replayed on the device that replaces it after a loss. */
+    public readonly device: GPUDevice;
     /** Optional debug label — names the bundle in GPU captures and in WebGPU validation errors. */
     public readonly label?: string;
 
     /**
      * @param gpuBundle - The recorded native render bundle.
      * @param stateKey - The pipeline state key captured when recording began.
+     * @param device - The device the bundle was recorded on.
      * @param label - Optional debug label for the bundle.
      */
-    constructor(gpuBundle: GPURenderBundle, stateKey: number, label?: string)
+    constructor(gpuBundle: GPURenderBundle, stateKey: number, device: GPUDevice, label?: string)
     {
         this.gpuBundle = gpuBundle;
         this.stateKey = stateKey;
+        this.device = device;
         this.label = label;
     }
 }

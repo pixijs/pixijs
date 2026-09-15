@@ -1050,9 +1050,20 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
             {
                 this._releaseRenderTarget(key as TextureSource, renderTarget);
             }
+            else
+            {
+                // a caller-owned target outlives the system: stop listening, leave it intact
+                renderTarget.off('destroy', this._onRenderTargetDestroy, this);
+            }
         });
 
         this._renderSurfaceToRenderTargetHash.clear();
+
+        // free the backend targets built for caller-owned surfaces, which the loop above leaves intact
+        for (const gpuRenderTarget of Object.values(this._gpuRenderTargetHash))
+        {
+            if (gpuRenderTarget) this.adaptor.destroyGpuRenderTarget(gpuRenderTarget);
+        }
 
         this._gpuRenderTargetHash = Object.create(null);
     }
@@ -1069,6 +1080,8 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         if (renderSurface instanceof RenderTarget)
         {
             renderTarget = renderSurface;
+
+            renderSurface.once('destroy', this._onRenderTargetDestroy, this);
         }
         else if (renderSurface instanceof TextureSource)
         {
@@ -1101,6 +1114,17 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
     }
 
     /**
+     * A caller-owned render target is tearing itself down. It releases its own attachments,
+     * so only the system's references to it and the backend objects built for it go here.
+     * @param renderTarget - the render target being destroyed
+     */
+    private _onRenderTargetDestroy(renderTarget: RenderTarget): void
+    {
+        this._renderSurfaceToRenderTargetHash.delete(renderTarget);
+        this._releaseGpuRenderTarget(renderTarget);
+    }
+
+    /**
      * Tears down a render target that wraps a texture source, removing every reference the
      * system holds to it so neither the system's own teardown nor the source's `destroy`
      * event can destroy it a second time.
@@ -1112,7 +1136,15 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
         renderTarget.destroy();
         this._renderSurfaceToRenderTargetHash.delete(renderSurface);
         renderSurface.off('destroy', this._onRenderSurfaceDestroy, this);
+        this._releaseGpuRenderTarget(renderTarget);
+    }
 
+    /**
+     * Frees the backend objects (framebuffers, renderbuffers, MSAA textures) cached for a render target.
+     * @param renderTarget - the render target whose backend counterpart is no longer needed
+     */
+    private _releaseGpuRenderTarget(renderTarget: RenderTarget): void
+    {
         const gpuRenderTarget = this._gpuRenderTargetHash[renderTarget.uid];
 
         if (gpuRenderTarget)

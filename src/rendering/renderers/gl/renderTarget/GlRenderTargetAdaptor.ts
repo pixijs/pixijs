@@ -385,7 +385,8 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             gl.deleteRenderbuffer(renderBuffer);
         });
 
-        gpuRenderTarget.msaaRenderBuffer = null;
+        // stays an array so destroying the same target again finds nothing to delete
+        gpuRenderTarget.msaaRenderBuffer.length = 0;
     }
 
     public clear(

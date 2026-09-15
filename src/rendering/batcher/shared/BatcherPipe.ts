@@ -163,6 +163,32 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         this._adaptor.execute(this, batch);
     }
 
+    /**
+     * Releases all batchers cached for the given InstructionSet. Called from
+     * {@link InstructionSet.destroy} so that batchers (and their GPU geometry / attribute
+     * buffers / referenced textures) do not leak when the owning RenderGroup is destroyed.
+     * @param instructionSet - the instruction set being destroyed
+     */
+    public destroyInstructionSet(instructionSet: InstructionSet)
+    {
+        const batchers = this._batchersByInstructionSet[instructionSet.uid];
+
+        if (!batchers) return;
+
+        for (const i in batchers)
+        {
+            batchers[i].destroy();
+        }
+
+        delete this._batchersByInstructionSet[instructionSet.uid];
+
+        if (this._activeBatches === batchers)
+        {
+            this._activeBatches = Object.create(null);
+            this._activeBatch = null;
+        }
+    }
+
     public destroy()
     {
         this.state = null;

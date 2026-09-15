@@ -185,12 +185,14 @@ export type ShaderFromResources = (GlShaderFromWith | GpuShaderFromWith)
  *     resources: {
  *         uTexture: texture.source,
  *         uSampler: texture.sampler,
- *         uColor: [1, 0, 0, 1],
+ *         myUniforms: {
+ *             uColor: { value: [1, 0, 0, 1], type: 'vec4<f32>' },
+ *         },
  *     },
  * });
  *
  * // update the uniforms
- * shader.resources.uColor[1] = 1;
+ * shader.resources.myUniforms.uniforms.uColor[1] = 1;
  * shader.resources.uTexture = texture2.source;
  * @class
  * @category rendering
