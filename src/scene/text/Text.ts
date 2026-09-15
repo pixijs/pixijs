@@ -5,6 +5,7 @@ import { type BatchableText } from './canvas/BatchableText';
 import { CanvasTextGenerator } from './canvas/CanvasTextGenerator';
 import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
 import { TextStyle } from './TextStyle';
+import { warnIgnoredTextureStyle } from './utils/warnIgnoredTextureStyle';
 import './init';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
@@ -52,8 +53,8 @@ export interface Text extends PixiMixins.Text, AbstractText<
 export interface CanvasTextOptions extends TextOptions
 {
     /**
-     * Optional texture style to use for the text texture. Only `scaleMode` is applied
-     * (`nearest` or `linear`) when the texture is requested from the pool.
+     * Optional texture style for the text texture. Only `scaleMode` is read (`nearest` or `linear`):
+     * the text gets a pooled texture with that scale mode. Every other field is ignored.
      * @example
      * ```ts
      * const text = new Text({
@@ -161,9 +162,8 @@ export class Text
     public override readonly renderPipeId: string = 'text';
 
     /**
-     * Optional texture style to use for the text.
-     * > [!NOTE] Text is not updated when this property is updated,
-     * > you must update the text manually by calling `text.onViewUpdate()`
+     * Optional texture style to use for the text. Only `scaleMode` is read, when a new texture is
+     * generated for the text (a text, style or resolution change).
      * @advanced
      */
     public textureStyle?: TextureStyle;
@@ -194,6 +194,8 @@ export class Text
             this.textureStyle = options.textureStyle instanceof TextureStyle
                 ? options.textureStyle
                 : new TextureStyle(options.textureStyle);
+
+            warnIgnoredTextureStyle(this.textureStyle);
         }
 
         this.autoGenerateMipmaps = options.autoGenerateMipmaps ?? TextureSource.defaultOptions.autoGenerateMipmaps;

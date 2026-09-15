@@ -157,4 +157,25 @@ describe('CanvasPool', () =>
 
         expect(pool.getOptimalCanvasAndContext(1280, 720).canvas).not.toBe(canvasAndContext.canvas);
     });
+
+    it('should keep enableFullScreen as a deprecated accessor', () =>
+    {
+        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { /* silence the deprecation */ });
+        const groupSpy = jest.spyOn(console, 'groupCollapsed').mockImplementation(() => { /* silence the group */ });
+
+        expect(pool.enableFullScreen).toBe(false);
+
+        // the deprecation helper logs through console.groupCollapsed when it is available
+        const calls: unknown[][] = [...warnSpy.mock.calls, ...groupSpy.mock.calls];
+
+        expect(calls.some((args) => args.some((arg) =>
+            typeof arg === 'string' && arg.includes('CanvasPool.enableFullScreen is no longer used')))).toBe(true);
+
+        pool.enableFullScreen = true;
+
+        expect(pool.enableFullScreen).toBe(true);
+
+        warnSpy.mockRestore();
+        groupSpy.mockRestore();
+    });
 });

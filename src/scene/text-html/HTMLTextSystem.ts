@@ -240,9 +240,12 @@ export class HTMLTextSystem implements System
 
     private _cleanUp(texture: Texture)
     {
+        // the pool destroys a texture whose bucket was pruned, so take the source before handing it back
+        const source = texture.source;
+
         TexturePool.returnTexture(texture);
-        texture.source.resource = null;
-        texture.source.uploadMethodId = 'unknown';
+        source.resource = null;
+        source.uploadMethodId = 'unknown';
     }
 
     public destroy()

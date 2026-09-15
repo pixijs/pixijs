@@ -1,5 +1,6 @@
 import { DOMAdapter } from '../../../../environment/adapter';
 import { isPow2, nextPow2 } from '../../../../maths/misc/pow2';
+import { deprecation, v8_21_0 } from '../../../../utils/logging/deprecation';
 import { warn } from '../../../../utils/logging/warn';
 import { GlobalResourceRegistry } from '../../../../utils/pool/GlobalResourceRegistry';
 import { ScreenSizeRegistry } from './utils/ScreenSizeRegistry';
@@ -43,9 +44,36 @@ export class CanvasPoolClass
     /** the screens this pool is sizing its canvases for */
     private readonly _screens = new ScreenSizeRegistry();
 
+    private _enableFullScreen = false;
+
     constructor(canvasOptions?: ICanvasRenderingContext2DSettings)
     {
         this.canvasOptions = canvasOptions || {};
+    }
+
+    /**
+     * Has no effect. The pool sizes canvases to the screens registered with
+     * {@link CanvasPoolClass#setScreenSize|setScreenSize}.
+     * @deprecated since 8.21.0
+     */
+    get enableFullScreen(): boolean
+    {
+        // #if _DEBUG
+        // eslint-disable-next-line max-len
+        deprecation(v8_21_0, 'CanvasPool.enableFullScreen is no longer used, the pool sizes canvases to the screens registered with setScreenSize.');
+        // #endif
+
+        return this._enableFullScreen;
+    }
+
+    set enableFullScreen(value: boolean)
+    {
+        // #if _DEBUG
+        // eslint-disable-next-line max-len
+        deprecation(v8_21_0, 'CanvasPool.enableFullScreen is no longer used, the pool sizes canvases to the screens registered with setScreenSize.');
+        // #endif
+
+        this._enableFullScreen = value;
     }
 
     /**

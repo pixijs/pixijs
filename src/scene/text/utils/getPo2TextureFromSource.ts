@@ -9,7 +9,7 @@ import type { Texture } from '../../../rendering/renderers/shared/texture/Textur
 const tempBounds = new Bounds();
 
 /**
- * Takes an image and creates a texture from it, using a power of 2 texture from the texture pool.
+ * Takes an image and creates a texture from it, using a power of two or screen sized texture from the texture pool.
  * Remember to return the texture when you don't need it any more!
  * @param image - The image to create a texture from
  * @param width - the frame width of the texture

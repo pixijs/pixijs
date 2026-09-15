@@ -43,14 +43,14 @@ const styled = new HTMLText({
 | Option                | Type                                    | Default                                            | Description                                                                                                                                               |
 | --------------------- | --------------------------------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `style`               | `HTMLTextStyle \| HTMLTextStyleOptions` | `new HTMLTextStyle()`                              | HTML text style object or options. Matches `TextStyle` minus `leading`, `textBaseline`, `trim`, and `filters`. Adds `cssOverrides` for raw CSS injection. |
-| `textureStyle`        | `TextureStyle \| TextureStyleOptions`   | `undefined`                                        | Override the generated texture's scale mode (`nearest` or `linear`). (@advanced)                                                                          |
+| `textureStyle`        | `TextureStyle \| TextureStyleOptions`   | `undefined`                                        | Scale mode for the generated texture (`nearest` or `linear`); every other `TextureStyle` field is ignored. (@advanced)                                    |
 | `autoGenerateMipmaps` | `boolean`                               | `TextureSource.defaultOptions.autoGenerateMipmaps` | Generate mipmaps for the text texture; improves quality when scaled down.                                                                                 |
 
 All base text options (`text`, `anchor`, `resolution`, `roundPixels`) are inherited from `TextOptions` — see `references/text.md`.
 
 All `Container` options (`position`, `scale`, `tint`, `label`, `filters`, `zIndex`, etc.) are also valid here — see `skills/pixijs-scene-core-concepts/references/constructor-options.md`.
 
-> Both `textureStyle` and `autoGenerateMipmaps` are also exposed as runtime instance properties, but mutating them after construction requires calling `htmlText.onViewUpdate()` to trigger a re-render.
+> Both `textureStyle` and `autoGenerateMipmaps` are also exposed as runtime instance properties, but they are only read when a new texture is generated for the text (a text, style or resolution change); `onViewUpdate()` alone does not regenerate it.
 
 ## Core Patterns
 

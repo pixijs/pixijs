@@ -346,7 +346,7 @@ export class FilterSystem implements System
         /// /////////
 
         // set all the filter data
-        // get a P02 texture from our pool...
+        // get a power of two or screen sized texture from our pool...
         filterData.outputRenderSurface = TexturePool.getOptimalTexture({
             width: bounds.width,
             height: bounds.height,
@@ -614,7 +614,7 @@ export class FilterSystem implements System
 
         /// ///
         // bind...
-        // get a P02 texture from our pool...
+        // get a power of two or screen sized texture from our pool...
         filterData.inputTexture = TexturePool.getOptimalTexture({
             width: bounds.width,
             height: bounds.height,

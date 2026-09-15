@@ -1,6 +1,7 @@
 import '~/rendering/init';
 import { TextureSource } from '../sources/TextureSource';
 import { TexturePoolClass } from '../TexturePool';
+import { TextureStyle } from '../TextureStyle';
 
 describe('TexturePool', () =>
 {
@@ -588,9 +589,96 @@ describe('TexturePool', () =>
             warnSpy.mockRestore();
             texture.destroy(true);
         });
+
+        it('should forget a texture it destroyed in a prune', () =>
+        {
+            pool.setScreenSize(1, 100, 100);
+
+            const texture = pool.getOptimalTexture({ width: 90, height: 90 });
+
+            pool.returnTexture(texture);
+            pool.removeScreen(1);
+
+            expect(texture.destroyed).toBe(true);
+
+            const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { /* capture */ });
+
+            pool.returnTexture(texture);
+
+            expect(warnSpy.mock.calls.join(' ')).toContain('did not come from this pool');
+
+            warnSpy.mockRestore();
+        });
+
+        it('should forget the textures it destroyed in a clear', () =>
+        {
+            const texture = pool.getOptimalTexture({ width: 64, height: 64 });
+
+            pool.returnTexture(texture);
+            pool.clear(true);
+
+            expect(texture.destroyed).toBe(true);
+
+            const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { /* capture */ });
+
+            pool.returnTexture(texture);
+
+            expect(warnSpy.mock.calls.join(' ')).toContain('did not come from this pool');
+
+            warnSpy.mockRestore();
+        });
+
+        it('should forget the textures it dropped in a clear that keeps them alive', () =>
+        {
+            const texture = pool.getOptimalTexture({ width: 64, height: 64 });
+
+            pool.returnTexture(texture);
+            pool.clear(false);
+
+            expect(texture.destroyed).toBe(false);
+
+            const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { /* capture */ });
+
+            pool.returnTexture(texture);
+
+            expect(warnSpy.mock.calls.join(' ')).toContain('did not come from this pool');
+
+            warnSpy.mockRestore();
+            texture.destroy(true);
+        });
     });
 
-    describe('Deprecated positional arguments', () =>
+    describe('Style Reset', () =>
+    {
+        it('should put the pool style back when a texture is returned with resetStyle', () =>
+        {
+            const texture = pool.getOptimalTexture({ width: 64, height: 64 });
+            const poolStyle = texture.source.style;
+
+            texture.source.style = new TextureStyle({ addressMode: 'repeat' });
+            pool.returnTexture(texture, true);
+
+            expect(texture.source.style).toBe(poolStyle);
+
+            const reused = pool.getOptimalTexture({ width: 64, height: 64 });
+
+            expect(reused).toBe(texture);
+            expect(reused.source.addressMode).toBe(TextureStyle.defaultOptions.addressMode);
+        });
+
+        it('should keep an assigned style when a texture is returned without resetStyle', () =>
+        {
+            const texture = pool.getOptimalTexture({ width: 64, height: 64 });
+            const consumerStyle = new TextureStyle({ addressMode: 'repeat' });
+
+            texture.source.style = consumerStyle;
+            pool.returnTexture(texture);
+
+            expect(texture.source.style).toBe(consumerStyle);
+        });
+    });
+
+    describe('Deprecated API', () =>
     {
         let warnSpy: jest.SpyInstance;
         let groupSpy: jest.SpyInstance;
@@ -666,6 +754,31 @@ describe('TexturePool', () =>
 
             positional.destroy(true);
             options.destroy(true);
+        });
+
+        it('should keep textureStyle as a deprecated accessor', () =>
+        {
+            const nearestPool = new TexturePoolClass({ scaleMode: 'nearest' });
+
+            expect(nearestPool.textureStyle).toBeInstanceOf(TextureStyle);
+            expect(nearestPool.textureStyle.scaleMode).toBe('nearest');
+            expect(firedFor('TexturePool.textureStyle is no longer used')).toBe(true);
+
+            const style = new TextureStyle({ scaleMode: 'linear' });
+
+            nearestPool.textureStyle = style;
+
+            expect(nearestPool.textureStyle).toBe(style);
+        });
+
+        it('should keep enableFullScreen as a deprecated accessor', () =>
+        {
+            expect(pool.enableFullScreen).toBe(false);
+            expect(firedFor('TexturePool.enableFullScreen is no longer used')).toBe(true);
+
+            pool.enableFullScreen = true;
+
+            expect(pool.enableFullScreen).toBe(true);
         });
     });
 

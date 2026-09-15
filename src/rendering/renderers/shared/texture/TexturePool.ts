@@ -33,12 +33,16 @@ function formatId(format: string): number
 }
 
 /**
- * A request for a texture from the pool: the {@link TextureSourceOptions} of the texture, with the size
- * it must be able to hold.
+ * A request for a texture from the pool. `width` and `height` are the minimum frame size the texture must
+ * hold; the other fields are the only {@link TextureSourceOptions} the pool honours, and each falls back
+ * to the pool's own options.
  * @category rendering
  * @advanced
  */
-export type TexturePoolRequest = TextureSourceOptions & { width: number, height: number };
+export type TexturePoolRequest = Pick<
+    TextureSourceOptions,
+    'resolution' | 'antialias' | 'autoGenerateMipmaps' | 'format' | 'scaleMode'
+> & { width: number, height: number };
 
 // One number isolates a bucket.
 // Bits 0-31: antialias, mipmap, height, width. Bit 32: scale mode. Bits 33+: format id.
@@ -74,8 +78,13 @@ export class TexturePoolClass
     private readonly _buckets = new Map<number, Texture[]>();
     /** the bucket key of every texture handed out, by texture uid */
     private _poolKey: Record<number, number> = Object.create(null);
+    /** the style the pool created for every texture handed out, by texture uid */
+    private _poolStyle: Record<number, TextureStyle> = Object.create(null);
     /** the screens this pool is sizing its textures for */
     private readonly _screens = new ScreenSizeRegistry();
+
+    private _textureStyle?: TextureStyle;
+    private _enableFullScreen = false;
 
     /**
      * @param textureOptions - options that will be passed to BaseRenderTexture constructor
@@ -84,6 +93,57 @@ export class TexturePoolClass
     constructor(textureOptions?: TextureSourceOptions)
     {
         this.textureOptions = textureOptions || {};
+    }
+
+    /**
+     * A style built from the pool options. The pool no longer applies it to anything.
+     * @deprecated since 8.21.0, pooled textures carry their own style; pass `scaleMode` in the request instead.
+     */
+    get textureStyle(): TextureStyle
+    {
+        // #if _DEBUG
+        // eslint-disable-next-line max-len
+        deprecation(v8_21_0, 'TexturePool.textureStyle is no longer used, pooled textures carry their own style. Pass scaleMode in the request instead.');
+        // #endif
+
+        if (!this._textureStyle) this._textureStyle = new TextureStyle(this.textureOptions);
+
+        return this._textureStyle;
+    }
+
+    set textureStyle(value: TextureStyle)
+    {
+        // #if _DEBUG
+        // eslint-disable-next-line max-len
+        deprecation(v8_21_0, 'TexturePool.textureStyle is no longer used, pooled textures carry their own style. Pass scaleMode in the request instead.');
+        // #endif
+
+        this._textureStyle = value;
+    }
+
+    /**
+     * Has no effect. The pool sizes textures to the screens registered with
+     * {@link TexturePoolClass#setScreenSize|setScreenSize}.
+     * @deprecated since 8.21.0
+     */
+    get enableFullScreen(): boolean
+    {
+        // #if _DEBUG
+        // eslint-disable-next-line max-len
+        deprecation(v8_21_0, 'TexturePool.enableFullScreen is no longer used, the pool sizes textures to the screens registered with setScreenSize.');
+        // #endif
+
+        return this._enableFullScreen;
+    }
+
+    set enableFullScreen(value: boolean)
+    {
+        // #if _DEBUG
+        // eslint-disable-next-line max-len
+        deprecation(v8_21_0, 'TexturePool.enableFullScreen is no longer used, the pool sizes textures to the screens registered with setScreenSize.');
+        // #endif
+
+        this._enableFullScreen = value;
     }
 
     /**
@@ -212,6 +272,8 @@ export class TexturePoolClass
                 format,
                 scaleMode,
             });
+
+            this._poolStyle[texture.uid] = texture.source.style;
         }
 
         texture.source._resolution = resolution;
@@ -288,11 +350,17 @@ export class TexturePoolClass
      * Returns a texture to the pool so it can be reused by future
      * {@link TexturePoolClass#getOptimalTexture|getOptimalTexture}
      * or {@link TexturePoolClass#getSameSizeTexture|getSameSizeTexture} calls.
+     *
+     * If you gave the texture a style of your own after obtaining it (a different address mode, anisotropy
+     * or similar), pass `resetStyle = true` so the pool puts its own style back. Otherwise your style stays
+     * on the texture and the next consumer inherits it.
      * @param renderTexture - The texture to return to the pool.
+     * @param resetStyle - When `true`, restores the style the pool created for this texture. Defaults to `false`.
      */
-    public returnTexture(renderTexture: Texture): void
+    public returnTexture(renderTexture: Texture, resetStyle = false): void
     {
-        const key = this._poolKey[renderTexture.uid];
+        const uid = renderTexture.uid;
+        const key = this._poolKey[uid];
 
         if (key === undefined)
         {
@@ -303,13 +371,21 @@ export class TexturePoolClass
             return;
         }
 
+        const poolStyle = this._poolStyle[uid];
+
+        if (resetStyle && renderTexture.source.style !== poolStyle)
+        {
+            renderTexture.source.style = poolStyle;
+        }
+
         const textures = this._buckets.get(key);
 
         if (!textures)
         {
             // the bucket this texture belongs to was pruned (its size no longer matches a screen),
             // so there is nothing to return it to - destroy it rather than resurrect a dead bucket
-            delete this._poolKey[renderTexture.uid];
+            delete this._poolKey[uid];
+            delete this._poolStyle[uid];
             renderTexture.destroy(true);
 
             return;
@@ -364,12 +440,26 @@ export class TexturePoolClass
             if ((isPow2(width) || this._screens.hasWidth(width))
                 && (isPow2(height) || this._screens.hasHeight(height))) continue;
 
-            for (let i = 0; i < textures.length; i++)
-            {
-                textures[i].destroy(true);
-            }
-
+            this._dropTextures(textures, true);
             this._buckets.delete(key);
+        }
+    }
+
+    /**
+     * Forgets idle textures were ever handed out, so a later return is ignored, and optionally destroys them.
+     * @param textures - The textures of one bucket.
+     * @param destroy - Whether to destroy the textures as well.
+     */
+    private _dropTextures(textures: Texture[], destroy: boolean): void
+    {
+        for (let i = 0; i < textures.length; i++)
+        {
+            const texture = textures[i];
+
+            delete this._poolKey[texture.uid];
+            delete this._poolStyle[texture.uid];
+
+            if (destroy) texture.destroy(true);
         }
     }
 
@@ -379,15 +469,9 @@ export class TexturePoolClass
      */
     public clear(destroyTextures?: boolean): void
     {
-        if (destroyTextures !== false)
+        for (const textures of this._buckets.values())
         {
-            for (const textures of this._buckets.values())
-            {
-                for (let i = 0; i < textures.length; i++)
-                {
-                    textures[i].destroy(true);
-                }
-            }
+            this._dropTextures(textures, destroyTextures !== false);
         }
 
         this._buckets.clear();

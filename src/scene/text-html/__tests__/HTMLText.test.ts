@@ -10,6 +10,7 @@ import {
 } from '@test-utils';
 import { TextureSource } from '~/rendering/renderers/shared/texture/sources/TextureSource';
 
+import type { BatchableHTMLText } from '../BatchableHTMLText';
 import type { Renderer } from '~/rendering/renderers/types';
 
 // generates the textures one after the other, so each text reuses the pooled render data of the previous one
@@ -83,6 +84,55 @@ describe('HTMLText', () =>
         text.destroy();
 
         expect(() => { renderer.resolution = 3; }).not.toThrow();
+
+        renderer.destroy();
+    });
+
+    it('should clean up a texture whose pool bucket was pruned by a resize', async () =>
+    {
+        const renderer = await getWebGLRenderer({ width: 100, height: 100 });
+        // wide enough to take the 100px screen bucket rather than the 64px power of two below it
+        const text = new HTMLText({ text: 'WIDE', style: { fontSize: 36, fill: 'white' } });
+
+        renderer.render(text);
+
+        const pooled = await (text._gpuData[renderer.uid] as BatchableHTMLText).texturePromise;
+
+        expect(pooled.source.pixelWidth).toBe(100);
+
+        // the screen bucket no longer matches a live screen, so returning the texture destroys it
+        renderer.resize(200, 200);
+
+        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { /* capture */ });
+
+        text.destroy();
+        await nextTick();
+
+        const warnings = warnSpy.mock.calls.map((args) => args.join(' '));
+
+        warnSpy.mockRestore();
+
+        expect(warnings.some((warning) => warning.includes('Failed to clean texture'))).toBe(false);
+        expect(pooled.destroyed).toBe(true);
+
+        renderer.destroy();
+    });
+
+    it('should give the text a pooled texture with the requested scale mode', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const text = new HTMLText({ text: 'foo', textureStyle: { scaleMode: 'nearest' } });
+
+        renderer.render(text);
+
+        const pooled = await (text._gpuData[renderer.uid] as BatchableHTMLText).texturePromise;
+
+        expect(pooled.source.scaleMode).toBe('nearest');
+        // the pool keeps its own style on the texture, the text's style object is never attached
+        expect(pooled.source.style).not.toBe(text.textureStyle);
+
+        text.destroy();
+        await nextTick();
 
         renderer.destroy();
     });
