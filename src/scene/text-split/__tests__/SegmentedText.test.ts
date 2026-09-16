@@ -113,6 +113,21 @@ describe('SegmentedText', () =>
             expect(text.chars.length).toBe(12); // 'Right' + 'Aligned'
         });
 
+        it('should preserve blank lines in bitmap text', () =>
+        {
+            const text = new SplitBitmapText({
+                text: 'Hello\n\nWorld',
+                style: {},
+            });
+
+            // the blank line is kept as its own line container instead of being stripped
+            expect(text.lines.length).toBe(3);
+
+            // and the blank line advances the vertical offset so spacing is preserved
+            expect(text.lines[1].y).toBeGreaterThan(text.lines[0].y);
+            expect(text.lines[2].y).toBeGreaterThan(text.lines[1].y);
+        });
+
         it('should handle text beginning with whitespace', () =>
         {
             const text = new SplitText({
