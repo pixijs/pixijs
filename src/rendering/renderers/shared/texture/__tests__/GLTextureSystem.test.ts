@@ -44,4 +44,22 @@ describe('GLTextureSystem', () =>
 
         expect(gl.getParameter(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL)).toBe(false);
     });
+
+    it('should not throw when binding a destroyed texture source', async () =>
+    {
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
+        const textureA = getTexture({ width: 10, height: 10 });
+        const textureB = getTexture({ width: 8, height: 8 });
+        const sourceA = textureA.source;
+
+        // initialise source A on the GPU, then destroy it while it is still referenced
+        renderer.texture.bindSource(sourceA, 0);
+        sourceA.destroy();
+
+        // bind a different source so the bound-texture cache no longer points at source A
+        renderer.texture.bindSource(textureB.source, 0);
+
+        // re-binding the destroyed source used to read its (now null) style and throw
+        expect(() => renderer.texture.bindSource(sourceA, 0)).not.toThrow();
+    });
 });
