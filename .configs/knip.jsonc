@@ -46,6 +46,9 @@
         // Transitive dep of typedoc; used directly in typedoc-plugin-stackblitz
         "@gerrit0/mini-shiki",
         // Used in build script
-        "dts-bundle-generator"
+        "dts-bundle-generator",
+        // Referenced only from lib/index.legacy.d.ts, written by scripts/types/fixTypes.mts
+        // at build time for TypeScript 5 consumers - knip can't see a generated file
+        "@webgpu/types"
     ]
 }

@@ -9,11 +9,10 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "..",
     "paths": {
-      "pixi.js": ["./src/index.ts"],
-      "pixi.js/*": ["./src/*"],
-      "~/*": ["./src/*"]
+      "pixi.js": ["../src/index.ts"],
+      "pixi.js/*": ["../src/*"],
+      "~/*": ["../src/*"]
     },
 
     "strict": true,
@@ -23,11 +22,10 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
 
-    "downlevelIteration": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "types": ["vite/client", "node", "@webgpu/types"]
+    "types": ["vite/client", "node"]
   },
   "include": [".", "../types", "../src/**/*.d.ts"]
 }

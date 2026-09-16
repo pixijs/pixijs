@@ -13,10 +13,11 @@ const runLint = all || selectors.has('lint');
 const runTypes = all || selectors.has('types');
 const runIndex = all || selectors.has('index');
 const runPrune = all || selectors.has('prune');
+const runDts = all || selectors.has('dts');
 const runUnit = all || selectors.has('unit');
 const runVisual = all || selectors.has('visual');
 
-const hasStaticChecks = runLint || runTypes || runIndex || runPrune;
+const hasStaticChecks = runLint || runTypes || runIndex || runPrune || runDts;
 const hasJest = runUnit || runVisual;
 
 type CheckResult = { name: string; passed: boolean; blocking: boolean };
@@ -52,6 +53,14 @@ async function runStaticChecks(): Promise<CheckResult[]>
             name: 'index',
             blocking: true,
             fn: () => spawn('node', ['./scripts/index/index.mts', '--check', ...passthrough]),
+        });
+    }
+    if (runDts)
+    {
+        checks.push({
+            name: 'dts',
+            blocking: true,
+            fn: () => spawn('node', ['./scripts/types/testTypesCompat.mts', ...passthrough]),
         });
     }
     if (runPrune)

@@ -22,7 +22,7 @@ For the long-form description and trigger keywords of every skill, see [referenc
 |---|---|
 | [pixijs-application](../pixijs-application/SKILL.md) | Creating or configuring a PixiJS `Application`, calling `app.init()`, accessing `app.stage`/`renderer`/`canvas`/`screen`, resize/ticker plugins, `app.destroy()`. |
 | [pixijs-core-concepts](../pixijs-core-concepts/SKILL.md) | Understanding the renderer pipeline, choosing WebGL/WebGPU/Canvas, render loop internals, systems and pipes, renderer loader extensions, rendering into a `RenderTexture`/`RenderTarget` (`flipY`, `mipLevel`, `bind`/`push`/`pop`, depth), WebGL context loss and WebGPU device loss. |
-| [pixijs-create](../pixijs-create/SKILL.md) | Scaffolding a new project with the `create-pixi` CLI (bundler-vite, creation-web, framework-react templates). |
+| [pixijs-create](../pixijs-create/SKILL.md) | Scaffolding a new project with the `create-pixi` CLI (bundler-vite, creation-web, framework-react templates), adding PixiJS to an existing project, or setting up `tsconfig.json` for TypeScript 5, 6, or 7 (`moduleResolution`, `@webgpu/types`, `@types/web`). |
 | [pixijs-environments](../pixijs-environments/SKILL.md) | Running PixiJS in Web Workers, Node/SSR, or strict-CSP contexts (`DOMAdapter`, `WebWorkerAdapter`, `pixi.js/unsafe-eval`). |
 | [pixijs-migration-v8](../pixijs-migration-v8/SKILL.md) | Upgrading from v7 to v8 or fixing v7 patterns (`beginFill`/`endFill`, `@pixi/*` packages, `BaseTexture`, `DisplayObject`). |
 | [pixijs-scene-core-concepts](../pixijs-scene-core-concepts/SKILL.md) | Understanding the scene graph as a whole: containers vs leaves, transforms, render order, masking, `RenderLayer`. |

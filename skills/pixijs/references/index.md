@@ -15,9 +15,9 @@ How PixiJS v8 renders frames: the systems-and-pipes renderer, the render loop, a
 **Triggers:** renderer, WebGL, WebGPU, Canvas, render loop, render pipeline, systems, environments, autoDetectRenderer, RenderTexture, RenderTarget, render to texture, flipY, mipLevel, renderTarget.bind, copyToTexture, copyDepthTexture, depth-only, WebGLLoader, WebGPULoader, CanvasLoader, RendererLoader, lazy-load renderer systems, context lost, webglcontextlost, device lost, GPUDevice.lost.
 
 ### pixijs-create
-Scaffold a new PixiJS v8 project with the `create-pixi` CLI. Covers npm/yarn/pnpm/bun create commands, interactive vs non-interactive flows, available template presets (bundler-vite, bundler-webpack, bundler-esbuild, bundler-import-map, creation-web, framework-react, extension-default), Node version requirements, and post-scaffold dev flow.
+Scaffold a new PixiJS v8 project with the `create-pixi` CLI or add PixiJS to an existing project. Covers npm/yarn/pnpm/bun create commands, interactive vs non-interactive flows, available template presets (bundler-vite, bundler-webpack, bundler-esbuild, bundler-import-map, creation-web, framework-react, extension-default), Node version requirements, TypeScript 5/6/7 tsconfig setup (`moduleResolution`, `@webgpu/types`, `@types/web`), and post-scaffold dev flow.
 
-**Triggers:** create pixi.js, npm create, scaffold, template, bundler-vite, bundler-webpack, creation-web, framework-react, new project, getting started.
+**Triggers:** create pixi.js, npm create, scaffold, template, bundler-vite, bundler-webpack, creation-web, framework-react, new project, getting started, TypeScript, tsconfig, moduleResolution, @webgpu/types, @types/web, Cannot find name GPUTextureUsage.
 
 ### pixijs-environments
 Run PixiJS v8 outside a standard browser: Web Workers, `OffscreenCanvas`, Node/SSR, or CSP-restricted contexts. Covers `DOMAdapter.set`, `BrowserAdapter`, `WebWorkerAdapter`, custom `Adapter` interface, `pixi.js/unsafe-eval` for strict CSP.
