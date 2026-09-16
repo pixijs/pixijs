@@ -69,7 +69,7 @@ level1Container.destroy({ children: true });
 await Assets.unloadBundle("level1");
 ```
 
-Prefer `unloadBundle` over manually iterating. It releases every asset in the bundle and respects reference counting; if another bundle also uses one of the assets, it stays in the cache.
+Prefer `unloadBundle` over manually iterating. It has no reference counting: every asset in the bundle is removed from the cache and destroyed, even if another bundle declares the same `src`, and that bundle's alias stays broken until you reload it. Detach anything on the scene that still uses those assets first.
 
 ### Inspecting the cache
 

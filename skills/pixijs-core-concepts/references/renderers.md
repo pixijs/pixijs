@@ -106,15 +106,52 @@ renderer.render({
   transform: new Matrix(),
 });
 
-// render into a specific mip level of a RenderTexture
+// render into a specific mip level or array layer of a RenderTexture
 renderer.render({
   container: myContainer,
   target: renderTexture,
   mipLevel: 1,
+  layer: 0,
 });
+
+// store the capture in screen orientation (for 3D UVs)
+renderer.render({ container: scene3d, target: renderTexture, flipY: true });
 ```
 
-`container` is the scene root to draw. `target` is a separate destination (e.g. a `RenderTexture`). `mipLevel > 0` is useful for custom LOD systems or manual mipmap generation.
+`container` is the scene root to draw. `target` is a separate destination (e.g. a `RenderTexture`). `mipLevel > 0` is useful for custom LOD systems or manual mipmap generation. `flipY` defaults to `false`; set it to store a texture render un-flipped, with winding adjusted so back-face culling still works.
+
+### Render targets
+
+```ts
+import { CLEAR, RenderTarget, Texture, TextureSource } from "pixi.js";
+
+const depthSource = new TextureSource({ width: 512, height: 512, format: "depth24plus-stencil8" });
+
+const target = new RenderTarget({
+  colorAttachments: [{ texture: new TextureSource({ width: 512, height: 512 }), loadOp: "clear" }],
+  depthStencilAttachment: { texture: depthSource, depthLoadOp: "clear" },
+});
+
+renderer.render({ container, target });
+
+// bind directly from custom render code; always use the options object
+renderer.renderTarget.push({ target, clear: CLEAR.COLOR, mipLevel: 0 });
+renderer.renderTarget.pop();
+
+const saved = renderer.renderTarget.getBindState();
+renderer.renderTarget.bind(saved); // replays without clearing
+
+// copy the depth attachment into another depth-format texture (WebGL2 and WebGPU)
+const depthCopy = new Texture({
+  source: new TextureSource({ width: 512, height: 512, format: "depth24plus-stencil8" }),
+});
+renderer.renderTarget.copyDepthTexture(target, depthCopy, { x: 0, y: 0 }, { width: 512, height: 512 });
+```
+
+- `RenderTarget` takes WebGPU-style `colorAttachments`/`depthStencilAttachment` or the older `colorTextures`/`depth`/`stencil`/`depthStencilTexture` options. `colorTextures: 0` with `depth: true` makes a depth-only target.
+- Positional `bind(target, clear, ...)` and `push(...)` are deprecated since 8.20.0. `pop()` throws when the stack is empty.
+- `copyDepthTexture` needs WebGL2 or WebGPU and a depth-format destination. The next render into the destination target must clear color only (`clear: CLEAR.COLOR`), or the copied depth is lost.
+- Destroy a target you constructed with `target.destroy()`; the renderer releases the GPU objects it built for it.
 
 ### Resizing, texture generation, and interop
 
@@ -173,9 +210,26 @@ if (await isWebGPUSupported()) {
 if (isWebGLSupported()) {
   // ok to prefer webgl
 }
+
+// after init, WebGPU-only capability flags
+if (renderer.name === "webgpu") {
+  renderer.device.extensions.transientAttachment; // GPUTextureUsage.TRANSIENT_ATTACHMENT available
+  renderer.limits.supportsOverrideConstants; // pipeline constants vs. source-baked overrides
+}
 ```
 
 Both helpers are exported from `pixi.js`. Useful if you want to tell the user which backend is about to be used before calling `app.init`.
+
+### Context and device loss
+
+```ts
+// both renderers recover on their own; only render bundles need re-recording
+if (!renderer.encoder.isBundleValid(bundle)) {
+  bundle = record();
+}
+```
+
+The WebGL renderer restores itself after `webglcontextrestored`. The WebGPU renderer requests a new device when the browser reports `GPUDevice.lost` and rebuilds its GPU resources on the next render. A device you pass through the WebGPU `gpu` option is neither restored nor destroyed by PixiJS. A render bundle recorded on a lost device fails `isBundleValid` and must be re-recorded.
 
 ## Common Mistakes
 
@@ -229,3 +283,5 @@ app.renderer.render(app.stage);
 - [WebGLRenderer](https://pixijs.download/release/docs/rendering.WebGLRenderer.html.md)
 - [WebGPURenderer](https://pixijs.download/release/docs/rendering.WebGPURenderer.html.md)
 - [CanvasRenderer](https://pixijs.download/release/docs/rendering.CanvasRenderer.html.md)
+- [RenderTarget](https://pixijs.download/release/docs/rendering.RenderTarget.html.md)
+- [RenderTargetSystem](https://pixijs.download/release/docs/rendering.RenderTargetSystem.html.md)

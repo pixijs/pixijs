@@ -20,6 +20,7 @@
  * @document rendering/__docs__/rendering.md
  * @document scene/__docs__/scene.md
  * @document gif/__docs__/scene-gif.md
+ * @document html-source/__docs__/html-source.md
  * @document ticker/__docs__/ticker.md
  * @document utils/__docs__/utils.md
  * @document __docs__/migrations/v8.md

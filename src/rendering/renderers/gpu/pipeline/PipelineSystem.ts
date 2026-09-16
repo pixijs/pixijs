@@ -343,7 +343,7 @@ export class PipelineSystem implements System
     }
 
     /**
-     * Builds a {@link GPURenderBundleEncoderDescriptor} that matches the current render target
+     * Builds a `GPURenderBundleEncoderDescriptor` that matches the current render target
      * configuration (color formats, sample count, depth/stencil format, and which of its aspects
      * are read-only).
      * Used by {@link GpuEncoderSystem.beginBundle} to create a compatible render bundle encoder.

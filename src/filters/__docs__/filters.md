@@ -311,6 +311,7 @@ All filters accept these base options:
 - **Share filter instances**: The same filter instance can be assigned to multiple objects
 - **Remove when unused**: Set `sprite.filters = null` to skip filter processing entirely
 - **Tune quality**: Lower `quality` on `BlurFilter` reduces passes
+- **Mind filter padding**: Full-screen filter textures are pooled at screen size, but padding (the `BlurFilter` default) pushes the request past the screen and up to the next power of two. Set `repeatEdgePixels: true` on a full-screen blur to keep it screen-sized
 - **Prefer sprite sheets**: For static effects, bake them into textures instead of using runtime filters
 
 ```ts

@@ -81,13 +81,17 @@ texture.source.unload();
 
 PixiJS supports multiple `TextureSource` types depending on the input data:
 
-| Type                  | Description                                                       |
-| --------------------- | ----------------------------------------------------------------- |
-| **ImageSource**       | HTMLImageElement, ImageBitmap, SVGs, VideoFrame                   |
-| **CanvasSource**      | HTMLCanvasElement or OffscreenCanvas                              |
-| **VideoSource**       | HTMLVideoElement with optional auto-play and update FPS           |
-| **BufferImageSource** | TypedArray or ArrayBuffer with explicit width, height, and format |
-| **CompressedSource**  | Array of compressed mipmaps (Uint8Array\[])                       |
+| Type                   | Description                                                                                     |
+| ---------------------- | ----------------------------------------------------------------------------------------------- |
+| **ImageSource**        | HTMLImageElement, ImageBitmap, SVGs, VideoFrame                                                 |
+| **CanvasSource**       | HTMLCanvasElement or OffscreenCanvas                                                            |
+| **VideoSource**        | HTMLVideoElement with optional auto-play and update FPS                                         |
+| **BufferImageSource**  | TypedArray or ArrayBuffer with explicit width, height, and format                               |
+| **CompressedSource**   | Array of compressed mipmaps (Uint8Array\[])                                                     |
+| **HTMLSource**         | A live DOM element rendered through the experimental HTML-in-Canvas API (`pixi.js/html-source`) |
+| **ElementImageSource** | An immutable `ElementImage` snapshot of a DOM element (`pixi.js/html-source`)                   |
+
+`HTMLSource` and `ElementImageSource` are experimental and only register when you import `pixi.js/html-source`. See the [HTML Source guide](../../html-source/__docs__/html-source.md).
 
 ## Texture properties
 
@@ -111,11 +115,36 @@ Key properties on `TextureSource`:
 - `alphaMode`: How alpha is interpreted on upload.
 - `wrapMode` / `scaleMode`: Sampling behavior outside bounds or when scaled.
 - `autoGenerateMipmaps`: Whether to generate mipmaps on upload.
+- `transient`: WebGPU only. Marks an antialiased render texture's multisample buffer as single-pass scratch memory. Set at creation time.
 
 ```ts
 texture.source.scaleMode = 'linear';
 texture.source.wrapMode = 'repeat';
 ```
+
+## Pooled textures (advanced)
+
+Filters, masks, `cacheAsTexture`, and canvas text borrow their scratch textures from the shared `TexturePool`. Custom filters and plugins can use it too:
+
+```ts
+import { TexturePool } from 'pixi.js';
+
+const scratch = TexturePool.getOptimalTexture({
+    width: bounds.width,
+    height: bounds.height,
+    resolution: renderer.resolution,
+    antialias: true,
+    scaleMode: 'nearest',
+});
+
+// ... render into it ...
+
+TexturePool.returnTexture(scratch);
+```
+
+`width` and `height` are the minimum frame size. `resolution`, `antialias`, `autoGenerateMipmaps`, `format`, and `scaleMode` are optional, and each combination keeps its own bucket. Each axis of the backing texture is rounded up to the next power of two or the renderer's screen size, whichever is smaller, so a full-screen request on a 1170x2532 phone gets a 1170x2532 texture instead of 2048x4096. `getOptimalSize(width, height, resolution)` reports the backing size without taking a texture, and `getSameSizeTexture(texture)` matches an existing one.
+
+The positional `getOptimalTexture(width, height, resolution, antialias)` form and the `enableFullScreen` and `textureStyle` properties are deprecated since 8.21.0.
 
 ---
 
