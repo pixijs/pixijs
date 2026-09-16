@@ -37,7 +37,7 @@ state.culling = true;
 state.clockwiseFrontFace = true; // or state.cullMode = "front"
 ```
 
-`geometry.getSize()` is deprecated since 8.20.0; read `vertexCount` instead. `indexCount` of `0` (the default) draws the whole index buffer; any other value draws that many indices. A `size` passed to `encoder.draw()` still wins. `clockwiseFrontFace` selects which winding counts as front-facing on both renderers. When rendering into a texture PixiJS inverts the winding to match the flipped projection; call `renderer.renderTarget.isFrontFaceInverted()` if your own code needs the resolved orientation, or `isFrontFaceInverted(target, flipY)` to ask about a target before binding it.
+`geometry.getSize()` is deprecated since 8.20.0; read `vertexCount` instead. `indexCount` of `0` (the default) draws the whole index buffer; any other value draws that many indices. A `size` passed to `encoder.draw()` still wins. `clockwiseFrontFace` selects which winding counts as front-facing on both renderers. When rendering into a texture PixiJS inverts the winding to match the flipped projection; call `renderer.renderTarget.isFrontFaceInverted()` if your own code needs the resolved orientation, or `isFrontFaceInverted(target, flipY)` to ask about a `RenderTarget` before binding it (`renderer.renderTarget.getRenderTarget(texture)` returns one for a texture).
 
 ## WGSL override constants (WebGPU only)
 
