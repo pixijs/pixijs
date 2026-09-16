@@ -2,7 +2,7 @@ import { Container } from '../../container/Container';
 import { Mesh } from '../shared/Mesh';
 import { MeshGeometry } from '../shared/MeshGeometry';
 import '../init';
-import { getTexture, getWebGLRenderer } from '@test-utils';
+import { getTexture, getWebGLRenderer, getWebGPURenderer, itLocalOnly } from '@test-utils';
 
 function getMesh(batched = true)
 {
@@ -75,6 +75,20 @@ describe('Mesh', () =>
         expect(mesh.texture).toBeNull();
 
         expect(mesh._gpuData).toBeEmptyObject();
+    });
+
+    itLocalOnly('should render a non-batched mesh with a WebGPU renderer after another one was destroyed', async () =>
+    {
+        const rendererA = await getWebGPURenderer();
+        const rendererB = await getWebGPURenderer();
+
+        rendererA.destroy();
+
+        const mesh = getMesh(false);
+
+        expect(() => rendererB.render(mesh)).not.toThrow();
+
+        rendererB.destroy();
     });
 
     it('should support color tinting', () =>

@@ -98,7 +98,9 @@ export class GpuMeshAdapter implements MeshAdaptor
 
     public destroy(): void
     {
-        this._shader.destroy(true);
+        // the program comes from the shared GpuProgram cache and is used by every WebGPU renderer,
+        // so only the per-renderer shader is destroyed here
+        this._shader.destroy();
         this._shader = null;
     }
 }
