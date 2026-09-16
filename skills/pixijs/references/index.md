@@ -12,7 +12,7 @@ Create and configure a PixiJS v8 `Application`. Covers `new Application()` + asy
 ### pixijs-core-concepts
 How PixiJS v8 renders frames: the systems-and-pipes renderer, the render loop, and how the library adapts to different environments. Covers `WebGLRenderer`/`WebGPURenderer`/`CanvasRenderer` selection, `renderer.render()` pipeline, environment detection, and pointers to per-topic deep dives.
 
-**Triggers:** renderer, WebGL, WebGPU, Canvas, render loop, render pipeline, systems, environments, autoDetectRenderer, RenderTexture, RenderTarget, render to texture, flipY, mipLevel, layer, renderTarget.bind, push, pop, getBindState, copyToTexture, copyDepthTexture, depth-only, frontFaceInverted, GpuExtensions, WebGLLoader, WebGPULoader, CanvasLoader, RendererLoader, lazy-load renderer systems, code splitting, backend-specific import, context lost, webglcontextlost, webglcontextrestored, device lost, GPUDevice.lost, RenderTarget destroy, second renderer.
+**Triggers:** renderer, WebGL, WebGPU, Canvas, render loop, render pipeline, systems, environments, autoDetectRenderer, RenderTexture, RenderTarget, render to texture, flipY, mipLevel, renderTarget.bind, copyToTexture, copyDepthTexture, depth-only, WebGLLoader, WebGPULoader, CanvasLoader, RendererLoader, lazy-load renderer systems, context lost, webglcontextlost, device lost, GPUDevice.lost.
 
 ### pixijs-create
 Scaffold a new PixiJS v8 project with the `create-pixi` CLI. Covers npm/yarn/pnpm/bun create commands, interactive vs non-interactive flows, available template presets (bundler-vite, bundler-webpack, bundler-esbuild, bundler-import-map, creation-web, framework-react, extension-default), Node version requirements, and post-scaffold dev flow.
@@ -54,7 +54,7 @@ Display animated GIFs. Covers the `pixi.js/gif` side-effect import, `Assets.load
 ### pixijs-html-source
 Render live HTML/DOM elements or frozen snapshots as PixiJS v8 textures via the HTML-in-Canvas browser APIs. Experimental: requires a browser that supports the HTML-in-Canvas spec (the API must be enabled, or the texture uploader throws on first render). Covers the `pixi.js/html-source` side-effect import, feature detection with `canvas.requestPaint`, `HTMLSource` for a live repainting element (`autoLayout`/`autoUpdate`/`autoRequestPaint`, `requestPaint`, `isReady`, the direct-child-of-canvas + `layoutsubtree` rule), `ElementImageSource` for an immutable `captureElementImage()` snapshot (`autoClose`, ready immediately), using the source on a `Sprite`/`Texture`/`Mesh`, and fallback-only auto-detection via `Texture.from`.
 
-**Triggers:** HTMLSource, ElementImageSource, pixi.js/html-source, requestPaint, captureElementImage, ElementImage, layoutsubtree, autoRequestPaint, autoClose, HTML in canvas, HTML-in-Canvas, render DOM to texture, render HTML to texture, HTMLSourceCanvas, texElementImage2D, copyElementImageToTexture, Chromium 150, experimental.
+**Triggers:** HTMLSource, ElementImageSource, pixi.js/html-source, requestPaint, captureElementImage, ElementImage, layoutsubtree, autoRequestPaint, autoClose, HTML in canvas, HTML-in-Canvas, render DOM to texture, render HTML to texture, HTMLSourceCanvas, texElementImage2D, copyElementImageToTexture, experimental.
 
 ### pixijs-scene-graphics
 Draw vector shapes and paths. Covers the `Graphics` shape-then-fill API (`rect`/`circle`/`ellipse`/`poly`/`roundRect`/`star`), path methods (`moveTo`/`lineTo`/`bezierCurveTo`/`arc`), `fill`/`stroke`/`cut`, `FillGradient`, `FillPattern`, `GraphicsContext` sharing, SVG markup.
@@ -123,7 +123,7 @@ Composite display objects with blend modes. Covers standard modes (`normal`, `ad
 ### pixijs-custom-rendering
 Write custom shaders, uniforms, or batchers. Covers `Shader.from({gl, gpu, resources})`, `GlProgram`/`GpuProgram`, `UniformGroup` with typed uniforms (`f32`, `vec2`, `mat4x4`), UBO mode, textures as resources, custom `Filter`, custom `Batcher` via extensions.
 
-**Triggers:** Shader, GlProgram, GpuProgram, UniformGroup, Batcher, Filter, GLSL, WGSL, UBO, uniform, custom shader, override, ShaderOverrides, gpuLayout, bind group layout, extractStructAndGroups, generateGpuLayoutGroups, TextureView, depth texture, texture_depth_2d, depthReadOnly, Buffer.update, vertexCount, getSize, clockwiseFrontFace, cullMode, render bundle, beginBundle, endBundle, executeBundle, isBundleValid, RenderBundle, encoder.draw, RenderContainer, indexCount, instanceCount, TexturePool, getOptimalTexture, getSameSizeTexture, returnTexture, TexturePoolRequest, getOptimalSize, InstructionPipe, destroyInstructionSet, InstructionSet.
+**Triggers:** Shader, GlProgram, GpuProgram, UniformGroup, Batcher, Filter, GLSL, WGSL, UBO, uniform, custom shader, ShaderOverrides, gpuLayout, bind group layout, TextureView, depth texture, Buffer.update, vertexCount, indexCount, getSize, clockwiseFrontFace, cullMode, render bundle, beginBundle, executeBundle, RenderBundle, TexturePool, getOptimalTexture, InstructionPipe, destroyInstructionSet.
 
 ### pixijs-filters
 Apply visual effects to containers via the filter pipeline. Covers built-in filters (`AlphaFilter`, `BlurFilter`, `ColorMatrixFilter`, `DisplacementFilter`, `NoiseFilter`), custom `Filter.from()` with GLSL/WGSL, options (`resolution`, `padding`, `antialias`, `blendRequired`), `filterArea` optimization, `pixi-filters` community package.
@@ -133,4 +133,4 @@ Apply visual effects to containers via the filter pipeline. Covers built-in filt
 ### pixijs-performance
 Profile or optimize a PixiJS v8 app for FPS, draw calls, or GPU memory. Covers destroy patterns (`cacheAsTexture(false)`, `releaseGlobalResources`), `GCSystem` and `TextureGCSystem`, `PrepareSystem`, object pooling, batching rules, `BitmapText` for dynamic text, culling (`Culler`, `CullerPlugin`, `cullable`, `cullArea`), resolution/antialias tradeoffs.
 
-**Triggers:** FPS, jank, draw calls, batching, object pool, GCSystem, PrepareSystem, Culler, cacheAsTexture, memory leak, destroy patterns, render bundle, transient, MSAA, TRANSIENT_ATTACHMENT, Buffer.update, WebGPU performance, TexturePool, screen sized texture, power of two texture, repeatEdgePixels, bind group, Geometry.destroy, RenderTarget.destroy.
+**Triggers:** FPS, jank, draw calls, batching, object pool, GCSystem, PrepareSystem, Culler, cacheAsTexture, memory leak, destroy patterns, render bundle, transient, MSAA, Buffer.update, WebGPU performance, TexturePool, repeatEdgePixels, bind group.

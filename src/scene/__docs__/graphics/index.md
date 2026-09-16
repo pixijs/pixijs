@@ -71,7 +71,7 @@ let shape = new Graphics().svg(`
 `);
 ```
 
-The parser handles `<path>`, `<rect>`, `<circle>`, `<ellipse>`, `<line>`, `<polygon>`, `<polyline>`, and `<g>`, styled by `fill`, `stroke`, `stroke-width`, `fill-opacity`, `stroke-opacity`, and `opacity` from attributes or inline `style`. Fills and strokes can reference `<linearGradient>` and `<radialGradient>` definitions with `url(#id)`. Unsupported elements such as `<text>`, `<image>`, `<use>`, `<clipPath>`, `<mask>`, and `<style>` are skipped with a console warning, and `transform` attributes are ignored. See the [SVG guide](../../../assets/__docs__/svg.mdx) for the full feature table.
+The parser handles basic shapes, paths, groups, inline styles, and linear and radial gradients. `transform` attributes, `<style>` blocks, text, images, clipping paths, and masks are not supported; unsupported elements are skipped with a console warning. See the [SVG guide](../../../assets/__docs__/svg.mdx) for the full feature table.
 
 ## GraphicsContext
 

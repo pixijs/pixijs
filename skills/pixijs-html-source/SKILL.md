@@ -1,6 +1,6 @@
 ---
 name: pixijs-html-source
-description: "Use this skill when rendering live HTML/DOM elements (or frozen snapshots of them) as PixiJS v8 textures via the EXPERIMENTAL HTML-in-Canvas browser APIs. Covers the pixi.js/html-source import, feature detection with canvas.requestPaint, HTMLSource for a live, repainting, still-interactive element (autoLayout/autoUpdate/autoRequestPaint, requestPaint, isReady, HTMLSource.defaultOptions, the direct-child-of-canvas + layoutsubtree requirement), ElementImageSource for an immutable captureElementImage() snapshot (autoClose, ready immediately), using the source on a Sprite/Texture/Mesh, fallback-only auto-detection via Texture.from at priority -10, the pre-150 and Chromium 150+ upload signatures, uploader error messages, and destroy/cleanup. Triggers on: HTMLSource, ElementImageSource, ElementImage, HTML in canvas, render DOM to texture, render HTML to texture, texElementImage2D, copyElementImageToTexture, HTMLSourceOptions, ElementImageSourceOptions, HTMLSourceCanvas."
+description: "Use this skill when rendering live HTML/DOM elements (or frozen snapshots of them) as PixiJS v8 textures via the EXPERIMENTAL HTML-in-Canvas browser APIs. Covers the pixi.js/html-source import, feature detection with canvas.requestPaint, HTMLSource for a live, repainting, still-interactive element (autoLayout/autoUpdate/autoRequestPaint, requestPaint, isReady, HTMLSource.defaultOptions, the direct-child-of-canvas + layoutsubtree requirement), ElementImageSource for an immutable captureElementImage() snapshot (autoClose, ready immediately), using the source on a Sprite/Texture/Mesh, fallback-only auto-detection via Texture.from at priority -10, uploader error messages, and destroy/cleanup. Triggers on: HTMLSource, ElementImageSource, ElementImage, HTML in canvas, render DOM to texture, render HTML to texture, texElementImage2D, copyElementImageToTexture, HTMLSourceOptions, ElementImageSourceOptions, HTMLSourceCanvas."
 license: MIT
 ---
 
@@ -88,7 +88,7 @@ if (canvas.requestPaint) {
 
 Cast `app.canvas` to `HTMLSourceCanvas` for the typed `requestPaint` and `captureElementImage` members. `source.requestPaint()` returns `false` when the browser lacks the API; the texture uploader throws on first render when it is disabled.
 
-When the API is missing the first upload throws `[HTMLSource] WebGLRenderingContext.texElementImage2D is not available. Enable the browser HTML-in-Canvas API before using HTMLSource.` on WebGL, or `[HTMLSource] GPUQueue.copyElementImageToTexture is not available. Enable the browser HTML-in-Canvas API before using HTMLSource.` on WebGPU. PixiJS detects both the original and the Chromium 150+ signatures of `texElementImage2D` and `copyElementImageToTexture`, so no configuration is needed across browser versions.
+When the API is missing the first upload throws `[HTMLSource] WebGLRenderingContext.texElementImage2D is not available...` on WebGL or `[HTMLSource] GPUQueue.copyElementImageToTexture is not available...` on WebGPU.
 
 ### Live element with HTMLSource
 
@@ -100,7 +100,7 @@ const source = new HTMLSource({ resource: form });
 const sprite = Sprite.from(source);
 ```
 
-The element must be a direct child of the renderer's `<canvas>`; the source infers the owning canvas from `resource.parentElement` (or pass `canvas`). With the defaults, it sets `layoutsubtree` on the canvas, listens for the canvas `paint` event, and requests one initial paint. `source.isReady` is `false` until that first paint lands, then `true`. It is `true` immediately when `autoUpdate` is `false`, or when the canvas has no `requestPaint` (in which case the uploader throws instead of waiting). `resourceWidth`/`resourceHeight` report the element's real-pixel size (`offsetWidth`/`offsetHeight`).
+The element must be a direct child of the renderer's `<canvas>`; the source infers the owning canvas from `resource.parentElement` (or pass `canvas`). With the defaults, it sets `layoutsubtree` on the canvas, listens for the canvas `paint` event, and requests one initial paint. `source.isReady` is `false` until that first paint lands, then `true`. It is `true` immediately when `autoUpdate` is `false`. `resourceWidth`/`resourceHeight` report the element's real-pixel size (`offsetWidth`/`offsetHeight`).
 
 ### Continuous animation with requestPaint
 
@@ -155,7 +155,7 @@ const mesh = new PerspectiveMesh({ texture: Texture.from(source) /* ... */ });
 const sprite = Sprite.from(elementAlreadyInTheCanvas);
 ```
 
-A generic HTML element or an `ElementImage` passed to `Texture.from`/`Sprite.from` resolves to these sources at the lowest texture-source priority (`-10`), so they only claim a resource no other built-in source handles. Image, video, and canvas elements are deliberately rejected; they have dedicated, faster sources. Construct the source explicitly when you need options (`autoUpdate`, `autoClose`) or non-HTML elements such as SVG. Snapshot auto-detection needs the browser to expose a global `ElementImage` constructor; construct `ElementImageSource` explicitly otherwise.
+A generic HTML element or an `ElementImage` passed to `Texture.from`/`Sprite.from` resolves to these sources at the lowest texture-source priority (`-10`), so they only claim a resource no other built-in source handles. Image, video, and canvas elements are deliberately rejected; they have dedicated, faster sources. Construct the source explicitly when you need options (`autoUpdate`, `autoClose`) or non-HTML elements such as SVG.
 
 ## Common Mistakes
 

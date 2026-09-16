@@ -1,6 +1,6 @@
 ---
 name: pixijs-performance
-description: "Use this skill when profiling or optimizing a PixiJS v8 app for FPS, draw calls, or GPU memory. Covers destroy patterns (cacheAsTexture(false), releaseGlobalResources), GCSystem and TextureGCSystem, PrepareSystem, object pooling, batching rules, BitmapText for dynamic text, culling (Culler, CullerPlugin, cullable, cullArea), resolution/antialias tradeoffs, WebGPU-only wins (transient MSAA render textures, render bundles, partial buffer updates). Triggers on: FPS, jank, draw calls, batching, object pool, GCSystem, PrepareSystem, Culler, cacheAsTexture, memory leak, destroy patterns, render bundle, transient, MSAA, Buffer.update, WebGPU performance, TexturePool, repeatEdgePixels, bind group."
+description: "Use this skill when profiling or optimizing a PixiJS v8 app for FPS, draw calls, or GPU memory. Covers destroy patterns (cacheAsTexture(false), releaseGlobalResources), GCSystem and TextureGCSystem, PrepareSystem, object pooling, batching rules, BitmapText for dynamic text, culling (Culler, CullerPlugin, cullable, cullArea), resolution/antialias tradeoffs, low-level wins (transient MSAA render textures, render bundles, partial buffer updates). Triggers on: FPS, jank, draw calls, batching, object pool, GCSystem, PrepareSystem, Culler, cacheAsTexture, memory leak, destroy patterns, render bundle, transient, MSAA, Buffer.update, WebGPU performance, TexturePool, repeatEdgePixels, bind group."
 license: MIT
 ---
 
@@ -52,7 +52,7 @@ Assets.unload("character.png");
 
 This removes it from the cache and unloads the GPU resource.
 
-Objects you build for custom rendering clean up the same way: `geometry.destroy()` releases its VAOs and detaches it from shared buffers, `renderTarget.destroy()` releases the framebuffers and MSAA textures the renderer built for it, and destroying a container destroys the batchers cached for its render group.
+Objects you build for custom rendering clean up the same way: call `geometry.destroy()` and `renderTarget.destroy()` on the ones you create. Destroying a container also destroys the batchers cached for its render group.
 
 ### Application destroy/recreate cycle
 
@@ -128,7 +128,7 @@ app.start();
 **Tradeoffs:**
 
 - Uses GPU memory for the cached texture (larger containers = more memory)
-- Max texture size is GPU-dependent (typically 4096x4096 or larger). No PixiJS property exposes it (`renderer.limits` only reports texture-unit counts), so query the backend directly
+- Max texture size is GPU-dependent (typically 4096x4096 or larger). No PixiJS property exposes it, so query the backend directly:
 - Must call `updateCacheTexture()` after modifying children
 - Combining with masks is fragile (see the masking skill)
 
@@ -349,7 +349,7 @@ await app.init({
 
 `resolution: 2` quadruples the pixel count. On mobile, this can halve frame rate. Profile to find the right balance.
 
-### WebGPU-only optimizations
+### Low-level rendering optimizations
 
 ```ts
 import { RenderTexture } from "pixi.js";
@@ -361,7 +361,7 @@ const rt = RenderTexture.create({ width: 1024, height: 1024, antialias: true, tr
 buffer.update(changedBytes, offsetBytes);
 ```
 
-`transient: true` tells WebGPU the multisample buffer is scratch memory: it is discarded instead of written back, and tile-based GPUs skip allocating it when `renderer.device.extensions.transientAttachment` is true. Only use it on textures rendered in a single pass and never re-entered with `clear: false` or wrapped by a filter. For static custom draw sequences, record a render bundle once and replay it each frame; see the `pixijs-custom-rendering` skill.
+`transient: true` (WebGPU only) tells the GPU the multisample buffer is scratch memory: it is discarded instead of written back, and tile-based GPUs skip allocating it when `renderer.device.extensions.transientAttachment` is true. Only use it on textures rendered in a single pass and never re-entered with `clear: false` or wrapped by a filter. For static custom draw sequences on WebGPU, record a render bundle once and replay it each frame; see the `pixijs-custom-rendering` skill.
 
 ### Stagger bulk texture destruction
 
@@ -393,7 +393,7 @@ Destroying many textures in one frame causes a freeze. Spread the cost across fr
 
 - Set `container.filterArea = new Rectangle(x, y, w, h)` when you know the bounds. Without it, PixiJS measures bounds every frame.
 - Release filter memory: `container.filters = null`.
-- Filter textures come from a shared pool sized to the renderer's screen when the request fits. `BlurFilter` pads its area by default, which pushes the request past the screen and back to the next power of two; set `repeatEdgePixels: true` on a full-screen blur so it uses a screen-sized texture instead of, say, 2048x4096 on a 1170x2532 phone.
+- Full-screen filter textures are pooled at screen size, but padding (the `BlurFilter` default) pushes the request past the screen and up to the next power of two. Set `repeatEdgePixels: true` on full-screen blurs to keep them screen-sized.
 - Mask cost (cheapest to most expensive): axis-aligned Rectangle masks (scissor rect) < Graphics masks (stencil buffer) < Sprite/alpha masks (filter pipeline). Hundreds of masks will slow things down regardless of type; prefer rectangle masks when bounds are axis-aligned.
 - Set `interactiveChildren = false` on containers with no interactive children.
 - Set `hitArea` on large containers to skip recursive child hit testing.

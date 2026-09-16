@@ -142,9 +142,9 @@ const scratch = TexturePool.getOptimalTexture({
 TexturePool.returnTexture(scratch);
 ```
 
-`width` and `height` are the minimum frame size. `resolution`, `antialias`, `autoGenerateMipmaps`, `format`, and `scaleMode` are optional; each combination keeps its own bucket, so one pool can serve color, float, and depth targets side by side. Each axis of the backing texture is the next power of two or the size of the renderer's screen, whichever is smaller, so a full-screen request on a 1170x2532 phone gets a 1170x2532 texture instead of 2048x4096. Requests larger than every live screen keep their power-of-two size. `getOptimalSize(width, height, resolution)` reports the backing size without taking a texture, and `getSameSizeTexture(texture)` matches an existing one.
+`width` and `height` are the minimum frame size. `resolution`, `antialias`, `autoGenerateMipmaps`, `format`, and `scaleMode` are optional, and each combination keeps its own bucket. Each axis of the backing texture is rounded up to the next power of two or the renderer's screen size, whichever is smaller, so a full-screen request on a 1170x2532 phone gets a 1170x2532 texture instead of 2048x4096. `getOptimalSize(width, height, resolution)` reports the backing size without taking a texture, and `getSameSizeTexture(texture)` matches an existing one.
 
-The positional `getOptimalTexture(width, height, resolution, antialias)` form is deprecated since 8.21.0, as are the `enableFullScreen` and `textureStyle` properties, which no longer do anything. Every renderer registers its own screen size with the pool through `setScreenSize` and removes it on destroy; only custom or off-screen setups need to call those themselves.
+The positional `getOptimalTexture(width, height, resolution, antialias)` form and the `enableFullScreen` and `textureStyle` properties are deprecated since 8.21.0.
 
 ## Depth textures and texture views (advanced)
 

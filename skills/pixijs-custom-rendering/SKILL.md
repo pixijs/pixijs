@@ -202,13 +202,13 @@ shader.resources.myUniforms.update();
 
 See [references/advanced-gpu.md](references/advanced-gpu.md) for full samples of:
 
-- **Partial buffer updates**: `buffer.update(sizeInBytes, offsetInBytes)` uploads only the changed byte range (WebGL and WebGPU).
-- **Vertex count, index count, winding, and culling**: `geometry.vertexCount` replaces the deprecated `getSize()`; `geometry.indexCount` (default `0`, the whole buffer) lets several geometries share one index buffer and each draw a prefix of it; `state.clockwiseFrontFace` is honored on both renderers, and `renderer.renderTarget.frontFaceInverted` exposes the resolved winding when rendering into a texture.
+- **Partial buffer updates**: `buffer.update(sizeInBytes, offsetInBytes)` uploads only the changed byte range.
+- **Vertex and index counts, winding, culling**: `geometry.vertexCount` (replaces the deprecated `getSize()`), `geometry.indexCount` to draw a prefix of a shared index buffer, `state.clockwiseFrontFace` and `cullMode`.
 - **WGSL override constants** (WebGPU): `Shader.from({ gpu, resources, overrides: { STEPS: 8 } })`; each distinct set compiles its own pipeline.
-- **Custom bind group layouts** (WebGPU): generate the default with `generateGpuLayoutGroups(extractStructAndGroups(source))`, tweak entries, pass it as `gpuLayout`.
-- **Depth sampling with `TextureView`** (WebGPU): bind a depth-format source as `new TextureView(depth, { aspect: "depth-only" })` and read it with `textureLoad` while the target's depth attachment is `depthReadOnly`.
-- **Render bundles** (WebGPU): record draws once with `encoder.beginBundle()` / `endBundle()` and replay with `executeBundle()` after `isBundleValid()` passes.
-- **Pooled scratch textures**: `TexturePool.getOptimalTexture({ width, height, resolution, antialias, format, scaleMode })` returns a screen-sized or power-of-two texture; `getOptimalSize()` reports the backing size; return it with `returnTexture()`.
+- **Custom bind group layouts** (WebGPU): generate the default with `generateGpuLayoutGroups(extractStructAndGroups(source))`, edit it, pass it as `gpuLayout`.
+- **Depth sampling with `TextureView`** (WebGPU): bind `new TextureView(depth, { aspect: "depth-only" })` as a resource while the target's depth attachment is `depthReadOnly`.
+- **Render bundles** (WebGPU): record draws once with `encoder.beginBundle()` / `endBundle()` and replay with `executeBundle()` while `isBundleValid()` holds.
+- **Pooled scratch textures**: `TexturePool.getOptimalTexture({ width, height, resolution, antialias })` and `returnTexture()`.
 
 ### Uniform type reference
 

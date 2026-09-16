@@ -55,7 +55,7 @@ Areas:
 
 This ensures that decorative corners are preserved and the center content can scale as needed.
 
-Keep `leftWidth + rightWidth` below the texture width and `topHeight + bottomHeight` below the texture height. When the borders meet or overlap, no texture pixels remain for the center strip, so every renderer fills it by stretching the seam between the two borders instead of the texture's middle.
+Keep `leftWidth + rightWidth` below the texture width and `topHeight + bottomHeight` below the texture height. When the borders meet or overlap, no texture pixels remain for the center, so it is filled by stretching the seam between the borders.
 
 ## Width and height vs scale
 

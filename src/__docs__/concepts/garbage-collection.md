@@ -79,7 +79,7 @@ await app.init({
 ## Best Practices
 
 1. **Explicitly destroy objects:** Call `destroy()` on objects you no longer need. Pass `{ texture: true, textureSource: true }` if the texture won't be reused.
-2. **Destroy GPU-backed helpers you own:** `geometry.destroy()` releases its vertex array objects and detaches it from buffers it shared, and `renderTarget.destroy()` releases the framebuffers and MSAA textures every renderer built for it. Destroying a container also destroys the batchers cached for its render group.
+2. **Destroy geometries and render targets you create:** `geometry.destroy()` and `renderTarget.destroy()` release the GPU objects built for them. Destroying a container also destroys the batchers cached for its render group.
 3. **Use `Assets.unload()` for loaded assets:** If you loaded a texture via `Assets.load('image.png')`, use `Assets.unload('image.png')` to release it. This removes it from the cache and unloads the GPU resource.
 4. **Use pooling for frequently created/destroyed objects:** Reuse sprites, particles, and other objects to reduce allocation overhead.
 5. **Batch large texture cleanups:** If destroying many textures at once, stagger the calls across multiple frames (e.g., destroy 5 per frame) to avoid a single-frame hitch.

@@ -81,7 +81,7 @@ The `container` property is the scene root to draw. `target` is a separate prope
 
 ### Flipping the output (advanced)
 
-By default a texture render is stored in PixiJS's Y-down orientation, which the 2D pipeline samples upright but 3D UV conventions read upside down. Pass `flipY: true` to invert the Y orientation of the render. Back-face culling stays correct because the winding order flips together with the projection. The default is `false` and leaves existing renders unchanged on both WebGL and WebGPU.
+By default a texture render is stored in PixiJS's Y-down orientation, which the 2D pipeline samples upright but 3D UV conventions read upside down. Pass `flipY: true` to invert the Y orientation of the render. Back-face culling stays correct because the winding order flips together with the projection.
 
 ```ts
 renderer.render({
@@ -166,7 +166,7 @@ renderer.renderTarget.bind({ target: scratch, clear: true });
 renderer.renderTarget.bind(saved);
 ```
 
-Available options are `target`, `clear`, `clearColor`, `frame` (in mip 0 pixel space), `mipLevel`, `layer`, and `flipY`. Binding the same target again with no clear reuses the open render pass and only updates the viewport.
+Available options are `target`, `clear`, `clearColor`, `frame` (in mip 0 pixel space), `mipLevel`, `layer`, and `flipY`.
 
 ### Copying between targets
 
@@ -183,11 +183,11 @@ renderer.render({ container, target: destTarget, clear: CLEAR.COLOR });
 
 `copyDepthTexture` warns and does nothing when the source has no depth attachment or the destination texture is not a depth or stencil format. Clear only the color buffer afterwards, or the copied depth is lost.
 
-When writing 3D code that needs to know the resolved winding of the current target, read `renderer.renderTarget.frontFaceInverted` instead of deriving it from `flipY`, `isRoot`, and the backend.
+3D code that needs the resolved winding of the current target can read `renderer.renderTarget.frontFaceInverted`.
 
 ### Destroying targets
 
-A `RenderTarget` you construct is yours to destroy. `destroy()` emits a `destroy` event before the attachments are released, and every renderer that drew into the target frees the framebuffers, renderbuffers, and MSAA textures it built for it. Destroying the renderer frees those backend objects as well, without destroying your target.
+A `RenderTarget` you construct is yours to destroy. Every renderer that drew into it frees the framebuffers and MSAA textures it built for it. Destroying the renderer frees those too, without destroying your target.
 
 ```ts
 import { RenderTarget } from 'pixi.js';
@@ -251,11 +251,7 @@ const rt = RenderTexture.create({ width: 1024, height: 1024, antialias: true, tr
 
 ### Device loss
 
-When the browser reports the GPU device as lost (a GPU process crash, for example), the WebGPU renderer requests a new adapter and device, runs `contextChange` on every system, and recreates textures, buffers, shader modules, pipelines, and bind groups on the next render. `Text` and `HTMLText` regenerate their textures. You do not need to handle it yourself. The one thing that cannot survive is a render bundle recorded on the old device: `renderer.encoder.isBundleValid(bundle)` returns `false` for it, so re-record it as you would after a render target change.
-
-A device you hand in through the `gpu` option belongs to the engine that created it, so PixiJS neither restores nor destroys it. A device PixiJS created is destroyed by `renderer.destroy()`.
-
-The WebGL renderer already restores itself after `webglcontextlost` / `webglcontextrestored`; `Text` and `HTMLText` regenerate their textures there too.
+When the browser reports the GPU device as lost (a GPU process crash, for example), the WebGPU renderer requests a new device and rebuilds textures, buffers, pipelines, and bind groups on the next render. You do not need to handle it yourself, with one exception: a render bundle recorded on the old device fails `renderer.encoder.isBundleValid(bundle)` and must be re-recorded. A device you hand in through the `gpu` option is neither restored nor destroyed by PixiJS. The WebGL renderer restores itself the same way after `webglcontextrestored`.
 
 ## Resizing the renderer
 

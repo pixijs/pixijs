@@ -37,7 +37,7 @@ state.culling = true;
 state.clockwiseFrontFace = true; // or state.cullMode = "front"
 ```
 
-`geometry.getSize()` is deprecated since 8.20.0 and warns once; read `vertexCount` instead. `indexCount` is the index-buffer twin of `instanceCount`: `0` (the default) draws the whole index buffer and any other value draws that many indices. A `size` passed to `encoder.draw()` or `renderer.geometry.draw()` still wins, and a geometry with no index buffer ignores it and draws `vertexCount` vertices. `clockwiseFrontFace` selects which winding counts as front-facing and is respected by both renderers. When rendering into a texture, PixiJS inverts the winding to match the flipped projection; read `renderer.renderTarget.frontFaceInverted` if your own code needs the resolved orientation.
+`geometry.getSize()` is deprecated since 8.20.0; read `vertexCount` instead. `indexCount` of `0` (the default) draws the whole index buffer; any other value draws that many indices. A `size` passed to `encoder.draw()` still wins. `clockwiseFrontFace` selects which winding counts as front-facing on both renderers. When rendering into a texture PixiJS inverts the winding to match the flipped projection; read `renderer.renderTarget.frontFaceInverted` if your own code needs the resolved orientation.
 
 ## WGSL override constants (WebGPU only)
 
@@ -129,7 +129,7 @@ const props = new RenderContainer({
 });
 ```
 
-A bundle records draw calls once and replays them on later frames. It bakes the render target it was recorded in (color formats, sample count, depth format, winding), so `isBundleValid` returns `false` after the target changes, for example when a filter wraps the container or `flipY` flips, and after a WebGPU device loss, since the bundle remembers the `device` it was recorded on. Re-record when it does; WebGPU rejects the whole frame or draws inside out otherwise. Pass an array to `executeBundle` to replay several bundles in one call. The optional label names the bundle in GPU captures and validation errors.
+A bundle records draw calls once and replays them on later frames. It bakes the render target it was recorded in (formats, sample count, winding) and the device, so `isBundleValid` returns `false` after the target changes (a filter wrapping the container, `flipY` flipping) or after a device loss. Re-record when it does; otherwise WebGPU rejects the frame or draws inside out. Pass an array to `executeBundle` to replay several bundles in one call. The optional label names the bundle in GPU captures.
 
 ## Pooled scratch textures
 
@@ -149,7 +149,7 @@ const { width, height } = TexturePool.getOptimalSize(bounds.width, bounds.height
 TexturePool.returnTexture(scratch);
 ```
 
-`getOptimalTexture` and `createTexture` take one request object; `width` and `height` are the minimum frame size, and `resolution`, `antialias`, `autoGenerateMipmaps`, `format`, and `scaleMode` are optional. Textures are bucketed by all of those, so ask for a float or depth format directly instead of restyling a returned texture. Each axis is rounded to the next power of two or the renderer's screen size, whichever is smaller; requests bigger than every live screen stay power of two. `getOptimalSize` gives you the backing size before you take a texture, which is what you need for a uniform that maps content space onto texture space. `getSameSizeTexture(texture)` matches an existing texture's frame and resolution. Pass `returnTexture(texture, true)` only if you replaced `texture.source.style` yourself. The positional `getOptimalTexture(width, height, resolution, antialias)` form, `TexturePool.textureStyle`, and `enableFullScreen` are deprecated since 8.21.0. `ViewSystem` registers each renderer's screen with `setScreenSize` for you.
+`getOptimalTexture` takes one request object: `width` and `height` are the minimum frame size; `resolution`, `antialias`, `autoGenerateMipmaps`, `format`, and `scaleMode` are optional, and each combination has its own bucket, so ask for a float or depth format directly instead of restyling a returned texture. Each axis is rounded up to the next power of two or the renderer's screen size, whichever is smaller. `getOptimalSize` reports that backing size without taking a texture, and `getSameSizeTexture(texture)` matches an existing texture's frame and resolution. The positional `getOptimalTexture(width, height, resolution, antialias)` form, `TexturePool.textureStyle`, and `enableFullScreen` are deprecated since 8.21.0.
 
 ## API Reference
 

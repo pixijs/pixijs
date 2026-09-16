@@ -58,7 +58,7 @@ This page collects practical advice for improving frame rate and reducing memory
 - Release memory: `container.filters = null`
 - If you know the size of them: `container.filterArea = new Rectangle(x,y,w,h)`. This can speed things up as it means the object does not need to be measured
 - Filters are expensive, using too many will start to slow things down!
-- Filter textures are pooled at screen size when they fit the screen. A padded filter (the default `BlurFilter`) falls back to the next power of two; use `repeatEdgePixels: true` on full-screen blurs
+- Full-screen filter textures are pooled at screen size, but padding (the `BlurFilter` default) pushes them up to the next power of two; set `repeatEdgePixels: true` on full-screen blurs
 
 ### BlendModes
 

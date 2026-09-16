@@ -67,8 +67,6 @@ When the API is missing, `source.requestPaint()` returns `false` and the first r
 [HTMLSource] GPUQueue.copyElementImageToTexture is not available. Enable the browser HTML-in-Canvas API before using HTMLSource.
 ```
 
-PixiJS supports both the original and the Chromium 150+ signatures of the underlying upload APIs, so no configuration is needed for either.
-
 ## Repainting
 
 A live element updates whenever the browser fires a `paint` event for it. Content that changes every frame needs a paint request each frame. Turn off the initial request and drive repaints from the ticker:
