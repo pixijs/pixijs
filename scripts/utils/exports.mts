@@ -79,20 +79,24 @@ const exportFields: Record<string, ExportField> = {
     },
     './gif': {
         import: {
+            'types@<6.0': './lib/gif/init.legacy.d.ts',
             types: './lib/gif/init.d.ts',
             default: './lib/gif/init.mjs',
         },
         require: {
+            'types@<6.0': './lib/gif/init.legacy.d.ts',
             types: './lib/gif/init.d.ts',
             default: './lib/gif/init.js',
         },
     },
     './html-source': {
         import: {
+            'types@<6.0': './lib/html-source/init.legacy.d.ts',
             types: './lib/html-source/init.d.ts',
             default: './lib/html-source/init.mjs',
         },
         require: {
+            'types@<6.0': './lib/html-source/init.legacy.d.ts',
             types: './lib/html-source/init.d.ts',
             default: './lib/html-source/init.js',
         },

@@ -66,13 +66,17 @@ function copyShaders()
  * its own lib.dom, so `lib/index.d.ts` is the modern entry point and carries
  * only the canvas overloads TypeScript 6 is missing (see WebGPUCanvas.d.ts).
  *
- * TypeScript 5 has no WebGPU types at all, so it gets a wrapper entry that
- * pulls in `@webgpu/types` on top - the overloads it declares are identical to
- * the ones in WebGPUCanvas.d.ts, so the two merge without conflict.
+ * TypeScript 5 has no WebGPU types at all, so every entry point that ships
+ * declarations (the root, `gif` and `html-source`) gets a `.legacy.d.ts`
+ * wrapper beside it that pulls in `@webgpu/types` on top - the overloads it
+ * declares are identical to the ones in WebGPUCanvas.d.ts, so the two merge
+ * without conflict. The subpaths need their own wrapper because a program that
+ * imports only `pixi.js/gif` never loads the root entry.
  *
- * package.json points TypeScript 5 at `lib/index.legacy.d.ts` through the
- * `types@<6.0` export condition and the `typesVersions` field; TypeScript 6 and
- * above get `lib/index.d.ts`, the default.
+ * package.json points TypeScript 5 at the wrappers through the `types@<6.0`
+ * export conditions, and at `lib/index.legacy.d.ts` through `typesVersions`
+ * for node10 resolution, which ignores `exports`; TypeScript 6 and above get
+ * the plain declarations, the default.
  */
 function writeVersionedEntries()
 {
@@ -89,10 +93,13 @@ function writeVersionedEntries()
         fs.writeFileSync(filePath, `/// <reference path="./WebGPUCanvas.d.ts" />\n${contents}`);
     }
 
-    fs.writeFileSync(
-        `${lib}/index.legacy.d.ts`,
-        '/// <reference types="@webgpu/types" />\nexport * from \'./index\';\n'
-    );
+    for (const entry of ['index', 'gif/init', 'html-source/init'])
+    {
+        fs.writeFileSync(
+            `${lib}/${entry}.legacy.d.ts`,
+            `/// <reference types="@webgpu/types" />\nexport * from './${path.basename(entry)}';\n`
+        );
+    }
 }
 
 addMixinReferencePaths();
