@@ -46,7 +46,7 @@ This is particularly useful for applications that dynamically load large numbers
 
 ## Automatic Garbage Collection with `GCSystem`
 
-PixiJS also includes the `GCSystem`, which unloads GPU resources (textures, buffers, graphics geometry, and other renderables) that have not been used recently. By default:
+PixiJS also includes the `GCSystem`, which unloads GPU resources (textures, buffers, graphics geometry, WebGPU bind groups, and other renderables) that have not been used recently. By default:
 
 - **Unloads resources unused for 60 seconds** (`gcMaxUnusedTime: 60000`).
 - **Checks every 30 seconds** (`gcFrequency: 30000`).
@@ -79,8 +79,9 @@ await app.init({
 ## Best Practices
 
 1. **Explicitly destroy objects:** Call `destroy()` on objects you no longer need. Pass `{ texture: true, textureSource: true }` if the texture won't be reused.
-2. **Use `Assets.unload()` for loaded assets:** If you loaded a texture via `Assets.load('image.png')`, use `Assets.unload('image.png')` to release it. This removes it from the cache and unloads the GPU resource.
-3. **Use pooling for frequently created/destroyed objects:** Reuse sprites, particles, and other objects to reduce allocation overhead.
-4. **Batch large texture cleanups:** If destroying many textures at once, stagger the calls across multiple frames (e.g., destroy 5 per frame) to avoid a single-frame hitch.
+2. **Destroy GPU-backed helpers you own:** `geometry.destroy()` releases its vertex array objects and detaches it from buffers it shared, and `renderTarget.destroy()` releases the framebuffers and MSAA textures every renderer built for it. Destroying a container also destroys the batchers cached for its render group.
+3. **Use `Assets.unload()` for loaded assets:** If you loaded a texture via `Assets.load('image.png')`, use `Assets.unload('image.png')` to release it. This removes it from the cache and unloads the GPU resource.
+4. **Use pooling for frequently created/destroyed objects:** Reuse sprites, particles, and other objects to reduce allocation overhead.
+5. **Batch large texture cleanups:** If destroying many textures at once, stagger the calls across multiple frames (e.g., destroy 5 per frame) to avoid a single-frame hitch.
 
 For more optimization strategies, see [Performance Tips](./performance-tips.md).

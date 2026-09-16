@@ -18,17 +18,26 @@ buffer.update(newVertices.byteLength, 256 * 4); // size and offset in bytes
 
 `update()` with no arguments re-uploads the whole buffer. Pass a byte size and byte offset to upload only the range you changed. Works on WebGL and WebGPU.
 
-## Vertex count, winding, and culling
+## Vertex count, index count, winding, and culling
 
 ```ts
 const count = geometry.vertexCount; // cached, from the first non-instanced attribute
+
+// several geometries share one index buffer sized for the biggest batch;
+// each draws only the prefix it currently uses
+const quads = new Geometry({
+  attributes: { aPosition: positions },
+  indexBuffer: sharedIndices,
+  indexCount: liveQuads * 6,
+});
+quads.indexCount = 12; // read at draw time; no re-upload
 
 const state = new State();
 state.culling = true;
 state.clockwiseFrontFace = true; // or state.cullMode = "front"
 ```
 
-`geometry.getSize()` is deprecated since 8.20.0 and warns once; read `vertexCount` instead. `clockwiseFrontFace` selects which winding counts as front-facing and is respected by both renderers. When rendering into a texture, PixiJS inverts the winding to match the flipped projection; read `renderer.renderTarget.frontFaceInverted` if your own code needs the resolved orientation.
+`geometry.getSize()` is deprecated since 8.20.0 and warns once; read `vertexCount` instead. `indexCount` is the index-buffer twin of `instanceCount`: `0` (the default) draws the whole index buffer and any other value draws that many indices. A `size` passed to `encoder.draw()` or `renderer.geometry.draw()` still wins, and a geometry with no index buffer ignores it and draws `vertexCount` vertices. `clockwiseFrontFace` selects which winding counts as front-facing and is respected by both renderers. When rendering into a texture, PixiJS inverts the winding to match the flipped projection; read `renderer.renderTarget.frontFaceInverted` if your own code needs the resolved orientation.
 
 ## WGSL override constants (WebGPU only)
 
@@ -120,10 +129,31 @@ const props = new RenderContainer({
 });
 ```
 
-A bundle records draw calls once and replays them on later frames. It bakes the render target it was recorded in (color formats, sample count, depth format, winding), so `isBundleValid` returns `false` after the target changes, for example when a filter wraps the container or `flipY` flips. Re-record when it does; WebGPU rejects the whole frame or draws inside out otherwise. Pass an array to `executeBundle` to replay several bundles in one call. The optional label names the bundle in GPU captures and validation errors.
+A bundle records draw calls once and replays them on later frames. It bakes the render target it was recorded in (color formats, sample count, depth format, winding), so `isBundleValid` returns `false` after the target changes, for example when a filter wraps the container or `flipY` flips, and after a WebGPU device loss, since the bundle remembers the `device` it was recorded on. Re-record when it does; WebGPU rejects the whole frame or draws inside out otherwise. Pass an array to `executeBundle` to replay several bundles in one call. The optional label names the bundle in GPU captures and validation errors.
+
+## Pooled scratch textures
+
+```ts
+import { TexturePool } from "pixi.js";
+
+const scratch = TexturePool.getOptimalTexture({
+  width: bounds.width,
+  height: bounds.height,
+  resolution: renderer.resolution,
+  antialias: true,
+  scaleMode: "nearest",
+});
+
+const { width, height } = TexturePool.getOptimalSize(bounds.width, bounds.height, renderer.resolution);
+
+TexturePool.returnTexture(scratch);
+```
+
+`getOptimalTexture` and `createTexture` take one request object; `width` and `height` are the minimum frame size, and `resolution`, `antialias`, `autoGenerateMipmaps`, `format`, and `scaleMode` are optional. Textures are bucketed by all of those, so ask for a float or depth format directly instead of restyling a returned texture. Each axis is rounded to the next power of two or the renderer's screen size, whichever is smaller; requests bigger than every live screen stay power of two. `getOptimalSize` gives you the backing size before you take a texture, which is what you need for a uniform that maps content space onto texture space. `getSameSizeTexture(texture)` matches an existing texture's frame and resolution. Pass `returnTexture(texture, true)` only if you replaced `texture.source.style` yourself. The positional `getOptimalTexture(width, height, resolution, antialias)` form, `TexturePool.textureStyle`, and `enableFullScreen` are deprecated since 8.21.0. `ViewSystem` registers each renderer's screen with `setScreenSize` for you.
 
 ## API Reference
 
+- [TexturePool](https://pixijs.download/release/docs/rendering.TexturePool.html.md)
 - [Buffer](https://pixijs.download/release/docs/rendering.Buffer.html.md)
 - [Geometry](https://pixijs.download/release/docs/rendering.Geometry.html.md)
 - [State](https://pixijs.download/release/docs/rendering.State.html.md)

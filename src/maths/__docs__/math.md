@@ -53,7 +53,24 @@ matrix.setTransform(
 );
 ```
 
-Use `decompose` to extract components back out of a matrix, and `invert` to reverse a transformation.
+Use `decompose` to extract components back out of a matrix, and `invert` to reverse a transformation. A matrix that mirrors one axis (its axes are still perpendicular, but the determinant is negative) decomposes into a rotation and a negative `scale.x` with zero skew, not into a pair of skews. `scale.y` is always positive: a flip on the y axis comes back as a negative `scale.x` plus a half turn of rotation. The components always rebuild the same matrix, even when they differ from the ones you composed it with. `Container.setFromMatrix` follows the same rule.
+
+```ts
+import { Matrix, Point } from 'pixi.js';
+
+const mirrored = new Matrix().rotate(Math.PI / 6).scale(-1, 1);
+const transform = {
+  position: new Point(),
+  scale: new Point(),
+  pivot: new Point(),
+  skew: new Point(),
+  rotation: 0,
+};
+
+mirrored.decompose(transform);
+transform.scale.x; // -1
+transform.skew.x; // 0
+```
 
 ---
 

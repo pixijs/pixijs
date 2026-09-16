@@ -1,6 +1,6 @@
 ---
 name: pixijs-custom-rendering
-description: "Use this skill when writing custom shaders, uniforms, filters, batchers, or low-level draw code in PixiJS v8. Covers Shader.from({gl, gpu, resources}), GlProgram/GpuProgram, UniformGroup with typed uniforms (f32, vec2, mat4x4), UBO mode, textures as resources, TextureView for depth sampling, WGSL override constants, custom bind group layouts (gpuLayout), partial buffer updates (Buffer.update), Geometry.vertexCount, State winding and culling (clockwiseFrontFace, cullMode), WebGPU render bundles, custom Filter via Filter.from, GLSL ES 3.0 conventions (in/out, finalColor, texture()), uBackTexture sampling, pixi.js/unsafe-eval for strict CSP, custom Batcher via extensions. Triggers on: Shader, GLSL, WGSL, uniform, custom shader, blendRequired, ShaderOverrides, bind group layout, extractStructAndGroups, generateGpuLayoutGroups, depth texture, texture_depth_2d, getSize, beginBundle, executeBundle, RenderBundle, encoder.draw."
+description: "Use this skill when writing custom shaders, uniforms, filters, batchers, or low-level draw code in PixiJS v8. Covers Shader.from({gl, gpu, resources}), GlProgram/GpuProgram, UniformGroup with typed uniforms (f32, vec2, mat4x4), UBO mode, textures as resources, TextureView for depth sampling, WGSL override constants, custom bind group layouts (gpuLayout), partial buffer updates (Buffer.update), Geometry.vertexCount/indexCount, TexturePool scratch textures, State winding and culling (clockwiseFrontFace, cullMode), WebGPU render bundles, custom Filter via Filter.from, GLSL ES 3.0 conventions (finalColor), uBackTexture sampling, pixi.js/unsafe-eval for strict CSP, custom Batcher and InstructionPipe.destroyInstructionSet via extensions. Triggers on: Shader, GLSL, WGSL, uniform, custom shader, blendRequired, ShaderOverrides, bind group layout, depth texture, getSize, indexCount, TexturePool, getOptimalTexture, destroyInstructionSet, beginBundle, executeBundle, RenderBundle."
 license: MIT
 ---
 
@@ -203,11 +203,12 @@ shader.resources.myUniforms.update();
 See [references/advanced-gpu.md](references/advanced-gpu.md) for full samples of:
 
 - **Partial buffer updates**: `buffer.update(sizeInBytes, offsetInBytes)` uploads only the changed byte range (WebGL and WebGPU).
-- **Vertex count, winding, and culling**: `geometry.vertexCount` replaces the deprecated `getSize()`; `state.clockwiseFrontFace` is honored on both renderers, and `renderer.renderTarget.frontFaceInverted` exposes the resolved winding when rendering into a texture.
+- **Vertex count, index count, winding, and culling**: `geometry.vertexCount` replaces the deprecated `getSize()`; `geometry.indexCount` (default `0`, the whole buffer) lets several geometries share one index buffer and each draw a prefix of it; `state.clockwiseFrontFace` is honored on both renderers, and `renderer.renderTarget.frontFaceInverted` exposes the resolved winding when rendering into a texture.
 - **WGSL override constants** (WebGPU): `Shader.from({ gpu, resources, overrides: { STEPS: 8 } })`; each distinct set compiles its own pipeline.
 - **Custom bind group layouts** (WebGPU): generate the default with `generateGpuLayoutGroups(extractStructAndGroups(source))`, tweak entries, pass it as `gpuLayout`.
 - **Depth sampling with `TextureView`** (WebGPU): bind a depth-format source as `new TextureView(depth, { aspect: "depth-only" })` and read it with `textureLoad` while the target's depth attachment is `depthReadOnly`.
 - **Render bundles** (WebGPU): record draws once with `encoder.beginBundle()` / `endBundle()` and replay with `executeBundle()` after `isBundleValid()` passes.
+- **Pooled scratch textures**: `TexturePool.getOptimalTexture({ width, height, resolution, antialias, format, scaleMode })` returns a screen-sized or power-of-two texture; `getOptimalSize()` reports the backing size; return it with `returnTexture()`.
 
 ### Uniform type reference
 
@@ -268,6 +269,15 @@ extensions.add(MyBatcher);
 ```
 
 Elements reference the batcher by `batcherName`. The `BatchableElement` interface requires: `batcherName`, `texture`, `blendMode`, `indexSize`, `attributeSize`, `topology`, and `packAsQuad`.
+
+A custom `InstructionPipe` that caches state per `InstructionSet` (the way `BatcherPipe` keeps its batchers) should implement `destroyInstructionSet(instructionSet)`. The renderer calls it when the owning render group is destroyed, so the cached GPU objects are released with it instead of leaking.
+
+```ts
+public destroyInstructionSet(instructionSet: InstructionSet): void {
+  this._cache[instructionSet.uid]?.destroy();
+  delete this._cache[instructionSet.uid];
+}
+```
 
 ## Common Mistakes
 
@@ -366,7 +376,7 @@ if (!bundle || !encoder.isBundleValid(bundle)) {
 encoder.executeBundle(bundle);
 ```
 
-A bundle bakes the attachments and winding of the pass it was recorded in. Replaying it under a different target either fails WebGPU validation for the whole frame or silently renders inside out.
+A bundle bakes the attachments and winding of the pass it was recorded in, and the device it was recorded on. Replaying it under a different target either fails WebGPU validation for the whole frame or silently renders inside out; replaying it after a device loss is rejected outright.
 
 
 ### [MEDIUM] Reading Geometry.getSize()

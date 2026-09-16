@@ -1,6 +1,6 @@
 ---
 name: pixijs-math
-description: "Use this skill when working with coordinates, vectors, matrices, shapes, hit testing, or layout rectangles in PixiJS v8. Covers Point/ObservablePoint, Matrix (2D affine, decompose, apply, applyInverse), shapes (Rectangle, Circle, Ellipse, Polygon, RoundedRectangle, Triangle), Rectangle layout helpers (pad, fit, enlarge, ceil, scale, getBounds), strokeContains hit tests, Polygon isClockwise/containsPolygon, toGlobal/toLocal, PointData/PointLike/Size types, DEG_TO_RAD, and pixi.js/math-extras vector and intersection helpers. Triggers on: Point, ObservablePoint, Matrix, Rectangle, Circle, Polygon, Triangle, RoundedRectangle, toGlobal, toLocal, hitArea, strokeContains, pad, fit, enlarge, ceil, getBounds, containsRect, intersects, isClockwise, math-extras, lineIntersection, segmentIntersection, DEG_TO_RAD, PointData."
+description: "Use this skill when working with coordinates, vectors, matrices, shapes, hit testing, or layout rectangles in PixiJS v8. Covers Point/ObservablePoint, Matrix (2D affine, decompose (including mirrored/negative-scale matrices), apply, applyInverse), shapes (Rectangle, Circle, Ellipse, Polygon, RoundedRectangle, Triangle), Rectangle layout helpers (pad, fit, enlarge, ceil, scale, getBounds), strokeContains hit tests, Polygon isClockwise/containsPolygon, toGlobal/toLocal, PointData/PointLike/Size types, DEG_TO_RAD, and pixi.js/math-extras vector and intersection helpers. Triggers on: Point, ObservablePoint, Matrix, Rectangle, Circle, Polygon, Triangle, RoundedRectangle, toGlobal, toLocal, hitArea, strokeContains, pad, fit, enlarge, ceil, getBounds, containsRect, intersects, isClockwise, math-extras, lineIntersection, segmentIntersection, DEG_TO_RAD, PointData, decompose, mirror, flip, negative scale, setFromMatrix."
 license: MIT
 ---
 
@@ -102,6 +102,14 @@ const transform = {
 m.decompose(transform);
 console.log(transform.rotation); // ~0.785 (PI/4)
 
+// A mirrored matrix (one axis flipped, axes still perpendicular) decomposes into
+// rotation + negative scale.x with zero skew. scale.y is never negative: a y-axis
+// flip comes back as scale.x = -1 plus a half turn. Either way the parts rebuild the matrix.
+const mirrored = new Matrix().rotate(Math.PI / 6).scale(-1, 1);
+mirrored.decompose(transform);
+transform.scale.x; // -1
+transform.skew.x; // 0
+
 // Shared temporary matrix (reset on each access)
 const temp = Matrix.shared;
 // IDENTITY is read-only reference
@@ -142,7 +150,7 @@ const ptInOther = child.toLocal(new Point(10, 10), other);
 Rectangle, Circle, Ellipse, Polygon, RoundedRectangle, and Triangle all implement `contains(x, y)` for point-in-shape tests, plus `getBounds(out?)` and `strokeContains(x, y, width, alignment?)` (`Triangle` ignores `alignment` and always tests a centered stroke). They can be used as `hitArea` on containers for custom interaction regions.
 
 ```ts
-import { Rectangle, Circle, Polygon, Container } from "pixi.js";
+import { Rectangle, Circle, Ellipse, Polygon, Container } from "pixi.js";
 
 const rect = new Rectangle(0, 0, 200, 100);
 rect.contains(50, 50); // true
@@ -165,6 +173,8 @@ rect.intersects(other, matrix); // overlap after transforming `other`
 rect.strokeContains(0, 50, 4); // true if (0,50) lies on a 4px centered stroke
 const circle = new Circle(100, 100, 50);
 circle.strokeContains(150, 100, 4, 1); // inner-aligned stroke check
+// A stroke that reaches past the shape's centre covers the whole interior; there is no hole
+new Ellipse(0, 0, 10, 10).strokeContains(0, 0, 40, 1); // true
 
 // getBounds works on every shape (returns a Rectangle, accepts an out param)
 const bounds = circle.getBounds();

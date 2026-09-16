@@ -1,6 +1,6 @@
 ---
 name: pixijs-performance
-description: "Use this skill when profiling or optimizing a PixiJS v8 app for FPS, draw calls, or GPU memory. Covers destroy patterns (cacheAsTexture(false), releaseGlobalResources), GCSystem and TextureGCSystem, PrepareSystem, object pooling, batching rules, BitmapText for dynamic text, culling (Culler, CullerPlugin, cullable, cullArea), resolution/antialias tradeoffs, WebGPU-only wins (transient MSAA render textures, render bundles, partial buffer updates). Triggers on: FPS, jank, draw calls, batching, object pool, GCSystem, PrepareSystem, Culler, cacheAsTexture, memory leak, destroy patterns, render bundle, transient, MSAA, Buffer.update, WebGPU performance."
+description: "Use this skill when profiling or optimizing a PixiJS v8 app for FPS, draw calls, or GPU memory. Covers destroy patterns (cacheAsTexture(false), releaseGlobalResources), GCSystem and TextureGCSystem, PrepareSystem, object pooling, batching rules, BitmapText for dynamic text, culling (Culler, CullerPlugin, cullable, cullArea), resolution/antialias tradeoffs, WebGPU-only wins (transient MSAA render textures, render bundles, partial buffer updates). Triggers on: FPS, jank, draw calls, batching, object pool, GCSystem, PrepareSystem, Culler, cacheAsTexture, memory leak, destroy patterns, render bundle, transient, MSAA, Buffer.update, WebGPU performance, TexturePool, repeatEdgePixels, bind group."
 license: MIT
 ---
 
@@ -52,6 +52,8 @@ Assets.unload("character.png");
 
 This removes it from the cache and unloads the GPU resource.
 
+Objects you build for custom rendering clean up the same way: `geometry.destroy()` releases its VAOs and detaches it from shared buffers, `renderTarget.destroy()` releases the framebuffers and MSAA textures the renderer built for it, and destroying a container destroys the batchers cached for its render group.
+
 ### Application destroy/recreate cycle
 
 ```ts
@@ -68,7 +70,7 @@ Without `releaseGlobalResources: true`, pooled objects (batches, textures) from 
 
 ### Texture garbage collection
 
-PixiJS auto-collects unused textures and GPU resources via `GCSystem`. Defaults: checks every 30 seconds, removes resources idle for 60 seconds. These are time-based (milliseconds).
+PixiJS auto-collects unused textures and GPU resources (including WebGPU bind groups) via `GCSystem`. Defaults: checks every 30 seconds, removes resources idle for 60 seconds. These are time-based (milliseconds).
 
 ```ts
 import { Application } from "pixi.js";
@@ -391,6 +393,7 @@ Destroying many textures in one frame causes a freeze. Spread the cost across fr
 
 - Set `container.filterArea = new Rectangle(x, y, w, h)` when you know the bounds. Without it, PixiJS measures bounds every frame.
 - Release filter memory: `container.filters = null`.
+- Filter textures come from a shared pool sized to the renderer's screen when the request fits. `BlurFilter` pads its area by default, which pushes the request past the screen and back to the next power of two; set `repeatEdgePixels: true` on a full-screen blur so it uses a screen-sized texture instead of, say, 2048x4096 on a 1170x2532 phone.
 - Mask cost (cheapest to most expensive): axis-aligned Rectangle masks (scissor rect) < Graphics masks (stencil buffer) < Sprite/alpha masks (filter pipeline). Hundreds of masks will slow things down regardless of type; prefer rectangle masks when bounds are axis-aligned.
 - Set `interactiveChildren = false` on containers with no interactive children.
 - Set `hitArea` on large containers to skip recursive child hit testing.

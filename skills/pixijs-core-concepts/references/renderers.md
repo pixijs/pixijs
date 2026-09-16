@@ -148,7 +148,7 @@ const depthCopy = new Texture({
 renderer.renderTarget.copyDepthTexture(target, depthCopy, { x: 0, y: 0 }, { width: 512, height: 512 });
 ```
 
-`RenderTarget` accepts either the legacy `colorTextures`/`depth`/`stencil`/`depthStencilTexture` options or WebGPU-style `colorAttachments`/`depthStencilAttachment`. Read them back via `target.colorAttachments` and `target.depthStencilAttachment`; `colorTexture`, `colorTextures`, and `depthStencilTexture` remain as convenience getters. Use `colorTextures: 0` with `depth: true` for a depth-only target. Positional `bind(target, clear, ...)` and `push(...)` are deprecated since 8.20.0 and warn once. `pop()` throws on an unbalanced pop. `copyToTexture` accepts any texture, canvas, or render target as its source; `copyDepthTexture` needs WebGL2 or WebGPU and a depth-format destination, and the next render into that target must clear only color (`clear: CLEAR.COLOR`).
+`RenderTarget` accepts either the legacy `colorTextures`/`depth`/`stencil`/`depthStencilTexture` options or WebGPU-style `colorAttachments`/`depthStencilAttachment`. Read them back via `target.colorAttachments` and `target.depthStencilAttachment`; `colorTexture`, `colorTextures`, and `depthStencilTexture` remain as convenience getters. Use `colorTextures: 0` with `depth: true` for a depth-only target. Positional `bind(target, clear, ...)` and `push(...)` are deprecated since 8.20.0 and warn once. `pop()` throws on an unbalanced pop. `copyToTexture` accepts any texture, canvas, or render target as its source; `copyDepthTexture` needs WebGL2 or WebGPU and a depth-format destination, and the next render into that target must clear only color (`clear: CLEAR.COLOR`). Destroy a target you constructed with `target.destroy()`; it emits `destroy` and the renderer releases the framebuffers and MSAA textures it built for it. `renderer.destroy()` frees those backend objects too but leaves your target intact.
 
 ### Resizing, texture generation, and interop
 
@@ -216,6 +216,20 @@ if (renderer.name === "webgpu") {
 ```
 
 Both helpers are exported from `pixi.js`. Useful if you want to tell the user which backend is about to be used before calling `app.init`. On the WebGPU renderer, `renderer.device.extensions` mirrors `renderer.context.extensions` on WebGL for optional capabilities.
+
+### Context and device loss
+
+```ts
+// nothing to wire up: both renderers recover on their own
+await app.init({ preference: ["webgpu", "webgl"] });
+
+// only render bundles need your help after a WebGPU device loss
+if (!encoder.isBundleValid(bundle)) {
+  bundle = record();
+}
+```
+
+The WebGL renderer restores itself after `webglcontextrestored`, and the WebGPU renderer requests a new adapter and device when the browser reports `GPUDevice.lost`, then rebuilds textures, buffers, pipelines, and bind groups on the next render. `Text` and `HTMLText` regenerate their textures in both cases. A device you pass through the WebGPU `gpu` option is neither restored nor destroyed by PixiJS; `renderer.destroy()` destroys only a device PixiJS created. A render bundle recorded on a lost device fails `isBundleValid` and must be re-recorded. If you rebuild the app with a second renderer instead, `Text`, `HTMLText`, and `Graphics` first drawn by the old renderer render correctly on the new one.
 
 ## Common Mistakes
 

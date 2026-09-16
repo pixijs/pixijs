@@ -52,6 +52,8 @@ await renderer.init(options);
 > [!NOTE]
 > Most applications should use `autoDetectRenderer()` and let PixiJS pick the best backend. Use direct construction only when you have a specific reason.
 
+Both paths run the same `init()`: environment extensions load first, then any `WebGLLoader`/`WebGPULoader`/`CanvasLoader` extensions registered for that backend are awaited, and only then are the renderer's systems and pipes created. See the [extensions guide](../../extensions/__docs__/extensions.md) for registering a loader.
+
 ## Rendering a scene
 
 Call `render()` with a `Container` to draw it to the screen:
@@ -183,6 +185,20 @@ renderer.render({ container, target: destTarget, clear: CLEAR.COLOR });
 
 When writing 3D code that needs to know the resolved winding of the current target, read `renderer.renderTarget.frontFaceInverted` instead of deriving it from `flipY`, `isRoot`, and the backend.
 
+### Destroying targets
+
+A `RenderTarget` you construct is yours to destroy. `destroy()` emits a `destroy` event before the attachments are released, and every renderer that drew into the target frees the framebuffers, renderbuffers, and MSAA textures it built for it. Destroying the renderer frees those backend objects as well, without destroying your target.
+
+```ts
+import { RenderTarget } from 'pixi.js';
+
+const target = new RenderTarget({ colorTextures: [texture] });
+
+renderer.render({ container, target });
+
+target.destroy(); // the GPU objects built for it go with it
+```
+
 ## WebGPU-only features (advanced)
 
 These have no effect on the WebGL renderer. Branch on `renderer.name === 'webgpu'` before relying on them.
@@ -219,7 +235,7 @@ if (!bundle || !renderer.encoder.isBundleValid(bundle)) {
 renderer.encoder.executeBundle(bundle);
 ```
 
-Pass an array to `executeBundle` to replay several bundles in one call.
+Pass an array to `executeBundle` to replay several bundles in one call. A bundle is also invalid after a WebGPU device loss, because it was recorded on the device that was lost; `isBundleValid` reports that too.
 
 ### Transient MSAA render textures
 
@@ -232,6 +248,14 @@ const rt = RenderTexture.create({ width: 1024, height: 1024, antialias: true, tr
 ```
 
 `renderer.device.extensions.transientAttachment` reports whether the usage bit is available.
+
+### Device loss
+
+When the browser reports the GPU device as lost (a GPU process crash, for example), the WebGPU renderer requests a new adapter and device, runs `contextChange` on every system, and recreates textures, buffers, shader modules, pipelines, and bind groups on the next render. `Text` and `HTMLText` regenerate their textures. You do not need to handle it yourself. The one thing that cannot survive is a render bundle recorded on the old device: `renderer.encoder.isBundleValid(bundle)` returns `false` for it, so re-record it as you would after a render target change.
+
+A device you hand in through the `gpu` option belongs to the engine that created it, so PixiJS neither restores nor destroys it. A device PixiJS created is destroyed by `renderer.destroy()`.
+
+The WebGL renderer already restores itself after `webglcontextlost` / `webglcontextrestored`; `Text` and `HTMLText` regenerate their textures there too.
 
 ## Resizing the renderer
 
@@ -276,7 +300,7 @@ Call `destroy()` to clean up all GPU resources, systems, event listeners, and in
 renderer.destroy();
 ```
 
-This removes all `EventEmitter` listeners attached to the renderer and nullifies internal systems and pipes. A destroyed renderer cannot be used for further rendering.
+This removes all `EventEmitter` listeners attached to the renderer and nullifies internal systems and pipes. On WebGPU it also destroys the `GPUDevice` the renderer created (a device passed in through the `gpu` option is left alone). A destroyed renderer cannot be used for further rendering.
 
 ---
 

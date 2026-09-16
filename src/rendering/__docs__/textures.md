@@ -122,6 +122,30 @@ texture.source.scaleMode = 'linear';
 texture.source.wrapMode = 'repeat';
 ```
 
+## Pooled textures (advanced)
+
+Filters, masks, `cacheAsTexture`, and canvas text borrow their scratch textures from the shared `TexturePool`. Custom filters and plugins can use it too:
+
+```ts
+import { TexturePool } from 'pixi.js';
+
+const scratch = TexturePool.getOptimalTexture({
+    width: bounds.width,
+    height: bounds.height,
+    resolution: renderer.resolution,
+    antialias: true,
+    scaleMode: 'nearest',
+});
+
+// ... render into it ...
+
+TexturePool.returnTexture(scratch);
+```
+
+`width` and `height` are the minimum frame size. `resolution`, `antialias`, `autoGenerateMipmaps`, `format`, and `scaleMode` are optional; each combination keeps its own bucket, so one pool can serve color, float, and depth targets side by side. Each axis of the backing texture is the next power of two or the size of the renderer's screen, whichever is smaller, so a full-screen request on a 1170x2532 phone gets a 1170x2532 texture instead of 2048x4096. Requests larger than every live screen keep their power-of-two size. `getOptimalSize(width, height, resolution)` reports the backing size without taking a texture, and `getSameSizeTexture(texture)` matches an existing one.
+
+The positional `getOptimalTexture(width, height, resolution, antialias)` form is deprecated since 8.21.0, as are the `enableFullScreen` and `textureStyle` properties, which no longer do anything. Every renderer registers its own screen size with the pool through `setScreenSize` and removes it on destroy; only custom or off-screen setups need to call those themselves.
+
 ## Depth textures and texture views (advanced)
 
 A `TextureSource` with a depth or stencil format (`depth24plus`, `depth24plus-stencil8`, `depth32float`, and so on) can be attached to a {@link RenderTarget} and, on WebGPU, sampled in a shader. To sample only the depth aspect, wrap the source in a {@link TextureView} and pass it as a shader resource:
