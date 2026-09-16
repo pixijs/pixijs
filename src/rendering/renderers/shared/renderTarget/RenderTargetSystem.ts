@@ -1,6 +1,6 @@
 import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
-import { deprecation } from '../../../../utils/logging/deprecation';
+import { deprecation, v8_21_0 } from '../../../../utils/logging/deprecation';
 import { warn } from '../../../../utils/logging/warn';
 import { CLEAR } from '../../gl/const';
 import { calculateProjection } from '../../gpu/renderTarget/calculateProjection';
@@ -662,35 +662,54 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
     }
 
     /**
-     * The effective front-face orientation of the current bind — `true` when a front-facing triangle
-     * ends up wound the opposite way on the surface (so the winding/cull has been inverted to compensate).
+     * Whether pixi inverts the front face for a bind — `true` when a front-facing triangle ends up
+     * wound the opposite way on the surface, so the winding/cull has been inverted to compensate.
+     *
+     * With no arguments, answers for the current bind. With a target, answers for that target as if
+     * it were bound with the given `flipY` (defaulting to `false`, exactly as {@link bind} would), so
+     * a consumer can choose a projection or a `flipY` before binding.
      *
      * This is the requested `flipY` combined with the backend's inherent orientation, not the raw request:
      *
      * ```text
-     * frontFaceInverted = flipY XOR (isWebGL && !isRoot)
+     * inverted = flipY XOR (isWebGL && !isRoot)
      * ```
      *
      * WebGL's non-root FBOs carry an inherent Y-flip vs the root (the classic render-texture flip), so the
      * same requested `flipY` lands with the opposite winding depending on `isRoot`. WebGPU has no such
-     * inherent flip, so there it is simply `flipY`. This is exactly the winding inversion each backend bakes
-     * at bind ({@link GlStateSystem} / {@link PipelineSystem}), exposed so consumers (e.g. 3D pipelines) can
-     * read the resolved orientation instead of re-deriving it from `flipY`, `isRoot`, and a backend check of
-     * their own.
-     *
-     * It is per-bind, not per-target: `flipY` is set on every `bind`/`renderStart` while `isRoot` is fixed on
-     * the target, so this recomputes from whatever the last bind resolved.
+     * inherent flip, so there it is simply `flipY`. This is the one spelling of the rule: the winding each
+     * backend bakes at bind ({@link GlStateSystem} / {@link PipelineSystem}) comes from here too, so
+     * consumers (e.g. 3D pipelines) read the resolved orientation instead of re-deriving it.
+     * @param renderTarget - the target to ask about; omit for the current bind
+     * @param flipY - the `flipY` the target would be bound with; ignored when `renderTarget` is omitted
+     * @returns whether the front face is inverted
+     */
+    public isFrontFaceInverted(renderTarget?: RenderTarget, flipY?: boolean): boolean
+    {
+        if (!renderTarget)
+        {
+            renderTarget = this.renderTarget;
+
+            if (!renderTarget) return false;
+
+            flipY = renderTarget.flipY;
+        }
+
+        return !!flipY !== (this._renderer.type === RendererType.WEBGL && !renderTarget.isRoot);
+    }
+
+    /**
+     * The effective front-face orientation of the current bind.
+     * @deprecated since 8.21.0, use {@link isFrontFaceInverted} instead
      * @returns whether the current bind's front face is inverted
      */
     public get frontFaceInverted(): boolean
     {
-        const renderTarget = this.renderTarget;
+        // #if _DEBUG
+        deprecation(v8_21_0, 'RenderTargetSystem.frontFaceInverted is deprecated, use isFrontFaceInverted() instead');
+        // #endif
 
-        if (!renderTarget) return false;
-
-        const glInherentFlip = this._renderer.type === RendererType.WEBGL && !renderTarget.isRoot;
-
-        return !!renderTarget.flipY !== glInherentFlip;
+        return this.isFrontFaceInverted();
     }
 
     public clear(
