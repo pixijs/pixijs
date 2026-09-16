@@ -283,11 +283,12 @@ export class PipelineSystem implements System
         // attachment is usually about sampling the texture, which WebGPU only allows when the
         // entire attachment — stencil included — is read-only
         this._stencilReadOnly = renderTarget.depthStencilAttachment?.stencilReadOnly ?? this._depthReadOnly;
-        // WebGPU bakes winding into the (cached) pipeline, not as live state. `flipY` is opt-in: off →
-        // the framebuffer's natural ccw (exactly today); on → invert to cw so the projection flip and the
-        // winding flip cancel and culling is preserved. This bit feeds the cache key (getGlobalStateKey),
-        // so a flipY pass gets its own pipeline rather than aliasing — and an off pass keeps today's key.
-        this._invertFrontFace = !!renderTarget.flipY;
+        // WebGPU bakes winding into the (cached) pipeline, not as live state. The one spelling of the
+        // rule lives on the render target system; on WebGPU it resolves to plain `flipY`: off → the
+        // framebuffer's natural ccw; on → invert to cw so the projection flip and the winding flip
+        // cancel and culling is preserved. This bit feeds the cache key (getGlobalStateKey), so a
+        // flipY pass gets its own pipeline rather than aliasing — and an off pass keeps today's key.
+        this._invertFrontFace = this._renderer.renderTarget.isFrontFaceInverted(renderTarget, renderTarget.flipY);
         this._updatePipeHash();
     }
 
