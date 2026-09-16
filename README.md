@@ -88,6 +88,28 @@ import { Application, Assets, Sprite } from 'pixi.js';
     });
 })();
 ```
+
+### TypeScript
+
+PixiJS supports WebGPU, so its type declarations depend on the WebGPU types. Where those come from depends on your TypeScript version.
+
+**TypeScript 5:** no WebGPU types are built in, so PixiJS adds [`@webgpu/types`](https://github.com/gpuweb/types) for you. No additional setup required.
+
+**TypeScript 6 and 7:** the WebGPU types are built into the `"dom"` library, but some releases leave parts out, such as `GPUTextureUsage`. Use [`@types/web`](https://www.npmjs.com/package/@types/web), which has the full set, in place of `"dom"`. Remove `@webgpu/types` from `types` if it's there, since it conflicts with the built-in types.
+
+```bash
+npm install --save-dev @types/web
+```
+
+```json
+{
+  "compilerOptions": {
+    "lib": ["esnext"],
+    "types": ["@types/web"]
+  }
+}
+```
+
 ### Contribute
 
 Want to be part of the PixiJS project? Great! All are welcome! We will get there quicker

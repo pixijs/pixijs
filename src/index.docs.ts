@@ -8,6 +8,7 @@
  * @document __docs__/concepts/environments.md
  * @document __docs__/concepts/garbage-collection.md
  * @document __docs__/concepts/performance-tips.md
+ * @document __docs__/concepts/typescript.md
  * @document accessibility/__docs__/accessibility.md
  * @document app/__docs__/app.md
  * @document assets/__docs__/assets.md
