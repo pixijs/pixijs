@@ -191,6 +191,10 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             && this._renderer.encoder.renderPassEncoder !== null
             && clearBits === CLEAR.NONE;
 
+        // even a reused pass can change its winding: the same target rebound with the other `flipY`
+        // must key its pipelines to the new front face
+        this._renderer.pipeline.setRenderTarget(renderTarget);
+
         if (reuse)
         {
             this._renderer.encoder.setViewport(viewport);
@@ -202,7 +206,6 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
         gpuRenderTarget.descriptor = descriptor;
 
-        this._renderer.pipeline.setRenderTarget(renderTarget);
         this._renderer.encoder.beginRenderPass(gpuRenderTarget);
         this._renderer.encoder.setViewport(viewport);
 
@@ -537,6 +540,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     width: 0,
                     height: 0,
                     sampleCount: 4,
+                    // WebGPU requires multisampled textures to have exactly 1 mip level, so this must never
+                    // inherit TextureSource.defaultOptions.autoGenerateMipmaps
+                    autoGenerateMipmaps: false,
                     transient: colorTexture.transient,
                     arrayLayerCount: colorTexture.arrayLayerCount,
                     format: colorTexture.format,

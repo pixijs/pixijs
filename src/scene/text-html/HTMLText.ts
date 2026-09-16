@@ -1,6 +1,7 @@
 import { TextureSource } from '../../rendering/renderers/shared/texture/sources/TextureSource';
 import { TextureStyle, type TextureStyleOptions } from '../../rendering/renderers/shared/texture/TextureStyle';
 import { AbstractText, ensureTextOptions } from '../text/AbstractText';
+import { warnIgnoredTextureStyle } from '../text/utils/warnIgnoredTextureStyle';
 import { type BatchableHTMLText } from './BatchableHTMLText';
 import { HTMLTextStyle } from './HTMLTextStyle';
 import { measureHtmlText } from './utils/measureHtmlText';
@@ -51,14 +52,8 @@ import type { HTMLTextStyleOptions } from './HTMLTextStyle';
 export interface HTMLTextOptions extends TextOptions<HTMLTextStyle, HTMLTextStyleOptions>, PixiMixins.HTMLTextOptions
 {
     /**
-     * Optional texture style to use for the text texture. This allows fine control over
-     * how the text is rendered to a texture before being displayed.
-     *
-     * The texture style can affect:
-     * - Scale mode (nearest/linear)
-     * - Resolution
-     * - Format (rgb/rgba)
-     * - Alpha handling
+     * Optional texture style for the text texture. Only `scaleMode` is read (`nearest` or `linear`):
+     * the text gets a pooled texture with that scale mode. Every other field is ignored.
      * @example
      * ```ts
      * const text = new HTMLText({
@@ -172,9 +167,8 @@ export class HTMLText extends AbstractText<
     public override readonly renderPipeId: string = 'htmlText';
 
     /**
-     * Optional texture style to use for the text.
-     * > [!NOTE] HTMLText is not updated when this property is updated,
-     * > you must update the text manually by calling `text.onViewUpdate()`
+     * Optional texture style to use for the text. Only `scaleMode` is read, when a new texture is
+     * generated for the text (a text, style or resolution change).
      * @advanced
      */
     public textureStyle?: TextureStyle;
@@ -205,6 +199,8 @@ export class HTMLText extends AbstractText<
             this.textureStyle = options.textureStyle instanceof TextureStyle
                 ? options.textureStyle
                 : new TextureStyle(options.textureStyle);
+
+            warnIgnoredTextureStyle(this.textureStyle);
         }
 
         this.autoGenerateMipmaps = options.autoGenerateMipmaps ?? TextureSource.defaultOptions.autoGenerateMipmaps;

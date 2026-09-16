@@ -1,6 +1,6 @@
 ---
 name: pixijs-events
-description: "Use this skill when handling pointer, mouse, touch, or wheel input in PixiJS v8. Covers eventMode (none, passive, auto, static, dynamic), FederatedEvent types, propagation and capture phase, hitArea, interactiveChildren, cursor and cursorStyles, global move events for drag, eventFeatures config. Triggers on: eventMode, FederatedPointerEvent, pointerdown, click, tap, globalpointermove, drag, hitArea, cursor, stopPropagation."
+description: "Use this skill when handling pointer, mouse, touch, or wheel input in PixiJS v8. Covers eventMode (none, passive, auto, static, dynamic), FederatedEvent types, propagation and capture phase, hitArea, interactiveChildren, cursor and cursorStyles, global move events for drag, eventFeatures config. Triggers on: eventMode, FederatedPointerEvent, pointerdown, click, tap, globalpointermove, drag, hitArea, cursor, stopPropagation, persistentDeviceId."
 license: MIT
 ---
 
@@ -247,6 +247,7 @@ sprite.on("pointerdown", (event: FederatedPointerEvent) => {
   event.pointerType; // 'mouse' | 'pen' | 'touch'
   event.pointerId; // unique id for multi-touch tracking
   event.isPrimary; // first pointer in a multi-pointer gesture
+  event.persistentDeviceId; // always 0; present for DOM PointerEvent type compatibility
   event.pressure; // 0-1 pen/touch pressure
   event.button; // 0 left, 1 middle, 2 right
   event.buttons; // bitmask of held buttons

@@ -165,7 +165,7 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 
     /**
      * Releases all batchers cached for the given InstructionSet. Called from
-     * {@link InstructionSet.destroy} so that batchers (and their GPU geometry / attribute
+     * `InstructionSet.destroy()` so that batchers (and their GPU geometry / attribute
      * buffers / referenced textures) do not leak when the owning RenderGroup is destroyed.
      * @param instructionSet - the instruction set being destroyed
      */

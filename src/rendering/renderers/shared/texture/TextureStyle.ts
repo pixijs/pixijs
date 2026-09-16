@@ -86,8 +86,6 @@ export class TextureStyle extends EventEmitter<{
 {
     /** @internal */
     public _resourceType = 'textureSampler';
-    /** @internal */
-    public _touched = 0;
     private _sharedResourceId: number;
 
     /** default options for the style */

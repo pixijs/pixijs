@@ -52,6 +52,8 @@ await renderer.init(options);
 > [!NOTE]
 > Most applications should use `autoDetectRenderer()` and let PixiJS pick the best backend. Use direct construction only when you have a specific reason.
 
+Both paths run the same `init()`: environment extensions load first, then any `WebGLLoader`/`WebGPULoader`/`CanvasLoader` extensions registered for that backend are awaited, and only then are the renderer's systems and pipes created. See the [extensions guide](../../extensions/__docs__/extensions.md) for registering a loader.
+
 ## Rendering a scene
 
 Call `render()` with a `Container` to draw it to the screen:
@@ -77,6 +79,23 @@ renderer.render({
 
 The `container` property is the scene root to draw. `target` is a separate property that specifies a render destination (e.g., a {@link RenderTexture}).
 
+## Resizing the renderer
+
+```ts
+renderer.resize(window.innerWidth, window.innerHeight);
+```
+
+## Generating textures
+
+Create textures from any display object with `generateTexture()`:
+
+```ts
+import { Sprite } from 'pixi.js';
+
+const sprite = new Sprite();
+const texture = renderer.generateTexture(sprite);
+```
+
 ## Rendering to mip levels (advanced)
 
 When rendering to a texture-backed target, you can specify `mipLevel` to render into a specific mip level of the target's underlying texture storage. Most applications won't need this; it's useful for custom LOD (level of detail) systems or manual mipmap generation.
@@ -101,22 +120,155 @@ renderer.render({
 
 If your `target` is a {@link Texture} with a `frame` (e.g. an atlas sub-texture), that frame is interpreted in **mip 0** pixel space and is scaled/clamped when rendering to `mipLevel > 0`.
 
-## Resizing the renderer
+## Flipping the output (advanced)
+
+By default a texture render is stored in PixiJS's Y-down orientation, which the 2D pipeline samples upright but 3D UV conventions read upside down. Pass `flipY: true` to invert the Y orientation of the render. Back-face culling stays correct because the winding order flips together with the projection.
 
 ```ts
-renderer.resize(window.innerWidth, window.innerHeight);
+renderer.render({
+    container: scene3d,
+    target: renderTexture,
+    flipY: true,
+});
 ```
 
-## Generating textures
+## Render targets (advanced)
 
-Create textures from any display object with `generateTexture()`:
+Every texture you render to gets a {@link RenderTarget} behind the scenes. Create one yourself when you need multiple color attachments, an explicit depth or stencil texture, or per-attachment load and store behavior.
 
 ```ts
-import { Sprite } from 'pixi.js';
+import { RenderTarget, TextureSource } from 'pixi.js';
 
-const sprite = new Sprite();
-const texture = renderer.generateTexture(sprite);
+const color = new TextureSource({ width: 512, height: 512 });
+const depth = new TextureSource({ width: 512, height: 512, format: 'depth24plus-stencil8' });
+
+const target = new RenderTarget({
+    colorAttachments: [{ texture: color, loadOp: 'clear', clearValue: [0, 0, 0, 1] }],
+    depthStencilAttachment: { texture: depth, depthLoadOp: 'clear', depthClearValue: 1 },
+});
+
+renderer.render({ container, target });
 ```
+
+The attachment objects mirror the WebGPU render pass descriptors, with `texture` in place of `view`. The `clear` option you pass to `render()` overrides the attachments' load ops for that call. The older `colorTextures`, `depth`, `stencil`, and `depthStencilTexture` options still work and are converted to attachments internally.
+
+### Depth-only targets
+
+Pass `colorTextures: 0` with `depth: true`, or hand a depth-format `TextureSource` to `depthStencilTexture`. Rendering directly to a depth-format `TextureSource` also works; PixiJS wraps it in a depth-only target.
+
+```ts
+const shadowMap = new RenderTarget({ width: 1024, height: 1024, colorTextures: 0, depth: true });
+```
+
+Supported depth and stencil formats are `stencil8`, `depth16unorm`, `depth24plus`, `depth24plus-stencil8`, `depth32float`, and `depth32float-stencil8`. A depth-only format cannot be used for stencil masks.
+
+### Binding targets directly
+
+Custom rendering code binds surfaces through `renderer.renderTarget`. Pass an options object; the positional form is deprecated since 8.20.0 and warns once.
+
+```ts
+import { CLEAR } from 'pixi.js';
+
+// bind: replaces the current binding
+renderer.renderTarget.bind({ target: renderTexture, clear: true, clearColor: [0, 0, 0, 0] });
+
+// push/pop: save and restore the previous binding
+renderer.renderTarget.push({ target: scratch, clear: CLEAR.COLOR, mipLevel: 1 });
+// ... draw ...
+renderer.renderTarget.pop(); // returns the restored RenderTarget, throws if the stack is empty
+
+// capture and replay a binding without clearing it
+const saved = renderer.renderTarget.getBindState();
+renderer.renderTarget.bind({ target: scratch, clear: true });
+renderer.renderTarget.bind(saved);
+```
+
+Available options are `target`, `clear`, `clearColor`, `frame` (in mip 0 pixel space), `mipLevel`, `layer`, and `flipY`.
+
+### Copying between targets
+
+```ts
+// copy color pixels from any texture, canvas, or render target into a texture
+renderer.renderTarget.copyToTexture(source, destTexture, { x: 0, y: 0 }, { width: 256, height: 256 }, { x: 0, y: 0 });
+
+// copy the depth attachment into a depth-format texture (WebGL2 and WebGPU)
+renderer.renderTarget.copyDepthTexture(sourceTarget, destDepthTexture, { x: 0, y: 0 }, { width: 256, height: 256 });
+
+// then render into the destination without clearing the copied depth
+renderer.render({ container, target: destTarget, clear: CLEAR.COLOR });
+```
+
+`copyDepthTexture` warns and does nothing when the source has no depth attachment or the destination texture is not a depth or stencil format. Clear only the color buffer afterwards, or the copied depth is lost.
+
+3D code that needs the resolved winding of the current target can call `renderer.renderTarget.isFrontFaceInverted()`, or `isFrontFaceInverted(target, flipY)` to ask about a target before binding it. The target is a `RenderTarget`; get one for a texture with `renderer.renderTarget.getRenderTarget(texture)`.
+
+### Destroying targets
+
+A `RenderTarget` you construct is yours to destroy. Every renderer that drew into it frees the framebuffers and MSAA textures it built for it. Destroying the renderer frees those too, without destroying your target.
+
+```ts
+import { RenderTarget } from 'pixi.js';
+
+const target = new RenderTarget({ colorTextures: [texture] });
+
+renderer.render({ container, target });
+
+target.destroy(); // the GPU objects built for it go with it
+```
+
+## WebGPU-only features (advanced)
+
+These have no effect on the WebGL renderer. Branch on `renderer.name === 'webgpu'` before relying on them.
+
+### Shader override constants
+
+WGSL `override` declarations can be set per shader without recompiling the source. Values are baked into the pipeline, so each distinct set of overrides creates a separate pipeline. Keep the number of combinations small.
+
+```ts
+import { Shader } from 'pixi.js';
+
+const shader = Shader.from({
+    gpu: { vertex: { source, entryPoint: 'vsMain' }, fragment: { source, entryPoint: 'fsMain' } },
+    resources: { uniforms },
+    overrides: { BLUR_STEPS: 8 },
+});
+```
+
+Browsers without pipeline constant support (Safari) get the values substituted into the source instead. `renderer.limits.supportsOverrideConstants` reports which path is in use.
+
+### Render bundles
+
+A render bundle records a sequence of draw calls once and replays them on later frames, cutting CPU cost for static content drawn through `renderer.encoder`. A bundle bakes the render target it was recorded against, so check it before replaying and re-record when the check fails.
+
+```ts
+let bundle;
+
+if (!bundle || !renderer.encoder.isBundleValid(bundle)) {
+    renderer.encoder.beginBundle('static-props');
+    renderer.encoder.draw({ geometry, shader, state });
+    bundle = renderer.encoder.endBundle();
+}
+
+renderer.encoder.executeBundle(bundle);
+```
+
+Pass an array to `executeBundle` to replay several bundles in one call. A bundle is also invalid after a WebGPU device loss, because it was recorded on the device that was lost; `isBundleValid` reports that too.
+
+### Transient MSAA render textures
+
+An antialiased render texture that is drawn in a single pass and never loaded back can mark its multisample buffer as scratch memory. Set `transient: true` when creating it; PixiJS then discards the MSAA buffer at the end of the pass, and tile-based GPUs skip allocating it entirely where the browser supports `GPUTextureUsage.TRANSIENT_ATTACHMENT`. Do not set it on a texture that is rendered into again with `clear: false`, or on one used with filters.
+
+```ts
+import { RenderTexture } from 'pixi.js';
+
+const rt = RenderTexture.create({ width: 1024, height: 1024, antialias: true, transient: true });
+```
+
+`renderer.device.extensions.transientAttachment` reports whether the usage bit is available.
+
+### Device loss
+
+When the browser reports the GPU device as lost (a GPU process crash, for example), the WebGPU renderer requests a new device and rebuilds textures, buffers, pipelines, and bind groups on the next render. You do not need to handle it yourself, with one exception: a render bundle recorded on the old device fails `renderer.encoder.isBundleValid(bundle)` and must be re-recorded. A device you hand in through the `gpu` option is neither restored nor destroyed by PixiJS. The WebGL renderer restores itself the same way after `webglcontextrestored`.
 
 ## Resetting state
 
@@ -144,7 +296,7 @@ Call `destroy()` to clean up all GPU resources, systems, event listeners, and in
 renderer.destroy();
 ```
 
-This removes all `EventEmitter` listeners attached to the renderer and nullifies internal systems and pipes. A destroyed renderer cannot be used for further rendering.
+This removes all `EventEmitter` listeners attached to the renderer and nullifies internal systems and pipes. On WebGPU it also destroys the `GPUDevice` the renderer created (a device passed in through the `gpu` option is left alone). A destroyed renderer cannot be used for further rendering.
 
 ---
 
@@ -159,3 +311,9 @@ This removes all `EventEmitter` listeners attached to the renderer and nullifies
 - {@link GenerateTextureSystem}
 - {@link RenderTexture}
 - {@link Texture}
+- {@link RenderTarget}
+- {@link RenderTargetSystem}
+- {@link TextureView}
+- {@link ShaderOverrides}
+- {@link GpuEncoderSystem}
+- {@link RenderBundle}

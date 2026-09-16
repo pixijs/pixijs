@@ -1,5 +1,8 @@
 import { CLEAR } from '../gl/const';
+import { GpuProgram } from '../gpu/shader/GpuProgram';
+import { Geometry } from '../shared/geometry/Geometry';
 import { RenderTarget } from '../shared/renderTarget/RenderTarget';
+import { State } from '../shared/state/State';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
 import { Texture } from '../shared/texture/Texture';
 import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
@@ -20,11 +23,12 @@ function createTarget(options: Partial<ConstructorParameters<typeof TextureSourc
 }
 
 /**
- * collects the bind-deprecation messages captured by the console spies
+ * collects the deprecation messages captured by the console spies
  * @param warnSpy - spy on console.warn
  * @param groupSpy - spy on console.groupCollapsed
+ * @param needle - the message fragment to look for
  */
-function findBindDeprecations(warnSpy: jest.SpyInstance, groupSpy: jest.SpyInstance): string[]
+function findDeprecations(warnSpy: jest.SpyInstance, groupSpy: jest.SpyInstance, needle: string): string[]
 {
     const allCalls = warnSpy.mock.calls.concat(groupSpy.mock.calls);
     const found: string[] = [];
@@ -33,7 +37,7 @@ function findBindDeprecations(warnSpy: jest.SpyInstance, groupSpy: jest.SpyInsta
     {
         for (const arg of call)
         {
-            if (typeof arg === 'string' && arg.includes('positional arguments'))
+            if (typeof arg === 'string' && arg.includes(needle))
             {
                 found.push(arg);
             }
@@ -306,7 +310,7 @@ describe('RenderTargetSystem flipY orientation toggle (WebGL)', () =>
         expect(state._invertFrontFace).toBe(false);
     });
 
-    it('exposes frontFaceInverted matching the baked winding inversion (welded to flipY and isRoot)', async () =>
+    it('exposes isFrontFaceInverted() matching the baked winding inversion (welded to flipY and isRoot)', async () =>
     {
         renderer = await getWebGLRenderer() as WebGLRenderer;
 
@@ -317,18 +321,89 @@ describe('RenderTargetSystem flipY orientation toggle (WebGL)', () =>
 
         // non-root texture, default: WebGL's inherent flip inverts the winding
         renderTarget.bind({ target: a });
-        expect(renderTarget.frontFaceInverted).toBe(true);
-        expect(renderTarget.frontFaceInverted).toBe(state._invertFrontFace);
+        expect(renderTarget.isFrontFaceInverted()).toBe(true);
+        expect(renderTarget.isFrontFaceInverted()).toBe(state._invertFrontFace);
 
         // flipY:false is inert -> still inverted (switch target to force the change to re-emit)
         renderTarget.bind({ target: b, clear: true, flipY: false });
-        expect(renderTarget.frontFaceInverted).toBe(true);
-        expect(renderTarget.frontFaceInverted).toBe(state._invertFrontFace);
+        expect(renderTarget.isFrontFaceInverted()).toBe(true);
+        expect(renderTarget.isFrontFaceInverted()).toBe(state._invertFrontFace);
 
         // flipY:true cancels the inherent flip -> not inverted
         renderTarget.bind({ target: a, clear: true, flipY: true });
-        expect(renderTarget.frontFaceInverted).toBe(false);
-        expect(renderTarget.frontFaceInverted).toBe(state._invertFrontFace);
+        expect(renderTarget.isFrontFaceInverted()).toBe(false);
+        expect(renderTarget.isFrontFaceInverted()).toBe(state._invertFrontFace);
+    });
+
+    it('re-emits the WebGL front face when the same target is rebound with the other flipY', async () =>
+    {
+        renderer = await getWebGLRenderer() as WebGLRenderer;
+
+        const { renderTarget } = renderer;
+        const state = (renderer as WebGLRenderer).state as unknown as { _invertFrontFace: boolean };
+        const target = createTarget();
+
+        renderTarget.bind({ target, clear: true, flipY: false });
+        expect(state._invertFrontFace).toBe(true);
+
+        // same target, flipY flipped: the target identity is unchanged, but the resolved winding is
+        // not, so the change must still reach the WebGL state
+        renderTarget.bind({ target, clear: true, flipY: true });
+        expect(renderTarget.isFrontFaceInverted()).toBe(false);
+        expect(state._invertFrontFace).toBe(false);
+
+        // and back again, still on the same target
+        renderTarget.bind({ target, clear: true, flipY: false });
+        expect(renderTarget.isFrontFaceInverted()).toBe(true);
+        expect(state._invertFrontFace).toBe(true);
+
+        // omitting flipY reads as false, so a plain rebind after flipY:false is not a change
+        const emit = jest.spyOn(renderTarget.onRenderTargetChange, 'emit');
+
+        renderTarget.bind({ target, clear: true });
+        expect(emit).not.toHaveBeenCalled();
+        emit.mockRestore();
+    });
+
+    it('answers isFrontFaceInverted(target, flipY) for a target that is not bound', async () =>
+    {
+        renderer = await getWebGLRenderer() as WebGLRenderer;
+
+        const { renderTarget } = renderer;
+        const bound = createTarget();
+        const unbound = createTarget();
+        const root = renderer.view.renderTarget;
+
+        renderTarget.bind({ target: bound, clear: true, flipY: true });
+
+        // naming a target asks about that target, not the bind, and flipY defaults to bind's default
+        expect(renderTarget.isFrontFaceInverted(renderTarget.getRenderTarget(unbound))).toBe(true);
+        expect(renderTarget.isFrontFaceInverted(renderTarget.getRenderTarget(unbound), true)).toBe(false);
+        expect(renderTarget.isFrontFaceInverted(root)).toBe(false);
+        expect(renderTarget.isFrontFaceInverted(root, true)).toBe(true);
+
+        // and the current bind is untouched by asking
+        expect(renderTarget.isFrontFaceInverted()).toBe(false);
+        expect(renderTarget.renderSurface).toBe(bound);
+    });
+
+    it('keeps the deprecated frontFaceInverted getter as an alias of isFrontFaceInverted()', async () =>
+    {
+        renderer = await getWebGLRenderer() as WebGLRenderer;
+
+        const { renderTarget } = renderer;
+        const target = createTarget();
+
+        renderTarget.bind({ target, clear: true, flipY: true });
+
+        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+        const groupSpy = jest.spyOn(console, 'groupCollapsed').mockImplementation(() => undefined);
+
+        expect(renderTarget.frontFaceInverted).toBe(renderTarget.isFrontFaceInverted());
+        expect(findDeprecations(warnSpy, groupSpy, 'frontFaceInverted is deprecated')).toHaveLength(1);
+
+        warnSpy.mockRestore();
+        groupSpy.mockRestore();
     });
 
     it('restores flipY when popping back to a target pushed with flipY:true', async () =>
@@ -383,7 +458,7 @@ describeLocalOnly('RenderTargetSystem flipY orientation toggle (WebGPU)', () =>
         expect(spy.mock.calls.some(([d]) => d.primitive?.frontFace === 'cw')).toBe(true);
     });
 
-    it('exposes frontFaceInverted as the raw flipY (WebGPU has no inherent Y-flip)', async () =>
+    it('exposes isFrontFaceInverted() as the raw flipY (WebGPU has no inherent Y-flip)', async () =>
     {
         renderer = await getWebGPURenderer() as WebGPURenderer;
 
@@ -394,10 +469,61 @@ describeLocalOnly('RenderTargetSystem flipY orientation toggle (WebGPU)', () =>
 
         // no inherent flip on WebGPU: isRoot never enters the equation, so it tracks flipY directly
         renderTarget.bind({ target, clear: true, flipY: false });
-        expect(renderTarget.frontFaceInverted).toBe(false);
+        expect(renderTarget.isFrontFaceInverted()).toBe(false);
 
         renderTarget.bind({ target, clear: true, flipY: true });
-        expect(renderTarget.frontFaceInverted).toBe(true);
+        expect(renderTarget.isFrontFaceInverted()).toBe(true);
+    });
+
+    it('answers isFrontFaceInverted(target, flipY) for a target that is not bound', async () =>
+    {
+        renderer = await getWebGPURenderer() as WebGPURenderer;
+
+        renderer.encoder.renderStart();
+
+        const { renderTarget } = renderer;
+        const unbound = renderTarget.getRenderTarget(createTarget());
+        const root = renderer.view.renderTarget;
+
+        // isRoot never enters the equation on WebGPU: only the flipY the target would bind with
+        expect(renderTarget.isFrontFaceInverted(unbound)).toBe(false);
+        expect(renderTarget.isFrontFaceInverted(unbound, true)).toBe(true);
+        expect(renderTarget.isFrontFaceInverted(root)).toBe(false);
+        expect(renderTarget.isFrontFaceInverted(root, true)).toBe(true);
+    });
+
+    it('bakes the new winding when the same target is rebound with the other flipY and no clear', async () =>
+    {
+        renderer = await getWebGPURenderer() as WebGPURenderer;
+
+        renderer.encoder.renderStart();
+
+        const { renderTarget, pipeline } = renderer as WebGPURenderer;
+        const target = createTarget();
+        const wgsl = `
+            @vertex fn vsMain(@location(0) aPosition: vec2<f32>) -> @builtin(position) vec4<f32>
+            {
+                return vec4<f32>(aPosition, 0.0, 1.0);
+            }
+            @fragment fn fsMain() -> @location(0) vec4<f32>
+            {
+                return vec4<f32>(1.0);
+            }
+        `;
+        const program = GpuProgram.from({
+            vertex: { source: wgsl, entryPoint: 'vsMain' },
+            fragment: { source: wgsl, entryPoint: 'fsMain' },
+        });
+        const geometry = new Geometry({ attributes: { aPosition: [0, 0, 1, 0, 0, 1] } });
+        const spy = jest.spyOn((renderer as WebGPURenderer).gpu.device, 'createRenderPipeline');
+
+        renderTarget.bind({ target, clear: true, flipY: false });
+
+        // no clear on the same target reuses the open pass, but the winding it resolves to still changes
+        renderTarget.bind({ target, clear: false, flipY: true });
+        pipeline.getPipeline(geometry, program, new State());
+
+        expect(spy.mock.calls.at(-1)[0].primitive.frontFace).toBe('cw');
     });
 });
 
@@ -425,7 +551,7 @@ describe('RenderTargetSystem object-form bind', () =>
 
         const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
         const groupSpy = jest.spyOn(console, 'groupCollapsed').mockImplementation(() => undefined);
-        const deprecationCount = () => findBindDeprecations(warnSpy, groupSpy).length;
+        const deprecationCount = () => findDeprecations(warnSpy, groupSpy, 'positional arguments').length;
 
         // the same bind through the deprecated positional form
         const boundPositional = renderTarget.bind(target, CLEAR.COLOR, undefined, frame, 0, 0, true);
@@ -574,7 +700,7 @@ describe('RenderTargetSystem push/pop replay', () =>
         // back-buffer present bind
         renderer.render({ container: scene });
 
-        const deprecations = findBindDeprecations(warnSpy, groupSpy);
+        const deprecations = findDeprecations(warnSpy, groupSpy, 'positional arguments');
 
         warnSpy.mockRestore();
         groupSpy.mockRestore();
@@ -597,7 +723,7 @@ describe('RenderTargetSystem getBindState', () =>
         const bound = renderTarget.bind({ target, clear: true, frame, flipY: true });
         const viewport = renderTarget.viewport.clone();
         const projection = renderTarget.projectionMatrix.clone();
-        const inverted = renderTarget.frontFaceInverted;
+        const inverted = renderTarget.isFrontFaceInverted();
 
         const saved = renderTarget.getBindState();
 
@@ -619,7 +745,7 @@ describe('RenderTargetSystem getBindState', () =>
         expect(renderTarget.projectionMatrix).toEqual(projection);
         expect(renderTarget.mipLevel).toBe(0);
         expect(renderTarget.layer).toBe(0);
-        expect(renderTarget.frontFaceInverted).toBe(inverted);
+        expect(renderTarget.isFrontFaceInverted()).toBe(inverted);
     });
 
     it('restores without clearing (the captured clear is NONE, passed through to the adaptor)', async () =>

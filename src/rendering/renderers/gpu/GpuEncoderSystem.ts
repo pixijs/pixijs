@@ -43,9 +43,9 @@ export class GpuEncoderSystem implements System
      * The active command target that draws and state are recorded into. This is the live render
      * pass during normal rendering, or a {@link GPURenderBundleEncoder} while a render bundle is
      * being recorded (see {@link beginBundle}). Both encoders expose the same render/bind command
-     * API the encoder relies on ({@link GPURenderCommandsMixin} + {@link GPUBindingCommandsMixin}),
+     * API the encoder relies on (`GPURenderCommandsMixin` + `GPUBindingCommandsMixin`),
      * so callers write to it without caring which one is active. Pass-level commands (viewport,
-     * stencil, executeBundles, end) are not part of that shared API and go through {@link _passEncoder}.
+     * stencil, executeBundles, end) are not part of that shared API and go through the private pass encoder.
      */
     public renderPassEncoder: GPURenderPassEncoder | GPURenderBundleEncoder;
     public commandFinished: Promise<void>;
@@ -348,7 +348,7 @@ export class GpuEncoderSystem implements System
         slot.program = program;
         slot.key = bindGroup._key;
 
-        bindGroup._touch(this._renderer.gc.now, this._renderer.tick);
+        bindGroup._touch(this._renderer.gc.now);
 
         const gpuBindGroup = this._renderer.bindGroup.getBindGroup(bindGroup, program, index);
 

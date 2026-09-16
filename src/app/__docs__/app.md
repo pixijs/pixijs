@@ -122,7 +122,7 @@ The `.init()` method accepts a `Partial<ApplicationOptions>` object:
 | `premultipliedAlpha`     | `boolean`                           | `true`      | Assume alpha is premultiplied in color buffers.                                                                    |
 | `preserveDrawingBuffer`  | `boolean`                           | `false`     | Preserve buffer between frames. Needed for `toDataURL`.                                                            |
 | `resolution`             | `number`                            | `1`         | Pixel ratio for rendering. Set to `window.devicePixelRatio` for crisp output on high-DPI screens. Use with `autoDensity: true`. |
-| `skipExtensionImports`   | `boolean`                           | `false`     | Prevent automatic import of default PixiJS extensions.                                                             |
+| `skipExtensionImports`   | `boolean`                           | `false`     | Prevent automatic import of default PixiJS extensions. Renderer loader extensions (`WebGLLoader`, `WebGPULoader`, `CanvasLoader`) are skipped too. |
 | `textureGCActive`        | `boolean`                           | `true`      | _(Deprecated)_ Enable garbage collection for GPU textures. Use `gcActive`.                                         |
 | `textureGCCheckCountMax` | `number`                            | `600`       | _(Deprecated)_ Frame interval between GC runs. Use `gcFrequency`.                                                 |
 | `textureGCMaxIdle`       | `number`                            | `3600`      | _(Deprecated)_ Max idle frames before destroying a texture. Use `gcMaxUnusedTime`.                                 |

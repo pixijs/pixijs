@@ -140,7 +140,9 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
 
     public destroy(): void
     {
-        this.shader.destroy(true);
+        // the program comes from the shared GpuProgram cache and is used by every WebGPU renderer,
+        // so only the per-renderer shader is destroyed here
+        this.shader.destroy();
         this.shader = null;
     }
 }

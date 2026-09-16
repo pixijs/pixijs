@@ -1,7 +1,6 @@
 import { type ICanvas } from '../../../environment/canvas/ICanvas';
 import { type Filter } from '../../../filters/Filter';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
-import { TextureStyle } from '../../../rendering/renderers/shared/texture/TextureStyle';
 import { deprecation } from '../../../utils/logging/deprecation';
 import { CanvasTextGenerator } from '../canvas/CanvasTextGenerator';
 import { type CanvasTextOptions, type Text } from '../Text';
@@ -70,11 +69,6 @@ export abstract class AbstractTextSystem implements System
             options.style = new TextStyle(options.style);
         }
 
-        if (!(options.textureStyle instanceof TextureStyle))
-        {
-            options.textureStyle = new TextureStyle(options.textureStyle);
-        }
-
         if (typeof options.text !== 'string')
         {
             options.text = options.text.toString();
@@ -95,10 +89,9 @@ export abstract class AbstractTextSystem implements System
             frame.width,
             frame.height,
             resolution,
-            autoGenerateMipmaps
+            autoGenerateMipmaps,
+            textureStyle?.scaleMode
         );
-
-        if (textureStyle) texture.source.style = textureStyle as TextureStyle;
 
         if (style.trim)
         {
@@ -161,7 +154,7 @@ export abstract class AbstractTextSystem implements System
         source.uploadMethodId = 'unknown';
         source.alphaMode = 'no-premultiply-alpha';
 
-        TexturePool.returnTexture(texture, true);
+        TexturePool.returnTexture(texture);
     }
 
     /**

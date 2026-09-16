@@ -189,6 +189,7 @@ export class Ellipse implements ShapePrimitive
      * - Uses normalized ellipse equations
      * - Considers stroke alignment
      * - Returns false if dimensions are 0
+     * - A stroke wider than the shape covers it entirely, leaving no unstroked interior
      * @param x - The X coordinate of the point to test
      * @param y - The Y coordinate of the point to test
      * @param strokeWidth - The width of the line to check
@@ -218,13 +219,21 @@ export class Ellipse implements ShapePrimitive
         const normalizedX = x - this.x;
         const normalizedY = y - this.y;
 
-        const innerEllipse = ((normalizedX * normalizedX) / (innerHorizontal * innerHorizontal))
-            + ((normalizedY * normalizedY) / (innerVertical * innerVertical));
-
         const outerEllipse = ((normalizedX * normalizedX) / (outerHorizontal * outerHorizontal))
             + ((normalizedY * normalizedY) / (outerVertical * outerVertical));
 
-        return innerEllipse > 1 && outerEllipse <= 1;
+        if (outerEllipse > 1) return false;
+
+        // Once the inward part of the stroke reaches the center on either axis there is no
+        // unstroked interior left, so everything inside the outer edge is on the stroke.
+        // Squaring a negative half-axis would revive it as a smaller positive ellipse and
+        // carve a hole out of the middle of the stroke.
+        if (innerHorizontal <= 0 || innerVertical <= 0) return true;
+
+        const innerEllipse = ((normalizedX * normalizedX) / (innerHorizontal * innerHorizontal))
+            + ((normalizedY * normalizedY) / (innerVertical * innerVertical));
+
+        return innerEllipse > 1;
     }
 
     /**

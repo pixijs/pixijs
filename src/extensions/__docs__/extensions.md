@@ -225,6 +225,8 @@ These extension types are for specialized use cases. Most applications won't nee
 - `ExtensionType.TextureSource`: Auto-detect and create texture sources from raw data
 - `ExtensionType.ShapeBuilder`: Add new shape types to the Graphics API
 - `ExtensionType.Batcher`: Custom batch grouping for draw call optimization
+- `ExtensionType.TextureUploaderWebGL`: Register a WebGL texture uploader by name, matched against `TextureSource.uploadMethodId`. Register before creating the renderer.
+- `ExtensionType.TextureUploaderWebGPU`: Register a WebGPU texture uploader by name, matched against `TextureSource.uploadMethodId`. Register before creating the renderer.
 
 ## Related documentation
 

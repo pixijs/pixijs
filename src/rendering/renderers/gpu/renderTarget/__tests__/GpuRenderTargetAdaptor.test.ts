@@ -74,3 +74,44 @@ describeLocalOnly('GpuRenderTargetAdaptor labels', () =>
         renderer.destroy();
     });
 });
+
+describeLocalOnly('GpuRenderTargetAdaptor msaa textures', () =>
+{
+    it('should not inherit autoGenerateMipmaps from TextureSource.defaultOptions', async () =>
+    {
+        const originalAutoGenerateMipmaps = TextureSource.defaultOptions.autoGenerateMipmaps;
+
+        TextureSource.defaultOptions.autoGenerateMipmaps = true;
+
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        try
+        {
+            const target = new RenderTarget({
+                colorTextures: [new TextureSource({ width: 16, height: 16, antialias: true })],
+            });
+
+            const device = renderer.gpu.device;
+
+            device.pushErrorScope('validation');
+
+            renderer.encoder.renderStart();
+            renderer.renderTarget.bind({ target, clear: true });
+
+            const msaaTexture = renderer.renderTarget.getGpuRenderTarget(target).msaaTextures[0];
+
+            // multisampled textures must have exactly 1 mip level
+            expect(msaaTexture.autoGenerateMipmaps).toBe(false);
+            expect(msaaTexture.mipLevelCount).toBe(1);
+
+            renderer.encoder.postrender();
+
+            expect(await device.popErrorScope()).toBeNull();
+        }
+        finally
+        {
+            TextureSource.defaultOptions.autoGenerateMipmaps = originalAutoGenerateMipmaps;
+            renderer.destroy();
+        }
+    });
+});
