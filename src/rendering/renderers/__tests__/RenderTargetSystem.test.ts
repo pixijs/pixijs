@@ -1,5 +1,8 @@
 import { CLEAR } from '../gl/const';
+import { GpuProgram } from '../gpu/shader/GpuProgram';
+import { Geometry } from '../shared/geometry/Geometry';
 import { RenderTarget } from '../shared/renderTarget/RenderTarget';
+import { State } from '../shared/state/State';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
 import { Texture } from '../shared/texture/Texture';
 import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
@@ -487,6 +490,40 @@ describeLocalOnly('RenderTargetSystem flipY orientation toggle (WebGPU)', () =>
         expect(renderTarget.isFrontFaceInverted(unbound, true)).toBe(true);
         expect(renderTarget.isFrontFaceInverted(root)).toBe(false);
         expect(renderTarget.isFrontFaceInverted(root, true)).toBe(true);
+    });
+
+    it('bakes the new winding when the same target is rebound with the other flipY and no clear', async () =>
+    {
+        renderer = await getWebGPURenderer() as WebGPURenderer;
+
+        renderer.encoder.renderStart();
+
+        const { renderTarget, pipeline } = renderer as WebGPURenderer;
+        const target = createTarget();
+        const wgsl = `
+            @vertex fn vsMain(@location(0) aPosition: vec2<f32>) -> @builtin(position) vec4<f32>
+            {
+                return vec4<f32>(aPosition, 0.0, 1.0);
+            }
+            @fragment fn fsMain() -> @location(0) vec4<f32>
+            {
+                return vec4<f32>(1.0);
+            }
+        `;
+        const program = GpuProgram.from({
+            vertex: { source: wgsl, entryPoint: 'vsMain' },
+            fragment: { source: wgsl, entryPoint: 'fsMain' },
+        });
+        const geometry = new Geometry({ attributes: { aPosition: [0, 0, 1, 0, 0, 1] } });
+        const spy = jest.spyOn((renderer as WebGPURenderer).gpu.device, 'createRenderPipeline');
+
+        renderTarget.bind({ target, clear: true, flipY: false });
+
+        // no clear on the same target reuses the open pass, but the winding it resolves to still changes
+        renderTarget.bind({ target, clear: false, flipY: true });
+        pipeline.getPipeline(geometry, program, new State());
+
+        expect(spy.mock.calls.at(-1)[0].primitive.frontFace).toBe('cw');
     });
 });
 
