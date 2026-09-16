@@ -146,24 +146,6 @@ TexturePool.returnTexture(scratch);
 
 The positional `getOptimalTexture(width, height, resolution, antialias)` form and the `enableFullScreen` and `textureStyle` properties are deprecated since 8.21.0.
 
-## Depth textures and texture views (advanced)
-
-A `TextureSource` with a depth or stencil format (`depth24plus`, `depth24plus-stencil8`, `depth32float`, and so on) can be attached to a {@link RenderTarget} and, on WebGPU, sampled in a shader. To sample only the depth aspect, wrap the source in a {@link TextureView} and pass it as a shader resource:
-
-```ts
-import { Shader, TextureSource, TextureView } from 'pixi.js';
-
-const depth = new TextureSource({ width: 512, height: 512, format: 'depth24plus-stencil8' });
-const depthView = new TextureView(depth, { aspect: 'depth-only' });
-
-const shader = Shader.from({
-    gpu: { vertex, fragment },
-    resources: { uDepthTexture: depthView },
-});
-```
-
-Declare the binding as `texture_depth_2d` in WGSL and read it with `textureLoad`. Bind the render target with `depthReadOnly: true` on its depth attachment while sampling. On WebGL a `TextureView` binds the underlying source and the view descriptor is ignored.
-
 ---
 
 ## API reference
@@ -172,4 +154,3 @@ Declare the binding as `texture_depth_2d` in WGSL and read it with `textureLoad`
 - {@link TextureSource}
 - {@link TextureStyle}
 - {@link RenderTexture}
-- {@link TextureView}

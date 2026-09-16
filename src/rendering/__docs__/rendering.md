@@ -79,16 +79,21 @@ renderer.render({
 
 The `container` property is the scene root to draw. `target` is a separate property that specifies a render destination (e.g., a {@link RenderTexture}).
 
-### Flipping the output (advanced)
-
-By default a texture render is stored in PixiJS's Y-down orientation, which the 2D pipeline samples upright but 3D UV conventions read upside down. Pass `flipY: true` to invert the Y orientation of the render. Back-face culling stays correct because the winding order flips together with the projection.
+## Resizing the renderer
 
 ```ts
-renderer.render({
-    container: scene3d,
-    target: renderTexture,
-    flipY: true,
-});
+renderer.resize(window.innerWidth, window.innerHeight);
+```
+
+## Generating textures
+
+Create textures from any display object with `generateTexture()`:
+
+```ts
+import { Sprite } from 'pixi.js';
+
+const sprite = new Sprite();
+const texture = renderer.generateTexture(sprite);
 ```
 
 ## Rendering to mip levels (advanced)
@@ -114,6 +119,18 @@ renderer.render({
 ```
 
 If your `target` is a {@link Texture} with a `frame` (e.g. an atlas sub-texture), that frame is interpreted in **mip 0** pixel space and is scaled/clamped when rendering to `mipLevel > 0`.
+
+## Flipping the output (advanced)
+
+By default a texture render is stored in PixiJS's Y-down orientation, which the 2D pipeline samples upright but 3D UV conventions read upside down. Pass `flipY: true` to invert the Y orientation of the render. Back-face culling stays correct because the winding order flips together with the projection.
+
+```ts
+renderer.render({
+    container: scene3d,
+    target: renderTexture,
+    flipY: true,
+});
+```
 
 ## Render targets (advanced)
 
@@ -252,23 +269,6 @@ const rt = RenderTexture.create({ width: 1024, height: 1024, antialias: true, tr
 ### Device loss
 
 When the browser reports the GPU device as lost (a GPU process crash, for example), the WebGPU renderer requests a new device and rebuilds textures, buffers, pipelines, and bind groups on the next render. You do not need to handle it yourself, with one exception: a render bundle recorded on the old device fails `renderer.encoder.isBundleValid(bundle)` and must be re-recorded. A device you hand in through the `gpu` option is neither restored nor destroyed by PixiJS. The WebGL renderer restores itself the same way after `webglcontextrestored`.
-
-## Resizing the renderer
-
-```ts
-renderer.resize(window.innerWidth, window.innerHeight);
-```
-
-## Generating textures
-
-Create textures from any display object with `generateTexture()`:
-
-```ts
-import { Sprite } from 'pixi.js';
-
-const sprite = new Sprite();
-const texture = renderer.generateTexture(sprite);
-```
 
 ## Resetting state
 
