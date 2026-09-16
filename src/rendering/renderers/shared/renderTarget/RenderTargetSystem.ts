@@ -471,7 +471,10 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
 
         const renderTarget = this.getRenderTarget(renderSurface);
 
-        const didChange = this.renderTarget !== renderTarget;
+        // a rebind counts as a change when the winding it resolves to changes, not only when the
+        // target does: WebGL applies the front-face inversion from this signal, so rebinding the
+        // same target with the other `flipY` must re-emit or the GL winding goes stale
+        const didChange = this.renderTarget !== renderTarget || !!renderTarget.flipY !== !!flipY;
 
         this.renderTarget = renderTarget;
 

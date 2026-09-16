@@ -331,6 +331,36 @@ describe('RenderTargetSystem flipY orientation toggle (WebGL)', () =>
         expect(renderTarget.frontFaceInverted).toBe(state._invertFrontFace);
     });
 
+    it('re-emits the WebGL front face when the same target is rebound with the other flipY', async () =>
+    {
+        renderer = await getWebGLRenderer() as WebGLRenderer;
+
+        const { renderTarget } = renderer;
+        const state = (renderer as WebGLRenderer).state as unknown as { _invertFrontFace: boolean };
+        const target = createTarget();
+
+        renderTarget.bind({ target, clear: true, flipY: false });
+        expect(state._invertFrontFace).toBe(true);
+
+        // same target, flipY flipped: the target identity is unchanged, but the resolved winding is
+        // not, so the change must still reach the WebGL state
+        renderTarget.bind({ target, clear: true, flipY: true });
+        expect(renderTarget.frontFaceInverted).toBe(false);
+        expect(state._invertFrontFace).toBe(false);
+
+        // and back again, still on the same target
+        renderTarget.bind({ target, clear: true, flipY: false });
+        expect(renderTarget.frontFaceInverted).toBe(true);
+        expect(state._invertFrontFace).toBe(true);
+
+        // omitting flipY reads as false, so a plain rebind after flipY:false is not a change
+        const emit = jest.spyOn(renderTarget.onRenderTargetChange, 'emit');
+
+        renderTarget.bind({ target, clear: true });
+        expect(emit).not.toHaveBeenCalled();
+        emit.mockRestore();
+    });
+
     it('restores flipY when popping back to a target pushed with flipY:true', async () =>
     {
         renderer = await getWebGLRenderer() as WebGLRenderer;
