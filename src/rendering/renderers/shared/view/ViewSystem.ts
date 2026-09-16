@@ -2,8 +2,10 @@ import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
-import { type RendererOptions } from '../../types';
+import { type Renderer, type RendererOptions } from '../../types';
 import { RenderTarget } from '../renderTarget/RenderTarget';
+import { CanvasPool } from '../texture/CanvasPool';
+import { TexturePool } from '../texture/TexturePool';
 import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
@@ -137,6 +139,8 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
     /** The render target that the view is drawn to. */
     public renderTarget: RenderTarget;
 
+    private readonly _renderer: Renderer;
+
     /** The resolution / device pixel ratio of the renderer. */
     get resolution(): number
     {
@@ -150,6 +154,11 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
             this.texture.source.height,
             value
         );
+    }
+
+    constructor(renderer: Renderer)
+    {
+        this._renderer = renderer;
     }
 
     /**
@@ -183,7 +192,14 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         });
 
         this.texture.source.transparent = (options as RendererOptions).backgroundAlpha < 1;
+
+        // every change of screen size - the resolution set below, the resolution setter and
+        // renderer.resize - ends in the source resizing, so this is the one place to hook the pools
+        this.texture.source.on('resize', this._updateScreenSize, this);
+
         this.resolution = options.resolution;
+
+        this._updateScreenSize();
     }
 
     /**
@@ -217,9 +233,27 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
             this.canvas.parentNode.removeChild(this.canvas);
         }
 
+        this.texture.source.off('resize', this._updateScreenSize, this);
+
+        TexturePool.removeScreen(this._renderer.uid);
+        CanvasPool.removeScreen(this._renderer.uid);
+
         this.texture.destroy();
 
         // note: don't nullify the element
         //       other systems may need to unbind from it during the destroy iteration (eg. GLContextSystem)
+    }
+
+    /**
+     * Tells the texture and canvas pools how big this renderer's screen is, in physical pixels, so they
+     * can hand out screen sized resources instead of rounding every request up to a power of two.
+     */
+    private _updateScreenSize(): void
+    {
+        const { pixelWidth, pixelHeight } = this.texture.source;
+        const uid = this._renderer.uid;
+
+        TexturePool.setScreenSize(uid, pixelWidth, pixelHeight);
+        CanvasPool.setScreenSize(uid, pixelWidth, pixelHeight);
     }
 }

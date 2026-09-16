@@ -94,4 +94,16 @@ describe('getPo2TextureFromSource', () =>
             expect(textureWithoutMipmaps).not.toBe(textureWithMipmaps);
         });
     });
+
+    it('should request the given scale mode from the pool', () =>
+    {
+        const canvas = document.createElement('canvas');
+
+        canvas.width = 100;
+        canvas.height = 100;
+
+        const texture = getPo2TextureFromSource(canvas, 100, 100, 1, false, 'nearest');
+
+        expect(texture.source.scaleMode).toBe('nearest');
+    });
 });
