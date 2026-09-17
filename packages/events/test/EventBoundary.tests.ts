@@ -4,6 +4,22 @@ import { Graphics } from '@pixi/graphics';
 
 describe('EventBoundary', () =>
 {
+    beforeAll(async () =>
+    {
+        await getApp();
+    });
+
+    it('should expose a persistentDeviceId property defaulting to 0', () =>
+    {
+        const boundary = new EventBoundary(new Container());
+        const event = new FederatedPointerEvent(boundary);
+
+        expect(event.persistentDeviceId).toBe(0);
+
+        event.persistentDeviceId = 7;
+        expect(event.persistentDeviceId).toBe(7);
+    });
+
     it('should fire capture, bubble events on the correct target', () =>
     {
         const stage = new Container();
