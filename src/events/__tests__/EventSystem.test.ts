@@ -162,6 +162,10 @@ describe('EventSystem', () =>
             // hit testing.
             { type: 'pointerupoutside', native: 'pointerup' },
         ],
+        [
+            { type: 'pointerdown' },
+            { type: 'pointercancel' },
+        ],
         { type: 'pointerover' },
         [
             { type: 'pointerover' },
@@ -184,7 +188,11 @@ describe('EventSystem', () =>
         [
             { type: 'touchstart' },
             { type: 'touchendoutside', native: 'touchend' },
-        ]
+        ],
+        [
+            { type: 'touchstart' },
+            { type: 'touchcancel' },
+        ],
     ] as Array<{
         type: string;
         clientX?: number;
@@ -206,6 +214,7 @@ describe('EventSystem', () =>
         pointerdown: '_onPointerDown',
         pointermove: '_onPointerMove',
         pointerup: '_onPointerUp',
+        pointercancel: '_onPointerCancel',
         pointerover: '_onPointerOverOut',
         pointerleave: '_onPointerOverOut',
         mousedown: '_onPointerDown',
@@ -216,6 +225,7 @@ describe('EventSystem', () =>
         touchstart: '_onPointerDown',
         touchmove: '_onPointerMove',
         touchend: '_onPointerUp',
+        touchcancel: '_onPointerCancel',
     };
 
     describe.each(views)('Static Pointer Event for %s', ({ view }) =>
@@ -685,6 +695,78 @@ describe('EventSystem', () =>
         renderer.events['_onPointerUp'](e);
 
         expect(eventSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should dispatch pointercancel to the press target and clear the press state', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene();
+        const cancelSpy = jest.fn();
+        const tapSpy = jest.fn();
+
+        renderer.render(stage);
+
+        graphics.addEventListener('pointercancel', (e) =>
+        {
+            expect(e.type).toEqual('pointercancel');
+            expect(e.target).toBe(graphics);
+            cancelSpy();
+        });
+        graphics.addEventListener('pointertap', tapSpy);
+
+        renderer.events['_onPointerDown'](
+            new PointerEvent('pointerdown', { clientX: 25, clientY: 25 })
+        );
+        // pointercancel reports button -1 and may be positioned outside of the pressed target
+        renderer.events['_onPointerCancel'](
+            new PointerEvent('pointercancel', { clientX: 90, clientY: 90, button: -1 })
+        );
+
+        expect(cancelSpy).toHaveBeenCalledOnce();
+
+        const up = new PointerEvent('pointerup', { clientX: 25, clientY: 25 });
+
+        // so it isn't a pointerupoutside
+        Object.defineProperty(up, 'target', {
+            writable: false,
+            value: renderer.canvas
+        });
+        renderer.events['_onPointerUp'](up);
+
+        // the canceled press must not turn into a click
+        expect(tapSpy).not.toHaveBeenCalled();
+
+        // a stray pointercancel without an active press is ignored
+        renderer.events['_onPointerCancel'](
+            new PointerEvent('pointercancel', { clientX: 25, clientY: 25, button: -1 })
+        );
+
+        expect(cancelSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should listen for native pointercancel events', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene();
+        const cancelSpy = jest.fn();
+
+        renderer.render(stage);
+        graphics.addEventListener('pointercancel', cancelSpy);
+
+        renderer.events['_onPointerDown'](
+            new PointerEvent('pointerdown', { clientX: 25, clientY: 25 })
+        );
+        globalThis.dispatchEvent(new PointerEvent('pointercancel', { clientX: 25, clientY: 25 }));
+
+        expect(cancelSpy).toHaveBeenCalledOnce();
+
+        renderer.events['_onPointerDown'](
+            new PointerEvent('pointerdown', { clientX: 25, clientY: 25 })
+        );
+        renderer.events['_removeEvents']();
+        globalThis.dispatchEvent(new PointerEvent('pointercancel', { clientX: 25, clientY: 25 }));
+
+        expect(cancelSpy).toHaveBeenCalledOnce();
     });
 
     // eslint-disable-next-line jest/no-done-callback
