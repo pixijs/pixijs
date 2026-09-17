@@ -159,6 +159,7 @@ export class EventBoundary
         this.mapPointerOver = this.mapPointerOver.bind(this);
         this.mapPointerUp = this.mapPointerUp.bind(this);
         this.mapPointerUpOutside = this.mapPointerUpOutside.bind(this);
+        this.mapPointerCancel = this.mapPointerCancel.bind(this);
         this.mapWheel = this.mapWheel.bind(this);
 
         this.mappingTable = {};
@@ -169,6 +170,7 @@ export class EventBoundary
         this.addEventMapping('pointerover', this.mapPointerOver);
         this.addEventMapping('pointerup', this.mapPointerUp);
         this.addEventMapping('pointerupoutside', this.mapPointerUpOutside);
+        this.addEventMapping('pointercancel', this.mapPointerCancel);
         this.addEventMapping('wheel', this.mapWheel);
     }
 
@@ -1130,6 +1132,48 @@ export class EventBoundary
         }
 
         this.freeEvent(e);
+    }
+
+    /**
+     * Maps the upstream `pointercancel` event to a downstream `pointercancel` event, dispatched on the
+     * target(s) that were pressed by the canceled pointer.
+     *
+     * A `touchcancel` event is fired as well for touch pointers. The tracking data for the specific pointer is
+     * cleared of its press targets, so no `pointerup`/`click` sequence is completed for the canceled press.
+     * @param from - The upstream `pointercancel` event.
+     */
+    protected mapPointerCancel(from: FederatedEvent): void
+    {
+        if (!(from instanceof FederatedPointerEvent))
+        {
+            // #if _DEBUG
+            warn('EventBoundary cannot map a non-pointer event as a pointer event');
+            // #endif
+
+            return;
+        }
+
+        const pressTargetsByButton = this.trackingData(from.pointerId).pressTargetsByButton;
+
+        for (const button in pressTargetsByButton)
+        {
+            const pressTarget = this.findMountedTarget(pressTargetsByButton[button]);
+
+            delete pressTargetsByButton[button];
+
+            if (!pressTarget) continue;
+
+            const e = this.createPointerEvent(from, 'pointercancel', pressTarget);
+
+            this.dispatchEvent(e, 'pointercancel');
+
+            if (e.pointerType === 'touch')
+            {
+                this.dispatchEvent(e, 'touchcancel');
+            }
+
+            this.freeEvent(e);
+        }
     }
 
     /**
