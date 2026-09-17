@@ -1300,6 +1300,7 @@ export class EventBoundary
         to.tiltX = from.tiltX;
         to.tiltY = from.tiltY;
         to.twist = from.twist;
+        to.persistentDeviceId = from.persistentDeviceId;
     }
 
     /**
