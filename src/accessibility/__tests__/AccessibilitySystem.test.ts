@@ -68,6 +68,68 @@ describe('AccessibilitySystem', () =>
         renderer.destroy();
     });
 
+    it('should register the keydown listener once, and keep it across activate/deactivate cycles', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const system = new AccessibilitySystem(renderer);
+
+        const addSpy = jest.spyOn(globalThis, 'addEventListener');
+        const removeSpy = jest.spyOn(globalThis, 'removeEventListener');
+        const keydownAdds = () => addSpy.mock.calls.filter(([type]) => type === 'keydown');
+        const keydownRemovals = () => removeSpy.mock.calls.filter(([type]) => type === 'keydown');
+
+        system.init();
+
+        // `activateOnTab` defaults to true, so tab has to be able to bring the layer up on a
+        // page that has never activated it.
+        expect(keydownAdds()).toHaveLength(1);
+        const onKeyDown = keydownAdds()[0][1] as EventListener;
+        const pressTab = () => onKeyDown(new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
+
+        pressTab();
+        expect(system.isActive).toBe(true);
+
+        // Deactivating must not touch the keydown registration at all: it used to call
+        // addEventListener there, where removeEventListener was meant.
+        system['_onMouseMove'](new MouseEvent('mousemove', { movementX: 10, movementY: 10 }));
+        expect(system.isActive).toBe(false);
+        expect(keydownAdds()).toHaveLength(1);
+
+        // ...and tab still works afterwards.
+        pressTab();
+        expect(system.isActive).toBe(true);
+        expect(keydownAdds()).toHaveLength(1);
+
+        system.destroy();
+        expect(keydownRemovals()).toHaveLength(1);
+        expect(keydownRemovals()[0][1]).toBe(onKeyDown);
+
+        addSpy.mockRestore();
+        removeSpy.mockRestore();
+        renderer.destroy();
+    });
+
+    it('should not register a keydown listener when activateOnTab is false', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const system = new AccessibilitySystem(renderer);
+
+        const addSpy = jest.spyOn(globalThis, 'addEventListener');
+
+        system.init({ accessibilityOptions: { activateOnTab: false } });
+
+        system.setAccessibilityEnabled(true);
+        expect(system.isActive).toBe(true);
+        system.setAccessibilityEnabled(false);
+        expect(system.isActive).toBe(false);
+
+        expect(addSpy.mock.calls.filter(([type]) => type === 'keydown')).toHaveLength(0);
+
+        system.destroy();
+        addSpy.mockRestore();
+        renderer.destroy();
+    });
+
     it('should not crash when scene graph contains Containers without children', async () =>
     {
         class CompleteContainer extends Container

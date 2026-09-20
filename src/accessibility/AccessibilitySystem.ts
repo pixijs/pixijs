@@ -311,12 +311,9 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             });
         }
 
-        // Add listeners using the stored bound references
-        if (this._activateOnTab)
-        {
-            globalThis.addEventListener('keydown', this._boundOnKeyDown, false);
-        }
-
+        // Add listeners using the stored bound references. The keydown listener is not added
+        // here: it is what activates the layer, so it is registered for the lifetime of the
+        // system in `init` and removed in `destroy`.
         if (this._deactivateOnMouseMove)
         {
             globalThis.document.addEventListener('mousemove', this._boundOnMouseMove, true);
@@ -377,12 +374,9 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
         this._isActive = false;
 
-        // Switch listeners
+        // Switch listeners. The keydown listener stays registered so that tab can bring the
+        // layer back up.
         globalThis.document.removeEventListener('mousemove', this._boundOnMouseMove, true);
-        if (this._activateOnTab)
-        {
-            globalThis.addEventListener('keydown', this._boundOnKeyDown, false);
-        }
 
         this._renderer.runners.postrender.remove(this);
 
@@ -474,6 +468,11 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         this.debug = mergedOptions.accessibilityOptions.debug;
         this._activateOnTab = mergedOptions.accessibilityOptions.activateOnTab;
         this._deactivateOnMouseMove = mergedOptions.accessibilityOptions.deactivateOnMouseMove;
+
+        if (this._activateOnTab)
+        {
+            globalThis.addEventListener('keydown', this._boundOnKeyDown, false);
+        }
 
         if (mergedOptions.accessibilityOptions.enabledByDefault)
         {
