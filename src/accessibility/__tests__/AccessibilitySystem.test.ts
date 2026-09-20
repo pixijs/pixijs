@@ -163,6 +163,55 @@ describe('AccessibilitySystem', () =>
         renderer.destroy();
     });
 
+    it('should set accessibleText on the default button type, and on recycled divs', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        const system = new AccessibilitySystem(renderer);
+
+        system.init({
+            accessibilityOptions: {
+                enabledByDefault: true
+            }
+        });
+
+        system['_isRunningTests'] = true;
+
+        const stage = new Container();
+
+        // `accessibleType` defaults to 'button'
+        const myButton = new Container();
+
+        myButton.accessible = true;
+        myButton.accessibleText = 'myButtonText';
+        stage.addChild(myButton);
+
+        renderer.render(stage);
+        system.postrender();
+
+        expect(myButton._accessibleDiv.tagName).toBe('BUTTON');
+        expect(myButton._accessibleDiv.innerText).toBe('myButtonText');
+
+        // Disable it so its div goes back to the pool
+        myButton.accessible = false;
+        renderer.render(stage);
+        system.postrender();
+
+        // A later button reuses that div, and must still get its own text
+        const myOtherButton = new Container();
+
+        myOtherButton.accessible = true;
+        myOtherButton.accessibleText = 'myOtherButtonText';
+        stage.addChild(myOtherButton);
+
+        renderer.render(stage);
+        system.postrender();
+
+        expect(myOtherButton._accessibleDiv.innerText).toBe('myOtherButtonText');
+
+        renderer.destroy();
+    });
+
     it('uses the correct HTMLElement type when recycling divs from the pool', async () =>
     {
         const renderer = await getWebGLRenderer();

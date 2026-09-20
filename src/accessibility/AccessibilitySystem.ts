@@ -684,10 +684,6 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
                         -moz-user-select: none;
                         -ms-user-select: none;
                     `;
-                if (container.accessibleText)
-                {
-                    div.innerText = container.accessibleText;
-                }
             }
             div.style.width = `${DIV_TOUCH_SIZE}px`;
             div.style.height = `${DIV_TOUCH_SIZE}px`;
@@ -727,6 +723,12 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         div.style.pointerEvents = container.accessiblePointerEvents;
         // set the type, this defaults to button!
         div.type = container.accessibleType;
+
+        // applied for every type, and for divs taken from the pool, whose text was cleared above
+        if (container.accessibleText)
+        {
+            div.innerText = container.accessibleText;
+        }
 
         if (container.accessibleTitle && container.accessibleTitle !== null)
         {
