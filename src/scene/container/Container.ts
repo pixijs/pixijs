@@ -678,10 +678,10 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     // the render group this container owns
     /** @private */
-    public renderGroup: RenderGroup = null;
+    public renderGroup: RenderGroup | null = null;
     // the render group this container belongs to
     /** @private */
-    public parentRenderGroup: RenderGroup = null;
+    public parentRenderGroup: RenderGroup | null = null;
     // the index of the container in the render group
     /** @private */
     public parentRenderGroupIndex: number = 0;
