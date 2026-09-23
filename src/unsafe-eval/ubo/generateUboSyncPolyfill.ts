@@ -54,13 +54,13 @@ export function generateUboSyncPolyfillWGSL(uboElements: UboElement[]): Uniforms
         {
             const { size, align } = WGSL_ALIGN_SIZE_DATA[uboElement.data.type];
 
-            const remainder = (size - align) / 4;
+            const remainder = (align - size) / 4;
 
             return (_name: string, data: Float32Array, offset: number, _uv: any, v: any) =>
             {
                 let t = 0;
 
-                for (let i = 0; i < uboElement.data.size * (size / 4); i++)
+                for (let i = 0; i < uboElement.data.size; i++)
                 {
                     for (let j = 0; j < (size / 4); j++)
                     {

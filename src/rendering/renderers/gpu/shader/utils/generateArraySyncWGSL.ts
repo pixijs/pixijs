@@ -26,7 +26,7 @@ export function generateArraySyncWGSL(uboElement: UboElement, offsetToAdd: numbe
 
          t = 0;
 
-         for(var i=0; i < ${uboElement.data.size * (size / 4)}; i++)
+         for(var i=0; i < ${uboElement.data.size}; i++)
          {
              for(var j = 0; j < ${size / 4}; j++)
              {
