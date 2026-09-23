@@ -38,7 +38,7 @@ This page collects practical advice for improving frame rate and reducing memory
 - Textures are automatically managed by a Texture Garbage Collector
 - You can also manage them yourself by using `texture.source.unload()` or `Assets.unload()`
 - When destroying many textures at once, stagger the calls across multiple frames (e.g., destroy 5 per frame) to avoid a single-frame freeze
-- On WebGPU, antialiased render textures that are drawn in one pass and never loaded back can be created with `transient: true` so the multisample buffer is discarded instead of written to memory
+- On WebGPU, antialiased render textures that are drawn in one pass and never reopened (no filters or masks popping back onto them, no `clear: false` renders) can be created with `transient: true` so their multisample depth/stencil buffer is discarded instead of written to memory. The multisample colour buffer is discarded automatically.
 
 ### Text
 

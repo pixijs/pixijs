@@ -1,7 +1,10 @@
+import { CLEAR } from '../../../gl/const';
 import { RenderTarget } from '../../../shared/renderTarget/RenderTarget';
 import { TextureSource } from '../../../shared/texture/sources/TextureSource';
 import { Texture } from '../../../shared/texture/Texture';
 import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
+import { AlphaFilter } from '~/filters';
+import { Container, Graphics } from '~/scene';
 
 import type { WebGPURenderer } from '../../WebGPURenderer';
 
@@ -113,5 +116,143 @@ describeLocalOnly('GpuRenderTargetAdaptor msaa textures', () =>
             TextureSource.defaultOptions.autoGenerateMipmaps = originalAutoGenerateMipmaps;
             renderer.destroy();
         }
+    });
+});
+
+describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
+{
+    function makeMsaaTarget(options: { transient?: boolean, colors?: number, depthStencil?: boolean } = {}): RenderTarget
+    {
+        const { transient = false, colors = 1, depthStencil = false } = options;
+
+        return new RenderTarget({
+            colorTextures: Array.from({ length: colors }, () =>
+                new TextureSource({ width: 16, height: 16, antialias: true, transient })),
+            depthStencilTexture: depthStencil
+                ? new TextureSource({ width: 16, height: 16, format: 'depth24plus-stencil8' })
+                : undefined,
+        });
+    }
+
+    it('should clear and discard msaa colour on every pass, restoring it when the pass would load', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const target = makeMsaaTarget();
+        const other = makeMsaaTarget();
+        const device = renderer.gpu.device;
+
+        device.pushErrorScope('validation');
+        renderer.encoder.renderStart();
+
+        renderer.renderTarget.bind({ target, clear: true });
+
+        const gpuRenderTarget = renderer.renderTarget.getGpuRenderTarget(target);
+        const first = gpuRenderTarget.descriptor.colorAttachments[0];
+
+        expect(gpuRenderTarget.msaaTextures[0].transient).toBe(true);
+        expect(first.loadOp).toBe('clear');
+        expect(first.storeOp).toBe('discard');
+        expect(gpuRenderTarget.msaaRestore).toEqual([]);
+
+        // leave and come back without clearing: the discarded samples are restored, not loaded
+        renderer.renderTarget.bind({ target: other, clear: true });
+        renderer.renderTarget.bind({ target, clear: false });
+
+        const reopened = gpuRenderTarget.descriptor.colorAttachments[0];
+
+        expect(reopened.loadOp).toBe('clear');
+        expect(reopened.storeOp).toBe('discard');
+        expect(gpuRenderTarget.msaaRestore).toEqual([0]);
+
+        renderer.encoder.postrender();
+
+        expect(await device.popErrorScope()).toBeNull();
+
+        renderer.destroy();
+    });
+
+    it('should keep storing msaa depth/stencil unless the colour texture is marked transient', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const kept = makeMsaaTarget({ depthStencil: true });
+        const scratch = makeMsaaTarget({ depthStencil: true, transient: true });
+
+        renderer.encoder.renderStart();
+
+        renderer.renderTarget.bind({ target: kept, clear: true });
+        expect(renderer.renderTarget.getGpuRenderTarget(kept).descriptor.depthStencilAttachment.stencilStoreOp)
+            .toBe('store');
+
+        renderer.renderTarget.bind({ target: scratch, clear: true });
+        expect(renderer.renderTarget.getGpuRenderTarget(scratch).descriptor.depthStencilAttachment.stencilStoreOp)
+            .toBe('discard');
+
+        renderer.encoder.postrender();
+        renderer.destroy();
+    });
+
+    it('should restore every colour attachment of a reopened msaa target with depth/stencil', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const target = makeMsaaTarget({ colors: 2, depthStencil: true });
+        const other = makeMsaaTarget();
+        const device = renderer.gpu.device;
+
+        device.pushErrorScope('validation');
+        renderer.encoder.renderStart();
+
+        renderer.renderTarget.bind({ target, clear: true });
+        renderer.renderTarget.bind({ target: other, clear: true });
+        renderer.renderTarget.bind({ target, clear: false });
+
+        expect(renderer.renderTarget.getGpuRenderTarget(target).msaaRestore).toEqual([0, 1]);
+
+        renderer.encoder.postrender();
+
+        expect(await device.popErrorScope()).toBeNull();
+
+        renderer.destroy();
+    });
+
+    it('should restore msaa colour on a depth-only clear outside a frame', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const target = makeMsaaTarget({ depthStencil: true });
+        const device = renderer.gpu.device;
+
+        renderer.encoder.renderStart();
+        renderer.renderTarget.bind({ target, clear: true });
+        renderer.encoder.postrender();
+
+        device.pushErrorScope('validation');
+
+        renderer.renderTarget.clear(target, CLEAR.DEPTH);
+
+        expect(renderer.renderTarget.getGpuRenderTarget(target).msaaRestore).toEqual([0]);
+        expect(await device.popErrorScope()).toBeNull();
+
+        renderer.destroy();
+    });
+
+    it('should restore an antialiased canvas when a filter reopens it', async () =>
+    {
+        const renderer = (await getWebGPURenderer({ antialias: true })) as WebGPURenderer;
+        const device = renderer.gpu.device;
+        const stage = new Container();
+        const filtered = new Graphics().rect(10, 10, 50, 50).fill('red');
+
+        filtered.filters = [new AlphaFilter({ alpha: 0.5 })];
+        stage.addChild(new Graphics().rect(0, 0, 100, 100).fill('blue'), filtered);
+
+        device.pushErrorScope('validation');
+
+        renderer.render(stage);
+
+        // the filter's pop-back reopened the canvas, so its colour was restored
+        expect(renderer.renderTarget.getGpuRenderTarget(renderer.renderTarget.rootRenderTarget).msaaRestore)
+            .toEqual([0]);
+        expect(await device.popErrorScope()).toBeNull();
+
+        renderer.destroy();
     });
 });

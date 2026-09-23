@@ -47,6 +47,21 @@ export class GPUTextureGpuData implements GPUData
     }
 }
 
+/** formats that have an `-srgb` version (8-bit RGBA/BGRA and the compressed colour formats) */
+const SRGB_CAPABLE = /^(rgba8|bgra8|bc[1237]-rgba-|etc2-rgb8|etc2-rgb8a1|etc2-rgba8|astc-\d+x\d+-)unorm$/;
+
+/**
+ * Declares the `-srgb` version of a format as an extra view format, so any texture that has one can
+ * also be bound through an sRGB `TextureView` (the GPU decodes gamma when sampling) from the same bytes.
+ * Pixi's own rendering keeps using the plain view. Declaring it measured free on Apple, Mali, Adreno
+ * and PowerVR GPUs.
+ * @param format - the texture's format
+ */
+function srgbViewFormat(format: GPUTextureFormat): GPUTextureFormat[] | undefined
+{
+    return SRGB_CAPABLE.test(format) ? [`${format}-srgb` as GPUTextureFormat] : undefined;
+}
+
 /**
  * Builds a cache key covering every view-affecting field of a GPUTextureViewDescriptor —
  * two descriptors selecting different subresources (mips, layers, aspects, formats) must
@@ -163,10 +178,9 @@ export class GpuTextureSystem implements System, CanvasGenerator
             // copied — so they need RENDER_ATTACHMENT alone.
             usage = GPUTextureUsage.RENDER_ATTACHMENT;
 
-            // TRANSIENT_ATTACHMENT goes on top only when the source is marked transient AND the
-            // browser exposes the bit. Mixing transient with any later loadOp:'load' is a spec
-            // violation, so callers must opt in via `transient: true` (pixi sets this for the
-            // canvas-root MSAA buffer; not for RenderTexture MSAA, which can be rebound by filters).
+            // TRANSIENT_ATTACHMENT goes on top when the source is marked transient AND the browser
+            // exposes the bit. The render target adaptor marks every MSAA colour buffer transient and
+            // never loads or stores it (a reopened pass restores it from the resolved texture instead).
             if (source.transient && this._renderer.device.extensions.transientAttachment)
             {
                 usage |= (GPUTextureUsage as { TRANSIENT_ATTACHMENT: number }).TRANSIENT_ATTACHMENT;
@@ -193,6 +207,8 @@ export class GpuTextureSystem implements System, CanvasGenerator
             // WebGPU cube textures are 2D textures with 6 array layers and a cube view.
             size: { width, height, depthOrArrayLayers: source.arrayLayerCount },
             format: source.format,
+            // multisampled textures are only rendered into and resolved, never sampled, so they skip it
+            viewFormats: source.sampleCount > 1 ? undefined : srgbViewFormat(source.format),
             sampleCount: source.sampleCount,
             mipLevelCount: source.mipLevelCount,
             dimension: source.dimension,

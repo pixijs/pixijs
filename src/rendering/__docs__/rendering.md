@@ -254,9 +254,11 @@ renderer.encoder.executeBundle(bundle);
 
 Pass an array to `executeBundle` to replay several bundles in one call. A bundle is also invalid after a WebGPU device loss, because it was recorded on the device that was lost; `isBundleValid` reports that too.
 
-### Transient MSAA render textures
+### Antialiasing on WebGPU
 
-An antialiased render texture that is drawn in a single pass and never loaded back can mark its multisample buffer as scratch memory. Set `transient: true` when creating it; PixiJS then discards the MSAA buffer at the end of the pass, and tile-based GPUs skip allocating it entirely where the browser supports `GPUTextureUsage.TRANSIENT_ATTACHMENT`. Do not set it on a texture that is rendered into again with `clear: false`, or on one used with filters.
+On WebGPU, antialiased targets (the canvas and render textures with `antialias: true`) never write their multisample colour buffer to memory. Only the resolved image is kept. When a pass reopens a target, for example a filter popping back onto its parent or a render with `clear: false`, PixiJS copies the resolved image back into the multisample buffer before drawing. On tile-based GPUs, which most phones use, this saves bandwidth on every frame, and the multisample buffer may not be allocated at all where the browser supports `GPUTextureUsage.TRANSIENT_ATTACHMENT`. You don't need to set anything.
+
+The multisample depth/stencil buffer is kept by default, because masks need it across a reopen. A render texture that is drawn in a single pass and never reopened can discard it too:
 
 ```ts
 import { RenderTexture } from 'pixi.js';

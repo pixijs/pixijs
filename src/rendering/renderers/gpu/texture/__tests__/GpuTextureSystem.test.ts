@@ -86,3 +86,40 @@ describeLocalOnly('GpuTextureSystem texture view cache key', () =>
         expect(mip0Again).toBe(mip0);
     });
 });
+
+describeLocalOnly('GpuTextureSystem sRGB view format', () =>
+{
+    it('should let any texture with an sRGB version be viewed as sRGB', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const createTexture = jest.spyOn(renderer.gpu.device, 'createTexture');
+        const source = new TextureSource({ width: 4, height: 4, format: 'rgba8unorm' });
+
+        renderer.texture.initSource(source);
+
+        expect(createTexture.mock.calls[0][0].viewFormats).toEqual(['rgba8unorm-srgb']);
+
+        const plainView = renderer.texture.getTextureView(source);
+        const srgbView = renderer.texture.getTextureView(source, { format: 'rgba8unorm-srgb' });
+
+        expect(srgbView).not.toBe(plainView);
+        expect(renderer.texture.getTextureView(source, { format: 'rgba8unorm-srgb' })).toBe(srgbView);
+    });
+
+    it('should leave viewFormats unset for formats without an sRGB version and for MSAA', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const createTexture = jest.spyOn(renderer.gpu.device, 'createTexture');
+
+        renderer.texture.initSource(new TextureSource({ width: 4, height: 4, format: 'r8unorm' }));
+        renderer.texture.initSource(new TextureSource({ width: 4, height: 4, format: 'rgba16float' }));
+        // multisampled: never sampled, so no sRGB view either
+        renderer.texture.initSource(new TextureSource({ width: 4, height: 4, format: 'rgba8unorm', sampleCount: 4 }));
+
+        expect(createTexture.mock.calls[0][0].viewFormats).toBeUndefined();
+        expect(createTexture.mock.calls[1][0].viewFormats).toBeUndefined();
+        expect(createTexture.mock.calls[2][0].viewFormats).toBeUndefined();
+    });
+});

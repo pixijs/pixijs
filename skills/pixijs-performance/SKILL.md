@@ -354,14 +354,14 @@ await app.init({
 ```ts
 import { RenderTexture } from "pixi.js";
 
-// single-pass antialiased render texture: discard the MSAA buffer at end of pass
+// single-pass antialiased render texture: also discard its MSAA depth/stencil at end of pass
 const rt = RenderTexture.create({ width: 1024, height: 1024, antialias: true, transient: true });
 
 // upload only the changed byte range of a large buffer (also works on WebGL)
 buffer.update(changedBytes, offsetBytes);
 ```
 
-`transient: true` (WebGPU only) tells the GPU the multisample buffer is scratch memory: it is discarded instead of written back, and tile-based GPUs skip allocating it when `renderer.device.extensions.transientAttachment` is true. Only use it on textures rendered in a single pass and never re-entered with `clear: false` or wrapped by a filter. For static custom draw sequences on WebGPU, record a render bundle once and replay it each frame; see the `pixijs-custom-rendering` skill.
+On WebGPU the multisample colour buffer of every antialiased target is already discarded instead of written back, and a pass that reopens the target restores it from the resolved image; tile-based GPUs skip allocating it when `renderer.device.extensions.transientAttachment` is true. `transient: true` additionally discards the multisample depth/stencil buffer. Only use it on textures rendered in a single pass and never re-entered with `clear: false` or wrapped by a filter or mask. For static custom draw sequences on WebGPU, record a render bundle once and replay it each frame; see the `pixijs-custom-rendering` skill.
 
 ### Stagger bulk texture destruction
 
