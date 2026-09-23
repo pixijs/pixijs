@@ -51,6 +51,15 @@ export interface ViewSystemOptions
     antialias?: boolean;
     /** Whether to ensure the main view has can make use of the depth buffer. Always true for WebGL renderer. */
     depth?: boolean;
+    /**
+     * WebGPU only, with `antialias`. Discards the canvas's multisample depth/stencil buffer at the end of each
+     * pass instead of writing it to memory. Only for apps that never reopen the canvas pass while still needing
+     * its depth or stencil: no filters or masks popping back onto it, no second `render` with `clear: false`.
+     * The multisample colour buffer is always discarded; this only adds depth/stencil.
+     * See {@link TextureSourceOptions.transient}.
+     * @default false
+     */
+    transient?: boolean;
 }
 
 /**

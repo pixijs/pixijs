@@ -255,4 +255,21 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
 
         renderer.destroy();
     });
+
+    it('should discard the canvas msaa depth/stencil only when the renderer is created transient', async () =>
+    {
+        for (const transient of [false, true])
+        {
+            const renderer = (await getWebGPURenderer({ antialias: true, depth: true, transient })) as WebGPURenderer;
+
+            renderer.render(new Graphics().rect(0, 0, 50, 50).fill('red'));
+
+            const root = renderer.renderTarget.getGpuRenderTarget(renderer.renderTarget.rootRenderTarget);
+
+            expect(renderer.view.texture.source.transient).toBe(transient);
+            expect(root.descriptor.depthStencilAttachment.depthStoreOp).toBe(transient ? 'discard' : 'store');
+
+            renderer.destroy();
+        }
+    });
 });

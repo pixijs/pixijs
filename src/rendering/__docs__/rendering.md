@@ -266,6 +266,12 @@ import { RenderTexture } from 'pixi.js';
 const rt = RenderTexture.create({ width: 1024, height: 1024, antialias: true, transient: true });
 ```
 
+The same flag works for the canvas. Pass `transient: true` to the renderer when the app never reopens the screen pass while it still needs depth or stencil:
+
+```ts
+await app.init({ preference: 'webgpu', antialias: true, transient: true });
+```
+
 `renderer.device.extensions.transientAttachment` reports whether the usage bit is available.
 
 ### Device loss
