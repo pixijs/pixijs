@@ -340,5 +340,10 @@ describe('BindGroup', () =>
         bindGroup.setResource(source, 0);
 
         expect(bindGroup._resourceKeys).toEqual([0, 3]);
+
+        // a new binding number after the list was built rebuilds it, still ascending
+        bindGroup.setResource(source.style, 1);
+
+        expect(bindGroup._resourceKeys).toEqual([0, 1, 3]);
     });
 });
