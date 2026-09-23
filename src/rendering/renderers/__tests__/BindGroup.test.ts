@@ -318,4 +318,27 @@ describe('BindGroup', () =>
         expect(bindGroup._key).toBe('-1');
         expect(() => bindGroup._touch(0)).not.toThrow();
     });
+
+    it('should track each binding number once, gaps included', () =>
+    {
+        const source = new TextureSource({ width: 16, height: 16 });
+        const other = new TextureSource({ width: 16, height: 16 });
+        const bindGroup = new BindGroup();
+
+        bindGroup.setResource(source, 0);
+        bindGroup.setResource(source.style, 3);
+
+        expect(bindGroup._resourceKeys).toEqual([0, 3]);
+
+        // replacing a resource keeps its binding number
+        bindGroup.setResource(other, 0);
+
+        expect(bindGroup._resourceKeys).toEqual([0, 3]);
+
+        // so does refilling the null slot a destroyed resource leaves behind
+        other.destroy();
+        bindGroup.setResource(source, 0);
+
+        expect(bindGroup._resourceKeys).toEqual([0, 3]);
+    });
 });

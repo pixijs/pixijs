@@ -36,6 +36,15 @@ export class BindGroup
     public resources: Record<string, BindResource> = Object.create(null);
 
     /**
+     * The binding numbers in use in {@link BindGroup#resources}, in insertion order. Binding
+     * numbers can have gaps, so per-draw loops index this list instead of running `for...in`
+     * over `resources`, which builds a fresh key list on every call for integer keys.
+     * Updated by {@link BindGroup#setResource}.
+     * @internal
+     */
+    public _resourceKeys: number[] = [];
+
+    /**
      * A key used internally to match it up to a WebGPU BindGroup.
      * Lazily rebuilt from resource IDs when dirty.
      * @internal
@@ -100,6 +109,12 @@ export class BindGroup
 
         resource.on?.('change', this.onResourceChange, this);
 
+        // a destroyed resource leaves null, not undefined, so this is only true for a new binding
+        if (currentResource === undefined)
+        {
+            this._resourceKeys.push(index);
+        }
+
         this.resources[index] = resource;
         this._dirty = true;
     }
@@ -123,10 +138,11 @@ export class BindGroup
     public _touch(now: number): void
     {
         const resources = this.resources;
+        const keys = this._resourceKeys;
 
-        for (const i in resources)
+        for (let i = 0; i < keys.length; i++)
         {
-            const resource = resources[i] as BindResource & GCable;
+            const resource = resources[keys[i]] as BindResource & GCable;
 
             if (!resource) continue;
 
@@ -147,6 +163,7 @@ export class BindGroup
         }
 
         this.resources = null;
+        this._resourceKeys = null;
     }
 
     protected onResourceChange(resource: BindResource)
