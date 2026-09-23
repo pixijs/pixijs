@@ -93,6 +93,20 @@ PixiJS supports multiple `TextureSource` types depending on the input data:
 
 `HTMLSource` and `ElementImageSource` are experimental and only register when you import `pixi.js/html-source`. See the [HTML Source guide](../../html-source/__docs__/html-source.md).
 
+### Updating part of a buffer texture
+
+A `BufferImageSource` holds texels in row-major order, so texel `i` sits at `x = i % width`, `y = floor(i / width)`. After changing the data, call `update(start, end)` with the texel range you changed to upload only that part. `end` is exclusive, like `TypedArray.subarray`. With no arguments, `update()` uploads the whole texture.
+
+```ts
+const data = new Float32Array(4096 * 64 * 4); // rgba32float: 4 floats per texel
+const source = new BufferImageSource({ resource: data, width: 4096, height: 64 });
+
+data.fill(1, 100 * 4, 116 * 4); // change texels 100 to 115
+source.update(100, 116); // upload only those 16 texels
+```
+
+The upload happens during the `update` call, and the range isn't remembered between calls. If you change several parts of the buffer in a frame, track the lowest and highest changed texel yourself and call `update` once with that span. Each call costs a few microseconds on top of the bytes it moves, so one span usually beats many small calls.
+
 ## Texture properties
 
 Key properties on `Texture`:

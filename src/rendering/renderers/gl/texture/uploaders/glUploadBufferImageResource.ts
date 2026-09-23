@@ -1,7 +1,13 @@
-import type { TextureSource } from '../../../shared/texture/sources/TextureSource';
+import { Rectangle } from '../../../../../maths/shapes/Rectangle';
+import { getTexelRangeRects } from '../../../shared/texture/utils/getTexelRangeRects';
+
+import type { TypedArray } from '../../../shared/buffer/Buffer';
+import type { BufferImageSource } from '../../../shared/texture/sources/BufferImageSource';
 import type { GlRenderingContext } from '../../context/GlRenderingContext';
 import type { GlTexture } from '../GlTexture';
 import type { GLTextureUploader } from './GLTextureUploader';
+
+const tempRects = [new Rectangle(), new Rectangle(), new Rectangle()];
 
 /** @internal */
 export const glUploadBufferImageResource = {
@@ -9,7 +15,7 @@ export const glUploadBufferImageResource = {
     id: 'buffer',
 
     upload(
-        source: TextureSource,
+        source: BufferImageSource,
         glTexture: GlTexture,
         gl: GlRenderingContext,
         _webGLVersion: number,
@@ -18,22 +24,12 @@ export const glUploadBufferImageResource = {
     )
     {
         const target = targetOverride || glTexture.target;
+        const resource = source.resource as TypedArray;
 
-        if (!forceAllocation && (glTexture.width === source.width && glTexture.height === source.height))
-        {
-            gl.texSubImage2D(
-                target,
-                0,
-                0,
-                0,
-                source.width,
-                source.height,
-                glTexture.format,
-                glTexture.type,
-                source.resource
-            );
-        }
-        else
+        const texelCount = source.width * source.height;
+        const isPartial = source._updateStart > 0 || source._updateEnd < texelCount;
+
+        if (forceAllocation || glTexture.width !== source.width || glTexture.height !== source.height)
         {
             gl.texImage2D(
                 target,
@@ -44,7 +40,52 @@ export const glUploadBufferImageResource = {
                 0,
                 glTexture.format,
                 glTexture.type,
-                source.resource
+                resource
+            );
+        }
+        else if (isPartial)
+        {
+            const elementsPerTexel = resource.length / texelCount;
+
+            const count = getTexelRangeRects(
+                source._updateStart,
+                source._updateEnd,
+                source.width,
+                source.height,
+                tempRects
+            );
+
+            // each rect is contiguous in the buffer, so a subarray is all texSubImage2D needs
+            for (let i = 0; i < count; i++)
+            {
+                const rect = tempRects[i];
+                const offset = ((rect.y * source.width) + rect.x) * elementsPerTexel;
+
+                gl.texSubImage2D(
+                    target,
+                    0,
+                    rect.x,
+                    rect.y,
+                    rect.width,
+                    rect.height,
+                    glTexture.format,
+                    glTexture.type,
+                    resource.subarray(offset, offset + (rect.width * rect.height * elementsPerTexel))
+                );
+            }
+        }
+        else
+        {
+            gl.texSubImage2D(
+                target,
+                0,
+                0,
+                0,
+                source.width,
+                source.height,
+                glTexture.format,
+                glTexture.type,
+                resource
             );
         }
 
@@ -52,4 +93,3 @@ export const glUploadBufferImageResource = {
         glTexture.height = source.height;
     }
 } as GLTextureUploader;
-
