@@ -2,7 +2,7 @@ import { warn } from '../../../../utils/logging/warn';
 import { CLEAR } from '../../gl/const';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
 import { TextureSource } from '../../shared/texture/sources/TextureSource';
-import { GpuMsaaRestore, type GpuMsaaRestoreLayout } from './GpuMsaaRestore';
+import { GpuMsaaRestore } from './GpuMsaaRestore';
 import { GpuRenderTarget } from './GpuRenderTarget';
 
 import type { RgbaArray } from '../../../../color/Color';
@@ -233,8 +233,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             encoder.endRenderPass();
 
             this._beginRestoredPass(
-                renderTarget, gpuRenderTarget, restore, encoder.commandEncoder,
-                () => encoder.beginRenderPass(gpuRenderTarget)
+                renderTarget, restore, encoder.commandEncoder, () => encoder.beginRenderPass(gpuRenderTarget)
             );
         }
         else
@@ -257,10 +256,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
     }
 
     /**
-     * Begins a pass whose MSAA colour must be restored: copies each resolved texture in `restore` to the
-     * target's back textures, begins the pass, and draws the copies back in before anything else.
+     * Begins a pass whose MSAA colour must be restored: copies each resolved texture in `restore` into the
+     * target's back textures, begins the pass, and draws them back in before anything else (see GpuMsaaRestore).
      * @param renderTarget - the target being reopened
-     * @param gpuRenderTarget - its backend target
      * @param restore - the colour attachments to restore
      * @param commandEncoder - the encoder to record the copies on, with no pass open
      * @param beginPass - begins the pass on the same encoder
@@ -268,75 +266,26 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
      */
     private _beginRestoredPass(
         renderTarget: RenderTarget,
-        gpuRenderTarget: GpuRenderTarget,
         restore: number[],
         commandEncoder: GPUCommandEncoder,
         beginPass: () => GPURenderPassEncoder,
     ): GPURenderPassEncoder
     {
-        const textureSystem = this._renderer.texture;
-        const backTextures = gpuRenderTarget.msaaBackTextures;
+        const msaaRestore = this._msaaRestore ??= new GpuMsaaRestore(this._renderer);
 
-        for (let i = 0; i < restore.length; i++)
+        for (const index of restore)
         {
-            const index = restore[i];
-            const colorTexture = renderTarget.colorAttachments[index].texture;
-
-            // the same size and format as the attachment, so it is resized and destroyed along with the MSAA buffer
-            backTextures[index] ??= new TextureSource({
-                label: 'msaa-back-texture',
-                width: colorTexture.width,
-                height: colorTexture.height,
-                resolution: colorTexture._resolution,
-                format: gpuRenderTarget.msaaTextures[index].format,
-                autoGenerateMipmaps: false,
-            });
-
-            const resolved = this._getGpuColorTexture(renderTarget, index);
-            const copy = textureSystem.getGpuSource(backTextures[index]);
-
-            commandEncoder.copyTextureToTexture(
-                { texture: resolved },
-                { texture: copy },
-                { width: Math.min(resolved.width, copy.width), height: Math.min(resolved.height, copy.height) },
-            );
+            msaaRestore.copy(commandEncoder, renderTarget, index, this._getGpuColorTexture(renderTarget, index));
         }
 
         const pass = beginPass();
-        const msaaRestore = this._msaaRestore ??= new GpuMsaaRestore(this._renderer.gpu.device);
-        const layout = this._getRestoreLayout(renderTarget, gpuRenderTarget);
 
-        for (let i = 0; i < restore.length; i++)
+        for (const index of restore)
         {
-            msaaRestore.draw(pass, layout, restore[i], textureSystem.getGpuSource(backTextures[restore[i]]));
+            msaaRestore.draw(pass, renderTarget, index);
         }
 
         return pass;
-    }
-
-    /**
-     * The attachment layout the restore pipelines must match, cached on the target and rebuilt only when
-     * its depth/stencil format changes (a mask can add stencil to a target mid-frame).
-     * @param renderTarget - the target being restored
-     * @param gpuRenderTarget - its backend target
-     */
-    private _getRestoreLayout(renderTarget: RenderTarget, gpuRenderTarget: GpuRenderTarget): GpuMsaaRestoreLayout
-    {
-        const depthStencilFormat = renderTarget.depthStencilAttachment?.texture.format;
-        let layout = gpuRenderTarget.msaaRestoreLayout;
-
-        if (!layout || layout.depthStencilFormat !== depthStencilFormat)
-        {
-            const colorFormats = gpuRenderTarget.msaaTextures.map((texture) => texture.format);
-
-            layout = gpuRenderTarget.msaaRestoreLayout = {
-                colorFormats,
-                depthStencilFormat,
-                key: `${colorFormats.join(',')}|${depthStencilFormat ?? ''}`,
-            };
-        }
-
-        return layout;
     }
 
     /**
@@ -603,12 +552,11 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         {
             const commandEncoder = device.createCommandEncoder();
             const { descriptor, restore } = this._buildDescriptor(renderTarget, clear, clearColor, mipLevel, layer);
-            const gpuRenderTarget = this._renderTargetSystem.getGpuRenderTarget(renderTarget);
             const beginPass = () => commandEncoder.beginRenderPass(descriptor);
 
             // a partial clear (e.g. depth only) keeps the colour, which for MSAA means restoring it
             const passEncoder = restore
-                ? this._beginRestoredPass(renderTarget, gpuRenderTarget, restore, commandEncoder, beginPass)
+                ? this._beginRestoredPass(renderTarget, restore, commandEncoder, beginPass)
                 : beginPass();
 
             passEncoder.setViewport(viewport.x, viewport.y, viewport.width, viewport.height, 0, 1);

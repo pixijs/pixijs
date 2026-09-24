@@ -1,7 +1,6 @@
 import { STENCIL_MODES } from '../../shared/state/const';
 
 import type { TextureSource } from '../../shared/texture/sources/TextureSource';
-import type { GpuMsaaRestoreLayout } from './GpuMsaaRestore';
 
 /**
  * A class which holds the canvas contexts and textures for a render target.
@@ -23,8 +22,6 @@ export class GpuRenderTarget
      * first restore, then resized and destroyed with `msaaTextures`.
      */
     public msaaBackTextures: TextureSource[] = [];
-    /** the attachment layout the restore pipelines match, built on the first restore */
-    public msaaRestoreLayout: GpuMsaaRestoreLayout = null;
     /**
      * The stencil state the stencil system and the mask pipe track for this target on this renderer.
      * It lives here rather than in a uid-keyed record so it is restored when the target is bound again
