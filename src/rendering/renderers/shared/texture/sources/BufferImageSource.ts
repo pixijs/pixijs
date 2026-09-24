@@ -65,7 +65,11 @@ export class BufferImageSource extends TextureSource<TypedArray | ArrayBuffer>
             }
         }
 
+        // integer data can't be premultiplied (WebGL never completes the upload), so default it off
+        const isInteger = format.endsWith('int');
+
         super({
+            ...(isInteger && { alphaMode: 'no-premultiply-alpha' }),
             ...options,
             resource: buffer,
             format,

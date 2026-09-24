@@ -75,6 +75,9 @@ export class GlBatchAdaptor implements BatcherAdaptor
             renderer.texture.bind(textures[i], i);
         }
 
+        // the batch shader declares float samplers on every unit, so none may be left holding an integer texture
+        renderer.texture.unbindIntegerTextures(batch.textures.count);
+
         renderer.geometry.draw(batch.topology, batch.size, batch.start);
     }
 }

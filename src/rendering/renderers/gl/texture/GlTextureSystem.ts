@@ -183,6 +183,26 @@ export class GlTextureSystem implements System, CanvasGenerator
         }
     }
 
+    /**
+     * Binds the empty texture over integer textures from `location` up. WebGL fails a draw when a
+     * float sampler's unit holds an integer texture, even if the shader never samples it.
+     * @param location - The first texture unit to check.
+     */
+    public unbindIntegerTextures(location: number): void
+    {
+        const boundTextures = this._boundTextures;
+
+        for (let i = location; i < boundTextures.length; i++)
+        {
+            const source = boundTextures[i];
+
+            if (source?.format.endsWith('int'))
+            {
+                this.bind(Texture.EMPTY, i);
+            }
+        }
+    }
+
     private _bindSampler(style: TextureStyle, location = 0): void
     {
         const gl = this._gl;
