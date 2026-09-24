@@ -15,12 +15,13 @@ export interface GpuMsaaRestoreLayout
 /**
  * Puts a resolved image back into a multisampled colour buffer.
  *
- * Pixi's MSAA colour buffers are transient: every pass clears them on load and discards them on store,
- * which skips writing the 4-sample buffer back to memory. The resolved single-sample texture is still
- * stored, so a pass that reopens the target (a filter popping back, a mask adding stencil, `clear: false`)
- * copies the resolved texture to a scratch texture and draws it back in as the pass's first draw,
- * instead of loading samples that were never written. On tile-based GPUs this beats storing and
- * loading the 4-sample buffer even when a target is reopened every frame.
+ * A transient MSAA colour buffer (every one on a tile-based GPU, and ones the user marks `transient`
+ * elsewhere) is cleared on load and discarded on store, which skips writing the 4-sample buffer back to
+ * memory. The resolved single-sample texture is still stored, so a pass that reopens the target (a filter
+ * popping back, a mask adding stencil, `clear: false`) copies the resolved texture to a scratch texture and
+ * draws it back in as the pass's first draw, instead of loading samples that were never written. On
+ * tile-based GPUs this beats storing and loading the 4-sample buffer even when a target is reopened every
+ * frame; on GPUs that keep MSAA in video memory it doesn't, which is why they store it by default.
  *
  * The draw is a full-screen `textureLoad` with no blending, so it is an exact per-pixel copy.
  * @category rendering

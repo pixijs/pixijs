@@ -346,4 +346,62 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
             renderer.destroy();
         }
     });
+
+    it('should store and load msaa colour on a GPU that is not tile-based', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const device = renderer.gpu.device;
+
+        // as on Intel/NVIDIA/AMD, where loading MSAA from video memory beats restoring it
+        renderer.device.extensions.tileBased = false;
+
+        const target = makeMsaaTarget();
+        const other = makeMsaaTarget();
+
+        device.pushErrorScope('validation');
+        renderer.encoder.renderStart();
+
+        renderer.renderTarget.bind({ target, clear: true });
+
+        const gpuRenderTarget = renderer.renderTarget.getGpuRenderTarget(target);
+
+        expect(gpuRenderTarget.msaaTextures[0].transient).toBe(false);
+        expect(gpuRenderTarget.descriptor.colorAttachments[0].storeOp).toBe('store');
+
+        renderer.renderTarget.bind({ target: other, clear: true });
+        renderer.renderTarget.bind({ target, clear: false });
+
+        expect(gpuRenderTarget.descriptor.colorAttachments[0].loadOp).toBe('load');
+        expect(gpuRenderTarget.msaaRestore).toEqual([]);
+
+        renderer.encoder.postrender();
+
+        expect(await device.popErrorScope()).toBeNull();
+
+        renderer.destroy();
+    });
+
+    it('should discard and restore msaa colour on a GPU that is not tile-based when marked transient', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        renderer.device.extensions.tileBased = false;
+
+        const target = makeMsaaTarget({ transient: true });
+        const other = makeMsaaTarget();
+
+        renderer.encoder.renderStart();
+
+        renderer.renderTarget.bind({ target, clear: true });
+        renderer.renderTarget.bind({ target: other, clear: true });
+        renderer.renderTarget.bind({ target, clear: false });
+
+        const gpuRenderTarget = renderer.renderTarget.getGpuRenderTarget(target);
+
+        expect(gpuRenderTarget.descriptor.colorAttachments[0].storeOp).toBe('discard');
+        expect(gpuRenderTarget.msaaRestore).toEqual([0]);
+
+        renderer.encoder.postrender();
+        renderer.destroy();
+    });
 });

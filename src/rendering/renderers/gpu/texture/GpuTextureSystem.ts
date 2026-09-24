@@ -180,8 +180,8 @@ export class GpuTextureSystem implements System, CanvasGenerator
             usage = GPUTextureUsage.RENDER_ATTACHMENT;
 
             // TRANSIENT_ATTACHMENT goes on top when the source is marked transient AND the browser
-            // exposes the bit. The render target adaptor marks every MSAA colour buffer transient and
-            // never loads or stores it (a reopened pass restores it from the resolved texture instead).
+            // exposes the bit. The render target adaptor never loads or stores a transient MSAA colour
+            // buffer (a reopened pass restores it from the resolved texture instead).
             if (source.transient && this._renderer.device.extensions.transientAttachment)
             {
                 usage |= (GPUTextureUsage as { TRANSIENT_ATTACHMENT: number }).TRANSIENT_ATTACHMENT;

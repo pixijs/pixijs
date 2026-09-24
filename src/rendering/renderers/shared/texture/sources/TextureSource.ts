@@ -91,11 +91,10 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
     /**
      * WebGPU only. Marks an antialiased render target as single-pass: it is never rendered into again
      * with `clear: false`, never has a filter or mask pop back onto it, and its depth/stencil is never
-     * needed after the pass. PixiJS then discards the multisample depth/stencil buffer at the end of the
-     * pass instead of writing it to memory.
-     *
-     * The multisample colour buffer doesn't need this: it is always discarded, and a pass that reopens
-     * the target restores it from the resolved texture.
+     * needed after the pass. PixiJS then discards its multisample buffers at the end of the pass instead
+     * of writing them to memory: depth/stencil, and on GPUs that aren't tile-based also colour (tile-based
+     * GPUs already discard colour; see {@link GpuExtensions.tileBased}). If the target is reopened anyway,
+     * the colour is restored from the resolved texture but the depth/stencil is lost.
      * @default false
      */
     transient?: boolean;

@@ -115,7 +115,7 @@ Key properties on `TextureSource`:
 - `alphaMode`: How alpha is interpreted on upload.
 - `wrapMode` / `scaleMode`: Sampling behavior outside bounds or when scaled.
 - `autoGenerateMipmaps`: Whether to generate mipmaps on upload.
-- `transient`: WebGPU only. Marks an antialiased render texture as drawn in a single pass, so its multisample depth/stencil buffer is discarded too. The multisample colour buffer is always discarded. Set at creation time.
+- `transient`: WebGPU only. Marks an antialiased render texture as drawn in a single pass, so its multisample depth/stencil buffer is discarded instead of written to memory, and its colour buffer too on GPUs that aren't tile-based (tile-based GPUs discard colour already). Set at creation time.
 
 ```ts
 texture.source.scaleMode = 'linear';

@@ -402,14 +402,12 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     );
                 }
 
-                const msaa = !!gpuRenderTarget.msaaTextures[i];
+                const msaaTexture = gpuRenderTarget.msaaTextures[i];
 
-                if (msaa)
+                if (msaaTexture)
                 {
                     resolveTarget = view;
-                    view = this._renderer.texture.getTextureView(
-                        gpuRenderTarget.msaaTextures[i]
-                    );
+                    view = this._renderer.texture.getTextureView(msaaTexture);
                 }
 
                 let loadOp = colorAttachment.loadOp;
@@ -421,9 +419,10 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
                 clearValue ??= renderTargetSystem.defaultClearColor;
 
-                // MSAA colour is never stored, so a pass that would load it clears and restores it instead
-                // (see GpuMsaaRestore)
-                const restore = msaa && loadOp !== 'clear';
+                // a transient MSAA buffer is never stored, so a pass that would load it clears and restores it
+                // from the resolved texture instead (see GpuMsaaRestore)
+                const transient = !!msaaTexture?.transient;
+                const restore = transient && loadOp !== 'clear';
 
                 if (restore)
                 {
@@ -434,7 +433,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                 const baseAttachment: GPURenderPassColorAttachment = {
                     view,
                     resolveTarget,
-                    storeOp: msaa ? 'discard' : (colorAttachment.storeOp ?? 'store'),
+                    storeOp: transient ? 'discard' : (colorAttachment.storeOp ?? 'store'),
                     loadOp,
                 };
 
@@ -642,8 +641,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
             if (colorTexture.antialias)
             {
-                // the MSAA colour buffer is never stored. A reopened pass restores it from the resolved texture
-                // (see GpuMsaaRestore)
+                // On tile-based GPUs the MSAA colour buffer is always transient: never stored, and restored from
+                // the resolved texture when a pass reopens it (see GpuMsaaRestore). Elsewhere storing it is
+                // cheaper, so it is transient only when the user marks the target single-pass.
                 const msaaTexture = new TextureSource({
                     width: 0,
                     height: 0,
@@ -651,7 +651,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     // WebGPU requires multisampled textures to have exactly 1 mip level, so this must never
                     // inherit TextureSource.defaultOptions.autoGenerateMipmaps
                     autoGenerateMipmaps: false,
-                    transient: true,
+                    transient: this._renderer.device.extensions.tileBased || colorTexture.transient,
                     arrayLayerCount: colorTexture.arrayLayerCount,
                     format: colorTexture.format,
                 });
