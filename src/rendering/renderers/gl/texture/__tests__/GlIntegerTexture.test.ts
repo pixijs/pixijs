@@ -17,6 +17,36 @@ const texels = new Uint32Array([
     0x80000000, 2, 0x7F800001, 42,
 ]);
 
+/**
+ * A renderer with an integer texture ready to bind, and a `draw` that renders a view to a 4x4 target
+ * and returns the GL error and the first pixel.
+ */
+async function setupBatchDraw()
+{
+    const renderer = (await getWebGLRenderer({ width: 4, height: 4 })) as WebGLRenderer;
+    const gl = renderer.gl;
+    const colorTexture = new Texture({ source: new TextureSource({ width: 4, height: 4, resolution: 1 }) });
+    const renderTarget = new RenderTarget({ colorTextures: [colorTexture] });
+    const integerTexture = new Texture({
+        source: new BufferImageSource({ resource: texels, width: 2, height: 1, scaleMode: 'nearest' }),
+    });
+
+    const draw = (view: Container) =>
+    {
+        gl.getError();
+        renderer.render({ target: renderTarget, container: view, clear: true, clearColor: [0, 0, 0, 1] });
+
+        const error = gl.getError();
+        const { pixels } = renderer.extract.pixels(colorTexture);
+
+        return { error, pixel: Array.from(pixels.slice(0, 4)) };
+    };
+
+    const drawn = { error: gl.NO_ERROR, pixel: [255, 255, 255, 255] };
+
+    return { renderer, integerTexture, draw, drawn };
+}
+
 const glShader = {
     vertex: `#version 300 es
         precision highp float;
@@ -96,38 +126,48 @@ describe('GlTextureSystem integer formats', () =>
         'should not fail a %s batch when an integer texture is left on a unit the batch does not use',
         async (name) =>
         {
-            const renderer = (await getWebGLRenderer({ width: 4, height: 4 })) as WebGLRenderer;
-            const gl = renderer.gl;
-            const colorTexture = new Texture({ source: new TextureSource({ width: 4, height: 4, resolution: 1 }) });
-            const renderTarget = new RenderTarget({ colorTextures: [colorTexture] });
-            const integerTexture = new Texture({
-                source: new BufferImageSource({ resource: texels, width: 2, height: 1, scaleMode: 'nearest' }),
-            });
+            const { renderer, integerTexture, draw, drawn } = await setupBatchDraw();
             const view = batchedViews[name]();
-
-            const draw = () =>
-            {
-                gl.getError();
-                renderer.render({ target: renderTarget, container: view, clear: true, clearColor: [0, 0, 0, 1] });
-
-                const error = gl.getError();
-                const { pixels } = renderer.extract.pixels(colorTexture);
-
-                return { error, pixel: Array.from(pixels.slice(0, 4)) };
-            };
-
-            const drawn = { error: gl.NO_ERROR, pixel: [255, 255, 255, 255] };
 
             // left on unit 1 by an earlier draw's bind
             renderer.texture.bind(integerTexture, 1);
 
-            expect(draw()).toEqual(drawn);
+            expect(draw(view)).toEqual(drawn);
 
             // left on unit 3 by an upload, which binds to the active unit without going through bind()
             renderer.texture.bind(Texture.WHITE, 3);
             integerTexture.source.update();
 
-            expect(draw()).toEqual(drawn);
+            expect(draw(view)).toEqual(drawn);
+
+            renderer.destroy();
+        },
+    );
+
+    it.each(['2d-array', 'cube'] as const)(
+        'should not fail a sprite batch when a %s texture is bound over an integer texture, or unbound again',
+        async (viewDimension) =>
+        {
+            const { renderer, integerTexture, draw, drawn } = await setupBatchDraw();
+            const sprite = new Sprite({ texture: Texture.WHITE, width: 4, height: 4 });
+            const otherTarget = new Texture({
+                source: new TextureSource({
+                    width: 1, height: 1, viewDimension, arrayLayerCount: viewDimension === 'cube' ? 6 : 2,
+                }),
+            });
+
+            // binds unit 1's 2D-array or cube target, leaving the integer texture on its 2D target
+            renderer.texture.bind(integerTexture, 1);
+            renderer.texture.bind(otherTarget, 1);
+
+            expect(draw(sprite)).toEqual(drawn);
+
+            // unbinding it (as the GC does) clears only its own target, so the integer texture is still there
+            renderer.texture.bind(integerTexture, 1);
+            renderer.texture.bind(otherTarget, 1);
+            renderer.texture.unbind(otherTarget);
+
+            expect(draw(sprite)).toEqual(drawn);
 
             renderer.destroy();
         },
@@ -154,8 +194,21 @@ describe('GlTextureSystem integer formats', () =>
         integerTexture.source.update();
         expect(textureSystem['_integerUnits']).toBe(1 << 5);
 
-        // cleared by unbind
+        // left set by unbind (it only nulls the unit), then cleared by the next unbindIntegerTextures
         textureSystem.unbind(integerTexture);
+        expect(textureSystem['_integerUnits']).toBe(1 << 5);
+        textureSystem.unbindIntegerTextures(0);
+        expect(textureSystem['_integerUnits']).toBe(0);
+
+        // left set when another target on the unit is bound: the integer texture is still on its 2D target
+        const arrayTexture = new Texture({
+            source: new TextureSource({ width: 1, height: 1, viewDimension: '2d-array', arrayLayerCount: 2 }),
+        });
+
+        textureSystem.bind(integerTexture, 4);
+        textureSystem.bind(arrayTexture, 4);
+        expect(textureSystem['_integerUnits']).toBe(1 << 4);
+        textureSystem.bind(Texture.WHITE, 4);
         expect(textureSystem['_integerUnits']).toBe(0);
 
         // unbindIntegerTextures only clears units from its location up

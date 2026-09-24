@@ -208,6 +208,12 @@ export class GlTextureSystem implements System, CanvasGenerator
     /**
      * Records the source bound to a unit, keeping `_integerUnits` in step. Every write to
      * `_boundTextures` goes through here so the two can't drift apart.
+     *
+     * A unit has a separate binding per target (2D, 2D array, cube), and the batch shaders sample
+     * the 2D target, so only a 2D source changes the unit's bit. Anything else, including null,
+     * leaves it as it was: a bit left set after the integer texture is gone only costs one extra
+     * `bind(Texture.EMPTY)` in `unbindIntegerTextures`, while a cleared bit over an integer texture
+     * fails the next batch.
      * @param location - The texture unit.
      * @param source - The source now bound there, or null.
      */
@@ -218,7 +224,9 @@ export class GlTextureSystem implements System, CanvasGenerator
         // the mask covers units 0-31, which includes every unit the batchers use
         if (location < 0 || location > 31) return;
 
-        if (source?.format.endsWith('int'))
+        if (!source || source.viewDimension !== '2d') return;
+
+        if (source.format.endsWith('int'))
         {
             this._integerUnits |= 1 << location;
         }
