@@ -28,19 +28,22 @@ export interface GpuMsaaRestoreLayout
  */
 export class GpuMsaaRestore
 {
-    public readonly device: GPUDevice;
-
+    private readonly _device: GPUDevice;
     private readonly _layout: GPUBindGroupLayout;
     private readonly _pipelineLayout: GPUPipelineLayout;
     /** per layout key, one pipeline per colour attachment */
-    private readonly _pipelines: Record<string, GPURenderPipeline[]> = Object.create(null);
-    private readonly _modules: Record<number, GPUShaderModule> = Object.create(null);
+    private _pipelines: Record<string, GPURenderPipeline[]> = Object.create(null);
+    private _modules: Record<number, GPUShaderModule> = Object.create(null);
     /** one scratch texture per format and attachment slot, grown to the largest target restored */
-    private readonly _scratch: Record<string, { texture: GPUTexture; bindGroup: GPUBindGroup }> = Object.create(null);
+    private _scratch: Record<string, { texture: GPUTexture; bindGroup: GPUBindGroup }> = Object.create(null);
+    /** replaced scratch textures, still read by commands recorded before the submit */
+    private readonly _retired: GPUTexture[] = [];
+    /** the bind group of each slot's latest copy */
+    private readonly _copied: GPUBindGroup[] = [];
 
     constructor(device: GPUDevice)
     {
-        this.device = device;
+        this._device = device;
         this._layout = device.createBindGroupLayout({
             entries: [{
                 binding: 0,
@@ -52,13 +55,33 @@ export class GpuMsaaRestore
     }
 
     /**
-     * Copies a resolved colour texture into scratch. Must be recorded outside a render pass.
+     * Whether a replaced scratch texture is still pending destruction, because commands recorded before the submit
+     * read it.
+     */
+    public get hasRetired(): boolean
+    {
+        return this._retired.length > 0;
+    }
+
+    /** Destroys the replaced scratch textures, once the commands recorded while they were in use are submitted. */
+    public destroyRetired(): void
+    {
+        for (const texture of this._retired)
+        {
+            texture.destroy();
+        }
+
+        this._retired.length = 0;
+    }
+
+    /**
+     * Copies a resolved colour texture into its slot's scratch for {@link GpuMsaaRestore.draw}. Must be recorded
+     * outside a render pass.
      * @param commandEncoder - the encoder to record the copy on
      * @param resolved - the resolved texture of the attachment being restored
      * @param slot - the attachment index, so attachments of the same format don't share scratch
-     * @returns the bind group the restore draw samples from
      */
-    public copy(commandEncoder: GPUCommandEncoder, resolved: GPUTexture, slot: number): GPUBindGroup
+    public copy(commandEncoder: GPUCommandEncoder, resolved: GPUTexture, slot: number): void
     {
         const scratch = this._getScratch(resolved, slot);
 
@@ -68,24 +91,38 @@ export class GpuMsaaRestore
             { width: resolved.width, height: resolved.height },
         );
 
-        return scratch.bindGroup;
+        this._copied[slot] = scratch.bindGroup;
     }
 
     /**
-     * Draws a copied image into one colour attachment. Must be the first draw of the pass, before
+     * Draws the latest copy of one colour attachment back in. Must be the first draw of the pass, before
      * any viewport or scissor is set.
      * @param pass - the pass that was just begun
      * @param layout - the pass's attachment layout
-     * @param index - the colour attachment to restore
-     * @param bindGroup - the bind group returned by {@link GpuMsaaRestore.copy}
+     * @param index - the colour attachment to restore, copied by {@link GpuMsaaRestore.copy}
      */
-    public draw(pass: GPURenderPassEncoder, layout: GpuMsaaRestoreLayout, index: number, bindGroup: GPUBindGroup): void
+    public draw(pass: GPURenderPassEncoder, layout: GpuMsaaRestoreLayout, index: number): void
     {
-        const pipelines = this._pipelines[layout.key] ||= [];
+        const pipelines = this._pipelines[layout.key] ??= [];
 
-        pass.setPipeline(pipelines[index] ||= this._createPipeline(layout, index));
-        pass.setBindGroup(0, bindGroup);
+        pass.setPipeline(pipelines[index] ??= this._createPipeline(layout, index));
+        pass.setBindGroup(0, this._copied[index]);
         pass.draw(3);
+    }
+
+    /** Destroys every scratch texture, replaced ones included, and drops the cached pipelines. */
+    public destroy(): void
+    {
+        for (const key in this._scratch)
+        {
+            this._scratch[key].texture.destroy();
+        }
+
+        this.destroyRetired();
+
+        this._scratch = Object.create(null);
+        this._pipelines = Object.create(null);
+        this._modules = Object.create(null);
     }
 
     private _getScratch(resolved: GPUTexture, slot: number)
@@ -99,9 +136,9 @@ export class GpuMsaaRestore
             const width = Math.max(resolved.width, scratch?.texture.width ?? 0);
             const height = Math.max(resolved.height, scratch?.texture.height ?? 0);
 
-            scratch?.texture.destroy();
+            if (scratch) this._retired.push(scratch.texture);
 
-            const texture = this.device.createTexture({
+            const texture = this._device.createTexture({
                 label: 'msaa-restore-scratch',
                 size: { width, height },
                 format,
@@ -110,7 +147,7 @@ export class GpuMsaaRestore
 
             scratch = this._scratch[key] = {
                 texture,
-                bindGroup: this.device.createBindGroup({
+                bindGroup: this._device.createBindGroup({
                     layout: this._layout,
                     entries: [{ binding: 0, resource: texture.createView() }],
                 }),
@@ -122,7 +159,7 @@ export class GpuMsaaRestore
 
     private _getModule(index: number): GPUShaderModule
     {
-        this._modules[index] ||= this.device.createShaderModule({
+        this._modules[index] ??= this._device.createShaderModule({
             label: 'msaa-restore',
             code: /* wgsl */ `
                 @group(0) @binding(0) var resolved: texture_2d<f32>;
@@ -163,7 +200,7 @@ export class GpuMsaaRestore
 
         const module = this._getModule(index);
 
-        return this.device.createRenderPipeline({
+        return this._device.createRenderPipeline({
             label: 'msaa-restore',
             layout: this._pipelineLayout,
             vertex: { module, entryPoint: 'vertexMain' },

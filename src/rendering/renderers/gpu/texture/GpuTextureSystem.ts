@@ -171,6 +171,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
         }
 
         let usage: number;
+        let viewFormats: GPUTextureFormat[];
 
         if (source.sampleCount > 1)
         {
@@ -195,6 +196,8 @@ export class GpuTextureSystem implements System, CanvasGenerator
                 usage |= GPUTextureUsage.RENDER_ATTACHMENT;
                 usage |= GPUTextureUsage.COPY_SRC;
             }
+
+            viewFormats = srgbViewFormat(source.format);
         }
 
         const blockData = blockDataMap[source.format] || { blockBytes: 4, blockWidth: 1, blockHeight: 1 };
@@ -207,8 +210,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             // WebGPU cube textures are 2D textures with 6 array layers and a cube view.
             size: { width, height, depthOrArrayLayers: source.arrayLayerCount },
             format: source.format,
-            // multisampled textures are only rendered into and resolved, never sampled, so they skip it
-            viewFormats: source.sampleCount > 1 ? undefined : srgbViewFormat(source.format),
+            viewFormats,
             sampleCount: source.sampleCount,
             mipLevelCount: source.mipLevelCount,
             dimension: source.dimension,

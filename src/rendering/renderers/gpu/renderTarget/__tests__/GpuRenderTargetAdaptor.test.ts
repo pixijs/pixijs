@@ -121,17 +121,28 @@ describeLocalOnly('GpuRenderTargetAdaptor msaa textures', () =>
 
 describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
 {
-    function makeMsaaTarget(options: { transient?: boolean, colors?: number, depthStencil?: boolean } = {}): RenderTarget
+    function makeMsaaTarget(
+        options: { transient?: boolean, colors?: number, depthStencil?: boolean, size?: number } = {}
+    ): RenderTarget
     {
-        const { transient = false, colors = 1, depthStencil = false } = options;
+        const { transient = false, colors = 1, depthStencil = false, size = 16 } = options;
 
         return new RenderTarget({
             colorTextures: Array.from({ length: colors }, () =>
-                new TextureSource({ width: 16, height: 16, antialias: true, transient })),
+                new TextureSource({ width: size, height: size, antialias: true, transient })),
             depthStencilTexture: depthStencil
-                ? new TextureSource({ width: 16, height: 16, format: 'depth24plus-stencil8' })
+                ? new TextureSource({ width: size, height: size, format: 'depth24plus-stencil8' })
                 : undefined,
         });
+    }
+
+    function scratchTextures(createTexture: jest.SpyInstance<GPUTexture, [GPUTextureDescriptor]>): GPUTexture[]
+    {
+        const { calls, results } = createTexture.mock;
+
+        return results
+            .filter((_, i) => calls[i][0].label === 'msaa-restore-scratch')
+            .map((result) => result.value);
     }
 
     it('should clear and discard msaa colour on every pass, restoring it when the pass would load', async () =>
@@ -212,6 +223,69 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
         expect(await device.popErrorScope()).toBeNull();
 
         renderer.destroy();
+    });
+
+    it('should keep a replaced scratch texture alive until the frame is submitted', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const small = makeMsaaTarget();
+        const large = makeMsaaTarget({ size: 64 });
+        const other = makeMsaaTarget();
+        const device = renderer.gpu.device;
+        const createTexture = jest.spyOn(device, 'createTexture');
+
+        device.pushErrorScope('validation');
+        renderer.encoder.renderStart();
+
+        // the first restore creates a 16x16 scratch texture
+        renderer.renderTarget.bind({ target: small, clear: true });
+        renderer.renderTarget.bind({ target: other, clear: true });
+        renderer.renderTarget.bind({ target: small, clear: false });
+
+        // the second needs 64x64, so the scratch is replaced while the first copy is still unsubmitted
+        renderer.renderTarget.bind({ target: large, clear: true });
+        renderer.renderTarget.bind({ target: other, clear: true });
+        renderer.renderTarget.bind({ target: large, clear: false });
+
+        const destroy = jest.spyOn(scratchTextures(createTexture)[0], 'destroy');
+
+        expect(destroy).not.toHaveBeenCalled();
+
+        renderer.encoder.postrender();
+
+        expect(await device.popErrorScope()).toBeNull();
+
+        await renderer.encoder.commandFinished;
+        await Promise.resolve();
+
+        expect(destroy).toHaveBeenCalledTimes(1);
+
+        renderer.destroy();
+    });
+
+    it('should destroy the restore scratch textures with the renderer', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const target = makeMsaaTarget();
+        const other = makeMsaaTarget();
+        const createTexture = jest.spyOn(renderer.gpu.device, 'createTexture');
+
+        renderer.encoder.renderStart();
+        renderer.renderTarget.bind({ target, clear: true });
+        renderer.renderTarget.bind({ target: other, clear: true });
+        renderer.renderTarget.bind({ target, clear: false });
+        renderer.encoder.postrender();
+
+        const destroys = scratchTextures(createTexture).map((texture) => jest.spyOn(texture, 'destroy'));
+
+        expect(destroys).toHaveLength(1);
+
+        renderer.destroy();
+
+        for (const destroy of destroys)
+        {
+            expect(destroy).toHaveBeenCalledTimes(1);
+        }
     });
 
     it('should restore msaa colour on a depth-only clear outside a frame', async () =>
