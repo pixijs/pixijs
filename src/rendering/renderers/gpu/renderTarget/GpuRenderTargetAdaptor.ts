@@ -258,7 +258,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
     /**
      * Begins a pass whose MSAA colour must be restored: copies each resolved texture in `restore` to the
-     * target's scratch, begins the pass, and draws the copies back in before anything else.
+     * target's back textures, begins the pass, and draws the copies back in before anything else.
      * @param renderTarget - the target being reopened
      * @param gpuRenderTarget - its backend target
      * @param restore - the colour attachments to restore
@@ -275,7 +275,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
     ): GPURenderPassEncoder
     {
         const textureSystem = this._renderer.texture;
-        const scratch = gpuRenderTarget.msaaScratch;
+        const backTextures = gpuRenderTarget.msaaBackTextures;
 
         for (let i = 0; i < restore.length; i++)
         {
@@ -283,8 +283,8 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             const colorTexture = renderTarget.colorAttachments[index].texture;
 
             // the same size and format as the attachment, so it is resized and destroyed along with the MSAA buffer
-            scratch[index] ??= new TextureSource({
-                label: 'msaa-restore-scratch',
+            backTextures[index] ??= new TextureSource({
+                label: 'msaa-back-texture',
                 width: colorTexture.width,
                 height: colorTexture.height,
                 resolution: colorTexture._resolution,
@@ -293,7 +293,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             });
 
             const resolved = this._getGpuColorTexture(renderTarget, index);
-            const copy = textureSystem.getGpuSource(scratch[index]);
+            const copy = textureSystem.getGpuSource(backTextures[index]);
 
             commandEncoder.copyTextureToTexture(
                 { texture: resolved },
@@ -308,7 +308,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
         for (let i = 0; i < restore.length; i++)
         {
-            msaaRestore.draw(pass, layout, restore[i], textureSystem.getGpuSource(scratch[restore[i]]));
+            msaaRestore.draw(pass, layout, restore[i], textureSystem.getGpuSource(backTextures[restore[i]]));
         }
 
         return pass;
@@ -744,13 +744,13 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             texture.destroy();
         });
 
-        gpuRenderTarget.msaaScratch.forEach((texture) =>
+        gpuRenderTarget.msaaBackTextures.forEach((texture) =>
         {
             texture?.destroy();
         });
 
         gpuRenderTarget.msaaTextures.length = 0;
-        gpuRenderTarget.msaaScratch.length = 0;
+        gpuRenderTarget.msaaBackTextures.length = 0;
         gpuRenderTarget.contexts.length = 0;
     }
 
@@ -774,7 +774,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                 const colorTexture = colorAttachment.texture;
 
                 gpuRenderTarget.msaaTextures[i]?.resize(colorTexture.width, colorTexture.height, colorTexture._resolution);
-                gpuRenderTarget.msaaScratch[i]?.resize(colorTexture.width, colorTexture.height, colorTexture._resolution);
+                gpuRenderTarget.msaaBackTextures[i]?.resize(
+                    colorTexture.width, colorTexture.height, colorTexture._resolution
+                );
             });
         }
     }

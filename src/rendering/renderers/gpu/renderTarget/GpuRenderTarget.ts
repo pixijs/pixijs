@@ -18,10 +18,11 @@ export class GpuRenderTarget
     public height: number;
     public descriptor: GPURenderPassDescriptor;
     /**
-     * Per MSAA colour attachment, the texture its resolved image is copied into when a pass reopens it (see
-     * GpuMsaaRestore). Created on the first restore, then resized and destroyed with `msaaTextures`.
+     * Per MSAA colour attachment, the copy of its resolved image that a reopened pass draws back in (see
+     * GpuMsaaRestore), as FilterSystem's `backTexture` is a copy of what a filter draws over. Created on the
+     * first restore, then resized and destroyed with `msaaTextures`.
      */
-    public msaaScratch: TextureSource[] = [];
+    public msaaBackTextures: TextureSource[] = [];
     /** the attachment layout the restore pipelines match, built on the first restore */
     public msaaRestoreLayout: GpuMsaaRestoreLayout = null;
     /**

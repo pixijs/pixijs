@@ -18,13 +18,13 @@ export interface GpuMsaaRestoreLayout
  * A transient MSAA colour buffer (every one on a tile-based GPU, and ones the user marks `transient`
  * elsewhere) is cleared on load and discarded on store, which skips writing the 4-sample buffer back to
  * memory. The resolved single-sample texture is still stored, so a pass that reopens the target (a filter
- * popping back, a mask adding stencil, `clear: false`) copies the resolved texture to the target's scratch
+ * popping back, a mask adding stencil, `clear: false`) copies the resolved texture to the target's back
  * texture and draws it back in as the pass's first draw, instead of loading samples that were never written.
  * On tile-based GPUs this beats storing and loading the 4-sample buffer even when a target is reopened every
  * frame; on GPUs that keep MSAA in video memory it doesn't, which is why they store it by default.
  *
  * The draw is a full-screen `textureLoad` with no blending, so every pixel gets its resolved colour back.
- * This holds only pipelines and bind groups; the scratch textures belong to the render targets.
+ * This holds only pipelines and bind groups; the back textures belong to the render targets.
  * @category rendering
  * @ignore
  */
@@ -36,7 +36,7 @@ export class GpuMsaaRestore
     /** per layout key, one pipeline per colour attachment */
     private readonly _pipelines: Record<string, GPURenderPipeline[]> = Object.create(null);
     private readonly _modules: Record<number, GPUShaderModule> = Object.create(null);
-    /** one bind group per scratch texture, dropped with the texture when a resize replaces it */
+    /** one bind group per back texture, dropped with the texture when a resize replaces it */
     private readonly _bindGroups = new WeakMap<GPUTexture, GPUBindGroup>();
 
     constructor(device: GPUDevice)
@@ -58,20 +58,20 @@ export class GpuMsaaRestore
      * @param pass - the pass that was just begun
      * @param layout - the pass's attachment layout
      * @param index - the colour attachment to restore
-     * @param scratch - the texture the resolved image was copied into
+     * @param backTexture - the texture the resolved image was copied into
      */
-    public draw(pass: GPURenderPassEncoder, layout: GpuMsaaRestoreLayout, index: number, scratch: GPUTexture): void
+    public draw(pass: GPURenderPassEncoder, layout: GpuMsaaRestoreLayout, index: number, backTexture: GPUTexture): void
     {
         const pipelines = this._pipelines[layout.key] ??= [];
-        let bindGroup = this._bindGroups.get(scratch);
+        let bindGroup = this._bindGroups.get(backTexture);
 
         if (!bindGroup)
         {
             bindGroup = this._device.createBindGroup({
                 layout: this._layout,
-                entries: [{ binding: 0, resource: scratch.createView() }],
+                entries: [{ binding: 0, resource: backTexture.createView() }],
             });
-            this._bindGroups.set(scratch, bindGroup);
+            this._bindGroups.set(backTexture, bindGroup);
         }
 
         pass.setPipeline(pipelines[index] ??= this._createPipeline(layout, index));
