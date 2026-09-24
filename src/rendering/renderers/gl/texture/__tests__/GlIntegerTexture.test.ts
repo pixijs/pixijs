@@ -5,9 +5,10 @@ import { BufferImageSource } from '../../../shared/texture/sources/BufferImageSo
 import { TextureSource } from '../../../shared/texture/sources/TextureSource';
 import { Texture } from '../../../shared/texture/Texture';
 import { getWebGLRenderer } from '@test-utils';
-import { Mesh, Sprite } from '~/scene';
+import { Graphics, Mesh, Sprite } from '~/scene';
 
 import type { WebGLRenderer } from '../../WebGLRenderer';
+import type { Container } from '~/scene';
 
 // 1 is a denormal when its bits are read as a float, and 0xFFFFFFFF is a NaN:
 // both are values a float texture may not return bit-exact
@@ -77,40 +78,101 @@ describe('GlTextureSystem integer formats', () =>
         renderer.destroy();
     });
 
-    it('should not fail a sprite batch when an integer texture is left on a unit the batch does not use', async () =>
+    const batchedViews: Record<string, () => Container> = {
+        // drawn by GlBatchAdaptor
+        sprite: () => new Sprite({ texture: Texture.WHITE, width: 4, height: 4 }),
+        // drawn by GlGraphicsAdaptor
+        graphics: () =>
+        {
+            const graphics = new Graphics().rect(0, 0, 4, 4).fill(0xffffff);
+
+            graphics.context.batchMode = 'no-batch';
+
+            return graphics;
+        },
+    };
+
+    it.each(Object.keys(batchedViews))(
+        'should not fail a %s batch when an integer texture is left on a unit the batch does not use',
+        async (name) =>
+        {
+            const renderer = (await getWebGLRenderer({ width: 4, height: 4 })) as WebGLRenderer;
+            const gl = renderer.gl;
+            const colorTexture = new Texture({ source: new TextureSource({ width: 4, height: 4, resolution: 1 }) });
+            const renderTarget = new RenderTarget({ colorTextures: [colorTexture] });
+            const integerTexture = new Texture({
+                source: new BufferImageSource({ resource: texels, width: 2, height: 1, scaleMode: 'nearest' }),
+            });
+            const view = batchedViews[name]();
+
+            const draw = () =>
+            {
+                gl.getError();
+                renderer.render({ target: renderTarget, container: view, clear: true, clearColor: [0, 0, 0, 1] });
+
+                const error = gl.getError();
+                const { pixels } = renderer.extract.pixels(colorTexture);
+
+                return { error, pixel: Array.from(pixels.slice(0, 4)) };
+            };
+
+            const drawn = { error: gl.NO_ERROR, pixel: [255, 255, 255, 255] };
+
+            // left on unit 1 by an earlier draw's bind
+            renderer.texture.bind(integerTexture, 1);
+
+            expect(draw()).toEqual(drawn);
+
+            // left on unit 3 by an upload, which binds to the active unit without going through bind()
+            renderer.texture.bind(Texture.WHITE, 3);
+            integerTexture.source.update();
+
+            expect(draw()).toEqual(drawn);
+
+            renderer.destroy();
+        },
+    );
+
+    it('should track which units hold integer textures', async () =>
     {
         const renderer = (await getWebGLRenderer({ width: 4, height: 4 })) as WebGLRenderer;
-        const gl = renderer.gl;
-        const colorTexture = new Texture({ source: new TextureSource({ width: 4, height: 4, resolution: 1 }) });
-        const renderTarget = new RenderTarget({ colorTextures: [colorTexture] });
+        const textureSystem = renderer.texture;
         const integerTexture = new Texture({
             source: new BufferImageSource({ resource: texels, width: 2, height: 1, scaleMode: 'nearest' }),
         });
-        const sprite = new Sprite({ texture: Texture.WHITE, width: 4, height: 4 });
 
-        const drawSprite = () =>
-        {
-            gl.getError();
-            renderer.render({ target: renderTarget, container: sprite, clear: true, clearColor: [0, 0, 0, 1] });
+        expect(textureSystem['_integerUnits']).toBe(0);
 
-            const error = gl.getError();
-            const { pixels } = renderer.extract.pixels(colorTexture);
+        // set by bind, cleared by binding a float texture over it
+        textureSystem.bind(integerTexture, 3);
+        expect(textureSystem['_integerUnits']).toBe(1 << 3);
+        textureSystem.bind(Texture.WHITE, 3);
+        expect(textureSystem['_integerUnits']).toBe(0);
 
-            return { error, pixel: Array.from(pixels.slice(0, 4)) };
-        };
-
-        const drawn = { error: gl.NO_ERROR, pixel: [255, 255, 255, 255] };
-
-        // left on unit 1 by an earlier draw's bind
-        renderer.texture.bind(integerTexture, 1);
-
-        expect(drawSprite()).toEqual(drawn);
-
-        // left on unit 3 by an upload, which binds to the active unit without going through bind()
-        renderer.texture.bind(Texture.WHITE, 3);
+        // set by an upload onto the active unit
+        textureSystem.bind(Texture.WHITE, 5);
         integerTexture.source.update();
+        expect(textureSystem['_integerUnits']).toBe(1 << 5);
 
-        expect(drawSprite()).toEqual(drawn);
+        // cleared by unbind
+        textureSystem.unbind(integerTexture);
+        expect(textureSystem['_integerUnits']).toBe(0);
+
+        // unbindIntegerTextures only clears units from its location up
+        textureSystem.bind(integerTexture, 1);
+        textureSystem.bind(integerTexture, 6);
+        textureSystem.unbindIntegerTextures(2);
+        expect(textureSystem['_integerUnits']).toBe(1 << 1);
+        expect(textureSystem['_boundTextures'][6]).toBe(Texture.EMPTY.source);
+
+        // cleared by resetState
+        textureSystem.resetState();
+        expect(textureSystem['_integerUnits']).toBe(0);
+
+        // units outside 0-31 don't alias onto the mask
+        textureSystem['_setBoundTexture'](32, integerTexture.source);
+        textureSystem['_setBoundTexture'](-1, integerTexture.source);
+        expect(textureSystem['_integerUnits']).toBe(0);
 
         renderer.destroy();
     });

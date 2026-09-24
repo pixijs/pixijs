@@ -60,6 +60,8 @@ export class GlTextureSystem implements System, CanvasGenerator
     private _glSamplers: Record<string, WebGLSampler> = Object.create(null);
 
     private _boundTextures: TextureSource[] = [];
+    /** Bit `n` is set while unit `n` holds an integer-format texture. Kept in step by `_setBoundTexture`. */
+    private _integerUnits = 0;
     private _activeTextureLocation = -1;
 
     private _boundSamplers: Record<number, WebGLSampler> = Object.create(null);
@@ -171,7 +173,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         if (this._boundTextures[location] !== source)
         {
-            this._boundTextures[location] = source;
+            this._setBoundTexture(location, source);
             this._activateLocation(location);
 
             source ||= Texture.EMPTY.source;
@@ -190,16 +192,39 @@ export class GlTextureSystem implements System, CanvasGenerator
      */
     public unbindIntegerTextures(location: number): void
     {
-        const boundTextures = this._boundTextures;
+        let units = (this._integerUnits >>> location) << location;
 
-        for (let i = location; i < boundTextures.length; i++)
+        while (units)
         {
-            const source = boundTextures[i];
+            const unit = 31 - Math.clz32(units);
 
-            if (source?.format.endsWith('int'))
-            {
-                this.bind(Texture.EMPTY, i);
-            }
+            units &= ~(1 << unit);
+
+            // clears the unit's bit through _setBoundTexture
+            this.bind(Texture.EMPTY, unit);
+        }
+    }
+
+    /**
+     * Records the source bound to a unit, keeping `_integerUnits` in step. Every write to
+     * `_boundTextures` goes through here so the two can't drift apart.
+     * @param location - The texture unit.
+     * @param source - The source now bound there, or null.
+     */
+    private _setBoundTexture(location: number, source: TextureSource | null): void
+    {
+        this._boundTextures[location] = source;
+
+        // the mask covers units 0-31, which includes every unit the batchers use
+        if (location < 0 || location > 31) return;
+
+        if (source?.format.endsWith('int'))
+        {
+            this._integerUnits |= 1 << location;
+        }
+        else
+        {
+            this._integerUnits &= ~(1 << location);
         }
     }
 
@@ -239,7 +264,7 @@ export class GlTextureSystem implements System, CanvasGenerator
                 const glTexture = this.getGlSource(source);
 
                 gl.bindTexture(glTexture.target, null);
-                boundTextures[i] = null;
+                this._setBoundTexture(i, null);
             }
         }
     }
@@ -308,7 +333,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         gl.bindTexture(glTexture.target, glTexture.texture);
 
-        this._boundTextures[this._activeTextureLocation] = source;
+        this._setBoundTexture(this._activeTextureLocation, source);
 
         applyStyleParams(
             source.style,
@@ -348,7 +373,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         gl.bindTexture(glTexture.target, glTexture.texture);
 
-        this._boundTextures[this._activeTextureLocation] = source;
+        this._setBoundTexture(this._activeTextureLocation, source);
 
         const premultipliedAlpha = source.alphaMode === 'premultiply-alpha-on-upload';
 
@@ -671,6 +696,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         this._activeTextureLocation = -1;
         this._boundTextures.fill(Texture.EMPTY.source);
+        this._integerUnits = 0;
         this._boundSamplers = Object.create(null);
 
         const gl = this._gl;
