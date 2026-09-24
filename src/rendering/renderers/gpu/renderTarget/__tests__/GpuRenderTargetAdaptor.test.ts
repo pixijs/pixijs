@@ -7,6 +7,7 @@ import { AlphaFilter } from '~/filters';
 import { Container, Graphics } from '~/scene';
 
 import type { WebGPURenderer } from '../../WebGPURenderer';
+import type { GpuRenderTarget } from '../GpuRenderTarget';
 
 function makeTarget(): RenderTarget
 {
@@ -136,13 +137,13 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
         });
     }
 
-    function scratchTextures(createTexture: jest.SpyInstance<GPUTexture, [GPUTextureDescriptor]>): GPUTexture[]
+    /**
+     * The colour attachments that have been restored, which are the ones with a scratch texture.
+     * @param gpuRenderTarget - the backend target to check
+     */
+    function restoredSlots(gpuRenderTarget: GpuRenderTarget): number[]
     {
-        const { calls, results } = createTexture.mock;
-
-        return results
-            .filter((_, i) => calls[i][0].label === 'msaa-restore-scratch')
-            .map((result) => result.value);
+        return gpuRenderTarget.msaaScratch.flatMap((scratch, i) => (scratch ? [i] : []));
     }
 
     it('should clear and discard msaa colour on every pass, restoring it when the pass would load', async () =>
@@ -163,7 +164,7 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
         expect(gpuRenderTarget.msaaTextures[0].transient).toBe(true);
         expect(first.loadOp).toBe('clear');
         expect(first.storeOp).toBe('discard');
-        expect(gpuRenderTarget.msaaRestore).toEqual([]);
+        expect(restoredSlots(gpuRenderTarget)).toEqual([]);
 
         // leave and come back without clearing: the discarded samples are restored, not loaded
         renderer.renderTarget.bind({ target: other, clear: true });
@@ -173,7 +174,7 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
 
         expect(reopened.loadOp).toBe('clear');
         expect(reopened.storeOp).toBe('discard');
-        expect(gpuRenderTarget.msaaRestore).toEqual([0]);
+        expect(restoredSlots(gpuRenderTarget)).toEqual([0]);
 
         renderer.encoder.postrender();
 
@@ -216,7 +217,7 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
         renderer.renderTarget.bind({ target: other, clear: true });
         renderer.renderTarget.bind({ target, clear: false });
 
-        expect(renderer.renderTarget.getGpuRenderTarget(target).msaaRestore).toEqual([0, 1]);
+        expect(restoredSlots(renderer.renderTarget.getGpuRenderTarget(target))).toEqual([0, 1]);
 
         renderer.encoder.postrender();
 
@@ -225,50 +226,41 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
         renderer.destroy();
     });
 
-    it('should keep a replaced scratch texture alive until the frame is submitted', async () =>
+    it('should restore targets of different sizes in one frame with their own scratch textures', async () =>
     {
         const renderer = (await getWebGPURenderer()) as WebGPURenderer;
         const small = makeMsaaTarget();
         const large = makeMsaaTarget({ size: 64 });
         const other = makeMsaaTarget();
         const device = renderer.gpu.device;
-        const createTexture = jest.spyOn(device, 'createTexture');
 
         device.pushErrorScope('validation');
         renderer.encoder.renderStart();
 
-        // the first restore creates a 16x16 scratch texture
-        renderer.renderTarget.bind({ target: small, clear: true });
-        renderer.renderTarget.bind({ target: other, clear: true });
-        renderer.renderTarget.bind({ target: small, clear: false });
-
-        // the second needs 64x64, so the scratch is replaced while the first copy is still unsubmitted
-        renderer.renderTarget.bind({ target: large, clear: true });
-        renderer.renderTarget.bind({ target: other, clear: true });
-        renderer.renderTarget.bind({ target: large, clear: false });
-
-        const destroy = jest.spyOn(scratchTextures(createTexture)[0], 'destroy');
-
-        expect(destroy).not.toHaveBeenCalled();
+        for (const target of [small, large])
+        {
+            renderer.renderTarget.bind({ target, clear: true });
+            renderer.renderTarget.bind({ target: other, clear: true });
+            renderer.renderTarget.bind({ target, clear: false });
+        }
 
         renderer.encoder.postrender();
 
         expect(await device.popErrorScope()).toBeNull();
 
-        await renderer.encoder.commandFinished;
-        await Promise.resolve();
+        const smallScratch = renderer.renderTarget.getGpuRenderTarget(small).msaaScratch[0];
+        const largeScratch = renderer.renderTarget.getGpuRenderTarget(large).msaaScratch[0];
 
-        expect(destroy).toHaveBeenCalledTimes(1);
+        expect([smallScratch.pixelWidth, largeScratch.pixelWidth]).toEqual([16, 64]);
 
         renderer.destroy();
     });
 
-    it('should destroy the restore scratch textures with the renderer', async () =>
+    it('should resize and destroy the scratch texture with its target', async () =>
     {
         const renderer = (await getWebGPURenderer()) as WebGPURenderer;
         const target = makeMsaaTarget();
         const other = makeMsaaTarget();
-        const createTexture = jest.spyOn(renderer.gpu.device, 'createTexture');
 
         renderer.encoder.renderStart();
         renderer.renderTarget.bind({ target, clear: true });
@@ -276,16 +268,24 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
         renderer.renderTarget.bind({ target, clear: false });
         renderer.encoder.postrender();
 
-        const destroys = scratchTextures(createTexture).map((texture) => jest.spyOn(texture, 'destroy'));
+        const gpuRenderTarget = renderer.renderTarget.getGpuRenderTarget(target);
+        const scratch = gpuRenderTarget.msaaScratch[0];
+        const destroy = jest.spyOn(scratch, 'destroy');
 
-        expect(destroys).toHaveLength(1);
+        // the backend target follows a resize the next time it is bound
+        target.resize(32, 32);
+        renderer.encoder.renderStart();
+        renderer.renderTarget.bind({ target, clear: true });
+        renderer.encoder.postrender();
+
+        expect(scratch.pixelWidth).toBe(32);
+
+        target.destroy();
+
+        expect(destroy).toHaveBeenCalledTimes(1);
+        expect(gpuRenderTarget.msaaScratch).toEqual([]);
 
         renderer.destroy();
-
-        for (const destroy of destroys)
-        {
-            expect(destroy).toHaveBeenCalledTimes(1);
-        }
     });
 
     it('should restore msaa colour on a depth-only clear outside a frame', async () =>
@@ -302,7 +302,7 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
 
         renderer.renderTarget.clear(target, CLEAR.DEPTH);
 
-        expect(renderer.renderTarget.getGpuRenderTarget(target).msaaRestore).toEqual([0]);
+        expect(restoredSlots(renderer.renderTarget.getGpuRenderTarget(target))).toEqual([0]);
         expect(await device.popErrorScope()).toBeNull();
 
         renderer.destroy();
@@ -323,7 +323,7 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
         renderer.render(stage);
 
         // the filter's pop-back reopened the canvas, so its colour was restored
-        expect(renderer.renderTarget.getGpuRenderTarget(renderer.renderTarget.rootRenderTarget).msaaRestore)
+        expect(restoredSlots(renderer.renderTarget.getGpuRenderTarget(renderer.renderTarget.rootRenderTarget)))
             .toEqual([0]);
         expect(await device.popErrorScope()).toBeNull();
 
@@ -372,7 +372,7 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
         renderer.renderTarget.bind({ target, clear: false });
 
         expect(gpuRenderTarget.descriptor.colorAttachments[0].loadOp).toBe('load');
-        expect(gpuRenderTarget.msaaRestore).toEqual([]);
+        expect(restoredSlots(gpuRenderTarget)).toEqual([]);
 
         renderer.encoder.postrender();
 
@@ -399,7 +399,7 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
         const gpuRenderTarget = renderer.renderTarget.getGpuRenderTarget(target);
 
         expect(gpuRenderTarget.descriptor.colorAttachments[0].storeOp).toBe('discard');
-        expect(gpuRenderTarget.msaaRestore).toEqual([0]);
+        expect(restoredSlots(gpuRenderTarget)).toEqual([0]);
 
         renderer.encoder.postrender();
         renderer.destroy();

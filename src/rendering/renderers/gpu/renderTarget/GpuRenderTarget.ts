@@ -18,10 +18,10 @@ export class GpuRenderTarget
     public height: number;
     public descriptor: GPURenderPassDescriptor;
     /**
-     * The MSAA colour attachments the last built descriptor opens with `clear` in place of `load`. Their
-     * buffers were discarded, so the pass must restore them from the resolved texture before drawing.
+     * Per MSAA colour attachment, the texture its resolved image is copied into when a pass reopens it (see
+     * GpuMsaaRestore). Created on the first restore, then resized and destroyed with `msaaTextures`.
      */
-    public msaaRestore: number[] = [];
+    public msaaScratch: TextureSource[] = [];
     /** the attachment layout the restore pipelines match, built on the first restore */
     public msaaRestoreLayout: GpuMsaaRestoreLayout = null;
     /**
