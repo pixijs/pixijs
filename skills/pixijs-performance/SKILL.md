@@ -359,6 +359,9 @@ const rt = RenderTexture.create({ width: 1024, height: 1024, antialias: true, tr
 
 // upload only the changed byte range of a large buffer (also works on WebGL)
 buffer.update(changedBytes, offsetBytes);
+
+// upload only a texel range of a data texture (end is exclusive)
+bufferImageSource.update(100, 116);
 ```
 
 `transient: true` (WebGPU only) tells the GPU the multisample buffer is scratch memory: it is discarded instead of written back, and tile-based GPUs skip allocating it when `renderer.device.extensions.transientAttachment` is true. Only use it on textures rendered in a single pass and never re-entered with `clear: false` or wrapped by a filter. For static custom draw sequences on WebGPU, record a render bundle once and replay it each frame; see the `pixijs-custom-rendering` skill.

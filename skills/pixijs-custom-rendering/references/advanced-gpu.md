@@ -18,6 +18,20 @@ buffer.update(newVertices.byteLength, 256 * 4); // size and offset in bytes
 
 `update()` with no arguments re-uploads the whole buffer. Pass a byte size and byte offset to upload only the range you changed. Works on WebGL and WebGPU.
 
+## Partial texture uploads
+
+```ts
+import { BufferImageSource } from "pixi.js";
+
+const data = new Float32Array(4096 * 64 * 4); // rgba32float: 4 floats per texel
+const source = new BufferImageSource({ resource: data, width: 4096, height: 64 });
+
+data.fill(1, 100 * 4, 116 * 4); // change texels 100 to 115
+source.update(100, 116); // upload only those 16 texels
+```
+
+Texel `i` sits at `x = i % width`, `y = floor(i / width)`, and `end` is exclusive. The range applies to that call only, so track the lowest and highest changed texel yourself and call `update` once per frame. `update()` with no arguments uploads the whole texture. Works on WebGL and WebGPU.
+
 ## Vertex count, index count, winding, and culling
 
 ```ts
