@@ -662,6 +662,11 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             if (container.accessibleType === 'button')
             {
                 div = document.createElement('button');
+                // hide the text like the non-button cssText does; debug mode keeps it visible
+                if (!this.debug)
+                {
+                    div.style.color = 'transparent';
+                }
             }
             else
             {
@@ -680,10 +685,6 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
                         -moz-user-select: none;
                         -ms-user-select: none;
                     `;
-                if (container.accessibleText)
-                {
-                    div.innerText = container.accessibleText;
-                }
             }
             div.style.width = `${DIV_TOUCH_SIZE}px`;
             div.style.height = `${DIV_TOUCH_SIZE}px`;
@@ -723,6 +724,12 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         div.style.pointerEvents = container.accessiblePointerEvents;
         // set the type, this defaults to button!
         div.type = container.accessibleType;
+
+        // must run after the pool reset above, which clears innerHTML
+        if (container.accessibleText)
+        {
+            div.innerText = container.accessibleText;
+        }
 
         if (container.accessibleTitle && container.accessibleTitle !== null)
         {

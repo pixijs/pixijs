@@ -190,6 +190,7 @@ describe('AccessibilitySystem', () =>
         const expectedInnerHTML = `type: button<br> title : myCustomTitle<br> tabIndex: 2`;
 
         expect(container._accessibleDiv.innerHTML).toBe(expectedInnerHTML);
+        expect(container._accessibleDiv.style.color).toBe('');
 
         renderer.destroy();
     });
@@ -220,6 +221,58 @@ describe('AccessibilitySystem', () =>
         expect(container._accessibleDiv.type).toBe('button');
         expect(container._accessibleDiv.title).toBe('myCustomTitle');
         expect(container._accessibleDiv.getAttribute('aria-label')).toBe('myCustomHint');
+
+        renderer.destroy();
+    });
+
+    it('should set accessibleText on the default button type, and on recycled divs', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        const system = new AccessibilitySystem(renderer);
+
+        system.init({
+            accessibilityOptions: {
+                enabledByDefault: true
+            }
+        });
+
+        system['_isRunningTests'] = true;
+
+        const stage = new Container();
+
+        // `accessibleType` defaults to 'button'
+        const myButton = new Container();
+
+        myButton.accessible = true;
+        myButton.accessibleText = 'myButtonText';
+        stage.addChild(myButton);
+
+        renderer.render(stage);
+        system.postrender();
+
+        expect(myButton._accessibleDiv.tagName).toBe('BUTTON');
+        expect(myButton._accessibleDiv.innerText).toBe('myButtonText');
+        expect(myButton._accessibleDiv.style.color).toBe('transparent');
+
+        const firstDiv = myButton._accessibleDiv;
+
+        // Disable it so its div goes back to the pool
+        myButton.accessible = false;
+        renderer.render(stage);
+        system.postrender();
+
+        const myOtherButton = new Container();
+
+        myOtherButton.accessible = true;
+        myOtherButton.accessibleText = 'myOtherButtonText';
+        stage.addChild(myOtherButton);
+
+        renderer.render(stage);
+        system.postrender();
+
+        expect(myOtherButton._accessibleDiv).toBe(firstDiv);
+        expect(myOtherButton._accessibleDiv.innerText).toBe('myOtherButtonText');
 
         renderer.destroy();
     });
