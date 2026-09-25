@@ -103,7 +103,12 @@ export class GpuEncoderSystem implements System
         this.commandEncoder = this._renderer.gpu.device.createCommandEncoder();
     }
 
-    public beginRenderPass(gpuRenderTarget: GpuRenderTarget)
+    /**
+     * Ends any open pass and begins one on the target's descriptor.
+     * @param gpuRenderTarget - the target to render to
+     * @returns the begun pass
+     */
+    public beginRenderPass(gpuRenderTarget: GpuRenderTarget): GPURenderPassEncoder
     {
         this.endRenderPass();
 
@@ -111,6 +116,8 @@ export class GpuEncoderSystem implements System
 
         this._passEncoder = this.commandEncoder.beginRenderPass(gpuRenderTarget.descriptor);
         this.renderPassEncoder = this._passEncoder;
+
+        return this._passEncoder;
     }
 
     public endRenderPass()

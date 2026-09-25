@@ -254,14 +254,26 @@ renderer.encoder.executeBundle(bundle);
 
 Pass an array to `executeBundle` to replay several bundles in one call. A bundle is also invalid after a WebGPU device loss, because it was recorded on the device that was lost; `isBundleValid` reports that too.
 
-### Transient MSAA render textures
+### Antialiasing on WebGPU
 
-An antialiased render texture that is drawn in a single pass and never loaded back can mark its multisample buffer as scratch memory. Set `transient: true` when creating it; PixiJS then discards the MSAA buffer at the end of the pass, and tile-based GPUs skip allocating it entirely where the browser supports `GPUTextureUsage.TRANSIENT_ATTACHMENT`. Do not set it on a texture that is rendered into again with `clear: false`, or on one used with filters.
+On a tile-based GPU (every phone GPU and Apple silicon, reported by `renderer.device.extensions.tileBased`), antialiased targets never write their multisample colour buffer to memory. Only the resolved image is kept. When a pass reopens a target, for example a filter popping back onto its parent or a render with `clear: false`, PixiJS copies the resolved image back into the multisample buffer before drawing. This saves bandwidth on every frame, and the multisample buffer may not be allocated at all where the browser supports `GPUTextureUsage.TRANSIENT_ATTACHMENT`. You don't need to set anything.
+
+Restoring writes the resolved colour into every sample, so antialiased edges that meet exactly across a reopen, such as two shapes drawn by separate `clear: false` renders, can show a faint seam. On an antialiased canvas, a frame that starts without clearing (`clearBeforeRender: false`, or a first `render` with `clear: false`) starts from an empty canvas rather than the previous frame, as it already does without antialiasing.
+
+Other GPUs (Intel, NVIDIA, AMD) keep multisample buffers in video memory, where storing them and loading them back on a reopen is cheaper than restoring, so PixiJS does that there.
+
+The multisample depth/stencil buffer is kept by default, because masks need it across a reopen. A render texture that is drawn in a single pass and never reopened can discard it too, along with its colour buffer on GPUs that aren't tile-based:
 
 ```ts
 import { RenderTexture } from 'pixi.js';
 
 const rt = RenderTexture.create({ width: 1024, height: 1024, antialias: true, transient: true });
+```
+
+The same flag works for the canvas. Pass `transient: true` to the renderer when the app never reopens the screen pass while it still needs depth or stencil:
+
+```ts
+await app.init({ preference: 'webgpu', antialias: true, transient: true });
 ```
 
 `renderer.device.extensions.transientAttachment` reports whether the usage bit is available.

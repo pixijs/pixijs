@@ -8,6 +8,13 @@ import type { GpuExtensions } from './GpuExtensions';
 import type { WebGPURenderer } from './WebGPURenderer';
 
 /**
+ * `adapter.info.vendor` of the tile-based GPUs measured to gain from never storing MSAA colour: Apple, Arm Mali,
+ * Qualcomm Adreno and Imagination PowerVR. Intel (and by the same design NVIDIA and AMD) measured slower, as
+ * restoring on reopen costs more there than loading from video memory.
+ */
+const tileBasedVendors = new Set(['apple', 'arm', 'qualcomm', 'img-tec']);
+
+/**
  * The GPU object.
  * Contains the GPU adapter and device.
  * @category rendering
@@ -116,6 +123,7 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
         this.extensions = {
             transientAttachment:
                 typeof (GPUTextureUsage as { TRANSIENT_ATTACHMENT?: number }).TRANSIENT_ATTACHMENT === 'number',
+            tileBased: tileBasedVendors.has(gpu.adapter?.info?.vendor),
         };
 
         // a shared device belongs to the engine that created it, so only restore our own

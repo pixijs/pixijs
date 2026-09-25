@@ -2,6 +2,7 @@ import { warn } from '../../../../utils/logging/warn';
 import { CLEAR } from '../../gl/const';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
 import { TextureSource } from '../../shared/texture/sources/TextureSource';
+import { GpuMsaaRestore } from './GpuMsaaRestore';
 import { GpuRenderTarget } from './GpuRenderTarget';
 
 import type { RgbaArray } from '../../../../color/Color';
@@ -55,10 +56,27 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         depthStencil: boolean;
     } | null = null;
 
+    /** Restores discarded MSAA colour buffers on reopen. Created on first use, per device. */
+    private _msaaRestore: GpuMsaaRestore;
+
     public init(renderer: WebGPURenderer, renderTargetSystem: RenderTargetSystem<GpuRenderTarget>): void
     {
         this._renderer = renderer;
         this._renderTargetSystem = renderTargetSystem;
+
+        renderer.runners.contextChange.add(this);
+        renderer.runners.destroy.add(this);
+    }
+
+    /** Drops the restore helper, whose pipelines belong to the old device. The next restore makes a new one. */
+    public contextChange(): void
+    {
+        this._msaaRestore = null;
+    }
+
+    public destroy(): void
+    {
+        this._msaaRestore = null;
     }
 
     public copyToTexture(
@@ -175,6 +193,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         if ((renderTarget.stencil || renderTarget.depth) && !renderTarget.depthStencilAttachment)
         {
             renderTarget.ensureDepthStencilTexture();
+            this._prepareDepthStencil(renderTarget, gpuRenderTarget);
         }
 
         const hasDepthStencil = !!renderTarget.depthStencilAttachment;
@@ -202,12 +221,27 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             return;
         }
 
-        const descriptor = this.getDescriptor(renderTarget, clear, clearColor, mipLevel, layer);
+        const { descriptor, restore } = this._buildDescriptor(renderTarget, clear, clearColor, mipLevel, layer);
 
         gpuRenderTarget.descriptor = descriptor;
 
-        this._renderer.encoder.beginRenderPass(gpuRenderTarget);
-        this._renderer.encoder.setViewport(viewport);
+        const encoder = this._renderer.encoder;
+
+        if (restore)
+        {
+            // the copy out of the resolved texture has to be recorded between passes
+            encoder.endRenderPass();
+
+            this._beginRestoredPass(
+                renderTarget, restore, encoder.commandEncoder, () => encoder.beginRenderPass(gpuRenderTarget)
+            );
+        }
+        else
+        {
+            encoder.beginRenderPass(gpuRenderTarget);
+        }
+
+        encoder.setViewport(viewport);
 
         this._activePass = { renderTarget, mipLevel, layer, depthStencil: hasDepthStencil };
     }
@@ -222,19 +256,53 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
     }
 
     /**
-     * returns the gpu texture for the first color texture in the render target
-     * mainly used by the filter manager to get copy the texture for blending
+     * Begins a pass whose MSAA colour must be restored: copies each resolved texture in `restore` into the
+     * target's back textures, begins the pass, and draws them back in before anything else (see GpuMsaaRestore).
+     * @param renderTarget - the target being reopened
+     * @param restore - the colour attachments to restore
+     * @param commandEncoder - the encoder to record the copies on, with no pass open
+     * @param beginPass - begins the pass on the same encoder
+     * @returns the begun pass
+     */
+    private _beginRestoredPass(
+        renderTarget: RenderTarget,
+        restore: number[],
+        commandEncoder: GPUCommandEncoder,
+        beginPass: () => GPURenderPassEncoder,
+    ): GPURenderPassEncoder
+    {
+        const msaaRestore = this._msaaRestore ??= new GpuMsaaRestore(this._renderer);
+
+        for (const index of restore)
+        {
+            msaaRestore.copy(commandEncoder, renderTarget, index, this._getGpuColorTexture(renderTarget, index));
+        }
+
+        const pass = beginPass();
+
+        for (const index of restore)
+        {
+            msaaRestore.draw(pass, renderTarget, index);
+        }
+
+        return pass;
+    }
+
+    /**
+     * returns the gpu texture for a color texture in the render target, the first by default
+     * mainly used by the filter manager to copy the texture for blending
      * @param renderTarget
+     * @param index - the color attachment to get
      * @returns a gpu texture
      */
-    private _getGpuColorTexture(renderTarget: RenderTarget): GPUTexture
+    private _getGpuColorTexture(renderTarget: RenderTarget, index = 0): GPUTexture
     {
         if (renderTarget.colorAttachments.length === 0)
         {
             throw new Error('[GpuRenderTargetAdaptor] cannot get gpu color texture from a depth-only render target');
         }
 
-        const colorTexture = renderTarget.colorAttachments[0].texture;
+        const colorTexture = renderTarget.colorAttachments[index].texture;
 
         if (colorTexture instanceof CanvasSource && colorTexture._gpuContext)
         {
@@ -252,6 +320,28 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         layer = 0
     ): GPURenderPassDescriptor
     {
+        return this._buildDescriptor(renderTarget, clear, clearValue, mipLevel, layer).descriptor;
+    }
+
+    /**
+     * Builds the pass descriptor, along with the MSAA colour attachments it opens with `clear` in place of
+     * `load`. Those buffers were discarded, so the pass must restore them before drawing.
+     * @param renderTarget - the target to render to
+     * @param clear - what to clear
+     * @param clearValue - the colour to clear to
+     * @param mipLevel - the mip level to render to
+     * @param layer - the array layer to render to
+     */
+    private _buildDescriptor(
+        renderTarget: RenderTarget,
+        clear: CLEAR_OR_BOOL,
+        clearValue: RgbaArray,
+        mipLevel = 0,
+        layer = 0
+    ): { descriptor: GPURenderPassDescriptor; restore: number[] | null }
+    {
+        let restoreList: number[] = null;
+
         if (typeof clear === 'boolean')
         {
             clear = clear ? CLEAR.ALL : CLEAR.NONE;
@@ -294,15 +384,12 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     );
                 }
 
-                let attachmentIsTransient = false;
+                const msaaTexture = gpuRenderTarget.msaaTextures[i];
 
-                if (gpuRenderTarget.msaaTextures[i])
+                if (msaaTexture)
                 {
                     resolveTarget = view;
-                    view = this._renderer.texture.getTextureView(
-                        gpuRenderTarget.msaaTextures[i]
-                    );
-                    attachmentIsTransient = gpuRenderTarget.msaaTextures[i].transient;
+                    view = this._renderer.texture.getTextureView(msaaTexture);
                 }
 
                 let loadOp = colorAttachment.loadOp;
@@ -314,19 +401,25 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
                 clearValue ??= renderTargetSystem.defaultClearColor;
 
-                const storeOp = colorAttachment.storeOp ?? 'store';
+                // a transient MSAA buffer is never stored, so a pass that would load it clears and restores it
+                // from the resolved texture instead (see GpuMsaaRestore)
+                const transient = !!msaaTexture?.transient;
+                const restore = transient && loadOp !== 'clear';
+
+                if (restore)
+                {
+                    loadOp = 'clear';
+                    (restoreList ??= []).push(i);
+                }
 
                 const baseAttachment: GPURenderPassColorAttachment = {
                     view,
                     resolveTarget,
-                    // Only discard the MSAA buffer when it was created as transient — i.e. we know
-                    // no later pass will try to load it. Non-transient MSAA targets keep storeOp:'store'
-                    // so flows like filter pop-back (loadOp:'load' on the parent RT) keep working.
-                    storeOp: attachmentIsTransient ? 'discard' : storeOp,
+                    storeOp: transient ? 'discard' : (colorAttachment.storeOp ?? 'store'),
                     loadOp,
                 };
 
-                if (loadOp === 'clear')
+                if (loadOp === 'clear' && !restore)
                 {
                     clearValue ??= (colorAttachment.clearValue as RgbaArray) ?? renderTargetSystem.defaultClearColor;
                     baseAttachment.clearValue = clearValue;
@@ -356,18 +449,15 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             {
                 renderTarget.depthStencilAttachment.texture.sampleCount = 4;
             }
-            // Mirror the MSAA color attachment's transient flag onto the depth/stencil texture so
-            // its store op can discard on single-pass tile-based GPUs (see store-op defaults below).
-            renderTarget.depthStencilAttachment.texture.transient
-                = !!gpuRenderTarget.msaaTextures[0]?.transient;
 
             const attachment = renderTarget.depthStencilAttachment;
             const stencil = attachment.texture.format.includes('stencil');
             const depth = attachment.texture.format.includes('depth');
-            // Only discard depth/stencil when the attachment is transient — same single-pass
-            // constraint as the color attachment. Non-transient MSAA RTs keep 'store' so any
-            // pop-back path that loadOp:'load's the buffer sees defined contents.
-            const dsStoreOp: GPUStoreOp = attachment.texture.transient ? 'discard' : 'store';
+            // Depth/stencil can't be rebuilt from a resolved image, so it is only discarded when the user
+            // marked the target `transient` (single pass, never reopened). Its contents are gone after a
+            // discard, so a transient depth/stencil is never loaded either.
+            const dsStoreOp: GPUStoreOp = gpuRenderTarget.transient ? 'discard' : 'store';
+            const dsLoadOp: GPULoadOp = gpuRenderTarget.transient ? 'clear' : 'load';
 
             depthStencilAttachment = {
                 view: this._renderer.texture.getTextureRenderTargetView(
@@ -386,7 +476,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             if (stencil && !stencilReadOnly)
             {
                 depthStencilAttachment.stencilLoadOp = (clear & CLEAR.STENCIL
-                    ? 'clear' : (attachment.stencilLoadOp ?? 'load')) as GPULoadOp;
+                    ? 'clear' : (attachment.stencilLoadOp ?? dsLoadOp)) as GPULoadOp;
                 depthStencilAttachment.stencilStoreOp = attachment.stencilStoreOp ?? dsStoreOp;
 
                 if (depthStencilAttachment.stencilLoadOp === 'clear')
@@ -402,7 +492,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             if (depth && !depthReadOnly)
             {
                 depthStencilAttachment.depthLoadOp = (clear & CLEAR.DEPTH
-                    ? 'clear' : (attachment.depthLoadOp ?? 'load')) as GPULoadOp;
+                    ? 'clear' : (attachment.depthLoadOp ?? dsLoadOp)) as GPULoadOp;
                 depthStencilAttachment.depthStoreOp = attachment.depthStoreOp ?? dsStoreOp;
 
                 if (depthStencilAttachment.depthLoadOp === 'clear')
@@ -437,7 +527,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             label: renderTarget.label,
         };
 
-        return descriptor;
+        return { descriptor, restore: restoreList };
     }
 
     public clear(
@@ -460,9 +550,13 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         if (standAlone)
         {
             const commandEncoder = device.createCommandEncoder();
-            const renderPassDescriptor = this.getDescriptor(renderTarget, clear, clearColor, mipLevel, layer);
+            const { descriptor, restore } = this._buildDescriptor(renderTarget, clear, clearColor, mipLevel, layer);
+            const beginPass = () => commandEncoder.beginRenderPass(descriptor);
 
-            const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
+            // a partial clear (e.g. depth only) keeps the colour, which for MSAA means restoring it
+            const passEncoder = restore
+                ? this._beginRestoredPass(renderTarget, restore, commandEncoder, beginPass)
+                : beginPass();
 
             passEncoder.setViewport(viewport.x, viewport.y, viewport.width, viewport.height, 0, 1);
 
@@ -484,6 +578,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         renderTarget.isRoot = true;
 
         const gpuRenderTarget = new GpuRenderTarget();
+
+        // the user's single-pass promise, read from the colour texture once, like `msaa`
+        gpuRenderTarget.transient = !!renderTarget.colorTexture?.antialias && !!renderTarget.colorTexture.transient;
 
         // create a context...
         // is a canvas...
@@ -528,14 +625,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
             if (colorTexture.antialias)
             {
-                // The MSAA buffer inherits the colour TextureSource's `transient` flag.
-                // Pixi never auto-sets transient: filter pop-back, additive layering, and
-                // any flow that rebinds the parent target mid-frame would issue
-                // loadOp:'load' on the MSAA attachment, which is invalid when the texture
-                // is transient (and undefined-behaviour when its prior contents were
-                // discarded). The user opts in by passing `transient: true` on the
-                // RenderTexture's TextureSource only when they know their flow is
-                // single-pass.
+                // On tile-based GPUs the MSAA colour buffer is always transient: never stored, and restored from
+                // the resolved texture when a pass reopens it (see GpuMsaaRestore). Elsewhere storing it is
+                // cheaper, so it is transient only when the user marks the target single-pass.
                 const msaaTexture = new TextureSource({
                     width: 0,
                     height: 0,
@@ -543,7 +635,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     // WebGPU requires multisampled textures to have exactly 1 mip level, so this must never
                     // inherit TextureSource.defaultOptions.autoGenerateMipmaps
                     autoGenerateMipmaps: false,
-                    transient: colorTexture.transient,
+                    transient: this._renderer.device.extensions.tileBased || gpuRenderTarget.transient,
                     arrayLayerCount: colorTexture.arrayLayerCount,
                     format: colorTexture.format,
                 });
@@ -555,16 +647,28 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         if (gpuRenderTarget.msaa)
         {
             gpuRenderTarget.msaaSamples = 4;
-
-            if (renderTarget.depthStencilAttachment)
-            {
-                renderTarget.depthStencilAttachment.texture.sampleCount = 4;
-                renderTarget.depthStencilAttachment.texture.transient
-                    = !!gpuRenderTarget.msaaTextures[0]?.transient;
-            }
         }
 
+        this._prepareDepthStencil(renderTarget, gpuRenderTarget);
+
         return gpuRenderTarget;
+    }
+
+    /**
+     * Sets up a depth/stencil texture for an MSAA target before its GPU texture is created: 4 samples, and
+     * the transient usage bit when the user marked the target single-pass. Called wherever the texture is
+     * created, as the usage is fixed at creation.
+     * @param renderTarget - the target whose depth/stencil texture to set up
+     * @param gpuRenderTarget - its backend target
+     */
+    private _prepareDepthStencil(renderTarget: RenderTarget, gpuRenderTarget: GpuRenderTarget): void
+    {
+        const texture = renderTarget.depthStencilAttachment?.texture;
+
+        if (!texture || !gpuRenderTarget.msaa) return;
+
+        texture.sampleCount = 4;
+        texture.transient = gpuRenderTarget.transient;
     }
 
     public destroyGpuRenderTarget(gpuRenderTarget: GpuRenderTarget)
@@ -579,19 +683,20 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             texture.destroy();
         });
 
+        gpuRenderTarget.msaaBackTextures.forEach((texture) =>
+        {
+            texture?.destroy();
+        });
+
         gpuRenderTarget.msaaTextures.length = 0;
+        gpuRenderTarget.msaaBackTextures.length = 0;
         gpuRenderTarget.contexts.length = 0;
     }
 
     public ensureDepthStencilTexture(renderTarget: RenderTarget)
     {
         // TODO This function will be more useful once we cache the descriptors
-        const gpuRenderTarget = this._renderTargetSystem.getGpuRenderTarget(renderTarget);
-
-        if (renderTarget.depthStencilAttachment && gpuRenderTarget.msaa)
-        {
-            renderTarget.depthStencilAttachment.texture.sampleCount = 4;
-        }
+        this._prepareDepthStencil(renderTarget, this._renderTargetSystem.getGpuRenderTarget(renderTarget));
     }
 
     public resizeGpuRenderTarget(renderTarget: RenderTarget)
@@ -606,12 +711,10 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             renderTarget.colorAttachments.forEach((colorAttachment, i) =>
             {
                 const colorTexture = colorAttachment.texture;
-                const msaaTexture = gpuRenderTarget.msaaTextures[i];
 
-                msaaTexture?.resize(
-                    colorTexture.width,
-                    colorTexture.height,
-                    colorTexture._resolution
+                gpuRenderTarget.msaaTextures[i]?.resize(colorTexture.width, colorTexture.height, colorTexture._resolution);
+                gpuRenderTarget.msaaBackTextures[i]?.resize(
+                    colorTexture.width, colorTexture.height, colorTexture._resolution
                 );
             });
         }

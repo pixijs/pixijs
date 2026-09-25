@@ -1,9 +1,13 @@
+import { CLEAR } from '../../../gl/const';
 import { RenderTarget } from '../../../shared/renderTarget/RenderTarget';
 import { TextureSource } from '../../../shared/texture/sources/TextureSource';
 import { Texture } from '../../../shared/texture/Texture';
 import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
+import { AlphaFilter } from '~/filters';
+import { Container, Graphics } from '~/scene';
 
 import type { WebGPURenderer } from '../../WebGPURenderer';
+import type { GpuRenderTarget } from '../GpuRenderTarget';
 
 function makeTarget(): RenderTarget
 {
@@ -113,5 +117,291 @@ describeLocalOnly('GpuRenderTargetAdaptor msaa textures', () =>
             TextureSource.defaultOptions.autoGenerateMipmaps = originalAutoGenerateMipmaps;
             renderer.destroy();
         }
+    });
+});
+
+describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
+{
+    function makeMsaaTarget(
+        options: { transient?: boolean, colors?: number, depthStencil?: boolean, size?: number } = {}
+    ): RenderTarget
+    {
+        const { transient = false, colors = 1, depthStencil = false, size = 16 } = options;
+
+        return new RenderTarget({
+            colorTextures: Array.from({ length: colors }, () =>
+                new TextureSource({ width: size, height: size, antialias: true, transient })),
+            depthStencilTexture: depthStencil
+                ? new TextureSource({ width: size, height: size, format: 'depth24plus-stencil8' })
+                : undefined,
+        });
+    }
+
+    /**
+     * The colour attachments that have been restored, which are the ones with a back texture.
+     * @param gpuRenderTarget - the backend target to check
+     */
+    function restoredSlots(gpuRenderTarget: GpuRenderTarget): number[]
+    {
+        return gpuRenderTarget.msaaBackTextures.flatMap((backTexture, i) => (backTexture ? [i] : []));
+    }
+
+    it('should clear and discard msaa colour on every pass, restoring it when the pass would load', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const target = makeMsaaTarget();
+        const other = makeMsaaTarget();
+        const device = renderer.gpu.device;
+
+        device.pushErrorScope('validation');
+        renderer.encoder.renderStart();
+
+        renderer.renderTarget.bind({ target, clear: true });
+
+        const gpuRenderTarget = renderer.renderTarget.getGpuRenderTarget(target);
+        const first = gpuRenderTarget.descriptor.colorAttachments[0];
+
+        expect(gpuRenderTarget.msaaTextures[0].transient).toBe(true);
+        expect(first.loadOp).toBe('clear');
+        expect(first.storeOp).toBe('discard');
+        expect(restoredSlots(gpuRenderTarget)).toEqual([]);
+
+        // leave and come back without clearing: the discarded samples are restored, not loaded
+        renderer.renderTarget.bind({ target: other, clear: true });
+        renderer.renderTarget.bind({ target, clear: false });
+
+        const reopened = gpuRenderTarget.descriptor.colorAttachments[0];
+
+        expect(reopened.loadOp).toBe('clear');
+        expect(reopened.storeOp).toBe('discard');
+        expect(restoredSlots(gpuRenderTarget)).toEqual([0]);
+
+        renderer.encoder.postrender();
+
+        expect(await device.popErrorScope()).toBeNull();
+
+        renderer.destroy();
+    });
+
+    it('should keep storing msaa depth/stencil unless the colour texture is marked transient', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const kept = makeMsaaTarget({ depthStencil: true });
+        const singlePass = makeMsaaTarget({ depthStencil: true, transient: true });
+
+        renderer.encoder.renderStart();
+
+        renderer.renderTarget.bind({ target: kept, clear: true });
+        expect(renderer.renderTarget.getGpuRenderTarget(kept).descriptor.depthStencilAttachment.stencilStoreOp)
+            .toBe('store');
+
+        renderer.renderTarget.bind({ target: singlePass, clear: true });
+        expect(renderer.renderTarget.getGpuRenderTarget(singlePass).descriptor.depthStencilAttachment.stencilStoreOp)
+            .toBe('discard');
+
+        renderer.encoder.postrender();
+        renderer.destroy();
+    });
+
+    it('should restore every colour attachment of a reopened msaa target with depth/stencil', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const target = makeMsaaTarget({ colors: 2, depthStencil: true });
+        const other = makeMsaaTarget();
+        const device = renderer.gpu.device;
+
+        device.pushErrorScope('validation');
+        renderer.encoder.renderStart();
+
+        renderer.renderTarget.bind({ target, clear: true });
+        renderer.renderTarget.bind({ target: other, clear: true });
+        renderer.renderTarget.bind({ target, clear: false });
+
+        expect(restoredSlots(renderer.renderTarget.getGpuRenderTarget(target))).toEqual([0, 1]);
+
+        renderer.encoder.postrender();
+
+        expect(await device.popErrorScope()).toBeNull();
+
+        renderer.destroy();
+    });
+
+    it('should restore targets of different sizes in one frame with their own back textures', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const small = makeMsaaTarget();
+        const large = makeMsaaTarget({ size: 64 });
+        const other = makeMsaaTarget();
+        const device = renderer.gpu.device;
+
+        device.pushErrorScope('validation');
+        renderer.encoder.renderStart();
+
+        for (const target of [small, large])
+        {
+            renderer.renderTarget.bind({ target, clear: true });
+            renderer.renderTarget.bind({ target: other, clear: true });
+            renderer.renderTarget.bind({ target, clear: false });
+        }
+
+        renderer.encoder.postrender();
+
+        expect(await device.popErrorScope()).toBeNull();
+
+        const smallBack = renderer.renderTarget.getGpuRenderTarget(small).msaaBackTextures[0];
+        const largeBack = renderer.renderTarget.getGpuRenderTarget(large).msaaBackTextures[0];
+
+        expect([smallBack.pixelWidth, largeBack.pixelWidth]).toEqual([16, 64]);
+
+        renderer.destroy();
+    });
+
+    it('should resize and destroy the back texture with its target', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const target = makeMsaaTarget();
+        const other = makeMsaaTarget();
+
+        renderer.encoder.renderStart();
+        renderer.renderTarget.bind({ target, clear: true });
+        renderer.renderTarget.bind({ target: other, clear: true });
+        renderer.renderTarget.bind({ target, clear: false });
+        renderer.encoder.postrender();
+
+        const gpuRenderTarget = renderer.renderTarget.getGpuRenderTarget(target);
+        const backTexture = gpuRenderTarget.msaaBackTextures[0];
+        const destroy = jest.spyOn(backTexture, 'destroy');
+
+        // the backend target follows a resize the next time it is bound
+        target.resize(32, 32);
+        renderer.encoder.renderStart();
+        renderer.renderTarget.bind({ target, clear: true });
+        renderer.encoder.postrender();
+
+        expect(backTexture.pixelWidth).toBe(32);
+
+        target.destroy();
+
+        expect(destroy).toHaveBeenCalledTimes(1);
+        expect(gpuRenderTarget.msaaBackTextures).toEqual([]);
+
+        renderer.destroy();
+    });
+
+    it('should restore msaa colour on a depth-only clear outside a frame', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const target = makeMsaaTarget({ depthStencil: true });
+        const device = renderer.gpu.device;
+
+        renderer.encoder.renderStart();
+        renderer.renderTarget.bind({ target, clear: true });
+        renderer.encoder.postrender();
+
+        device.pushErrorScope('validation');
+
+        renderer.renderTarget.clear(target, CLEAR.DEPTH);
+
+        expect(restoredSlots(renderer.renderTarget.getGpuRenderTarget(target))).toEqual([0]);
+        expect(await device.popErrorScope()).toBeNull();
+
+        renderer.destroy();
+    });
+
+    it('should restore an antialiased canvas when a filter reopens it', async () =>
+    {
+        const renderer = (await getWebGPURenderer({ antialias: true })) as WebGPURenderer;
+        const device = renderer.gpu.device;
+        const stage = new Container();
+        const filtered = new Graphics().rect(10, 10, 50, 50).fill('red');
+
+        filtered.filters = [new AlphaFilter({ alpha: 0.5 })];
+        stage.addChild(new Graphics().rect(0, 0, 100, 100).fill('blue'), filtered);
+
+        device.pushErrorScope('validation');
+
+        renderer.render(stage);
+
+        // the filter's pop-back reopened the canvas, so its colour was restored
+        expect(restoredSlots(renderer.renderTarget.getGpuRenderTarget(renderer.renderTarget.rootRenderTarget)))
+            .toEqual([0]);
+        expect(await device.popErrorScope()).toBeNull();
+
+        renderer.destroy();
+    });
+
+    it('should discard the canvas msaa depth/stencil only when the renderer is created transient', async () =>
+    {
+        for (const transient of [false, true])
+        {
+            const renderer = (await getWebGPURenderer({ antialias: true, depth: true, transient })) as WebGPURenderer;
+
+            renderer.render(new Graphics().rect(0, 0, 50, 50).fill('red'));
+
+            const root = renderer.renderTarget.getGpuRenderTarget(renderer.renderTarget.rootRenderTarget);
+
+            expect(renderer.view.texture.source.transient).toBe(transient);
+            expect(root.descriptor.depthStencilAttachment.depthStoreOp).toBe(transient ? 'discard' : 'store');
+
+            renderer.destroy();
+        }
+    });
+
+    it('should store and load msaa colour on a GPU that is not tile-based', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const device = renderer.gpu.device;
+
+        // as on Intel/NVIDIA/AMD, where loading MSAA from video memory beats restoring it
+        renderer.device.extensions.tileBased = false;
+
+        const target = makeMsaaTarget();
+        const other = makeMsaaTarget();
+
+        device.pushErrorScope('validation');
+        renderer.encoder.renderStart();
+
+        renderer.renderTarget.bind({ target, clear: true });
+
+        const gpuRenderTarget = renderer.renderTarget.getGpuRenderTarget(target);
+
+        expect(gpuRenderTarget.msaaTextures[0].transient).toBe(false);
+        expect(gpuRenderTarget.descriptor.colorAttachments[0].storeOp).toBe('store');
+
+        renderer.renderTarget.bind({ target: other, clear: true });
+        renderer.renderTarget.bind({ target, clear: false });
+
+        expect(gpuRenderTarget.descriptor.colorAttachments[0].loadOp).toBe('load');
+        expect(restoredSlots(gpuRenderTarget)).toEqual([]);
+
+        renderer.encoder.postrender();
+
+        expect(await device.popErrorScope()).toBeNull();
+
+        renderer.destroy();
+    });
+
+    it('should discard and restore msaa colour on a GPU that is not tile-based when marked transient', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        renderer.device.extensions.tileBased = false;
+
+        const target = makeMsaaTarget({ transient: true });
+        const other = makeMsaaTarget();
+
+        renderer.encoder.renderStart();
+
+        renderer.renderTarget.bind({ target, clear: true });
+        renderer.renderTarget.bind({ target: other, clear: true });
+        renderer.renderTarget.bind({ target, clear: false });
+
+        const gpuRenderTarget = renderer.renderTarget.getGpuRenderTarget(target);
+
+        expect(gpuRenderTarget.descriptor.colorAttachments[0].storeOp).toBe('discard');
+        expect(restoredSlots(gpuRenderTarget)).toEqual([0]);
+
+        renderer.encoder.postrender();
+        renderer.destroy();
     });
 });

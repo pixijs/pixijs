@@ -89,18 +89,12 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
     /** Used by RenderTexture.create to allow resizing. Not used by TextureSource itself. */
     dynamic?: boolean;
     /**
-     * Mark this texture as transient — its contents are scratch and do not need to persist
-     * beyond a single render pass. When the WebGPU backend sees this:
-     *
-     * - It uses `storeOp: 'discard'` on the attachment at end-of-pass, skipping the writeback to DRAM.
-     * - When the browser exposes `GPUTextureUsage.TRANSIENT_ATTACHMENT`, it adds that bit so the
-     *   driver can keep contents in tile memory on TBDR mobile GPUs and never allocate DRAM at all.
-     *
-     * Only safe when no later render pass needs to load the prior contents back
-     * (`loadOp: 'load'` on a transient attachment is a spec violation, and discarding makes
-     * loaded contents undefined even without the bit set). Pixi sets this internally for the
-     * MSAA buffer attached to the canvas root, which is rendered as a single pass per frame.
-     * Set it yourself only on textures you know follow the same single-pass-then-discard pattern.
+     * WebGPU only. Marks an antialiased render target as single-pass: it is never rendered into again
+     * with `clear: false`, never has a filter or mask pop back onto it, and its depth/stencil is never
+     * needed after the pass. PixiJS then discards its multisample buffers at the end of the pass instead
+     * of writing them to memory: depth/stencil, and on GPUs that aren't tile-based also colour (tile-based
+     * GPUs already discard colour; see {@link GpuExtensions.tileBased}). If the target is reopened anyway,
+     * the colour is restored from the resolved texture but the depth/stencil is lost.
      * @default false
      */
     transient?: boolean;
