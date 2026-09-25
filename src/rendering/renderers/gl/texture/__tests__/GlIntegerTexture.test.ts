@@ -186,7 +186,7 @@ describe('GlTextureSystem integer formats', () =>
         async (viewDimension) =>
         {
             const { renderer, integerTexture, draw, drawn } = await setup();
-            const sprite = new Sprite({ texture: Texture.WHITE, width: 4, height: 4 });
+            const sprite = batchedViews.sprite();
             const otherTarget = new Texture({
                 source: new TextureSource({
                     width: 1, height: 1, viewDimension, arrayLayerCount: viewDimension === 'cube' ? 6 : 2,
@@ -210,6 +210,38 @@ describe('GlTextureSystem integer formats', () =>
         },
     );
 
+    it('should not fail a sprite batch after resetState with an integer texture left on a unit', async () =>
+    {
+        const { renderer, integerTexture, draw, drawn } = await setup();
+        const sprite = batchedViews.sprite();
+
+        // left by an earlier draw; an app sharing the context with another GL library calls resetState each frame
+        renderer.texture.bind(integerTexture, 1);
+        renderer.resetState();
+
+        expect(draw(sprite)).toEqual(drawn);
+
+        renderer.destroy();
+    });
+
+    it('should not fail a sprite batch after resetState with an integer texture another library left on a unit', async () =>
+    {
+        const { renderer, draw, drawn } = await setup();
+        const gl = renderer.gl;
+        const sprite = batchedViews.sprite();
+
+        // raw GL, as a library sharing the context would do; it sets its own unpack state before uploading
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+        gl.activeTexture(gl.TEXTURE3);
+        gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32UI, 1, 1, 0, gl.RGBA_INTEGER, gl.UNSIGNED_INT, new Uint32Array(4));
+        renderer.resetState();
+
+        expect(draw(sprite)).toEqual(drawn);
+
+        renderer.destroy();
+    });
+
     it('should track which units hold integer textures', async () =>
     {
         const { renderer, integerTexture } = await setup();
@@ -226,8 +258,11 @@ describe('GlTextureSystem integer formats', () =>
         textureSystem.unbindIntegerTextures(32);
         expect(textureSystem['_boundTextures'][1]).toBe(integerTexture.source);
 
-        // cleared by resetState
+        // resetState forgets every unit, so the next unbindIntegerTextures rebinds the empty texture over all of them
         textureSystem.resetState();
+        textureSystem.unbindIntegerTextures(0);
+        expect(textureSystem['_boundTextures'][0]).toBe(Texture.EMPTY.source);
+        expect(textureSystem['_boundTextures'][renderer.limits.maxTextures - 1]).toBe(Texture.EMPTY.source);
         expect(textureSystem['_integerUnits']).toBe(0);
 
         // units outside 0-31 don't alias onto the mask

@@ -61,7 +61,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     private _glSamplers: Record<string, WebGLSampler> = Object.create(null);
 
     private _boundTextures: TextureSource[] = [];
-    /** Bit `n` is set while unit `n` holds an integer-format texture. */
+    /** Bit `n` is set while unit `n` may hold an integer-format texture; `resetState` sets every unit. */
     private _integerUnits = 0;
     private _activeTextureLocation = -1;
 
@@ -710,9 +710,14 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     public resetState(): void
     {
+        const maxTextures = this._renderer.limits.maxTextures;
+
         this._activeTextureLocation = -1;
-        this._boundTextures.fill(Texture.EMPTY.source);
-        this._integerUnits = 0;
+        // the context was used outside pixi, so nothing is known about what any unit holds. Forget the
+        // slots so the next bind is never skipped, and treat every unit as possibly integer until
+        // unbindIntegerTextures clears it
+        this._boundTextures.fill(null);
+        this._integerUnits = maxTextures >= 32 ? -1 : (1 << maxTextures) - 1;
         this._boundSamplers = Object.create(null);
 
         const gl = this._gl;
