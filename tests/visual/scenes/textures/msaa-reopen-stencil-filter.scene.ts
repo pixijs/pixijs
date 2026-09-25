@@ -1,3 +1,4 @@
+import { renderAsTileBased } from './renderAsTileBased';
 import { AlphaFilter } from '~/filters';
 import { RenderTexture } from '~/rendering';
 import { Container, Graphics, Sprite } from '~/scene';
@@ -29,7 +30,7 @@ export const scene: TestScene = {
         masked.mask = mask;
         root.addChild(masked, mask);
 
-        renderer.render({ container: root, target, clear: true });
+        renderAsTileBased(renderer, () => renderer.render({ container: root, target, clear: true }));
 
         scene.addChild(new Sprite(target));
     },

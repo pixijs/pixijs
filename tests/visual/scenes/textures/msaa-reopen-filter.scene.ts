@@ -1,3 +1,4 @@
+import { renderAsTileBased } from './renderAsTileBased';
 import { BlurFilter } from '~/filters';
 import { RenderTexture } from '~/rendering';
 import { Container, Graphics, Sprite } from '~/scene';
@@ -24,7 +25,7 @@ export const scene: TestScene = {
         // drawn after the pop-back, in the reopened pass
         content.addChild(new Graphics().rect(20, 90, 88, 12).fill('teal'));
 
-        renderer.render({ container: content, target, clear: true });
+        renderAsTileBased(renderer, () => renderer.render({ container: content, target, clear: true }));
 
         scene.addChild(new Sprite(target));
     },
