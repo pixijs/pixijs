@@ -105,7 +105,7 @@ data.fill(1, 100 * 4, 116 * 4); // change texels 100 to 115
 source.update(100, 116); // upload only those 16 texels
 ```
 
-The upload happens during the `update` call, and the range isn't remembered between calls. If you change several parts of the buffer in a frame, track the lowest and highest changed texel yourself and call `update` once with that span. Each call costs a few microseconds on top of the bytes it moves, so one span usually beats many small calls.
+The upload happens during the `update` call on every renderer that already holds the texture. The range applies to that call only, so if you change several parts of the buffer in a frame, track the lowest and highest changed texel yourself and call `update` once with that span. Each call has a fixed cost on top of the bytes it moves, which reaches tens of microseconds on some mobile GPUs. One span usually beats many small calls. Partial uploads assume the buffer holds exactly `width * height` texels.
 
 ## Texture properties
 
@@ -166,5 +166,6 @@ The positional `getOptimalTexture(width, height, resolution, antialias)` form an
 
 - {@link Texture}
 - {@link TextureSource}
+- {@link BufferImageSource}
 - {@link TextureStyle}
 - {@link RenderTexture}

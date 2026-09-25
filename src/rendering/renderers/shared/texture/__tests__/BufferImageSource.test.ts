@@ -2,14 +2,9 @@ import { BufferImageSource } from '../sources/BufferImageSource';
 import { Texture } from '../Texture';
 import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
 
-import type { WebGPURenderer } from '../../../gpu/WebGPURenderer';
-import type { WebGLRenderer } from '~/rendering';
-
 const WIDTH = 4;
 const HEIGHT = 4;
 
-// 4x4 rgba8 texture, uploaded as zeros, then filled with 255 on the CPU.
-// Only the texels inside the updated range should reach the GPU.
 function createSource()
 {
     const data = new Uint8Array(WIDTH * HEIGHT * 4);
@@ -33,22 +28,68 @@ function uploadedTexels(pixels: ArrayLike<number>, bytesPerRow = WIDTH * 4): num
     return out;
 }
 
-const range = (start: number, end: number) => Array.from({ length: end - start }, (_, i) => start + i);
+function range(start: number, end: number): number[]
+{
+    return Array.from({ length: end - start }, (_, i) => start + i);
+}
+
+type Update = (source: BufferImageSource) => void;
+
+/**
+ * Registers the cases shared by every backend.
+ * @param readBackAfterUpdate - uploads zeros, fills the buffer with 255, runs `update` against the
+ * source and returns the texels that reached the GPU. With `bindFirst` false the helper binds the
+ * source only after `update`, so the first upload is the full one.
+ */
+function itUploadsRanges(readBackAfterUpdate: (update: Update, bindFirst?: boolean) => Promise<number[]>)
+{
+    it('should upload the whole buffer when no range is given', async () =>
+    {
+        expect(await readBackAfterUpdate((source) => source.update())).toEqual(range(0, 16));
+    });
+
+    it('should upload only the texels in the range', async () =>
+    {
+        expect(await readBackAfterUpdate((source) => source.update(5, 11))).toEqual(range(5, 11));
+    });
+
+    it('should upload a range spanning partial and whole rows', async () =>
+    {
+        expect(await readBackAfterUpdate((source) => source.update(3, 14))).toEqual(range(3, 14));
+    });
+
+    it('should not keep the range for an upload outside update', async () =>
+    {
+        // a bare 'update' emit is what cube faces and getPo2TextureFromSource send
+        expect(await readBackAfterUpdate((source) =>
+        {
+            source.update(5, 11);
+            source.emit('update', source);
+        })).toEqual(range(0, 16));
+    });
+
+    it('should upload the whole buffer when the source is first bound after a ranged update', async () =>
+    {
+        expect(await readBackAfterUpdate((source) => source.update(5, 11), false)).toEqual(range(0, 16));
+    });
+}
 
 describe('BufferImageSource', () =>
 {
     describe.each([1, 2] as const)('WebGL%i', (preferWebGLVersion) =>
     {
-        async function uploadRange(start?: number, end?: number): Promise<number[]>
+        async function readBackAfterUpdate(update: Update, bindFirst = true): Promise<number[]>
         {
-            const renderer = (await getWebGLRenderer({ preferWebGLVersion })) as WebGLRenderer;
+            const renderer = await getWebGLRenderer({ preferWebGLVersion });
             const { data, source } = createSource();
             const texture = new Texture({ source });
 
-            renderer.texture.initSource(source);
+            if (bindFirst) renderer.texture.initSource(source);
 
             data.fill(255);
-            source.update(start, end);
+            update(source);
+
+            renderer.texture.initSource(source);
 
             const { pixels } = renderer.texture.getPixels(texture);
 
@@ -57,34 +98,23 @@ describe('BufferImageSource', () =>
             return uploadedTexels(pixels);
         }
 
-        it('should upload the whole buffer when no range is given', async () =>
-        {
-            expect(await uploadRange()).toEqual(range(0, 16));
-        });
-
-        it('should upload only the texels in the range', async () =>
-        {
-            expect(await uploadRange(5, 11)).toEqual(range(5, 11));
-        });
-
-        it('should upload a range spanning partial and whole rows', async () =>
-        {
-            expect(await uploadRange(3, 14)).toEqual(range(3, 14));
-        });
+        itUploadsRanges(readBackAfterUpdate);
     });
 
     describeLocalOnly('WebGPU', () =>
     {
-        async function uploadRange(start?: number, end?: number): Promise<number[]>
+        async function readBackAfterUpdate(update: Update, bindFirst = true): Promise<number[]>
         {
-            const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+            const renderer = await getWebGPURenderer();
             const device = renderer.gpu.device;
             const { data, source } = createSource();
 
-            const gpuTexture = renderer.texture.initSource(source);
+            if (bindFirst) renderer.texture.initSource(source);
 
             data.fill(255);
-            source.update(start, end);
+            update(source);
+
+            const gpuTexture = renderer.texture.initSource(source);
 
             const readBuffer = device.createBuffer({
                 size: 256 * HEIGHT,
@@ -104,19 +134,6 @@ describe('BufferImageSource', () =>
             return uploadedTexels(pixels, 256);
         }
 
-        it('should upload the whole buffer when no range is given', async () =>
-        {
-            expect(await uploadRange()).toEqual(range(0, 16));
-        });
-
-        it('should upload only the texels in the range', async () =>
-        {
-            expect(await uploadRange(5, 11)).toEqual(range(5, 11));
-        });
-
-        it('should upload a range spanning partial and whole rows', async () =>
-        {
-            expect(await uploadRange(3, 14)).toEqual(range(3, 14));
-        });
+        itUploadsRanges(readBackAfterUpdate);
     });
 });

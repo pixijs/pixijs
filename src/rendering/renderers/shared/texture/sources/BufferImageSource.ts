@@ -88,14 +88,17 @@ export class BufferImageSource extends TextureSource<TypedArray | ArrayBuffer>
     /**
      * Uploads the buffer to the GPU. Call this after changing the data in {@link TextureSource#resource}.
      *
-     * The buffer is treated as a flat list of texels in row-major order, so texel `i` sits at
+     * The buffer is a flat list of texels in row-major order, so texel `i` sits at
      * `x = i % width`, `y = floor(i / width)`. Pass a texel range to upload only that part of
      * the texture; leave it out to upload everything.
      *
-     * The upload happens immediately, and the range applies to this call only. Nothing is
-     * accumulated between calls, so if you change several parts of the buffer, track the dirty
-     * span yourself and call `update` once with the combined range. Each call costs a few
-     * microseconds of fixed overhead on top of the bytes it moves.
+     * The upload happens immediately for every renderer that already holds the texture, and the
+     * range applies to this call only. If you change several parts of the buffer, track the dirty
+     * span yourself and call `update` once with the combined range. Each call has a fixed cost on
+     * top of the bytes it moves, which reaches tens of microseconds on some mobile GPUs. One span
+     * usually beats many small calls.
+     *
+     * Partial uploads assume the buffer holds exactly `width * height` texels.
      * @example
      * ```ts
      * const data = new Float32Array(4096 * 64 * 4);

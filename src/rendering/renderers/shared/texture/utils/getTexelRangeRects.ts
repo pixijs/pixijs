@@ -3,13 +3,10 @@ import type { Rectangle } from '../../../../../maths/shapes/Rectangle';
 /**
  * Splits a linear texel range of a row-major texture into at most three rectangles: the partial
  * first row, the whole rows in between, and the partial last row. Each rectangle is contiguous in
- * the source data, so it can be uploaded straight from the flat array without row-length unpack
- * state. That keeps the split valid for WebGL1, WebGL2 and WebGPU alike.
+ * the source data, so the uploader copies it straight from the flat array without row-length
+ * unpack state. That keeps the split valid on WebGL1, WebGL2 and WebGPU.
  *
- * The range is clamped to the texture, so `end = Infinity` means "to the last texel".
- *
- * Unlike most `out` helpers this returns a count rather than `out`: `out` is a reusable scratch
- * array of three rectangles, so its length can't say how many were filled.
+ * The function clamps the range to the texture, so `end = Infinity` runs to the last texel.
  * @param start - index of the first texel in the range
  * @param end - index one past the last texel in the range (exclusive, like `TypedArray.subarray`)
  * @param width - texture width in texels

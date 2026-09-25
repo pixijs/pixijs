@@ -27,9 +27,10 @@ export const glUploadBufferImageResource = {
         const resource = source.resource as TypedArray;
 
         const texelCount = source.width * source.height;
+        const needsAllocation = forceAllocation || glTexture.width !== source.width || glTexture.height !== source.height;
         const isPartial = source._updateStart > 0 || source._updateEnd < texelCount;
 
-        if (forceAllocation || glTexture.width !== source.width || glTexture.height !== source.height)
+        if (needsAllocation)
         {
             gl.texImage2D(
                 target,
@@ -55,7 +56,7 @@ export const glUploadBufferImageResource = {
                 tempRects
             );
 
-            // each rect is contiguous in the buffer, so a subarray is all texSubImage2D needs
+            // each rect is contiguous in the buffer, so texSubImage2D can read it from a subarray
             for (let i = 0; i < count; i++)
             {
                 const rect = tempRects[i];

@@ -19,7 +19,7 @@ describe('getTexelRangeRects', () =>
         expect(rects(0, 32, 8, 4)).toEqual([[0, 0, 8, 4]]);
     });
 
-    it('should upload a single texel as a 1x1 rect', () =>
+    it('should return a single texel as a 1x1 rect', () =>
     {
         expect(rects(13, 14, 8, 4)).toEqual([[5, 1, 1, 1]]);
     });
