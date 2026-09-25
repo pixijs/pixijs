@@ -202,7 +202,7 @@ shader.resources.myUniforms.update();
 
 See [references/advanced-gpu.md](references/advanced-gpu.md) for full samples of:
 
-- **Partial buffer updates**: `buffer.update(sizeInBytes, offsetInBytes)` uploads only the changed byte range.
+- **Partial buffer and texture uploads**: `buffer.update(sizeInBytes, offsetInBytes)` uploads only the changed byte range; `bufferImageSource.update(startTexel, endTexel)` uploads only a texel range of a data texture.
 - **Vertex and index counts, winding, culling**: `geometry.vertexCount` (replaces the deprecated `getSize()`), `geometry.indexCount` to draw a prefix of a shared index buffer, `state.clockwiseFrontFace` and `cullMode`.
 - **WGSL override constants** (WebGPU): `Shader.from({ gpu, resources, overrides: { STEPS: 8 } })`; each distinct set compiles its own pipeline.
 - **Custom bind group layouts** (WebGPU): generate the default with `generateGpuLayoutGroups(extractStructAndGroups(source))`, edit it, pass it as `gpuLayout`.
