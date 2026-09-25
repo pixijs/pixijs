@@ -15,7 +15,7 @@ export function generateArraySyncWGSL(uboElement: UboElement, offsetToAdd: numbe
     // this is in byte..
     const { size, align } = WGSL_ALIGN_SIZE_DATA[uboElement.data.type];
 
-    const remainder = (align - size) / 4;
+    const remainder = (Math.max(size, align) - size) / 4;
     const data = uboElement.data.type.indexOf('i32') >= 0 ? 'dataInt32' : 'data';
 
     return `

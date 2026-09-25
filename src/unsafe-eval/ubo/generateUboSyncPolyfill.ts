@@ -54,7 +54,7 @@ export function generateUboSyncPolyfillWGSL(uboElements: UboElement[]): Uniforms
         {
             const { size, align } = WGSL_ALIGN_SIZE_DATA[uboElement.data.type];
 
-            const remainder = (align - size) / 4;
+            const remainder = (Math.max(size, align) - size) / 4;
 
             return (_name: string, data: Float32Array, offset: number, _uv: any, v: any) =>
             {

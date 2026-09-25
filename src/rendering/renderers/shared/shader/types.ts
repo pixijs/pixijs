@@ -56,7 +56,11 @@ export interface UniformData
     /** the value of the uniform, this could be any object - a parser will figure out how to write it to the buffer */
     value: unknown;
     type: UNIFORM_TYPES;
-    /** the size of the variable (eg 2 for vec2, 3 for vec3, 4 for vec4) */
+    /**
+     * Number of array elements
+     *
+     * Defaults to 1 for a single value. `{ type: 'vec4<f32>', size: 10 }` declares `array<vec4<f32>, 10>`.
+     */
     size?: number;
     name?: string;
 }
