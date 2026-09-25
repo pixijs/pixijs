@@ -381,10 +381,8 @@ export class GpuEncoderSystem implements System
         const program = shader.gpuProgram;
         const layout = program.layout;
 
-        // walk the program's layout rather than `for...in` over shader.groups: integer-keyed
-        // for...in allocates a fresh key list on every call, and this runs on every draw.
-        // Groups outside the layout (e.g. GL-fallback uniforms, parked in group 99 by
-        // Shader.from) are never visited — there is nothing to sync or bind for them
+        // indexed over the layout so no key list is built per draw. Groups outside the layout
+        // (e.g. GL-fallback uniforms, parked in group 99 by Shader.from) have nothing to sync or bind
         for (let i = 0; i < layout.length; i++)
         {
             const bindGroup = shader.groups[i];

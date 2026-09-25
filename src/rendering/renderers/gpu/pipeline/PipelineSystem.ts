@@ -630,11 +630,11 @@ export class PipelineSystem implements System
     }
 
     /**
-     * Returns the buffer names to bind, indexed by vertex buffer slot.
+     * Returns the buffer names to bind, one per vertex buffer slot.
      * This is used to bind the correct buffer to the correct location in the shader.
      * @param geometry - The geometry where to get the buffer names
      * @param program - The program where to get the buffer names
-     * @returns An array of buffer names, where the index is the vertex buffer slot.
+     * @returns The buffer names, indexed by vertex buffer slot.
      */
     public getBufferNamesToBind(geometry: Geometry, program: GpuProgram): string[]
     {
