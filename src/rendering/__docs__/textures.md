@@ -125,7 +125,7 @@ Key properties on `Texture`:
 Key properties on `TextureSource`:
 
 - `resolution`: Render size relative to pixel size.
-- `format`: Pixel format (e.g., `rgba8unorm`, `bgra8unorm`).
+- `format`: Pixel format (e.g., `rgba8unorm`, `bgra8unorm`). Integer formats such as `rgba32uint` need `scaleMode: 'nearest'`, and shaders read them with `texelFetch` or `textureLoad`.
 - `alphaMode`: How alpha is interpreted on upload.
 - `wrapMode` / `scaleMode`: Sampling behavior outside bounds or when scaled.
 - `autoGenerateMipmaps`: Whether to generate mipmaps on upload.

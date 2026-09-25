@@ -4,6 +4,26 @@ import type { ProgramPipelineLayoutDescription } from '../GpuProgram';
 import type { StructsAndGroups } from './extractStructAndGroups';
 
 /**
+ * Maps a WGSL texture declaration's texel type to the bind group layout sample type
+ * @param type - The WGSL binding type, e.g. `texture_2d<u32>`.
+ * @returns The matching bind group layout sample type.
+ */
+function getTextureSampleType(type: string): GPUTextureSampleType
+{
+    if (type.endsWith('<u32>'))
+    {
+        return 'uint';
+    }
+
+    if (type.endsWith('<i32>'))
+    {
+        return 'sint';
+    }
+
+    return 'float';
+}
+
+/**
  * Generates the default WebGPU bind group layout for a shader from its extracted structs and groups.
  * Every binding is marked visible to both the vertex and fragment stages
  * (`GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT`).
@@ -87,7 +107,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
                 binding: group.binding,
                 visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
                 texture: {
-                    sampleType: 'float',
+                    sampleType: getTextureSampleType(group.type),
                     viewDimension: '2d',
                     multisampled: false,
                 }
@@ -123,7 +143,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
                 binding: group.binding,
                 visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
                 texture: {
-                    sampleType: 'float',
+                    sampleType: getTextureSampleType(group.type),
                     viewDimension: '2d-array',
                     multisampled: false,
                 }
@@ -135,7 +155,7 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
                 binding: group.binding,
                 visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
                 texture: {
-                    sampleType: 'float',
+                    sampleType: getTextureSampleType(group.type),
                     viewDimension: 'cube',
                     multisampled: false,
                 }

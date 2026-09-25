@@ -207,6 +207,7 @@ See [references/advanced-gpu.md](references/advanced-gpu.md) for full samples of
 - **WGSL override constants** (WebGPU): `Shader.from({ gpu, resources, overrides: { STEPS: 8 } })`; each distinct set compiles its own pipeline.
 - **Custom bind group layouts** (WebGPU): generate the default with `generateGpuLayoutGroups(extractStructAndGroups(source))`, edit it, pass it as `gpuLayout`.
 - **Depth sampling with `TextureView`** (WebGPU): bind `new TextureView(depth, { aspect: "depth-only" })` as a resource while the target's depth attachment is `depthReadOnly`.
+- **Integer textures**: `BufferImageSource` with `rgba32uint` etc., `usampler2D`/`texelFetch` and `texture_2d<u32>`/`textureLoad`, `scaleMode: "nearest"`.
 - **Render bundles** (WebGPU): record draws once with `encoder.beginBundle()` / `endBundle()` and replay with `executeBundle()` while `isBundleValid()` holds.
 - **Pooled scratch textures**: `TexturePool.getOptimalTexture({ width, height, resolution, antialias })` and `returnTexture()`.
 

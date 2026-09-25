@@ -120,6 +120,29 @@ const shader = Shader.from({
 
 Declare `@group(0) @binding(1) var uDepthTexture: texture_depth_2d;` in WGSL and read it with `textureLoad`. Use a `State` with `depthMask = false` in the read pass. A `TextureView` is a bind resource like a `TextureSource`; on WebGL it binds the underlying source and the descriptor is ignored.
 
+## Integer textures
+
+```ts
+import { BufferImageSource, Shader } from "pixi.js";
+
+const ids = new BufferImageSource({
+  resource: new Uint32Array([1, 2, 3, 4]), // picks rgba32uint
+  width: 1,
+  height: 1,
+  scaleMode: "nearest",
+});
+
+const shader = Shader.from({
+  gl: { vertex: vertSrc, fragment: fragSrc },
+  gpu: { vertex: { source, entryPoint: "vsMain" }, fragment: { source, entryPoint: "fsMain" } },
+  resources: { uIds: ids },
+});
+```
+
+Integer formats (`*uint`, `*sint`) hold exact integers. Use them where a float texture would lose bits, since small integers are denormal floats and GPUs may flush them to zero. They can't be filtered, so set `scaleMode: "nearest"`. `BufferImageSource` infers `rgba32uint` from a `Uint32Array` and `rgba16uint` from a `Uint16Array`; pass `format: "rgba32sint"` (or another signed format) explicitly for signed data. It defaults integer formats to `alphaMode: "no-premultiply-alpha"` because integer data can't be premultiplied on upload.
+
+In GLSL ES 3.0, declare `uniform usampler2D uIds;` (or `isampler2D`) and read it with `texelFetch(uIds, ivec2(x, y), 0)`. Fragment shaders have no default precision for integer samplers, so add `precision highp usampler2D;`. In WGSL, declare `@group(0) @binding(1) var uIds: texture_2d<u32>;` (or `<i32>`) and read it with `textureLoad(uIds, vec2<i32>(x, y), 0)`; the generated bind group layout takes its `sampleType` from the `<u32>` / `<i32>` suffix. PixiJS can't render into integer textures yet.
+
 ## Render bundles (WebGPU only)
 
 ```ts

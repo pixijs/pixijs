@@ -233,6 +233,7 @@ export * from './renderers/shared/texture/utils/getCanvasTexture';
 export * from './renderers/shared/texture/utils/getSupportedCompressedTextureFormats';
 export * from './renderers/shared/texture/utils/getSupportedTextureFormats';
 export * from './renderers/shared/texture/utils/getTexelRangeRects';
+export * from './renderers/shared/texture/utils/isIntegerFormat';
 export * from './renderers/shared/texture/utils/ScreenSizeRegistry';
 export * from './renderers/shared/texture/utils/textureFrom';
 export * from './renderers/shared/utils/createIdFromString';
