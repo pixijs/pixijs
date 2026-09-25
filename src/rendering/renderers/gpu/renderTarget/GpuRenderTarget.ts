@@ -12,6 +12,12 @@ export class GpuRenderTarget
     public contexts: GPUCanvasContext[] = [];
     public msaaTextures: TextureSource[] = [];
     public msaa: boolean;
+    /**
+     * The user marked this multisampled target `transient` (single pass, never reopened), so its MSAA
+     * depth/stencil is discarded too. Read once from the colour texture, like `msaa`. Separate from each
+     * `msaaTextures[i].transient`, which is also set on every tile-based GPU.
+     */
+    public transient = false;
     public msaaSamples = 1;
     public width: number;
     public height: number;

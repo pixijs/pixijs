@@ -456,9 +456,8 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             // Depth/stencil can't be rebuilt from a resolved image, so it is only discarded when the user
             // marked the target `transient` (single pass, never reopened). Its contents are gone after a
             // discard, so a transient depth/stencil is never loaded either.
-            const dsTransient = this._isDepthStencilTransient(renderTarget, gpuRenderTarget);
-            const dsStoreOp: GPUStoreOp = dsTransient ? 'discard' : 'store';
-            const dsLoadOp: GPULoadOp = dsTransient ? 'clear' : 'load';
+            const dsStoreOp: GPUStoreOp = gpuRenderTarget.transient ? 'discard' : 'store';
+            const dsLoadOp: GPULoadOp = gpuRenderTarget.transient ? 'clear' : 'load';
 
             depthStencilAttachment = {
                 view: this._renderer.texture.getTextureRenderTargetView(
@@ -580,6 +579,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
         const gpuRenderTarget = new GpuRenderTarget();
 
+        // the user's single-pass promise, read from the colour texture once, like `msaa`
+        gpuRenderTarget.transient = !!renderTarget.colorTexture?.antialias && !!renderTarget.colorTexture.transient;
+
         // create a context...
         // is a canvas...
         renderTarget.colorAttachments.forEach((colorAttachment, i) =>
@@ -633,7 +635,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     // WebGPU requires multisampled textures to have exactly 1 mip level, so this must never
                     // inherit TextureSource.defaultOptions.autoGenerateMipmaps
                     autoGenerateMipmaps: false,
-                    transient: this._renderer.device.extensions.tileBased || colorTexture.transient,
+                    transient: this._renderer.device.extensions.tileBased || gpuRenderTarget.transient,
                     arrayLayerCount: colorTexture.arrayLayerCount,
                     format: colorTexture.format,
                 });
@@ -666,18 +668,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         if (!texture || !gpuRenderTarget.msaa) return;
 
         texture.sampleCount = 4;
-        texture.transient = this._isDepthStencilTransient(renderTarget, gpuRenderTarget);
-    }
-
-    /**
-     * The user's `transient` flag on the colour texture means "single pass, never reopened",
-     * which lets MSAA depth/stencil be discarded too.
-     * @param renderTarget - the target to check
-     * @param gpuRenderTarget - its backend target
-     */
-    private _isDepthStencilTransient(renderTarget: RenderTarget, gpuRenderTarget: GpuRenderTarget): boolean
-    {
-        return gpuRenderTarget.msaa && !!renderTarget.colorAttachments[0]?.texture.transient;
+        texture.transient = gpuRenderTarget.transient;
     }
 
     public destroyGpuRenderTarget(gpuRenderTarget: GpuRenderTarget)
