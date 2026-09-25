@@ -666,6 +666,11 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             if (container.accessibleType === 'button')
             {
                 div = document.createElement('button');
+                // hide the text like the non-button cssText does; debug mode keeps it visible
+                if (!this.debug)
+                {
+                    div.style.color = 'transparent';
+                }
             }
             else
             {
@@ -724,7 +729,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         // set the type, this defaults to button!
         div.type = container.accessibleType;
 
-        // applied for every type, and for divs taken from the pool, whose text was cleared above
+        // must run after the pool reset above, which clears innerHTML
         if (container.accessibleText)
         {
             div.innerText = container.accessibleText;

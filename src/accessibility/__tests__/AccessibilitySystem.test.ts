@@ -129,6 +129,7 @@ describe('AccessibilitySystem', () =>
         const expectedInnerHTML = `type: button<br> title : myCustomTitle<br> tabIndex: 2`;
 
         expect(container._accessibleDiv.innerHTML).toBe(expectedInnerHTML);
+        expect(container._accessibleDiv.style.color).toBe('');
 
         renderer.destroy();
     });
@@ -191,13 +192,15 @@ describe('AccessibilitySystem', () =>
 
         expect(myButton._accessibleDiv.tagName).toBe('BUTTON');
         expect(myButton._accessibleDiv.innerText).toBe('myButtonText');
+        expect(myButton._accessibleDiv.style.color).toBe('transparent');
+
+        const firstDiv = myButton._accessibleDiv;
 
         // Disable it so its div goes back to the pool
         myButton.accessible = false;
         renderer.render(stage);
         system.postrender();
 
-        // A later button reuses that div, and must still get its own text
         const myOtherButton = new Container();
 
         myOtherButton.accessible = true;
@@ -207,6 +210,7 @@ describe('AccessibilitySystem', () =>
         renderer.render(stage);
         system.postrender();
 
+        expect(myOtherButton._accessibleDiv).toBe(firstDiv);
         expect(myOtherButton._accessibleDiv.innerText).toBe('myOtherButtonText');
 
         renderer.destroy();
