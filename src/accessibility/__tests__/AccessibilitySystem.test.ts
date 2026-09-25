@@ -5,6 +5,11 @@ import { Container } from '~/scene';
 
 describe('AccessibilitySystem', () =>
 {
+    afterEach(() =>
+    {
+        jest.restoreAllMocks();
+    });
+
     it('should be plugin for renderer', async () =>
     {
         const renderer = await getWebGLRenderer();
@@ -65,6 +70,62 @@ describe('AccessibilitySystem', () =>
         system['_onMouseMove'](new MouseEvent('mousemove', { movementX: 10, movementY: 10 }));
         expect(system.isActive).toBe(false);
 
+        renderer.destroy();
+    });
+
+    it('should register the keydown listener in init and keep it across activate and deactivate cycles', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const system = new AccessibilitySystem(renderer);
+
+        const addSpy = jest.spyOn(globalThis, 'addEventListener');
+        const removeSpy = jest.spyOn(globalThis, 'removeEventListener');
+        const keydownAdds = () => addSpy.mock.calls.filter(([type]) => type === 'keydown');
+        const keydownRemovals = () => removeSpy.mock.calls.filter(([type]) => type === 'keydown');
+
+        system.init();
+
+        const onKeyDown = system['_boundOnKeyDown'];
+        const pressTab = () => onKeyDown(new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
+
+        expect(keydownAdds()).toHaveLength(1);
+        expect(addSpy).toHaveBeenCalledWith('keydown', onKeyDown, false);
+
+        pressTab();
+        expect(system.isActive).toBe(true);
+
+        system.setAccessibilityEnabled(false);
+        expect(system.isActive).toBe(false);
+        expect(keydownAdds()).toHaveLength(1);
+
+        pressTab();
+        expect(system.isActive).toBe(true);
+        expect(keydownAdds()).toHaveLength(1);
+
+        system.destroy();
+        expect(keydownRemovals()).toHaveLength(1);
+        expect(removeSpy).toHaveBeenCalledWith('keydown', onKeyDown);
+
+        renderer.destroy();
+    });
+
+    it('should not register a keydown listener when activateOnTab is false', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const system = new AccessibilitySystem(renderer);
+
+        const addSpy = jest.spyOn(globalThis, 'addEventListener');
+
+        system.init({ accessibilityOptions: { activateOnTab: false } });
+
+        system.setAccessibilityEnabled(true);
+        expect(system.isActive).toBe(true);
+        system.setAccessibilityEnabled(false);
+        expect(system.isActive).toBe(false);
+
+        expect(addSpy.mock.calls.filter(([type]) => type === 'keydown')).toHaveLength(0);
+
+        system.destroy();
         renderer.destroy();
     });
 
