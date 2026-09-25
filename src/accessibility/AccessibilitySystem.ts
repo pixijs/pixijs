@@ -311,9 +311,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             });
         }
 
-        // Add listeners using the stored bound references. The keydown listener is not added
-        // here: it is what activates the layer, so it is registered for the lifetime of the
-        // system in `init` and removed in `destroy`.
+        // The keydown listener is registered in init because it has to fire while the layer is inactive.
         if (this._deactivateOnMouseMove)
         {
             globalThis.document.addEventListener('mousemove', this._boundOnMouseMove, true);
@@ -374,8 +372,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
         this._isActive = false;
 
-        // Switch listeners. The keydown listener stays registered so that tab can bring the
-        // layer back up.
+        // The keydown listener stays registered so that tab can reactivate the layer.
         globalThis.document.removeEventListener('mousemove', this._boundOnMouseMove, true);
 
         this._renderer.runners.postrender.remove(this);
