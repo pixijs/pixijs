@@ -365,9 +365,9 @@ export class GpuEncoderSystem implements System
         // essentially only binding a single time for any buffers that are interleaved.
         const buffersToBind = this._renderer.pipeline.getBufferNamesToBind(geometry, program);
 
-        for (const i in buffersToBind)
+        for (let i = 0; i < buffersToBind.length; i++)
         {
-            this._setVertexBuffer(parseInt(i, 10), geometry.attributes[buffersToBind[i]].buffer);
+            this._setVertexBuffer(i, geometry.attributes[buffersToBind[i]].buffer);
         }
 
         if (geometry.indexBuffer)
@@ -379,15 +379,16 @@ export class GpuEncoderSystem implements System
     private _setShaderBindGroups(shader: Shader, skipSync?: boolean)
     {
         const program = shader.gpuProgram;
+        const layout = program.layout;
 
-        for (const i in shader.groups)
+        // indexed over the layout so no key list is built per draw. Groups outside the layout
+        // (e.g. GL-fallback uniforms, parked in group 99 by Shader.from) have nothing to sync or bind
+        for (let i = 0; i < layout.length; i++)
         {
-            // resources that only exist for the other backend (e.g. GL-fallback uniforms,
-            // parked in group 99 by Shader.from) have no entry in this program's layout —
-            // there is nothing to sync or bind for them
-            if (!program.layout[i as unknown as number]) continue;
+            const bindGroup = shader.groups[i];
 
-            const bindGroup = shader.groups[i] as BindGroup;
+            // a gap in a sparse layout, or a group this shader never filled
+            if (!layout[i] || !bindGroup) continue;
 
             // update any uniforms?
             if (!skipSync)
@@ -395,15 +396,18 @@ export class GpuEncoderSystem implements System
                 this._syncBindGroup(bindGroup);
             }
 
-            this.setBindGroup(i as unknown as number, bindGroup, program);
+            this.setBindGroup(i, bindGroup, program);
         }
     }
 
     private _syncBindGroup(bindGroup: BindGroup)
     {
-        for (const j in bindGroup.resources)
+        const resources = bindGroup.resources;
+        const keys = bindGroup._resourceKeys;
+
+        for (let i = 0; i < keys.length; i++)
         {
-            const resource = bindGroup.resources[j];
+            const resource = resources[keys[i]];
 
             // a destroyed buffer-like resource leaves a null slot (see BindGroup.onResourceChange)
             if (!resource) continue;
