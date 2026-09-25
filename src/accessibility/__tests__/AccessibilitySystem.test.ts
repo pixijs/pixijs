@@ -1,6 +1,7 @@
 import { AccessibilitySystem } from '../AccessibilitySystem';
 import '../init';
 import { getWebGLRenderer } from '@test-utils';
+import { Application } from '~/app';
 import { Container } from '~/scene';
 
 describe('AccessibilitySystem', () =>
@@ -399,5 +400,26 @@ describe('AccessibilitySystem', () =>
         expect(myButton2._accessibleDiv.hasAttribute('aria-label')).toBe(false);
 
         renderer.destroy();
+    });
+
+    it('should accept accessibilityOptions through the public application options', async () =>
+    {
+        // `accessibilityOptions` is documented on AccessibilitySystem and used by the guides,
+        // but the accessibility system is registered as an extension rather than a shared
+        // system, so it is not picked up by ExtractRendererOptions. This asserts the option
+        // is part of the public option type: without the mixin declaration this file does
+        // not type check.
+        const app = new Application();
+
+        await app.init({
+            accessibilityOptions: {
+                enabledByDefault: true,
+                deactivateOnMouseMove: false,
+            },
+        });
+
+        expect(app.renderer.accessibility.isActive).toBe(true);
+
+        app.destroy();
     });
 });
