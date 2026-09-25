@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../../../extensions/Extensions';
+import { isIntegerFormat } from '../utils/isIntegerFormat';
 import { TextureSource } from './TextureSource';
 
 import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
@@ -17,8 +18,21 @@ export interface BufferSourceOptions extends TextureSourceOptions<TypedArray | A
 }
 
 /**
- * A texture source that uses a TypedArray or ArrayBuffer as its resource.
- * It automatically determines the format based on the type of TypedArray provided.
+ * A texture source that uses a TypedArray or ArrayBuffer as its resource
+ *
+ * Without a `format`, the array type picks it: `Float32Array` gives `rgba32float`,
+ * 32-bit integer arrays give `rgba32uint`, 16-bit integer arrays give `rgba16uint`, anything else `bgra8unorm`.
+ * Integer formats default to `alphaMode: 'no-premultiply-alpha'`, since integer data can't be
+ * premultiplied on upload; an explicit `alphaMode` still wins.
+ * @example
+ * ```ts
+ * const ids = new BufferImageSource({
+ *     resource: new Uint32Array([1, 2, 3, 4]),
+ *     width: 1,
+ *     height: 1,
+ *     scaleMode: 'nearest',
+ * });
+ * ```
  * @category rendering
  * @advanced
  */
@@ -65,8 +79,8 @@ export class BufferImageSource extends TextureSource<TypedArray | ArrayBuffer>
             }
         }
 
-        // integer data can't be premultiplied (WebGL never completes the upload), so default it off
-        const isInteger = format.endsWith('int');
+        // uploads never premultiply integer data, so the default alphaMode must not say they did
+        const isInteger = isIntegerFormat(format);
 
         super({
             ...(isInteger && { alphaMode: 'no-premultiply-alpha' }),

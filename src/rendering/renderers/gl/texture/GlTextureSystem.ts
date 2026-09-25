@@ -2,6 +2,7 @@ import { DOMAdapter } from '../../../../environment/adapter';
 import { extensions, ExtensionType } from '../../../../extensions/Extensions';
 import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
 import { Texture } from '../../shared/texture/Texture';
+import { isIntegerFormat } from '../../shared/texture/utils/isIntegerFormat';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
 import { glUploadCompressedTextureResource } from './uploaders/glUploadCompressedTextureResource';
@@ -60,7 +61,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     private _glSamplers: Record<string, WebGLSampler> = Object.create(null);
 
     private _boundTextures: TextureSource[] = [];
-    /** Bit `n` is set while unit `n` holds an integer-format texture. Kept in step by `_setBoundTexture`. */
+    /** Bit `n` is set while unit `n` holds an integer-format texture. */
     private _integerUnits = 0;
     private _activeTextureLocation = -1;
 
@@ -186,12 +187,18 @@ export class GlTextureSystem implements System, CanvasGenerator
     }
 
     /**
-     * Binds the empty texture over integer textures from `location` up. WebGL fails a draw when a
-     * float sampler's unit holds an integer texture, even if the shader never samples it.
+     * Binds the empty texture over every integer texture on unit `location` and above
+     *
+     * WebGL fails a draw when a float sampler's unit holds an integer texture, even if the shader
+     * never samples it. Call this after binding a batch's textures when the shader declares more
+     * samplers than the batch binds.
      * @param location - The first texture unit to check.
      */
     public unbindIntegerTextures(location: number): void
     {
+        // the mask covers units 0-31
+        if (location >= 32) return;
+
         let units = (this._integerUnits >>> location) << location;
 
         while (units)
@@ -206,7 +213,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     }
 
     /**
-     * Records the source bound to a unit, keeping `_integerUnits` in step. Every write to
+     * Records the source bound to a unit, keeping `_integerUnits` in step. Every per-unit write to
      * `_boundTextures` goes through here so the two can't drift apart.
      *
      * A unit has a separate binding per target (2D, 2D array, cube), and the batch shaders sample
@@ -221,12 +228,12 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         this._boundTextures[location] = source;
 
-        // the mask covers units 0-31, which includes every unit the batchers use
+        // the mask covers units 0-31, every unit the batchers use; -1 is the active location before any bind
         if (location < 0 || location > 31) return;
 
         if (!source || source.viewDimension !== '2d') return;
 
-        if (source.format.endsWith('int'))
+        if (isIntegerFormat(source.format))
         {
             this._integerUnits |= 1 << location;
         }
@@ -383,7 +390,8 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         this._setBoundTexture(this._activeTextureLocation, source);
 
-        const premultipliedAlpha = source.alphaMode === 'premultiply-alpha-on-upload';
+        // integer texels have no alpha to premultiply, and a premultiplied 32-bit integer upload never returns in Chromium
+        const premultipliedAlpha = source.alphaMode === 'premultiply-alpha-on-upload' && !isIntegerFormat(source.format);
 
         if (this._premultiplyAlpha !== premultipliedAlpha)
         {

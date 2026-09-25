@@ -22,8 +22,8 @@ export type ALPHA_MODES =
  *
  * Integer formats (`*uint`, `*sint`) hold exact integers and are read with `texelFetch` through a
  * `usampler2D` / `isampler2D` in GLSL, or `textureLoad` on a `texture_2d<u32>` / `texture_2d<i32>` in WGSL.
- * They can't be filtered, so give them `scaleMode: 'nearest'`. They can't be premultiplied either;
- * {@link BufferImageSource} defaults them to `alphaMode: 'no-premultiply-alpha'`.
+ * They can't be filtered, so give them `scaleMode: 'nearest'`. They can't be premultiplied either. WebGL uploads
+ * skip premultiplication for them, and {@link BufferImageSource} defaults them to `alphaMode: 'no-premultiply-alpha'`.
  * @category rendering
  * @advanced
  */

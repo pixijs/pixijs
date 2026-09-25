@@ -4,8 +4,7 @@ import type { ProgramPipelineLayoutDescription } from '../GpuProgram';
 import type { StructsAndGroups } from './extractStructAndGroups';
 
 /**
- * Reads the texel type from a WGSL texture declaration: `texture_2d<u32>` is `uint`, `texture_2d<i32>` is `sint`,
- * and anything else (`texture_2d<f32>`, bare `texture_2d`) is `float`.
+ * Maps a WGSL texture declaration's texel type to the bind group layout sample type
  * @param type - The WGSL binding type, e.g. `texture_2d<u32>`.
  * @returns The matching bind group layout sample type.
  */
