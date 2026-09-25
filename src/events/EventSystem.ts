@@ -468,6 +468,7 @@ export class EventSystem implements System<EventSystemOptions>
         this._onPointerDown = this._onPointerDown.bind(this);
         this._onPointerMove = this._onPointerMove.bind(this);
         this._onPointerUp = this._onPointerUp.bind(this);
+        this._onPointerCancel = this._onPointerCancel.bind(this);
         this._onPointerOverOut = this._onPointerOverOut.bind(this);
         this.onWheel = this.onWheel.bind(this);
     }
@@ -713,6 +714,28 @@ export class EventSystem implements System<EventSystemOptions>
     }
 
     /**
+     * Event handler for pointer cancel events. These are fired when the browser or operating system
+     * interrupts an active pointer, e.g. when a touch turns into a scroll gesture or the app is backgrounded.
+     * @param nativeEvent - The native pointer/touch event.
+     */
+    private _onPointerCancel(nativeEvent: PointerEvent | TouchEvent): void
+    {
+        if (!this.features.click) return;
+        this.rootBoundary.rootTarget = this.renderer.lastObjectRendered;
+
+        const normalizedEvents = this._normalizeToPointerData(nativeEvent);
+
+        for (let i = 0, j = normalizedEvents.length; i < j; i++)
+        {
+            const event = this._bootstrapEvent(this._rootPointerEvent, normalizedEvents[i]);
+
+            this.rootBoundary.mapEvent(event);
+        }
+
+        this.setCursor(this.rootBoundary.cursor);
+    }
+
+    /**
      * Event handler for pointer over & out events on {@link EventSystem#domElement this.domElement}.
      * @param nativeEvent - The native mouse/pointer/touch event.
      */
@@ -819,7 +842,7 @@ export class EventSystem implements System<EventSystemOptions>
             // care about the pointerleave event
             this.domElement.addEventListener('pointerleave', this._onPointerOverOut, true);
             this.domElement.addEventListener('pointerover', this._onPointerOverOut, true);
-            // globalThis.addEventListener('pointercancel', this.onPointerCancel, true);
+            globalThis.addEventListener('pointercancel', this._onPointerCancel, true);
             globalThis.addEventListener('pointerup', this._onPointerUp, true);
         }
         else
@@ -833,7 +856,7 @@ export class EventSystem implements System<EventSystemOptions>
             if (this.supportsTouchEvents)
             {
                 this.domElement.addEventListener('touchstart', this._onPointerDown, true);
-                // this.domElement.addEventListener('touchcancel', this.onPointerCancel, true);
+                this.domElement.addEventListener('touchcancel', this._onPointerCancel, true);
                 this.domElement.addEventListener('touchend', this._onPointerUp, true);
                 this.domElement.addEventListener('touchmove', this._onPointerMove, true);
             }
@@ -879,7 +902,7 @@ export class EventSystem implements System<EventSystemOptions>
             this.domElement.removeEventListener('pointerdown', this._onPointerDown, true);
             this.domElement.removeEventListener('pointerleave', this._onPointerOverOut, true);
             this.domElement.removeEventListener('pointerover', this._onPointerOverOut, true);
-            // globalThis.removeEventListener('pointercancel', this.onPointerCancel, true);
+            globalThis.removeEventListener('pointercancel', this._onPointerCancel, true);
             globalThis.removeEventListener('pointerup', this._onPointerUp, true);
         }
         else
@@ -893,7 +916,7 @@ export class EventSystem implements System<EventSystemOptions>
             if (this.supportsTouchEvents)
             {
                 this.domElement.removeEventListener('touchstart', this._onPointerDown, true);
-                // this.domElement.removeEventListener('touchcancel', this.onPointerCancel, true);
+                this.domElement.removeEventListener('touchcancel', this._onPointerCancel, true);
                 this.domElement.removeEventListener('touchend', this._onPointerUp, true);
                 this.domElement.removeEventListener('touchmove', this._onPointerMove, true);
             }
