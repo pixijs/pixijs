@@ -253,6 +253,8 @@ export class Ticker
     private _protected = false;
     /** The last time keyframe was executed. Maintains a relatively fixed interval with the previous value. */
     private _lastFrame = -1;
+    /** Whether listeners are currently being invoked within _tick. */
+    private _isRunningListeners = false;
     /**
      * Internal tick method bound to ticker instance.
      * This is because in early 2015, Function.bind
@@ -276,8 +278,9 @@ export class Ticker
 
             if (this.started)
             {
-                // Invoke listeners now
+                this._isRunningListeners = true;
                 this.update(time);
+                this._isRunningListeners = false;
                 // Listener side effects may have modified ticker state.
                 if (this.started && this._requestId === null && this._head.next)
                 {
@@ -296,9 +299,12 @@ export class Ticker
     {
         if (this._requestId === null && this._head.next)
         {
-            // ensure callbacks get correct delta
-            this.lastTime = performance.now();
-            this._lastFrame = this.lastTime;
+            if (!this._isRunningListeners)
+            {
+                // ensure callbacks get correct delta
+                this.lastTime = performance.now();
+                this._lastFrame = this.lastTime;
+            }
             this._requestId = requestAnimationFrame(this._tick);
         }
     }
