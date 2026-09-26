@@ -1,4 +1,4 @@
-import { ColorMatrixFilter, NoiseFilter } from '~/filters';
+import { ColorTransformFilter, NoiseFilter } from '~/filters';
 import { Container, Graphics } from '~/scene';
 
 import type { TestScene } from '../../types';
@@ -23,7 +23,7 @@ export const scene: TestScene = {
         circle.x = 128 / 2 / 2;
         circle.y = 128 / 2 / 2;
 
-        const cm = new ColorMatrixFilter();
+        const cm = new ColorTransformFilter();
 
         cm.hue(140, true);
         circle.filters = cm;
