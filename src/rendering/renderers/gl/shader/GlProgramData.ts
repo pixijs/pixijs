@@ -1,3 +1,5 @@
+import type { GlRenderingContext } from '../context/GlRenderingContext';
+
 /** @private */
 export class IGLUniformData
 {
@@ -13,6 +15,7 @@ export class GlProgramData
 {
     /** The shader program. */
     public program: WebGLProgram;
+    private _gl: GlRenderingContext;
 
     /**
      * Holds the uniform data which contains uniform locations
@@ -43,10 +46,12 @@ export class GlProgramData
      * Makes a new Pixi program.
      * @param program - webgl program
      * @param uniformData - uniforms
+     * @param gl - webgl rendering context
      */
-    constructor(program: WebGLProgram, uniformData: {[key: string]: IGLUniformData})
+    constructor(program: WebGLProgram, uniformData: {[key: string]: IGLUniformData}, gl: GlRenderingContext)
     {
         this.program = program;
+        this._gl = gl;
         this.uniformData = uniformData;
         this.uniformGroups = {};
         this.uniformDirtyGroups = {};
@@ -56,10 +61,16 @@ export class GlProgramData
     /** Destroys this program. */
     public destroy(): void
     {
+        if (this.program)
+        {
+            this._gl.deleteProgram(this.program);
+            this.program = null;
+        }
+
         this.uniformData = null;
         this.uniformGroups = null;
         this.uniformDirtyGroups = null;
         this.uniformBlockBindings = null;
-        this.program = null;
+        this._gl = null;
     }
 }
