@@ -6,7 +6,9 @@
 import type { UNIFORM_TYPES } from '../../rendering/renderers/shared/shader/types';
 
 /** @internal */
-export type UboUploadFunction = (name: string, data: Float32Array, offset: number, uv: any, v: any) => void;
+export type UboUploadFunction = (
+    name: string, data: Float32Array, offset: number, uv: any, v: any, dataInt32: Int32Array
+) => void;
 
 // eslint-disable-next-line jsdoc/require-param
 /** @internal */
@@ -62,9 +64,13 @@ export const uboSingleFunctionsWGSL: Record<UNIFORM_TYPES | string, UboUploadFun
     {
         data[offset] = v;
     },
-    i32: (_name: string, data: Float32Array, offset: number, _uv: any, v: any): void =>
+    i32: (_name: string, _data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array): void =>
     {
-        data[offset] = v;
+        dataInt32[offset] = v;
+    },
+    u32: (_name: string, _data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array): void =>
+    {
+        dataInt32[offset] = v;
     },
     'vec2<f32>': (_name: string, data: Float32Array, offset: number, _uv: any, v: any): void =>
     {
@@ -83,6 +89,42 @@ export const uboSingleFunctionsWGSL: Record<UNIFORM_TYPES | string, UboUploadFun
         data[offset + 1] = v[1];
         data[offset + 2] = v[2];
         data[offset + 3] = v[3];
+    },
+    'vec2<i32>': (_name: string, _data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array): void =>
+    {
+        dataInt32[offset] = v[0];
+        dataInt32[offset + 1] = v[1];
+    },
+    'vec3<i32>': (_name: string, _data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array): void =>
+    {
+        dataInt32[offset] = v[0];
+        dataInt32[offset + 1] = v[1];
+        dataInt32[offset + 2] = v[2];
+    },
+    'vec4<i32>': (_name: string, _data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array): void =>
+    {
+        dataInt32[offset] = v[0];
+        dataInt32[offset + 1] = v[1];
+        dataInt32[offset + 2] = v[2];
+        dataInt32[offset + 3] = v[3];
+    },
+    'vec2<u32>': (_name: string, _data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array): void =>
+    {
+        dataInt32[offset] = v[0];
+        dataInt32[offset + 1] = v[1];
+    },
+    'vec3<u32>': (_name: string, _data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array): void =>
+    {
+        dataInt32[offset] = v[0];
+        dataInt32[offset + 1] = v[1];
+        dataInt32[offset + 2] = v[2];
+    },
+    'vec4<u32>': (_name: string, _data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array): void =>
+    {
+        dataInt32[offset] = v[0];
+        dataInt32[offset + 1] = v[1];
+        dataInt32[offset + 2] = v[2];
+        dataInt32[offset + 3] = v[3];
     },
     'mat2x2<f32>': (_name: string, data: Float32Array, offset: number, _uv: any, v: any): void =>
     {
@@ -160,9 +202,13 @@ export const uboSingleFunctionsSTD40: Record<UNIFORM_TYPES | string, UboUploadFu
     {
         data[offset] = v;
     },
-    i32: (_name: string, data: Float32Array, offset: number, _uv: any, v: any): void =>
+    i32: (_name: string, _data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array): void =>
     {
-        data[offset] = v;
+        dataInt32[offset] = v;
+    },
+    u32: (_name: string, _data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array): void =>
+    {
+        dataInt32[offset] = v;
     },
     'vec2<f32>': (_name: string, data: Float32Array, offset: number, _uv: any, v: any): void =>
     {
@@ -181,6 +227,42 @@ export const uboSingleFunctionsSTD40: Record<UNIFORM_TYPES | string, UboUploadFu
         data[offset + 1] = v[1];
         data[offset + 2] = v[2];
         data[offset + 3] = v[3];
+    },
+    'vec2<i32>': (_name: string, _data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array): void =>
+    {
+        dataInt32[offset] = v[0];
+        dataInt32[offset + 1] = v[1];
+    },
+    'vec3<i32>': (_name: string, _data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array): void =>
+    {
+        dataInt32[offset] = v[0];
+        dataInt32[offset + 1] = v[1];
+        dataInt32[offset + 2] = v[2];
+    },
+    'vec4<i32>': (_name: string, _data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array): void =>
+    {
+        dataInt32[offset] = v[0];
+        dataInt32[offset + 1] = v[1];
+        dataInt32[offset + 2] = v[2];
+        dataInt32[offset + 3] = v[3];
+    },
+    'vec2<u32>': (_name: string, _data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array): void =>
+    {
+        dataInt32[offset] = v[0];
+        dataInt32[offset + 1] = v[1];
+    },
+    'vec3<u32>': (_name: string, _data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array): void =>
+    {
+        dataInt32[offset] = v[0];
+        dataInt32[offset + 1] = v[1];
+        dataInt32[offset + 2] = v[2];
+    },
+    'vec4<u32>': (_name: string, _data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array): void =>
+    {
+        dataInt32[offset] = v[0];
+        dataInt32[offset + 1] = v[1];
+        dataInt32[offset + 2] = v[2];
+        dataInt32[offset + 3] = v[3];
     },
     'mat2x2<f32>': (_name: string, data: Float32Array, offset: number, _uv: any, v: any): void =>
     {
