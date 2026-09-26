@@ -83,7 +83,7 @@ export function generateProgram(gl: GlRenderingContext, program: GlProgram): GlP
         };
     }
 
-    const glProgram = new GlProgramData(webGLProgram, uniformData);
+    const glProgram = new GlProgramData(webGLProgram, uniformData, gl);
 
     return glProgram;
 }
