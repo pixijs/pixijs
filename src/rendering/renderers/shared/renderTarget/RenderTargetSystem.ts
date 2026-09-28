@@ -491,11 +491,11 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
 
         const source = renderTarget.colorAttachments[0]?.texture || renderTarget.depthStencilAttachment?.texture;
         const viewport = this.viewport;
-        const arrayLayerCount = source.arrayLayerCount || 1;
 
-        if (layer < 0 || layer >= arrayLayerCount)
+        if (layer < 0 || layer >= source.depthOrArrayLayers)
         {
-            throw new Error(`[RenderTargetSystem] layer ${layer} is out of bounds (arrayLayerCount=${arrayLayerCount}).`);
+            // eslint-disable-next-line max-len
+            throw new Error(`[RenderTargetSystem] layer ${layer} is out of bounds (layer count=${source.depthOrArrayLayers}).`);
         }
 
         // retain the as-passed bind state for the getters and getBindState; the frame is

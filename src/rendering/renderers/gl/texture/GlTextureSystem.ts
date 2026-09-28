@@ -312,7 +312,11 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         if (source.autoGenerateMipmaps && (this._renderer.context.supports.nonPowOf2mipmaps || source.isPowerOfTwo))
         {
-            const biggestDimension = Math.max(source.width, source.height);
+            const biggestDimension = Math.max(
+                source.width,
+                source.height,
+                source.dimension === '3d' ? source.depth : 1,
+            );
 
             source.mipLevelCount = Math.floor(Math.log2(biggestDimension)) + 1;
         }
@@ -390,8 +394,12 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         this._setBoundTexture(this._activeTextureLocation, source);
 
-        // integer texels have no alpha to premultiply, and a premultiplied 32-bit integer upload never returns in Chromium
-        const premultipliedAlpha = source.alphaMode === 'premultiply-alpha-on-upload' && !isIntegerFormat(source.format);
+        // integer texels have no alpha to premultiply, and a premultiplied 32-bit integer upload never returns in Chromium.
+        // 3D and array textures upload from buffers with texImage3D, which rejects premultiply (INVALID_OPERATION)
+        const premultipliedAlpha = source.alphaMode === 'premultiply-alpha-on-upload'
+            && !isIntegerFormat(source.format)
+            && glTexture.target !== gl.TEXTURE_3D
+            && glTexture.target !== gl.TEXTURE_2D_ARRAY;
 
         if (this._premultiplyAlpha !== premultipliedAlpha)
         {
@@ -409,9 +417,9 @@ export class GlTextureSystem implements System, CanvasGenerator
             // This allocates level 0 and, if needed, the full mip chain so any mip can be attached/rendered into (WebGL2).
             this._initEmptyTexture2D(glTexture, source);
         }
-        else if (glTexture.target === (gl as any).TEXTURE_2D_ARRAY)
+        else if (glTexture.target === gl.TEXTURE_2D_ARRAY || glTexture.target === gl.TEXTURE_3D)
         {
-            this._initEmptyTexture2DArray(glTexture, source);
+            this._initEmptyTexture3D(glTexture, source);
         }
         else if (glTexture.target === gl.TEXTURE_CUBE_MAP)
         {
@@ -481,43 +489,30 @@ export class GlTextureSystem implements System, CanvasGenerator
         }
     }
 
-    private _initEmptyTexture2DArray(glTexture: GlTexture, source: TextureSource): void
+    /**
+     * Allocates a texture with a depth: the layers of a 2D array or the slices of a 3D texture.
+     * Layer counts stay the same at every mip level, 3D depth halves like width and height.
+     * @param glTexture - The GL texture wrapper.
+     * @param source - The texture source describing the size.
+     */
+    private _initEmptyTexture3D(glTexture: GlTexture, source: TextureSource): void
     {
-        if (this._renderer.context.webGLVersion !== 2)
-        {
-            throw new Error('[GlTextureSystem] TEXTURE_2D_ARRAY requires WebGL2.');
-        }
-
         const gl2 = this._gl;
-        const depth = Math.max(source.arrayLayerCount | 0, 1);
+        const is3D = glTexture.target === gl2.TEXTURE_3D;
 
-        // Level 0
-        gl2.texImage3D(
-            gl2.TEXTURE_2D_ARRAY,
-            0,
-            glTexture.internalFormat,
-            source.pixelWidth,
-            source.pixelHeight,
-            depth,
-            0,
-            glTexture.format,
-            glTexture.type,
-            null,
-        );
+        let w = source.pixelWidth;
+        let h = source.pixelHeight;
+        let d = source.depthOrArrayLayers;
 
-        // Mips (if requested)
-        let w = Math.max(source.pixelWidth >> 1, 1);
-        let h = Math.max(source.pixelHeight >> 1, 1);
-
-        for (let level = 1; level < source.mipLevelCount; level++)
+        for (let level = 0; level < source.mipLevelCount; level++)
         {
             gl2.texImage3D(
-                gl2.TEXTURE_2D_ARRAY,
+                glTexture.target,
                 level,
                 glTexture.internalFormat,
                 w,
                 h,
-                depth,
+                d,
                 0,
                 glTexture.format,
                 glTexture.type,
@@ -526,6 +521,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
             w = Math.max(w >> 1, 1);
             h = Math.max(h >> 1, 1);
+            if (is3D) d = Math.max(d >> 1, 1);
         }
     }
 

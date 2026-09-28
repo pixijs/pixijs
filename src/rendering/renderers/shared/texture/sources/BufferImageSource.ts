@@ -4,7 +4,7 @@ import { TextureSource } from './TextureSource';
 
 import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
 import type { TypedArray } from '../../buffer/Buffer';
-import type { TextureSourceOptions } from './TextureSource';
+import type { TextureShapeOptions, TextureSourceOptions } from './TextureSource';
 
 /**
  * Options for creating a BufferImageSource.
@@ -24,6 +24,12 @@ export interface BufferSourceOptions extends TextureSourceOptions<TypedArray | A
  * 32-bit integer arrays give `rgba32uint`, 16-bit integer arrays give `rgba16uint`, anything else `bgra8unorm`.
  * Integer formats default to `alphaMode: 'no-premultiply-alpha'`, since integer data can't be
  * premultiplied on upload; an explicit `alphaMode` still wins.
+ *
+ * Pass `depth` for a 3D texture, or `arrayLayerCount` for a 2D array. The buffer holds the slices (or layers)
+ * one after another, each in row-major order, so texel `(x, y, z)` sits at index
+ * `x + (y * width) + (z * width * height)`. These upload whole: {@link BufferImageSource#update} takes no range.
+ * `rgba32float` can't be filtered on most devices, so smooth sampling wants a format such as
+ * `rgba8unorm`, `r8unorm` or `rgba16float`.
  * @example
  * ```ts
  * const ids = new BufferImageSource({
@@ -31,6 +37,88 @@ export interface BufferSourceOptions extends TextureSourceOptions<TypedArray | A
  *     width: 1,
  *     height: 1,
  *     scaleMode: 'nearest',
+ * });
+ * ```
+ * @example
+ * A 3D noise texture for volumetric effects, sampled with `sampler3D` (GLSL) or `texture_3d<f32>` (WGSL):
+ *
+ * ```ts
+ * const size = 64;
+ * const data = new Uint8Array(size * size * size * 4);
+ *
+ * for (let z = 0; z < size; z++)
+ * {
+ *     for (let y = 0; y < size; y++)
+ *     {
+ *         for (let x = 0; x < size; x++)
+ *         {
+ *             const i = (x + (y * size) + (z * size * size)) * 4;
+ *
+ *             data[i] = data[i + 1] = data[i + 2] = Math.random() * 255;
+ *             data[i + 3] = 255;
+ *         }
+ *     }
+ * }
+ *
+ * const noise = new BufferImageSource({
+ *     resource: data,
+ *     width: size,
+ *     height: size,
+ *     depth: size,
+ *     format: 'rgba8unorm',
+ *     addressMode: 'repeat',
+ * });
+ *
+ * // a fullscreen quad that shows the middle slice
+ * const quad = new Geometry({
+ *     attributes: {
+ *         aPosition: [-1, -1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1],
+ *         aUV: [0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0],
+ *     },
+ * });
+ *
+ * const wgsl = `
+ *     @group(0) @binding(0) var uNoise: texture_3d<f32>;
+ *     @group(0) @binding(1) var uNoiseSampler: sampler;
+ *
+ *     struct VSOutput { @builtin(position) position: vec4f, @location(0) uv: vec2f };
+ *
+ *     @vertex fn mainVert(@location(0) aPosition: vec2f, @location(1) aUV: vec2f) -> VSOutput {
+ *         return VSOutput(vec4f(aPosition, 0.0, 1.0), aUV);
+ *     }
+ *
+ *     @fragment fn mainFrag(@location(0) uv: vec2f) -> @location(0) vec4f {
+ *         return textureSample(uNoise, uNoiseSampler, vec3f(uv, 0.5));
+ *     }
+ * `;
+ *
+ * const mesh = new Mesh({
+ *     geometry: quad,
+ *     shader: Shader.from({
+ *         gl: {
+ *             vertex: `#version 300 es
+ *                 in vec2 aPosition;
+ *                 in vec2 aUV;
+ *                 out vec2 vUV;
+ *                 void main() { vUV = aUV; gl_Position = vec4(aPosition, 0.0, 1.0); }
+ *             `,
+ *             // no `precision ... sampler3D;` line needed: pixi adds it
+ *             fragment: `#version 300 es
+ *                 in vec2 vUV;
+ *                 uniform sampler3D uNoise;
+ *                 out vec4 fragColor;
+ *                 void main() { fragColor = texture(uNoise, vec3(vUV, 0.5)); }
+ *             `,
+ *         },
+ *         gpu: {
+ *             vertex: { source: wgsl, entryPoint: 'mainVert' },
+ *             fragment: { source: wgsl, entryPoint: 'mainFrag' },
+ *         },
+ *         resources: {
+ *             uNoise: noise,
+ *             uNoiseSampler: noise.style,
+ *         },
+ *     }),
  * });
  * ```
  * @category rendering
@@ -55,9 +143,10 @@ export class BufferImageSource extends TextureSource<TypedArray | ArrayBuffer>
      */
     public _updateEnd = Infinity;
 
-    constructor(options: BufferSourceOptions)
+    constructor(options: BufferSourceOptions & TextureShapeOptions)
     {
-        const buffer = options.resource || new Float32Array(options.width * options.height * 4);
+        const layerCount = options.depth ?? options.arrayLayerCount ?? 1;
+        const buffer = options.resource || new Float32Array(options.width * options.height * layerCount * 4);
         let format = options.format;
 
         if (!format)
@@ -92,11 +181,12 @@ export class BufferImageSource extends TextureSource<TypedArray | ArrayBuffer>
             }
         }
 
-        // uploads never premultiply integer data, so the default alphaMode must not say they did
-        const isInteger = isIntegerFormat(format);
+        // uploads never premultiply integer data, and WebGL can't premultiply a 3D or array upload from a
+        // buffer, so the default alphaMode must not say they did
+        const noPremultiply = isIntegerFormat(format) || layerCount > 1;
 
         super({
-            ...(isInteger && { alphaMode: 'no-premultiply-alpha' }),
+            ...(noPremultiply && { alphaMode: 'no-premultiply-alpha' }),
             ...options,
             resource: buffer,
             format,
@@ -116,7 +206,8 @@ export class BufferImageSource extends TextureSource<TypedArray | ArrayBuffer>
      * top of the bytes it moves, which reaches tens of microseconds on some mobile GPUs. One span
      * usually beats many small calls.
      *
-     * Partial uploads assume the buffer holds exactly `width * height` texels.
+     * Partial uploads assume the buffer holds exactly `width * height` texels. A 3D texture or 2D array
+     * always uploads whole, so it takes no range.
      * @example
      * ```ts
      * const data = new Float32Array(4096 * 64 * 4);
@@ -133,6 +224,13 @@ export class BufferImageSource extends TextureSource<TypedArray | ArrayBuffer>
      */
     public override update(start = 0, end = Infinity): void
     {
+        // #if _DEBUG
+        if ((start > 0 || end < Infinity) && this.depthOrArrayLayers > 1)
+        {
+            throw new Error('[BufferImageSource] a 3D texture or 2D array uploads whole: call update() with no range.');
+        }
+        // #endif
+
         this._updateStart = start;
         this._updateEnd = end;
 

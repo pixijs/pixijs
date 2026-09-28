@@ -14,8 +14,9 @@ import { Graphics } from '~/scene/graphics/shared/Graphics';
 import type { WebGLRenderer } from '../gl/WebGLRenderer';
 import type { WebGPURenderer } from '../gpu/WebGPURenderer';
 import type { BindOptions } from '../shared/renderTarget/RenderTargetSystem';
+import type { TextureSourceOptions } from '../shared/texture/sources/TextureSource';
 
-function createTarget(options: Partial<ConstructorParameters<typeof TextureSource>[0]> = {})
+function createTarget(options: TextureSourceOptions = {})
 {
     return new RenderTarget({
         colorTextures: [new TextureSource({ width: 64, height: 64, ...options })],

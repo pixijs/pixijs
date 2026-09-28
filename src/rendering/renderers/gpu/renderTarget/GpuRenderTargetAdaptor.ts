@@ -419,6 +419,11 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     loadOp,
                 };
 
+                if (colorTexture.dimension === '3d')
+                {
+                    baseAttachment.depthSlice = layer;
+                }
+
                 if (loadOp === 'clear' && !restore)
                 {
                     clearValue ??= (colorAttachment.clearValue as RgbaArray) ?? renderTargetSystem.defaultClearColor;

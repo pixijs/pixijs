@@ -137,3 +137,33 @@ describe('BufferImageSource', () =>
         itUploadsRanges(readBackAfterUpdate);
     });
 });
+
+describe('BufferImageSource with depth', () =>
+{
+    it('should allocate a buffer for every slice or layer when none is given', () =>
+    {
+        expect((new BufferImageSource({ width: 2, height: 2, depth: 3 }).resource as Float32Array).length).toBe(48);
+        expect((new BufferImageSource({ width: 2, height: 2, arrayLayerCount: 3 }).resource as Float32Array).length)
+            .toBe(48);
+    });
+
+    it('should default 3D and array textures to no-premultiply-alpha', () =>
+    {
+        const data = new Uint8Array(2 * 2 * 2 * 4);
+
+        expect(new BufferImageSource({ resource: data, width: 2, height: 2, depth: 2 }).alphaMode)
+            .toBe('no-premultiply-alpha');
+        expect(new BufferImageSource({ resource: data, width: 2, height: 2, arrayLayerCount: 2 }).alphaMode)
+            .toBe('no-premultiply-alpha');
+        expect(new BufferImageSource({ resource: data, width: 2, height: 4 }).alphaMode)
+            .toBe('premultiply-alpha-on-upload');
+    });
+
+    it('should reject a partial update of a 3D texture', () =>
+    {
+        const source = new BufferImageSource({ resource: new Uint8Array(2 * 2 * 2 * 4), width: 2, height: 2, depth: 2 });
+
+        expect(() => source.update(0, 4)).toThrow('uploads whole');
+        expect(() => source.update()).not.toThrow();
+    });
+});

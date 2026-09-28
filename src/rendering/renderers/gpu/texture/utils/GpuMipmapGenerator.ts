@@ -87,9 +87,14 @@ export class GpuMipmapGenerator
     {
         const pipeline = this._getMipmapPipeline(texture.format);
 
-        if (texture.dimension === '3d' || texture.dimension === '1d')
+        if (texture.dimension === '3d')
         {
-            throw new Error('Generating mipmaps for non-2d textures is currently unsupported!');
+            throw new Error('[GpuMipmapGenerator] a 3D texture uses Gpu3dMipmapGenerator.');
+        }
+
+        if (texture.dimension === '1d')
+        {
+            throw new Error('Generating mipmaps for 1d textures is currently unsupported!');
         }
 
         let mipTexture = texture;

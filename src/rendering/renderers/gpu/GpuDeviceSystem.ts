@@ -189,6 +189,9 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
             'texture-compression-astc',
             'texture-compression-etc2',
             'indirect-first-instance',
+            // more formats for TextureSource `storage`
+            'bgra8unorm-storage',
+            'texture-formats-tier1',
         ].filter((feature) => adapter.features.has(feature)) as GPUFeatureName[];
 
         const device = await adapter.requestDevice({

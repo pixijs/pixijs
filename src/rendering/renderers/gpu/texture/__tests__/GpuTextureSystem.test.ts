@@ -123,3 +123,56 @@ describeLocalOnly('GpuTextureSystem sRGB view format', () =>
         expect(createTexture.mock.calls[2][0].viewFormats).toBeUndefined();
     });
 });
+
+describeLocalOnly('GpuTextureSystem 3D textures', () =>
+{
+    it('should drop the 3D mipmap generator when the device changes', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        renderer.texture.initSource(new TextureSource({
+            width: 2, height: 2, depth: 2, format: 'rgba8unorm', storage: true, autoGenerateMipmaps: true,
+        }));
+
+        expect(renderer.texture['_mipmap3dGenerator']).toBeTruthy();
+
+        // its pipeline and sampler belong to the old device
+        renderer.texture['contextChange'](renderer.gpu);
+
+        expect(renderer.texture['_mipmap3dGenerator']).toBeNull();
+    });
+
+    it('should refuse 3D mipmaps it cannot generate before creating the texture', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const notStorage = new TextureSource({
+            width: 2, height: 2, depth: 2, format: 'rgba8unorm', autoGenerateMipmaps: true,
+        });
+        const notFilterable = new TextureSource({
+            width: 2, height: 2, depth: 2, format: 'rgba32float', storage: true, autoGenerateMipmaps: true,
+        });
+
+        expect(() => renderer.texture.initSource(notStorage)).toThrow('needs storage: true');
+        expect(() => renderer.texture.initSource(notFilterable)).toThrow('\'rgba32float\' can\'t be downsampled');
+        expect(notStorage._gpuData[renderer.uid]).toBeUndefined();
+        expect(notFilterable._gpuData[renderer.uid]).toBeUndefined();
+    });
+
+    describe('storage', () =>
+    {
+        it('should add STORAGE_BINDING only to textures marked storage', async () =>
+        {
+            renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+            const storage = renderer.texture.initSource(new TextureSource({
+                width: 4, height: 4, depth: 4, format: 'rgba8unorm', storage: true,
+            }));
+            const plain = renderer.texture.initSource(new TextureSource({ width: 4, height: 4, format: 'rgba8unorm' }));
+
+            expect(storage.usage & GPUTextureUsage.STORAGE_BINDING).toBeTruthy();
+            expect(storage.dimension).toBe('3d');
+            expect(plain.usage & GPUTextureUsage.STORAGE_BINDING).toBe(0);
+        });
+    });
+});

@@ -3,6 +3,19 @@ import { CanvasPool, TexturePool } from '~/rendering';
 
 describe('ViewSystem', () =>
 {
+    it('should give depth to the render target, not the canvas texture', async () =>
+    {
+        const renderer = await getWebGLRenderer({ depth: true });
+        const source = renderer.view.texture.source;
+
+        // the renderer's depth asks for a depth buffer; on the canvas source it would make a 3D texture
+        expect(source.dimension).toBe('2d');
+        expect(source.depth).toBe(1);
+        expect(renderer.view.renderTarget.depth).toBe(true);
+
+        renderer.destroy();
+    });
+
     it('should register the screen size with both pools on init', async () =>
     {
         const renderer = await getWebGLRenderer({ width: 640, height: 480, resolution: 2 });

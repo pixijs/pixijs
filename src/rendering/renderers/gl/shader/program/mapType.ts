@@ -40,6 +40,9 @@ const GL_TO_GLSL_TYPES: Dict<string> = {
     INT_SAMPLER_2D_ARRAY:          'sampler2DArray',
     UNSIGNED_INT_SAMPLER_2D_ARRAY: 'sampler2DArray',
     SAMPLER_2D_ARRAY_SHADOW:       'sampler2DArrayShadow',
+    SAMPLER_3D:              'sampler3D',
+    INT_SAMPLER_3D:          'sampler3D',
+    UNSIGNED_INT_SAMPLER_3D: 'sampler3D',
 };
 
 const GLSL_TO_VERTEX_TYPES: Record<string, VertexFormat> = {

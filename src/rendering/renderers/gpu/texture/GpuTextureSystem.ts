@@ -10,6 +10,7 @@ import { blockDataMap, gpuUploadCompressedTextureResource } from './uploaders/gp
 import { createGpuUploadCubeTextureResource } from './uploaders/gpuUploadCubeTextureResource';
 import { gpuUploadImageResource } from './uploaders/gpuUploadImageSource';
 import { gpuUploadVideoResource } from './uploaders/gpuUploadVideoSource';
+import { assertMipmap3dTexture, Gpu3dMipmapGenerator } from './utils/Gpu3dMipmapGenerator';
 import { GpuMipmapGenerator } from './utils/GpuMipmapGenerator';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
@@ -107,6 +108,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     private _gpu: GPU;
     private _mipmapGenerator?: GpuMipmapGenerator;
+    private _mipmap3dGenerator?: Gpu3dMipmapGenerator;
 
     private readonly _renderer: WebGPURenderer;
     private readonly _managedTextures: GCManagedHash<TextureSource>;
@@ -149,6 +151,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
         this._managedTextures.removeAll();
         this._gpuSamplers = Object.create(null);
         this._mipmapGenerator = null;
+        this._mipmap3dGenerator = null;
     }
 
     /**
@@ -165,7 +168,14 @@ export class GpuTextureSystem implements System, CanvasGenerator
     {
         if (source.autoGenerateMipmaps)
         {
-            const biggestDimension = Math.max(source.pixelWidth, source.pixelHeight);
+            // fail before allocating a mip chain that could never be filled
+            if (source.dimension === '3d') assertMipmap3dTexture(source.format, source.storage);
+
+            const biggestDimension = Math.max(
+                source.pixelWidth,
+                source.pixelHeight,
+                source.dimension === '3d' ? source.depth : 1,
+            );
 
             source.mipLevelCount = Math.floor(Math.log2(biggestDimension)) + 1;
         }
@@ -197,6 +207,8 @@ export class GpuTextureSystem implements System, CanvasGenerator
                 usage |= GPUTextureUsage.COPY_SRC;
             }
 
+            if (source.storage) usage |= GPUTextureUsage.STORAGE_BINDING;
+
             viewFormats = srgbViewFormat(source.format);
         }
 
@@ -208,7 +220,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
         const textureDescriptor: GPUTextureDescriptor = {
             label: source.label,
             // WebGPU cube textures are 2D textures with 6 array layers and a cube view.
-            size: { width, height, depthOrArrayLayers: source.arrayLayerCount },
+            size: { width, height, depthOrArrayLayers: source.depthOrArrayLayers },
             format: source.format,
             viewFormats,
             sampleCount: source.sampleCount,
@@ -255,13 +267,17 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     protected onUpdateMipmaps(source: TextureSource): void
     {
-        if (!this._mipmapGenerator)
-        {
-            this._mipmapGenerator = new GpuMipmapGenerator(this._gpu.device);
-        }
-
         const gpuTexture = this.getGpuSource(source);
 
+        if (source.dimension === '3d')
+        {
+            this._mipmap3dGenerator ??= new Gpu3dMipmapGenerator(this._gpu.device);
+            this._mipmap3dGenerator.generateMipmap(gpuTexture);
+
+            return;
+        }
+
+        this._mipmapGenerator ??= new GpuMipmapGenerator(this._gpu.device);
         this._mipmapGenerator.generateMipmap(gpuTexture);
     }
 
@@ -381,6 +397,11 @@ export class GpuTextureSystem implements System, CanvasGenerator
             gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
         }
 
+        // a 3D texture renders through a whole-volume view, and the pass picks the slice with `depthSlice`
+        const is3D = source.dimension === '3d';
+
+        if (is3D) layer = 0;
+
         // numeric fast path for the common case; explicit descriptors get the full string key.
         // (+1 keeps mip 0 / layer 0 distinct from the default bind view at key 0)
         let descriptorKey: string | number = (layer * (source.mipLevelCount || 1)) + mipLevel + 1;
@@ -391,7 +412,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
         }
 
         gpuData.textureViews[descriptorKey] ||= gpuData.gpuTexture.createView({
-            dimension: '2d',
+            dimension: is3D ? '3d' : '2d',
             baseMipLevel: mipLevel,
             mipLevelCount: 1,
             baseArrayLayer: layer,
@@ -477,6 +498,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
         (this._renderer as null) = null;
         this._gpu = null;
         this._mipmapGenerator = null;
+        this._mipmap3dGenerator = null;
         this._gpuSamplers = null;
         this._bindGroupHash = null;
     }
