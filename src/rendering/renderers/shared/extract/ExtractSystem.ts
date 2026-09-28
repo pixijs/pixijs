@@ -666,11 +666,14 @@ export class ExtractSystem implements System
 
         const texture = renderer.textureGenerator.generateTexture(options as GenerateTextureOptions);
 
-        const canvas = renderer.texture.generateCanvas(texture);
-
-        texture.destroy(true);
-
-        return canvas;
+        try
+        {
+            return renderer.texture.generateCanvas(texture);
+        }
+        finally
+        {
+            texture.destroy(true);
+        }
     }
 
     /**
@@ -710,19 +713,22 @@ export class ExtractSystem implements System
         const target = options.target;
 
         const renderer = this._renderer;
-        const texture = target instanceof Texture
-            ? target
-            : renderer.textureGenerator.generateTexture(options as GenerateTextureOptions);
 
-        const pixelInfo = renderer.texture.getPixels(texture);
-
-        if (target instanceof Container)
+        if (target instanceof Texture)
         {
-            // destroy generated texture
-            texture.destroy(true);
+            return renderer.texture.getPixels(target);
         }
 
-        return pixelInfo;
+        const texture = renderer.textureGenerator.generateTexture(options as GenerateTextureOptions);
+
+        try
+        {
+            return renderer.texture.getPixels(texture);
+        }
+        finally
+        {
+            texture.destroy(true);
+        }
     }
 
     /**
