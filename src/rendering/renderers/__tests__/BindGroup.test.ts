@@ -191,6 +191,18 @@ describe('BindGroup', () =>
         // the proxies delegate their own stamp straight through to the buffer
         expect(uniformGroup._gcLastUsed).toBe(123);
         expect(bufferResource._gcLastUsed).toBe(123);
+
+        // a binding added after the first touch, past a gap, is stamped too
+        const lateBuffer = new Buffer({
+            data: new Float32Array(16),
+            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
+        });
+
+        bindGroup.setResource(lateBuffer, 3);
+        bindGroup._touch(456);
+
+        expect(lateBuffer._gcLastUsed).toBe(456);
+        expect(buffer._gcLastUsed).toBe(456);
     });
 
     it('should let have a unique id for a bind group, no clashes', () =>
@@ -317,5 +329,39 @@ describe('BindGroup', () =>
         expect(() => bindGroup._key).not.toThrow();
         expect(bindGroup._key).toBe('-1');
         expect(() => bindGroup._touch(0)).not.toThrow();
+    });
+
+    it('should track each binding number once, gaps included', () =>
+    {
+        const source = new TextureSource({ width: 16, height: 16 });
+        const other = new TextureSource({ width: 16, height: 16 });
+        const bindGroup = new BindGroup();
+
+        bindGroup.setResource(source, 0);
+        bindGroup.setResource(source.style, 3);
+
+        const keys = bindGroup._resourceKeys;
+
+        expect(keys).toEqual([0, 3]);
+
+        // replacing a resource keeps its binding number
+        bindGroup.setResource(other, 0);
+
+        expect(bindGroup._resourceKeys).toBe(keys);
+
+        // the null slot a destroyed resource leaves behind keeps its binding number
+        other.destroy();
+
+        expect(bindGroup._resourceKeys).toBe(keys);
+
+        // and so does refilling it
+        bindGroup.setResource(source, 0);
+
+        expect(bindGroup._resourceKeys).toBe(keys);
+
+        // a new binding number after the list was built rebuilds it, still ascending
+        bindGroup.setResource(source.style, 1);
+
+        expect(bindGroup._resourceKeys).toEqual([0, 1, 3]);
     });
 });

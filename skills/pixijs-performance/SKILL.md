@@ -359,6 +359,9 @@ const rt = RenderTexture.create({ width: 1024, height: 1024, antialias: true, tr
 
 // upload only the changed byte range of a large buffer (also works on WebGL)
 buffer.update(changedBytes, offsetBytes);
+
+// upload only a texel range of a data texture (end is exclusive)
+bufferImageSource.update(100, 116);
 ```
 
 On a tile-based WebGPU GPU (`renderer.device.extensions.tileBased`: every phone GPU and Apple silicon) the multisample colour buffer of every antialiased target is already discarded instead of written back, and a pass that reopens the target restores it from the resolved image; the buffer may not be allocated at all when `renderer.device.extensions.transientAttachment` is true. `transient: true` additionally discards the multisample depth/stencil buffer, and the colour buffer on other GPUs. Only use it on textures rendered in a single pass and never re-entered with `clear: false` or wrapped by a filter or mask. For static custom draw sequences on WebGPU, record a render bundle once and replay it each frame; see the `pixijs-custom-rendering` skill.
