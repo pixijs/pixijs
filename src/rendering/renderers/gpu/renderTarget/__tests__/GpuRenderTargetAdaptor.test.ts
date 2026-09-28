@@ -2,6 +2,7 @@ import { CLEAR } from '../../../gl/const';
 import { RenderTarget } from '../../../shared/renderTarget/RenderTarget';
 import { TextureSource } from '../../../shared/texture/sources/TextureSource';
 import { Texture } from '../../../shared/texture/Texture';
+import { GpuMsaaRestore } from '../GpuMsaaRestore';
 import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
 import { AlphaFilter } from '~/filters';
 import { Container, Graphics } from '~/scene';
@@ -402,6 +403,115 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
         expect(restoredSlots(gpuRenderTarget)).toEqual([0]);
 
         renderer.encoder.postrender();
+        renderer.destroy();
+    });
+
+    it('should clear instead of restoring the first pass of a new canvas frame', async () =>
+    {
+        const renderer = (await getWebGPURenderer({ antialias: true })) as WebGPURenderer;
+        const device = renderer.gpu.device;
+        const copy = jest.spyOn(GpuMsaaRestore.prototype, 'copy');
+        const shape = new Graphics().rect(0, 0, 10, 10).fill('red');
+        const root = () => renderer.renderTarget.getGpuRenderTarget(renderer.renderTarget.rootRenderTarget);
+
+        device.pushErrorScope('validation');
+
+        // the canvas texture is new and empty, so there is nothing to restore
+        renderer.render({ container: shape, clear: false });
+
+        expect(copy).not.toHaveBeenCalled();
+        expect(root().descriptor.colorAttachments[0].clearValue).toEqual([0, 0, 0, 0]);
+
+        // the same frame: keeps what was just drawn
+        renderer.render({ container: shape, clear: false });
+
+        expect(copy).toHaveBeenCalledTimes(1);
+
+        // the next frame hands out a new texture
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        renderer.render({ container: shape, clear: false });
+
+        expect(copy).toHaveBeenCalledTimes(1);
+        expect(await device.popErrorScope()).toBeNull();
+
+        copy.mockRestore();
+        renderer.destroy();
+    });
+
+    it('should let the GC free an idle back texture and re-create it on the next restore', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const device = renderer.gpu.device;
+        const target = makeMsaaTarget();
+        const other = makeMsaaTarget();
+        const reopen = () =>
+        {
+            renderer.encoder.renderStart();
+            renderer.renderTarget.bind({ target, clear: true });
+            renderer.renderTarget.bind({ target: other, clear: true });
+            renderer.renderTarget.bind({ target, clear: false });
+            renderer.encoder.postrender();
+        };
+
+        reopen();
+
+        const backTexture = renderer.renderTarget.getGpuRenderTarget(target).msaaBackTextures[0];
+        const before = backTexture._gpuData[renderer.uid];
+
+        expect(before).toBeTruthy();
+
+        // unused for longer than the GC allows
+        backTexture._gcLastUsed = performance.now() - renderer.gc.maxUnusedTime - 1;
+        renderer.gc.run();
+
+        expect(backTexture._gpuData[renderer.uid]).toBeFalsy();
+
+        device.pushErrorScope('validation');
+        reopen();
+
+        expect(await device.popErrorScope()).toBeNull();
+        expect(backTexture._gpuData[renderer.uid]).toBeTruthy();
+        expect(backTexture._gpuData[renderer.uid]).not.toBe(before);
+
+        renderer.destroy();
+    });
+
+    it('should set up a depth/stencil texture added after the target was built', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const device = renderer.gpu.device;
+        const target = makeMsaaTarget({ transient: true });
+
+        // the backend target is built without depth/stencil
+        renderer.encoder.renderStart();
+        renderer.renderTarget.bind({ target, clear: true });
+        renderer.encoder.postrender();
+
+        // as pixi3d does, straight on the render target
+        target.ensureDepthStencilTexture();
+
+        const depthStencil = target.depthStencilAttachment.texture;
+        const createTexture = jest.spyOn(device, 'createTexture');
+
+        device.pushErrorScope('validation');
+        renderer.encoder.renderStart();
+        renderer.renderTarget.bind({ target, clear: true });
+        renderer.encoder.postrender();
+
+        expect(await device.popErrorScope()).toBeNull();
+        expect(depthStencil.sampleCount).toBe(4);
+        expect(depthStencil.transient).toBe(true);
+
+        const descriptor = createTexture.mock.calls.find(([d]) => d.format === depthStencil.format)[0];
+
+        expect(descriptor.sampleCount).toBe(4);
+
+        if (renderer.device.extensions.transientAttachment)
+        {
+            expect(descriptor.usage & (GPUTextureUsage as { TRANSIENT_ATTACHMENT?: number }).TRANSIENT_ATTACHMENT)
+                .toBeTruthy();
+        }
+
         renderer.destroy();
     });
 });

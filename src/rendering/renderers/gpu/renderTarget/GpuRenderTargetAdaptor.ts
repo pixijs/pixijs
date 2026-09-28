@@ -193,7 +193,6 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         if ((renderTarget.stencil || renderTarget.depth) && !renderTarget.depthStencilAttachment)
         {
             renderTarget.ensureDepthStencilTexture();
-            this._prepareDepthStencil(renderTarget, gpuRenderTarget);
         }
 
         const hasDepthStencil = !!renderTarget.depthStencilAttachment;
@@ -359,6 +358,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
                 let view: GPUTextureView;
                 let resolveTarget: GPUTextureView;
+                let newCanvasFrame = false;
 
                 if (context)
                 {
@@ -369,6 +369,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     }
 
                     const currentTexture = context.getCurrentTexture();
+
+                    newCanvasFrame = gpuRenderTarget.canvasTextures[i] !== currentTexture;
+                    gpuRenderTarget.canvasTextures[i] = currentTexture;
 
                     const canvasTextureView = currentTexture.createView(colorAttachment.viewDescriptor);
 
@@ -402,14 +405,16 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                 clearValue ??= renderTargetSystem.defaultClearColor;
 
                 // a transient MSAA buffer is never stored, so a pass that would load it clears and restores it
-                // from the resolved texture instead (see GpuMsaaRestore)
+                // from the resolved texture instead (see GpuMsaaRestore). The first pass of a canvas frame has
+                // nothing to restore: its texture is new and empty, so a clear to transparent gives the same result.
                 const transient = !!msaaTexture?.transient;
-                const restore = transient && loadOp !== 'clear';
+                const load = transient && loadOp !== 'clear';
+                const restore = load && !newCanvasFrame;
 
-                if (restore)
+                if (load)
                 {
                     loadOp = 'clear';
-                    (restoreList ??= []).push(i);
+                    if (restore) (restoreList ??= []).push(i);
                 }
 
                 const baseAttachment: GPURenderPassColorAttachment = {
@@ -424,7 +429,12 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     baseAttachment.depthSlice = layer;
                 }
 
-                if (loadOp === 'clear' && !restore)
+                if (load)
+                {
+                    // restored over, or a new canvas frame, which starts transparent
+                    baseAttachment.clearValue = [0, 0, 0, 0];
+                }
+                else if (loadOp === 'clear')
                 {
                     clearValue ??= (colorAttachment.clearValue as RgbaArray) ?? renderTargetSystem.defaultClearColor;
                     baseAttachment.clearValue = clearValue;
@@ -445,15 +455,11 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
         let depthStencilAttachment: GPURenderPassDepthStencilAttachment;
 
-        // If we have a depth/stencil attachment, ensure its sample count matches the MSAA state.
-        // This is necessary if the stencil buffer was added dynamically after initialization
-        // (e.g. by the mask system calling ensureDepthStencil()).
         if (renderTarget.depthStencilAttachment)
         {
-            if (gpuRenderTarget.msaa)
-            {
-                renderTarget.depthStencilAttachment.texture.sampleCount = 4;
-            }
+            // set up before the view below creates its GPU texture, which covers a depth/stencil texture added
+            // after the target was built (a mask adding stencil, RenderTarget.ensureDepthStencilTexture)
+            this._prepareDepthStencil(renderTarget, gpuRenderTarget);
 
             const attachment = renderTarget.depthStencilAttachment;
             const stencil = attachment.texture.format.includes('stencil');
@@ -654,15 +660,13 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             gpuRenderTarget.msaaSamples = 4;
         }
 
-        this._prepareDepthStencil(renderTarget, gpuRenderTarget);
-
         return gpuRenderTarget;
     }
 
     /**
      * Sets up a depth/stencil texture for an MSAA target before its GPU texture is created: 4 samples, and
-     * the transient usage bit when the user marked the target single-pass. Called wherever the texture is
-     * created, as the usage is fixed at creation.
+     * the transient usage bit when the user marked the target single-pass. Both are fixed at creation, so this
+     * runs when a pass descriptor is built, just before the depth/stencil view is first made.
      * @param renderTarget - the target whose depth/stencil texture to set up
      * @param gpuRenderTarget - its backend target
      */
