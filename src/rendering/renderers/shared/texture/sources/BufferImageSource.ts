@@ -27,9 +27,10 @@ export interface BufferSourceOptions extends TextureSourceOptions<TypedArray | A
  *
  * Pass `depth` for a 3D texture, or `arrayLayerCount` for a 2D array. The buffer holds the slices (or layers)
  * one after another, each in row-major order, so texel `(x, y, z)` sits at index
- * `x + (y * width) + (z * width * height)`. These upload whole: {@link BufferImageSource#update} takes no range.
- * `rgba32float` can't be filtered on most devices, so smooth sampling wants a format such as
- * `rgba8unorm`, `r8unorm` or `rgba16float`.
+ * `x + (y * width) + (z * width * height)`. These upload whole, so {@link BufferImageSource#update} takes no range.
+ * `rgba32float`, the default for a `Float32Array`, needs an optional feature for linear filtering that PixiJS
+ * doesn't request on WebGPU. Use `scaleMode: 'nearest'` with it, or pick `rgba8unorm`, `r8unorm` or
+ * `rgba16float` for smooth sampling.
  * @example
  * ```ts
  * const ids = new BufferImageSource({
@@ -145,8 +146,8 @@ export class BufferImageSource extends TextureSource<TypedArray | ArrayBuffer>
 
     constructor(options: BufferSourceOptions & TextureShapeOptions)
     {
-        const layerCount = options.depth ?? options.arrayLayerCount ?? 1;
-        const buffer = options.resource || new Float32Array(options.width * options.height * layerCount * 4);
+        const depthOrArrayLayers = options.depth ?? options.arrayLayerCount ?? 1;
+        const buffer = options.resource || new Float32Array(options.width * options.height * depthOrArrayLayers * 4);
         let format = options.format;
 
         if (!format)
@@ -183,7 +184,7 @@ export class BufferImageSource extends TextureSource<TypedArray | ArrayBuffer>
 
         // uploads never premultiply integer data, and WebGL can't premultiply a 3D or array upload from a
         // buffer, so the default alphaMode must not say they did
-        const noPremultiply = isIntegerFormat(format) || layerCount > 1;
+        const noPremultiply = isIntegerFormat(format) || depthOrArrayLayers > 1;
 
         super({
             ...(noPremultiply && { alphaMode: 'no-premultiply-alpha' }),

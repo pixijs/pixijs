@@ -312,11 +312,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         if (source.autoGenerateMipmaps && (this._renderer.context.supports.nonPowOf2mipmaps || source.isPowerOfTwo))
         {
-            const biggestDimension = Math.max(
-                source.width,
-                source.height,
-                source.dimension === '3d' ? source.depth : 1,
-            );
+            const biggestDimension = Math.max(source.width, source.height, source.depth);
 
             source.mipLevelCount = Math.floor(Math.log2(biggestDimension)) + 1;
         }
@@ -491,14 +487,14 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     /**
      * Allocates a texture with a depth: the layers of a 2D array or the slices of a 3D texture.
-     * Layer counts stay the same at every mip level, 3D depth halves like width and height.
+     * Layer counts stay the same at every mip level; 3D depth halves like width and height.
      * @param glTexture - The GL texture wrapper.
      * @param source - The texture source describing the size.
      */
     private _initEmptyTexture3D(glTexture: GlTexture, source: TextureSource): void
     {
-        const gl2 = this._gl;
-        const is3D = glTexture.target === gl2.TEXTURE_3D;
+        const gl = this._gl;
+        const is3D = glTexture.target === gl.TEXTURE_3D;
 
         let w = source.pixelWidth;
         let h = source.pixelHeight;
@@ -506,7 +502,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         for (let level = 0; level < source.mipLevelCount; level++)
         {
-            gl2.texImage3D(
+            gl.texImage3D(
                 glTexture.target,
                 level,
                 glTexture.internalFormat,

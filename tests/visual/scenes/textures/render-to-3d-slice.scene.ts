@@ -7,12 +7,7 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render to each depth slice of a 3D texture and sample them back',
-    renderers: {
-        webgpu: true,
-        webgl2: true,
-        webgl1: false,
-        canvas: false,
-    },
+    renderers: ['webgpu', 'webgl2'],
     create: async (scene: Container, renderer: Renderer) =>
     {
         const volume = new TextureSource({

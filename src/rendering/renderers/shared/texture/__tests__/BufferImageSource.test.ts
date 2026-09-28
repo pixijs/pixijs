@@ -2,6 +2,8 @@ import { BufferImageSource } from '../sources/BufferImageSource';
 import { Texture } from '../Texture';
 import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
 
+import type { TextureShapeOptions, TextureSourceOptions } from '../sources/TextureSource';
+
 const WIDTH = 4;
 const HEIGHT = 4;
 
@@ -140,6 +142,50 @@ describe('BufferImageSource', () =>
 
 describe('BufferImageSource with depth', () =>
 {
+    function readSliceRed(gl: WebGL2RenderingContext, texture: WebGLTexture, layer: number): number
+    {
+        const framebuffer = gl.createFramebuffer();
+        const pixel = new Uint8Array(4);
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+        gl.framebufferTextureLayer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, texture, 0, layer);
+        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toBe(gl.FRAMEBUFFER_COMPLETE);
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+        gl.deleteFramebuffer(framebuffer);
+
+        return pixel[0];
+    }
+
+    it.each<TextureShapeOptions & TextureSourceOptions>([{ depth: 3 }, { arrayLayerCount: 3 }])(
+        'should upload and update the slices of %j on WebGL2',
+        async (shape) =>
+        {
+            const renderer = await getWebGLRenderer({ preferWebGLVersion: 2 });
+            const gl = renderer.gl;
+            const resource = new Uint8Array(2 * 2 * 3 * 4);
+
+            for (let z = 0; z < 3; z++) resource.fill((z * 50) + 10, z * 16, (z + 1) * 16);
+
+            const source = new BufferImageSource({ resource, width: 2, height: 2, ...shape, format: 'rgba8unorm' });
+
+            renderer.texture.initSource(source);
+
+            const glTexture = renderer.texture.getGlSource(source).texture;
+
+            expect(readSliceRed(gl, glTexture, 2)).toBe(110);
+            expect(gl.getError()).toBe(gl.NO_ERROR);
+
+            // same size, so this goes through texSubImage3D
+            resource.fill(200, 32, 48);
+            source.update();
+
+            expect(readSliceRed(gl, glTexture, 2)).toBe(200);
+            expect(gl.getError()).toBe(gl.NO_ERROR);
+
+            renderer.destroy();
+        },
+    );
+
     it('should allocate a buffer for every slice or layer when none is given', () =>
     {
         expect((new BufferImageSource({ width: 2, height: 2, depth: 3 }).resource as Float32Array).length).toBe(48);

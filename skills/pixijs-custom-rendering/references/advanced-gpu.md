@@ -30,7 +30,7 @@ data.fill(1, 100 * 4, 116 * 4); // change texels 100 to 115
 source.update(100, 116); // upload only those 16 texels
 ```
 
-Texel `i` sits at `x = i % width`, `y = floor(i / width)`, and `end` is exclusive. The range applies to that call only, so track the lowest and highest changed texel yourself and call `update` once per frame. `update()` with no arguments uploads the whole texture. Works on WebGL and WebGPU.
+Texel `i` sits at `x = i % width`, `y = floor(i / width)`, and `end` is exclusive. The range applies to that call only, so track the lowest and highest changed texel yourself and call `update` once per frame. `update()` with no arguments uploads the whole texture. Works on WebGL and WebGPU. A 3D texture (`depth`) or 2D array (`arrayLayerCount`) always uploads whole, so call `update()` with no range.
 
 ## Vertex count, index count, winding, and culling
 
@@ -141,7 +141,49 @@ const shader = Shader.from({
 
 Integer formats (`*uint`, `*sint`) hold exact integers. Use them where a float texture would lose bits, since small integers are denormal floats and GPUs may flush them to zero. They can't be filtered, so set `scaleMode: "nearest"`. `BufferImageSource` infers `rgba32uint` from a `Uint32Array` and `rgba16uint` from a `Uint16Array`; pass `format: "rgba32sint"` (or another signed format) explicitly for signed data. It defaults integer formats to `alphaMode: "no-premultiply-alpha"` because integer data can't be premultiplied on upload.
 
-In GLSL ES 3.0, declare `uniform usampler2D uIds;` (or `isampler2D`) and read it with `texelFetch(uIds, ivec2(x, y), 0)`. Fragment shaders have no default precision for integer samplers, so add `precision highp usampler2D;`. In WGSL, declare `@group(0) @binding(1) var uIds: texture_2d<u32>;` (or `<i32>`) and read it with `textureLoad(uIds, vec2<i32>(x, y), 0)`; the generated bind group layout takes its `sampleType` from the `<u32>` / `<i32>` suffix. PixiJS can't render into integer textures yet.
+In GLSL ES 3.0, declare `uniform usampler2D uIds;` (or `isampler2D`) and read it with `texelFetch(uIds, ivec2(x, y), 0)`. GLSL ES 3.0 gives integer samplers no default precision, so PixiJS declares `highp` for them and you don't need a precision line. A precision line you write yourself is kept. In WGSL, declare `@group(0) @binding(1) var uIds: texture_2d<u32>;` (or `<i32>`) and read it with `textureLoad(uIds, vec2<i32>(x, y), 0)`; the generated bind group layout takes its `sampleType` from the `<u32>` / `<i32>` suffix. PixiJS can't render into integer textures yet.
+
+## 3D and array textures
+
+```ts
+import { BufferImageSource } from "pixi.js";
+
+const size = 64;
+const noise = new BufferImageSource({
+  resource: new Uint8Array(size * size * size * 4), // slice after slice, row-major
+  width: size,
+  height: size,
+  depth: size, // or arrayLayerCount: n for a 2D array
+  format: "rgba8unorm",
+});
+```
+
+`depth` on a `TextureSource` or `BufferImageSource` makes a `"3d"` texture, and `arrayLayerCount > 1` makes a `"2d-array"` texture. A texture can't have both, and TypeScript rejects options that set both. Pass `viewDimension` only when the size doesn't decide it, such as `"cube"` for 6 layers. `dimensions` is deprecated; leave it out. These textures need WebGL2 or WebGPU; WebGL1 has no 3D or array textures.
+
+The buffer holds the slices (or layers) one after another, each in row-major order, so texel `(x, y, z)` sits at index `x + y * width + z * width * height`. `resolution` doesn't scale `depth`. A 3D or array `BufferImageSource` defaults to `alphaMode: "no-premultiply-alpha"` and always uploads whole, so `update()` takes no range.
+
+In GLSL ES 3.0, declare `uniform sampler3D` or `uniform sampler2DArray`. In WGSL, declare `texture_3d<f32>` or `texture_2d_array<f32>`. PixiJS adds the precision line for `sampler3D` and `sampler2DArray`, as for integer samplers above.
+
+`rgba32float`, the default for a `Float32Array`, needs an optional feature for linear filtering that PixiJS doesn't request on WebGPU. Use `scaleMode: "nearest"` with it, or pick `rgba8unorm`, `r8unorm` or `rgba16float` for smooth sampling.
+
+To draw into one slice or layer, pass the source itself as `target` and pick the slice with `layer`: `renderer.render({ container, target: noise, layer: z, clear: true })`. `layer` selects an array layer, a cube face, or a 3D depth slice. `RenderTexture.create` doesn't take `depth`, so use the `TextureSource` directly. `renderer.renderTarget.push({ target, layer })` takes `layer` too.
+
+## Storage textures (WebGPU only)
+
+```ts
+import { TextureSource } from "pixi.js";
+
+const volume = new TextureSource({ width: 64, height: 64, depth: 64, format: "rgba8unorm", storage: true });
+
+// bind this view to a texture_storage_3d<rgba8unorm, write> in your own compute pass
+const view = renderer.texture.getGpuSource(volume).createView();
+```
+
+`storage: true` adds `GPUTextureUsage.STORAGE_BINDING`, so your own compute pass can write the texture through `renderer.texture.getGpuSource(source).createView()`. PixiJS still samples it like any other texture. WebGL ignores the option.
+
+Every device accepts `rgba8unorm`, `rgba8snorm`, `rgba16float`, `r32float`, `rg32float`, `rgba32float` and the matching integer formats as storage textures. `bgra8unorm` needs the `bgra8unorm-storage` feature, and formats such as `r8unorm` or `r16float` need `texture-formats-tier1`. PixiJS enables both features when the GPU has them. WebGPU rejects any other format when the texture is created.
+
+`autoGenerateMipmaps` on a 3D texture uses `gl.generateMipmap` on WebGL. WebGPU writes the mips with a compute shader, so the texture needs `storage: true` and the `rgba8unorm` or `rgba16float` format.
 
 ## Render bundles (WebGPU only)
 

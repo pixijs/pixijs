@@ -159,6 +159,35 @@ describeLocalOnly('GpuTextureSystem 3D textures', () =>
         expect(notFilterable._gpuData[renderer.uid]).toBeUndefined();
     });
 
+    it('should generate 3D mipmaps for every format it accepts', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const device = renderer.gpu.device;
+
+        for (const format of ['rgba8unorm', 'rgba16float'] as const)
+        {
+            device.pushErrorScope('validation');
+
+            renderer.texture.initSource(new TextureSource({
+                width: 4, height: 4, depth: 4, format, storage: true, autoGenerateMipmaps: true,
+            }));
+
+            expect(await device.popErrorScope()).toBeNull();
+        }
+    });
+
+    it('should count the mip levels of a 3D texture along its depth', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const gpuTexture = renderer.texture.initSource(new TextureSource({
+            width: 2, height: 2, depth: 8, format: 'rgba8unorm', storage: true, autoGenerateMipmaps: true,
+        }));
+
+        expect(gpuTexture.mipLevelCount).toBe(4);
+    });
+
     describe('storage', () =>
     {
         it('should add STORAGE_BINDING only to textures marked storage', async () =>

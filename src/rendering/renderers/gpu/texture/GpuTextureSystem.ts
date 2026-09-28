@@ -171,11 +171,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             // fail before allocating a mip chain that could never be filled
             if (source.dimension === '3d') assertMipmap3dTexture(source.format, source.storage);
 
-            const biggestDimension = Math.max(
-                source.pixelWidth,
-                source.pixelHeight,
-                source.dimension === '3d' ? source.depth : 1,
-            );
+            const biggestDimension = Math.max(source.pixelWidth, source.pixelHeight, source.depth);
 
             source.mipLevelCount = Math.floor(Math.log2(biggestDimension)) + 1;
         }

@@ -11,6 +11,9 @@ interface EnsurePrecisionOptions
 /** Matches uniform sampler declarations that carry no precision qualifier of their own. */
 const unqualifiedSamplerPattern = /\buniform\s+([iu]?sampler\w+)/g;
 
+/** Matches precision statements for a sampler type, e.g. `precision highp usampler2D;`. */
+const declaredSamplerPattern = /\bprecision\s+\w+\s+([iu]?sampler\w+)\s*;/g;
+
 /**
  * The precision GLSL predeclares for `sampler2D` and `samplerCube`. Restating it changes nothing, so existing
  * shaders keep reading colour at the precision they always had.
@@ -25,9 +28,9 @@ const defaultSamplerPrecisions: Record<string, PRECISION> = {
  * If the precision is already present, it just ensures that the device is able to handle it.
  *
  * It also declares a precision for every sampler type the shader uses, unless the shader already declares one:
- * `lowp` for `sampler2D` and `samplerCube` (their GLSL default), and `highp` for every other type, which
- * GLSL ES 3.00 gives no default so the shader wouldn't compile. Those types mostly hold data, where a lower
- * precision would silently truncate values such as 32-bit integer ids.
+ * `lowp` for `sampler2D` and `samplerCube`, their GLSL default, and `highp` for every other type. GLSL ES 3.00
+ * gives those types no default, so the shader wouldn't compile without one, and they mostly hold data, where a
+ * lower precision would silently truncate values such as 32-bit integer ids.
  * @param src
  * @param options
  * @param options.requestedVertexPrecision
@@ -45,17 +48,17 @@ export function ensurePrecision(
 {
     const maxSupportedPrecision = isFragment ? options.maxSupportedFragmentPrecision : options.maxSupportedVertexPrecision;
 
-    let precision = isFragment ? options.requestedFragmentPrecision : options.requestedVertexPrecision;
-
-    // If highp is requested but not supported, downgrade precision to a level all devices support.
-    if (precision === 'highp' && maxSupportedPrecision !== 'highp')
-    {
-        precision = 'mediump';
-    }
-
     if (src.substring(0, 9) !== 'precision')
     {
         // no precision supplied, so PixiJS will add the requested level.
+        let precision = isFragment ? options.requestedFragmentPrecision : options.requestedVertexPrecision;
+
+        // If highp is requested but not supported, downgrade precision to a level all devices support.
+        if (precision === 'highp' && maxSupportedPrecision !== 'highp')
+        {
+            precision = 'mediump';
+        }
+
         src = `precision ${precision} float;\n${src}`;
     }
     else if (maxSupportedPrecision !== 'highp' && src.substring(0, 15) === 'precision highp')
@@ -77,15 +80,14 @@ export function ensurePrecision(
  */
 function ensureSamplerPrecision(src: string, dataPrecision: PRECISION): string
 {
+    const declared = new Set(Array.from(src.matchAll(declaredSamplerPattern), (m) => m[1]));
     let header = '';
 
-    for (const [, type] of src.matchAll(unqualifiedSamplerPattern))
+    for (const type of new Set(Array.from(src.matchAll(unqualifiedSamplerPattern), (m) => m[1])))
     {
-        const statement = `precision ${defaultSamplerPrecisions[type] ?? dataPrecision} ${type};\n`;
+        if (declared.has(type)) continue;
 
-        if (header.includes(statement) || new RegExp(`precision\\s+\\w+\\s+${type}\\s*;`).test(src)) continue;
-
-        header += statement;
+        header += `precision ${defaultSamplerPrecisions[type] ?? dataPrecision} ${type};\n`;
     }
 
     return header + src;

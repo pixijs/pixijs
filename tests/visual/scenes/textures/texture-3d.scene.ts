@@ -14,12 +14,7 @@ const sliceColors = [
 
 export const scene: TestScene = {
     it: 'should upload a 3D texture from a buffer and sample each depth slice',
-    renderers: {
-        webgpu: true,
-        webgl2: true,
-        webgl1: false,
-        canvas: false,
-    },
+    renderers: ['webgpu', 'webgl2'],
     create: async (scene: Container) =>
     {
         const size = 4;

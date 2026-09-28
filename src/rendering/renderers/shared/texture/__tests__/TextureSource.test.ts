@@ -113,6 +113,7 @@ describe('TextureSource', () =>
             [{ arrayLayerCount: 4 }, '2d', '2d-array', 4, 1],
             [{ arrayLayerCount: 6, viewDimension: 'cube' }, '2d', 'cube', 6, 1],
             [{ depth: 8, viewDimension: '3d' }, '3d', '3d', 1, 8],
+            [{ depth: 0 }, '2d', '2d', 1, 1],
         ] as const)('should derive the dimensions from %j', (options, dimension, viewDimension, arrayLayerCount, depth) =>
         {
             const source = new TextureSource(options);
@@ -130,6 +131,11 @@ describe('TextureSource', () =>
             expect(() => new TextureSource({ depth: 4, arrayLayerCount: 2 })).toThrow('can\'t be combined');
             // @ts-expect-error - depth makes a 3D view
             expect(() => new TextureSource({ depth: 4, viewDimension: '2d-array' })).toThrow('depth makes a 3D texture');
+        });
+
+        it('should reject array layers on a 3D view', () =>
+        {
+            expect(() => new TextureSource({ viewDimension: '3d', arrayLayerCount: 2 })).toThrow(/takes depth/);
         });
 
         it('should reject antialias on a 3D texture', () =>
@@ -151,11 +157,7 @@ describe('TextureSource', () =>
         {
             expect(() => new TextureSource({ dimensions: '2d', depth: 4 })).toThrow('doesn\'t match viewDimension');
             expect(new TextureSource({ dimensions: '3d', depth: 4 }).dimension).toBe('3d');
-        });
-
-        it('should allow mipmap generation on a 3D texture', () =>
-        {
-            expect(new TextureSource({ depth: 8, autoGenerateMipmaps: true }).autoGenerateMipmaps).toBe(true);
+            expect(new TextureSource({ dimensions: '2d' }).dimension).toBe('2d');
         });
     });
 });
