@@ -19,6 +19,11 @@ export type ALPHA_MODES =
  *
  * These formats are used to specify the format of textures in WebGPU and WebGL.
  * They include various uncompressed, compressed, and depth/stencil formats.
+ *
+ * Integer formats (`*uint`, `*sint`) hold exact integers and are read with `texelFetch` through a
+ * `usampler2D` / `isampler2D` in GLSL, or `textureLoad` on a `texture_2d<u32>` / `texture_2d<i32>` in WGSL.
+ * They can't be filtered, so give them `scaleMode: 'nearest'`. They can't be premultiplied either. WebGL uploads
+ * skip premultiplication for them, and {@link BufferImageSource} defaults them to `alphaMode: 'no-premultiply-alpha'`.
  * @category rendering
  * @advanced
  */

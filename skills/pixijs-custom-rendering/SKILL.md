@@ -202,11 +202,12 @@ shader.resources.myUniforms.update();
 
 See [references/advanced-gpu.md](references/advanced-gpu.md) for full samples of:
 
-- **Partial buffer updates**: `buffer.update(sizeInBytes, offsetInBytes)` uploads only the changed byte range.
+- **Partial buffer and texture uploads**: `buffer.update(sizeInBytes, offsetInBytes)` uploads only the changed byte range; `bufferImageSource.update(startTexel, endTexel)` uploads only a texel range of a data texture.
 - **Vertex and index counts, winding, culling**: `geometry.vertexCount` (replaces the deprecated `getSize()`), `geometry.indexCount` to draw a prefix of a shared index buffer, `state.clockwiseFrontFace` and `cullMode`.
 - **WGSL override constants** (WebGPU): `Shader.from({ gpu, resources, overrides: { STEPS: 8 } })`; each distinct set compiles its own pipeline.
 - **Custom bind group layouts** (WebGPU): generate the default with `generateGpuLayoutGroups(extractStructAndGroups(source))`, edit it, pass it as `gpuLayout`.
 - **Depth sampling with `TextureView`** (WebGPU): bind `new TextureView(depth, { aspect: "depth-only" })` as a resource while the target's depth attachment is `depthReadOnly`.
+- **Integer textures**: `BufferImageSource` with `rgba32uint` etc., `usampler2D`/`texelFetch` and `texture_2d<u32>`/`textureLoad`, `scaleMode: "nearest"`.
 - **Render bundles** (WebGPU): record draws once with `encoder.beginBundle()` / `endBundle()` and replay with `executeBundle()` while `isBundleValid()` holds.
 - **Pooled scratch textures**: `TexturePool.getOptimalTexture({ width, height, resolution, antialias })` and `returnTexture()`.
 

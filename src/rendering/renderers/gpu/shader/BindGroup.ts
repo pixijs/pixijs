@@ -32,8 +32,32 @@ import type { BindResource } from './BindResource';
  */
 export class BindGroup
 {
-    /** The resources that are bound together for use by a shader. */
+    /**
+     * The resources that are bound together for use by a shader, keyed by binding number.
+     *
+     * Treat this as read-only and use {@link BindGroup#setResource} to add or replace a resource.
+     * A direct write skips the bind group's change tracking: the GPU bind group is not rebuilt,
+     * and the renderer never syncs the new resource's uniforms or marks it as in use.
+     * @readonly
+     */
     public resources: Record<string, BindResource> = Object.create(null);
+
+    /**
+     * The binding numbers in use in {@link BindGroup#resources}, ascending. Binding numbers can
+     * have gaps, so per-draw loops index this list instead of running `for...in` over
+     * `resources`, which builds a fresh key list on every call for integer keys.
+     * @internal
+     */
+    public get _resourceKeys(): number[]
+    {
+        // built on first use after setResource adds a binding number, so the array is sized
+        // exactly — growing it with push() reserves ~17 slots for a group that holds 1 to 4
+        this._resourceKeysValue ??= Object.keys(this.resources).map(Number);
+
+        return this._resourceKeysValue;
+    }
+
+    private _resourceKeysValue: number[] = null;
 
     /**
      * A key used internally to match it up to a WebGPU BindGroup.
@@ -100,6 +124,12 @@ export class BindGroup
 
         resource.on?.('change', this.onResourceChange, this);
 
+        // a destroyed resource leaves null, not undefined, so this is only true for a new binding
+        if (currentResource === undefined)
+        {
+            this._resourceKeysValue = null;
+        }
+
         this.resources[index] = resource;
         this._dirty = true;
     }
@@ -123,10 +153,11 @@ export class BindGroup
     public _touch(now: number): void
     {
         const resources = this.resources;
+        const keys = this._resourceKeys;
 
-        for (const i in resources)
+        for (let i = 0; i < keys.length; i++)
         {
-            const resource = resources[i] as BindResource & GCable;
+            const resource = resources[keys[i]] as BindResource & GCable;
 
             if (!resource) continue;
 
@@ -147,6 +178,7 @@ export class BindGroup
         }
 
         this.resources = null;
+        this._resourceKeysValue = null;
     }
 
     protected onResourceChange(resource: BindResource)

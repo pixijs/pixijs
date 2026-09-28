@@ -113,7 +113,7 @@ export interface AccessibleOptions
     accessiblePointerEvents: PointerEvents;
 
     /**
-     * Sets the text content of the shadow
+     * Sets the text content of the shadow div
      * @default null
      * @example
      * ```js
