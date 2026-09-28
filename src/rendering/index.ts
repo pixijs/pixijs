@@ -135,6 +135,7 @@ export * from './renderers/gpu/GpuUniformBatchPipe';
 export * from './renderers/gpu/pipeline/PipelineSystem';
 export * from './renderers/gpu/RenderBundle';
 export * from './renderers/gpu/renderTarget/calculateProjection';
+export * from './renderers/gpu/renderTarget/GpuMsaaRestore';
 export * from './renderers/gpu/renderTarget/GpuRenderTarget';
 export * from './renderers/gpu/renderTarget/GpuRenderTargetAdaptor';
 export * from './renderers/gpu/renderTarget/GpuRenderTargetSystem';

@@ -23,6 +23,7 @@ Configures the main canvas and how it maps to CSS pixels.
 | `autoDensity` | `boolean` | `false` | Scale CSS dimensions of the canvas so `width`/`height` stay in CSS pixels while the backing store matches `resolution`. Only honored on `HTMLCanvasElement` (ignored on `OffscreenCanvas`). |
 | `antialias`   | `boolean` | `false` | GPU MSAA where supported. On WebGL, this only affects the main context — use `useBackBuffer: true` if you need antialiased filtering.                                                       |
 | `depth`       | `boolean` | —       | Allocate a depth buffer for the main view. Always on for WebGL; needed for z-ordered rendering.                                                                                             |
+| `transient`   | `boolean` | `false` | WebGPU only, with `antialias`. Discard the canvas's multisample depth/stencil buffer at the end of each pass, and its colour buffer on GPUs that aren't tile-based (tile-based GPUs already discard colour). Only for apps that never reopen the canvas pass while still needing depth or stencil: no filters or masks popping back onto it, no render with `clear: false`. |
 
 ```ts
 await app.init({

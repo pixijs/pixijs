@@ -16,4 +16,12 @@ export interface GpuExtensions
      * the `GPUTextureUsage` enum at runtime.
      */
     transientAttachment: boolean;
+    /**
+     * The GPU renders in tiles of on-chip memory (every phone GPU and Apple silicon), judged from
+     * `adapter.info.vendor`. On these, writing a multisample buffer out to memory and reading it back costs far
+     * more than restoring it from its resolved image, so PixiJS never stores MSAA colour on them and restores
+     * it when a pass reopens the target. Other GPUs keep MSAA in video memory, where reopening is nearly free,
+     * so they store it as before. An unknown vendor counts as not tile-based.
+     */
+    tileBased: boolean;
 }
