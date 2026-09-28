@@ -80,13 +80,17 @@ export function ensurePrecision(
  */
 function ensureSamplerPrecision(src: string, dataPrecision: PRECISION): string
 {
-    const declared = new Set(Array.from(src.matchAll(declaredSamplerPattern), (m) => m[1]));
+    // sampler types that already have a precision, from the shader or from this header
+    const done = new Set<string>();
     let header = '';
 
-    for (const type of new Set(Array.from(src.matchAll(unqualifiedSamplerPattern), (m) => m[1])))
-    {
-        if (declared.has(type)) continue;
+    for (const [, type] of src.matchAll(declaredSamplerPattern)) done.add(type);
 
+    for (const [, type] of src.matchAll(unqualifiedSamplerPattern))
+    {
+        if (done.has(type)) continue;
+
+        done.add(type);
         header += `precision ${defaultSamplerPrecisions[type] ?? dataPrecision} ${type};\n`;
     }
 

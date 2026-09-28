@@ -115,9 +115,9 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
      * `texture_storage_3d` binding in WGSL). PixiJS still samples it as a normal texture. WebGL has no storage
      * textures and ignores this.
      *
-     * Only some formats can be storage textures: every device supports `rgba8unorm`, `rgba8snorm`,
-     * `rgba16float`, `r32float`, `rg32float`, `rgba32float` and the matching `rgba8`, `rgba16`, `r32`, `rg32` and
-     * `rgba32` integer formats. `bgra8unorm` needs the `bgra8unorm-storage` feature and formats such as `r8unorm`
+     * Only some formats can be storage textures: every device supports `rgba8unorm`, `rgba16float`,
+     * `r32float`, `rg32float`, `rgba32float` and the matching `rgba8`, `rgba16`, `r32`, `rg32` and `rgba32`
+     * integer formats. `bgra8unorm` needs the `bgra8unorm-storage` feature and formats such as `r8unorm`
      * or `r16float` need `texture-formats-tier1`; PixiJS enables both when the GPU has them. WebGPU rejects any
      * other format when the texture is created.
      * @example
@@ -361,6 +361,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     {
         super();
 
+        const passedOptions = options;
+
         options = { ...TextureSource.defaultOptions, ...options } as TextureSourceOptions<T> & TextureShapeOptions;
 
         // the size decides the view unless one is given, and the view decides the texture dimension
@@ -368,7 +370,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         const dimension = viewDimension === '3d' || viewDimension === '1d' ? viewDimension : '2d';
 
         // #if _DEBUG
-        validateTextureShape(options, viewDimension);
+        // only what the caller passed: a global default such as `antialias: true` mustn't make a 3D texture throw
+        validateTextureShape(passedOptions, viewDimension, dimension);
         // #endif
 
         this.label = options.label ?? '';
@@ -405,7 +408,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.mipLevelCount = options.mipLevelCount;
         this.autoGenerateMipmaps = options.autoGenerateMipmaps;
         this.sampleCount = options.sampleCount;
-        this.antialias = options.antialias;
+        // a 3D texture can't be multisampled, whatever the defaults say
+        this.antialias = dimension === '3d' ? false : options.antialias;
         this.transient = options.transient ?? false;
         this.storage = options.storage ?? false;
         this.alphaMode = options.alphaMode;
@@ -748,16 +752,16 @@ function resolveViewDimension(options: TextureSourceOptions & TextureShapeOption
 
 /**
  * Throws on size and dimension options that contradict each other.
- * @param options - the options passed to the TextureSource constructor, merged with the defaults
+ * @param options - the options passed to the TextureSource constructor, without the defaults
  * @param viewDimension - the view dimension resolved from the options
+ * @param dimension - the texture dimension resolved from the view
  */
 function validateTextureShape(
     options: TextureSourceOptions & TextureShapeOptions,
     viewDimension: TEXTURE_VIEW_DIMENSIONS,
+    dimension: TEXTURE_DIMENSIONS,
 ): void
 {
-    const dimension = viewDimension === '3d' || viewDimension === '1d' ? viewDimension : '2d';
-
     if (options.depth !== undefined && typeof options.depth !== 'number')
     {
         throw new Error(`[TextureSource] depth is a 3D texture's depth in texels, but got ${options.depth}. `

@@ -26,15 +26,11 @@ export const glUploadBufferImageResource = {
     {
         const target = targetOverride || glTexture.target;
         const resource = source.resource as TypedArray;
-        const texelCount = source.width * source.height;
-        const needsAllocation = forceAllocation || glTexture.width !== source.width || glTexture.height !== source.height;
-        const isPartial = source._updateStart > 0 || source._updateEnd < texelCount;
-        const isLayered = target === GL_TARGETS.TEXTURE_3D || target === GL_TARGETS.TEXTURE_2D_ARRAY;
 
         // a 3D texture or 2D array uploads as one box; BufferImageSource.update rejects partial ranges for these
-        if (isLayered)
+        if (target === GL_TARGETS.TEXTURE_3D || target === GL_TARGETS.TEXTURE_2D_ARRAY)
         {
-            if (needsAllocation)
+            if (forceAllocation || glTexture.width !== source.width || glTexture.height !== source.height)
             {
                 gl.texImage3D(
                     target,
@@ -65,8 +61,18 @@ export const glUploadBufferImageResource = {
                     resource
                 );
             }
+
+            glTexture.width = source.width;
+            glTexture.height = source.height;
+
+            return;
         }
-        else if (needsAllocation)
+
+        const texelCount = source.width * source.height;
+        const needsAllocation = forceAllocation || glTexture.width !== source.width || glTexture.height !== source.height;
+        const isPartial = source._updateStart > 0 || source._updateEnd < texelCount;
+
+        if (needsAllocation)
         {
             gl.texImage2D(
                 target,

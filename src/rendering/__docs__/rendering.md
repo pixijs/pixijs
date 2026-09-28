@@ -265,7 +265,7 @@ const volume = new TextureSource({ width: 64, height: 64, depth: 64, format: 'rg
 const view = renderer.texture.getGpuSource(volume).createView();
 ```
 
-Every device accepts `rgba8unorm`, `rgba8snorm`, `rgba16float`, `r32float`, `rg32float`, `rgba32float` and the matching integer formats as storage textures. `bgra8unorm` needs the `bgra8unorm-storage` feature, and formats such as `r8unorm` or `r16float` need `texture-formats-tier1`. PixiJS enables both features when the GPU has them. WebGPU rejects any other format when the texture is created.
+Every device accepts `rgba8unorm`, `rgba16float`, `r32float`, `rg32float`, `rgba32float` and the matching integer formats as storage textures. `bgra8unorm` needs the `bgra8unorm-storage` feature, and formats such as `r8unorm` or `r16float` need `texture-formats-tier1`. PixiJS enables both features when the GPU has them. WebGPU rejects any other format when the texture is created.
 
 A 3D texture with `autoGenerateMipmaps` needs `storage: true` and the `rgba8unorm` or `rgba16float` format on WebGPU, because a compute shader writes its mips.
 

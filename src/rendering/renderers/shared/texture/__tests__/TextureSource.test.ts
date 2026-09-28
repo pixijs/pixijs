@@ -147,6 +147,23 @@ describe('TextureSource', () =>
             expect(new TextureSource({ depth: 4, antialias: false }).antialias).toBe(false);
         });
 
+        it('should not apply a global antialias default to a 3D texture', () =>
+        {
+            const defaultAntialias = TextureSource.defaultOptions.antialias;
+
+            TextureSource.defaultOptions.antialias = true;
+
+            try
+            {
+                expect(new TextureSource({ depth: 4 }).antialias).toBe(false);
+                expect(new TextureSource({ width: 4, height: 4 }).antialias).toBe(true);
+            }
+            finally
+            {
+                TextureSource.defaultOptions.antialias = defaultAntialias;
+            }
+        });
+
         it('should reject a depth-buffer boolean passed as depth', () =>
         {
             // @ts-expect-error - depth is a number of texels, not the render target's depth buffer flag

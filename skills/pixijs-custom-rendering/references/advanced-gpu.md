@@ -181,7 +181,7 @@ const view = renderer.texture.getGpuSource(volume).createView();
 
 `storage: true` adds `GPUTextureUsage.STORAGE_BINDING`, so your own compute pass can write the texture through `renderer.texture.getGpuSource(source).createView()`. PixiJS still samples it like any other texture. WebGL ignores the option.
 
-Every device accepts `rgba8unorm`, `rgba8snorm`, `rgba16float`, `r32float`, `rg32float`, `rgba32float` and the matching integer formats as storage textures. `bgra8unorm` needs the `bgra8unorm-storage` feature, and formats such as `r8unorm` or `r16float` need `texture-formats-tier1`. PixiJS enables both features when the GPU has them. WebGPU rejects any other format when the texture is created.
+Every device accepts `rgba8unorm`, `rgba16float`, `r32float`, `rg32float`, `rgba32float` and the matching integer formats as storage textures. `bgra8unorm` needs the `bgra8unorm-storage` feature, and formats such as `r8unorm` or `r16float` need `texture-formats-tier1`. PixiJS enables both features when the GPU has them. WebGPU rejects any other format when the texture is created.
 
 `autoGenerateMipmaps` on a 3D texture uses `gl.generateMipmap` on WebGL. WebGPU writes the mips with a compute shader, so the texture needs `storage: true` and the `rgba8unorm` or `rgba16float` format.
 
