@@ -1,49 +1,62 @@
 import { CanvasObserver } from '../CanvasObserver';
-import { Ticker } from '../../ticker/Ticker';
-import type { Renderer } from '../../rendering/renderers/types';
+import { Ticker } from '~/ticker';
+
+import type { Renderer } from '~/rendering';
 
 describe('CanvasObserver', () =>
 {
     it('removes the fallback ticker listener on destroy', () =>
     {
         const originalRO = globalThis.ResizeObserver;
-        (globalThis as { ResizeObserver?: typeof ResizeObserver }).ResizeObserver = undefined;
 
-        const canvas = document.createElement('canvas');
-        const domElement = document.createElement('div');
-        const renderer = { resolution: 1 } as unknown as Renderer;
+        delete globalThis.ResizeObserver;
 
-        const observer = new CanvasObserver({ domElement, renderer });
-        observer.ensureAttached();
+        try
+        {
+            const renderer = { resolution: 1, canvas: document.createElement('canvas') } as unknown as Renderer;
+            const observer = new CanvasObserver({ domElement: document.createElement('div'), renderer });
 
-        const listenerCount = Ticker.shared.count;
-        expect(listenerCount).toBeGreaterThan(0);
+            observer.ensureAttached();
 
-        observer.destroy();
+            const listenerCount = Ticker.shared.count;
 
-        expect(Ticker.shared.count).toBe(listenerCount - 1);
+            expect(listenerCount).toBeGreaterThan(0);
 
-        (globalThis as { ResizeObserver?: typeof ResizeObserver }).ResizeObserver = originalRO;
+            observer.destroy();
+
+            expect(Ticker.shared.count).toBe(listenerCount - 1);
+        }
+        finally
+        {
+            globalThis.ResizeObserver = originalRO;
+        }
     });
 
     it('does not add duplicate listeners across construction cycles', () =>
     {
         const originalRO = globalThis.ResizeObserver;
-        (globalThis as { ResizeObserver?: typeof ResizeObserver }).ResizeObserver = undefined;
 
-        const renderer = { resolution: 1 } as unknown as Renderer;
-        const before = Ticker.shared.count;
+        delete globalThis.ResizeObserver;
 
-        const a = new CanvasObserver({ domElement: document.createElement('div'), renderer });
-        a.ensureAttached();
-        a.destroy();
+        try
+        {
+            const renderer = { resolution: 1, canvas: document.createElement('canvas') } as unknown as Renderer;
+            const before = Ticker.shared.count;
+            const a = new CanvasObserver({ domElement: document.createElement('div'), renderer });
 
-        const b = new CanvasObserver({ domElement: document.createElement('div'), renderer });
-        b.ensureAttached();
-        b.destroy();
+            a.ensureAttached();
+            a.destroy();
 
-        expect(Ticker.shared.count).toBe(before);
+            const b = new CanvasObserver({ domElement: document.createElement('div'), renderer });
 
-        (globalThis as { ResizeObserver?: typeof ResizeObserver }).ResizeObserver = originalRO;
+            b.ensureAttached();
+            b.destroy();
+
+            expect(Ticker.shared.count).toBe(before);
+        }
+        finally
+        {
+            globalThis.ResizeObserver = originalRO;
+        }
     });
 });
