@@ -10,6 +10,11 @@ import type { TextureSource } from '../../shared/texture/sources/TextureSource';
 export class GpuRenderTarget
 {
     public contexts: GPUCanvasContext[] = [];
+    /**
+     * Per canvas attachment, the canvas texture the last pass drew into. A canvas hands out a new, empty
+     * texture each frame, so a different one means nothing has been drawn this frame yet.
+     */
+    public canvasTextures: GPUTexture[] = [];
     public msaaTextures: TextureSource[] = [];
     public msaa: boolean;
     /**

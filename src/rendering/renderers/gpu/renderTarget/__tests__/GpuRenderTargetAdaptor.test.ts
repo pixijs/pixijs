@@ -2,6 +2,7 @@ import { CLEAR } from '../../../gl/const';
 import { RenderTarget } from '../../../shared/renderTarget/RenderTarget';
 import { TextureSource } from '../../../shared/texture/sources/TextureSource';
 import { Texture } from '../../../shared/texture/Texture';
+import { GpuMsaaRestore } from '../GpuMsaaRestore';
 import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
 import { AlphaFilter } from '~/filters';
 import { Container, Graphics } from '~/scene';
@@ -402,6 +403,38 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
         expect(restoredSlots(gpuRenderTarget)).toEqual([0]);
 
         renderer.encoder.postrender();
+        renderer.destroy();
+    });
+
+    it('should clear instead of restoring the first pass of a new canvas frame', async () =>
+    {
+        const renderer = (await getWebGPURenderer({ antialias: true })) as WebGPURenderer;
+        const device = renderer.gpu.device;
+        const copy = jest.spyOn(GpuMsaaRestore.prototype, 'copy');
+        const shape = new Graphics().rect(0, 0, 10, 10).fill('red');
+        const root = () => renderer.renderTarget.getGpuRenderTarget(renderer.renderTarget.rootRenderTarget);
+
+        device.pushErrorScope('validation');
+
+        // the canvas texture is new and empty, so there is nothing to restore
+        renderer.render({ container: shape, clear: false });
+
+        expect(copy).not.toHaveBeenCalled();
+        expect(root().descriptor.colorAttachments[0].clearValue).toEqual([0, 0, 0, 0]);
+
+        // the same frame: keeps what was just drawn
+        renderer.render({ container: shape, clear: false });
+
+        expect(copy).toHaveBeenCalledTimes(1);
+
+        // the next frame hands out a new texture
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        renderer.render({ container: shape, clear: false });
+
+        expect(copy).toHaveBeenCalledTimes(1);
+        expect(await device.popErrorScope()).toBeNull();
+
+        copy.mockRestore();
         renderer.destroy();
     });
 });

@@ -359,6 +359,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
                 let view: GPUTextureView;
                 let resolveTarget: GPUTextureView;
+                let newCanvasFrame = false;
 
                 if (context)
                 {
@@ -369,6 +370,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     }
 
                     const currentTexture = context.getCurrentTexture();
+
+                    newCanvasFrame = gpuRenderTarget.canvasTextures[i] !== currentTexture;
+                    gpuRenderTarget.canvasTextures[i] = currentTexture;
 
                     const canvasTextureView = currentTexture.createView(colorAttachment.viewDescriptor);
 
@@ -402,14 +406,16 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                 clearValue ??= renderTargetSystem.defaultClearColor;
 
                 // a transient MSAA buffer is never stored, so a pass that would load it clears and restores it
-                // from the resolved texture instead (see GpuMsaaRestore)
+                // from the resolved texture instead (see GpuMsaaRestore). The first pass of a canvas frame has
+                // nothing to restore: its texture is new and empty, so a clear to transparent gives the same result.
                 const transient = !!msaaTexture?.transient;
-                const restore = transient && loadOp !== 'clear';
+                const load = transient && loadOp !== 'clear';
+                const restore = load && !newCanvasFrame;
 
-                if (restore)
+                if (load)
                 {
                     loadOp = 'clear';
-                    (restoreList ??= []).push(i);
+                    if (restore) (restoreList ??= []).push(i);
                 }
 
                 const baseAttachment: GPURenderPassColorAttachment = {
@@ -419,7 +425,12 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     loadOp,
                 };
 
-                if (loadOp === 'clear' && !restore)
+                if (load)
+                {
+                    // restored over, or a new canvas frame, which starts transparent
+                    baseAttachment.clearValue = [0, 0, 0, 0];
+                }
+                else if (loadOp === 'clear')
                 {
                     clearValue ??= (colorAttachment.clearValue as RgbaArray) ?? renderTargetSystem.defaultClearColor;
                     baseAttachment.clearValue = clearValue;
