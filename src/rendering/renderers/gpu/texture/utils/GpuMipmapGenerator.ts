@@ -85,8 +85,6 @@ export class GpuMipmapGenerator
      */
     public generateMipmap(texture: GPUTexture)
     {
-        const pipeline = this._getMipmapPipeline(texture.format);
-
         if (texture.dimension === '3d')
         {
             throw new Error('[GpuMipmapGenerator] a 3D texture uses Gpu3dMipmapGenerator.');
@@ -96,6 +94,8 @@ export class GpuMipmapGenerator
         {
             throw new Error('Generating mipmaps for 1d textures is currently unsupported!');
         }
+
+        const pipeline = this._getMipmapPipeline(texture.format);
 
         let mipTexture = texture;
         const arrayLayerCount = texture.depthOrArrayLayers || 1; // Only valid for 2D textures.

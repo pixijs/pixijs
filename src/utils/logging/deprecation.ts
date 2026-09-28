@@ -19,6 +19,12 @@ export const v8_3_4 = '8.3.4';
  * @internal
  */
 export const v8_21_0 = '8.21.0';
+/**
+ * deprecation name for version 8.22.0
+ * @ignore
+ * @internal
+ */
+export const v8_22_0 = '8.22.0';
 
 /**
  * Options for managing deprecation messages behavior globally

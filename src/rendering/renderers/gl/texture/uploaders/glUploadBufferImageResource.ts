@@ -26,13 +26,15 @@ export const glUploadBufferImageResource = {
     {
         const target = targetOverride || glTexture.target;
         const resource = source.resource as TypedArray;
+        const texelCount = source.width * source.height;
+        const needsAllocation = forceAllocation || glTexture.width !== source.width || glTexture.height !== source.height;
+        const isPartial = source._updateStart > 0 || source._updateEnd < texelCount;
+        const isLayered = target === GL_TARGETS.TEXTURE_3D || target === GL_TARGETS.TEXTURE_2D_ARRAY;
 
         // a 3D texture or 2D array uploads as one box; BufferImageSource.update rejects partial ranges for these
-        if (target === GL_TARGETS.TEXTURE_3D || target === GL_TARGETS.TEXTURE_2D_ARRAY)
+        if (isLayered)
         {
-            const depth = source.depthOrArrayLayers;
-
-            if (forceAllocation || glTexture.width !== source.width || glTexture.height !== source.height)
+            if (needsAllocation)
             {
                 gl.texImage3D(
                     target,
@@ -40,7 +42,7 @@ export const glUploadBufferImageResource = {
                     glTexture.internalFormat,
                     source.width,
                     source.height,
-                    depth,
+                    source.depthOrArrayLayers,
                     0,
                     glTexture.format,
                     glTexture.type,
@@ -57,24 +59,14 @@ export const glUploadBufferImageResource = {
                     0,
                     source.width,
                     source.height,
-                    depth,
+                    source.depthOrArrayLayers,
                     glTexture.format,
                     glTexture.type,
                     resource
                 );
             }
-
-            glTexture.width = source.width;
-            glTexture.height = source.height;
-
-            return;
         }
-
-        const texelCount = source.width * source.height;
-        const needsAllocation = forceAllocation || glTexture.width !== source.width || glTexture.height !== source.height;
-        const isPartial = source._updateStart > 0 || source._updateEnd < texelCount;
-
-        if (needsAllocation)
+        else if (needsAllocation)
         {
             gl.texImage2D(
                 target,

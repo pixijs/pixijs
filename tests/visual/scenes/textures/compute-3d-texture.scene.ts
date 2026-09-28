@@ -7,12 +7,7 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should sample a 3D storage texture written by a compute shader',
-    renderers: {
-        webgpu: true,
-        webgl2: false,
-        webgl1: false,
-        canvas: false,
-    },
+    renderers: ['webgpu'],
     create: async (scene: Container, renderer: Renderer) =>
     {
         const volume = new TextureSource({

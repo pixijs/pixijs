@@ -14,12 +14,7 @@ const sliceColors = [
 
 export const scene: TestScene = {
     it: 'should generate mipmaps for a 3D texture and sample mip 1',
-    renderers: {
-        webgpu: true,
-        webgl2: true,
-        webgl1: false,
-        canvas: false,
-    },
+    renderers: ['webgpu', 'webgl2'],
     create: async (scene: Container) =>
     {
         const size = 4;
