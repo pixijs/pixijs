@@ -193,7 +193,6 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         if ((renderTarget.stencil || renderTarget.depth) && !renderTarget.depthStencilAttachment)
         {
             renderTarget.ensureDepthStencilTexture();
-            this._prepareDepthStencil(renderTarget, gpuRenderTarget);
         }
 
         const hasDepthStencil = !!renderTarget.depthStencilAttachment;
@@ -451,15 +450,11 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
         let depthStencilAttachment: GPURenderPassDepthStencilAttachment;
 
-        // If we have a depth/stencil attachment, ensure its sample count matches the MSAA state.
-        // This is necessary if the stencil buffer was added dynamically after initialization
-        // (e.g. by the mask system calling ensureDepthStencil()).
         if (renderTarget.depthStencilAttachment)
         {
-            if (gpuRenderTarget.msaa)
-            {
-                renderTarget.depthStencilAttachment.texture.sampleCount = 4;
-            }
+            // set up before the view below creates its GPU texture, which covers a depth/stencil texture added
+            // after the target was built (a mask adding stencil, RenderTarget.ensureDepthStencilTexture)
+            this._prepareDepthStencil(renderTarget, gpuRenderTarget);
 
             const attachment = renderTarget.depthStencilAttachment;
             const stencil = attachment.texture.format.includes('stencil');
@@ -660,15 +655,13 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             gpuRenderTarget.msaaSamples = 4;
         }
 
-        this._prepareDepthStencil(renderTarget, gpuRenderTarget);
-
         return gpuRenderTarget;
     }
 
     /**
      * Sets up a depth/stencil texture for an MSAA target before its GPU texture is created: 4 samples, and
-     * the transient usage bit when the user marked the target single-pass. Called wherever the texture is
-     * created, as the usage is fixed at creation.
+     * the transient usage bit when the user marked the target single-pass. Both are fixed at creation, so this
+     * runs when a pass descriptor is built, just before the depth/stencil view is first made.
      * @param renderTarget - the target whose depth/stencil texture to set up
      * @param gpuRenderTarget - its backend target
      */

@@ -66,6 +66,8 @@ export class GpuMsaaRestore
             resolution: colorTexture._resolution,
             format: gpuRenderTarget.msaaTextures[index].format,
             autoGenerateMipmaps: false,
+            // every restore copies into it afresh, so an idle one can be freed and re-created on the next restore
+            autoGarbageCollect: true,
         });
 
         const backTexture = this._renderer.texture.getGpuSource(gpuRenderTarget.msaaBackTextures[index]);
