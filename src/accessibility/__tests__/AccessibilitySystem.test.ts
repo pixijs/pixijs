@@ -1,6 +1,6 @@
 import { AccessibilitySystem } from '../AccessibilitySystem';
 import '../init';
-import { getWebGLRenderer } from '@test-utils';
+import { getWebGLRenderer, nextTick } from '@test-utils';
 import { Application } from '~/app';
 import { Container } from '~/scene';
 
@@ -421,5 +421,64 @@ describe('AccessibilitySystem', () =>
         expect(app.renderer.accessibility.isActive).toBe(true);
 
         app.destroy();
+    });
+
+    it('should not throw when destroyed before the canvas is attached to the DOM', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const canvas = renderer.view.canvas;
+
+        // The renderer canvas starts detached from the DOM
+        expect(canvas.parentNode).toBe(null);
+
+        const system = new AccessibilitySystem(renderer);
+
+        system.init({
+            accessibilityOptions: {
+                enabledByDefault: true,
+            },
+        });
+
+        expect(system.isActive).toBe(true);
+
+        system.destroy();
+
+        // Appending the canvas after destroy fires the pending MutationObserver,
+        // which must no longer run against destroyed state
+        document.body.appendChild(canvas);
+
+        await nextTick();
+
+        canvas.remove();
+        renderer.destroy();
+    });
+
+    it('should finish activation when the canvas is attached to the DOM after being created detached', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const canvas = renderer.view.canvas;
+
+        const system = new AccessibilitySystem(renderer);
+
+        system.init({
+            accessibilityOptions: {
+                enabledByDefault: true,
+            },
+        });
+
+        // The accessibility div waits for the canvas to enter the DOM
+        expect(system.div?.parentNode).toBe(null);
+
+        document.body.appendChild(canvas);
+
+        await nextTick();
+
+        // The pending MutationObserver completed activation once the canvas entered the DOM
+        expect(system.div?.parentNode).toBe(document.body);
+        expect(system.isActive).toBe(true);
+
+        canvas.remove();
+        system.destroy();
+        renderer.destroy();
     });
 });
