@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { generateShaderSyncCode } from './GenerateShaderSyncCode';
-import { generateProgram } from './program/generateProgram';
+import { generateProgram, updateProgramReflection } from './program/generateProgram';
 
 import type { BufferResource } from '../../shared/buffer/BufferResource';
 import type { Shader } from '../../shared/shader/Shader';
@@ -173,7 +173,18 @@ export class GlShaderSystem
      */
     public _getProgramData(program: GlProgram): GlProgramData
     {
-        return this._programDataHash[program._key] || this._createProgramData(program);
+        let programData = this._programDataHash[program._key];
+
+        if (!programData)
+        {
+            programData = this._createProgramData(program);
+        }
+        else if (!program._attributeData)
+        {
+            updateProgramReflection(this._gl, programData.program, program);
+        }
+
+        return programData;
     }
 
     private _createProgramData(program: GlProgram): GlProgramData
