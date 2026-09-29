@@ -166,7 +166,18 @@ async function fetchMarkdown()
 
     try
     {
-        const response = await fetch(mdUrl);
+        // Ensure the resolved URL is still same-origin before fetching, to guard against
+        // the URL being influenced by an untrusted or manipulated document location.
+        const parsedUrl = new URL(mdUrl, window.location.origin);
+
+        if (parsedUrl.origin !== window.location.origin)
+        {
+            console.warn(`Refusing to fetch markdown from cross-origin URL: ${mdUrl}`);
+
+            return null;
+        }
+
+        const response = await fetch(parsedUrl.href);
 
         if (!response.ok)
         {
