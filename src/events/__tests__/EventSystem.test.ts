@@ -866,22 +866,39 @@ describe('EventSystem', () =>
         expect(eventSpy).toHaveBeenCalledTimes(3);
     });
 
-    it('should register the wheel listener as non-passive so preventDefault works', async () =>
+    it('should register the wheel listener as passive by default and non-passive when opted out', async () =>
     {
-        const canvas = document.createElement('canvas');
-        const spy = jest.spyOn(canvas, 'addEventListener');
+        // default: passive listener, preserves existing behaviour
+        const defaultCanvas = document.createElement('canvas');
+        const defaultSpy = jest.spyOn(defaultCanvas, 'addEventListener');
 
-        await createRenderer(canvas);
+        await createRenderer(defaultCanvas);
 
-        const wheelCall = spy.mock.calls.find(([type]) => type === 'wheel');
+        const defaultWheelCall = defaultSpy.mock.calls.find(([type]) => type === 'wheel');
 
-        expect(wheelCall).toBeDefined();
-        // passive must be false so that users can call preventDefault() on a wheel
-        // event delivered to a PIXI Container handler and have the browser honour it
-        // (see https://github.com/pixijs/pixijs/issues/9227).
-        expect((wheelCall![2] as AddEventListenerOptions).passive).toBe(false);
+        expect(defaultWheelCall).toBeDefined();
+        expect((defaultWheelCall![2] as AddEventListenerOptions).passive).toBe(true);
 
-        spy.mockRestore();
+        // opted out: non-passive so users can call preventDefault() from a wheel
+        // handler on a PIXI Container and have the browser honour it
+        // (see https://github.com/pixijs/pixijs/issues/9227)
+        const optOutCanvas = document.createElement('canvas');
+        const optOutSpy = jest.spyOn(optOutCanvas, 'addEventListener');
+
+        await createRenderer(optOutCanvas, undefined, {
+            eventFeatures: {
+                wheel: true,
+                wheelPassive: false,
+            },
+        });
+
+        const optOutWheelCall = optOutSpy.mock.calls.find(([type]) => type === 'wheel');
+
+        expect(optOutWheelCall).toBeDefined();
+        expect((optOutWheelCall![2] as AddEventListenerOptions).passive).toBe(false);
+
+        defaultSpy.mockRestore();
+        optOutSpy.mockRestore();
     });
 
     it('should dispatch global pointer move event with custom hitArea', async () =>

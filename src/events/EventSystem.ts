@@ -196,6 +196,32 @@ export interface EventSystemFeatures
      * @default true
      */
     wheel: boolean;
+
+    /**
+     * Controls whether the underlying `wheel` event listener is registered as
+     * passive on the DOM element. When `true` (the default), the browser may
+     * fast-path scrolling and will silently ignore any `preventDefault()` call
+     * from a user-supplied wheel handler, including those attached to a PIXI
+     * `Container`. Set to `false` to opt in to letting user handlers call
+     * `preventDefault()` and stop the page from scrolling while interacting
+     * with the canvas (see https://github.com/pixijs/pixijs/issues/9227).
+     *
+     * Only has an effect when `wheel` is also enabled.
+     * @example
+     * ```ts
+     * await app.init({
+     *     eventFeatures: {
+     *         wheel: true,
+     *         wheelPassive: false,
+     *     },
+     * });
+     *
+     * // Or at runtime:
+     * app.renderer.events.features.wheelPassive = false;
+     * ```
+     * @default true
+     */
+    wheelPassive: boolean;
 }
 
 /**
@@ -272,6 +298,8 @@ export class EventSystem implements System<EventSystemOptions>
         click: true,
         /** Enables wheel events. */
         wheel: true,
+        /** Registers the wheel DOM event listener as passive. */
+        wheelPassive: true,
     };
 
     private static _defaultEventMode: EventMode;
@@ -840,7 +868,7 @@ export class EventSystem implements System<EventSystemOptions>
         }
 
         this.domElement.addEventListener('wheel', this.onWheel, {
-            passive: false,
+            passive: this.features.wheelPassive,
             capture: true,
         });
 
