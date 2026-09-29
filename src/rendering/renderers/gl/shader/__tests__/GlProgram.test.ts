@@ -1,5 +1,8 @@
 import { GlProgram } from '../GlProgram';
 import { GlProgramData } from '../GlProgramData';
+import { getGlProgram, getWebGLRenderer } from '@test-utils';
+
+import type { WebGLRenderer } from '../../WebGLRenderer';
 
 describe('GlProgram', () =>
 {
@@ -20,6 +23,29 @@ describe('GlProgram', () =>
         const second = new GlProgram({ vertex, fragment: `${fragment} ` });
 
         expect(first._key).not.toBe(second._key);
+    });
+
+    it('reflects attributes when another instance reuses the compiled program', async () =>
+    {
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
+        const first = getGlProgram();
+        const second = getGlProgram();
+        const createProgram = jest.spyOn(renderer.gl, 'createProgram');
+
+        try
+        {
+            renderer.shader._getProgramData(first);
+            renderer.shader._getProgramData(second);
+
+            expect(createProgram).toHaveBeenCalledTimes(1);
+            expect(second._attributeData.aPosition.location).toBe(first._attributeData.aPosition.location);
+            expect(second._uniformData).toEqual(first._uniformData);
+            expect(second._uniformBlockData).toEqual(first._uniformBlockData);
+        }
+        finally
+        {
+            renderer.destroy();
+        }
     });
 });
 
