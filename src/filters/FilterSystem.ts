@@ -296,6 +296,7 @@ export class FilterSystem implements System
         // they collect all renderables and push them into a list.
         // this list is then used to calculate the bounds of the filter area
 
+        bounds.clear();
         bounds.addRect(texture.frame);
 
         this._calculateFilterBounds(filterData, bounds.rectangle, rootAntialias, rootResolution, 0);

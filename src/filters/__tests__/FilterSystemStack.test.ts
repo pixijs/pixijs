@@ -7,6 +7,7 @@ import { RenderTexture, Texture, TexturePool } from '~/rendering';
 import { Container, Graphics, Text } from '~/scene';
 
 import type { Filter } from '../Filter';
+import type { WebGLRenderer } from '~/rendering';
 
 interface FilterFrame
 {
@@ -54,6 +55,16 @@ function createNestedFilterStage(): Container
     stage.addChild(parent);
 
     return stage;
+}
+
+function filterTexture(renderer: WebGLRenderer, texture: Texture, filters: AlphaFilter[])
+{
+    const output = renderer.filter.generateFilteredTexture({ texture, filters });
+    const result = { isNewTexture: output !== texture, size: [output.frame.width, output.frame.height] };
+
+    if (result.isNewTexture) TexturePool.returnTexture(output);
+
+    return result;
 }
 
 const screenOptions = { width: 301, height: 201, resolution: 1, background: '#222222' };
@@ -343,6 +354,57 @@ describe('FilterSystem stack', () =>
         finally
         {
             parent.destroy({ children: true });
+            renderer.destroy();
+        }
+    });
+    it('should size a filtered texture to its input after a filtered container rendered', async () =>
+    {
+        const renderer = await getWebGLRenderer(squareScreenOptions);
+        const stage = new Container();
+        const graphics = new Graphics().rect(0, 0, 200, 200).fill('red');
+        const input = RenderTexture.create({ width: 64, height: 32 });
+
+        graphics.filters = [new AlphaFilter({ alpha: 0.5 })];
+        stage.addChild(graphics);
+
+        try
+        {
+            renderer.render(stage);
+
+            expect(filterTexture(renderer, input, [new AlphaFilter({ alpha: 0.5 })]))
+                .toEqual({ isNewTexture: true, size: [64, 32] });
+        }
+        finally
+        {
+            stage.destroy({ children: true });
+            input.destroy(true);
+            TexturePool.clear();
+            renderer.destroy();
+        }
+    });
+
+    it('should size a filtered texture to its input after a larger texture was filtered', async () =>
+    {
+        const renderer = await getWebGLRenderer(squareScreenOptions);
+        const stage = new Container();
+        const large = RenderTexture.create({ width: 200, height: 100 });
+        const small = RenderTexture.create({ width: 64, height: 32 });
+        const filters = [new AlphaFilter({ alpha: 0.5 })];
+
+        try
+        {
+            // generateFilteredTexture needs a bound render target, which a render provides
+            renderer.render(stage);
+            filterTexture(renderer, large, filters);
+
+            expect(filterTexture(renderer, small, filters)).toEqual({ isNewTexture: true, size: [64, 32] });
+        }
+        finally
+        {
+            stage.destroy();
+            large.destroy(true);
+            small.destroy(true);
+            TexturePool.clear();
             renderer.destroy();
         }
     });
