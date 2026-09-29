@@ -162,6 +162,7 @@ export * from './renderers/gpu/texture/uploaders/gpuUploadCubeTextureResource';
 export * from './renderers/gpu/texture/uploaders/gpuUploadImageSource';
 export * from './renderers/gpu/texture/uploaders/gpuUploadVideoSource';
 export * from './renderers/gpu/texture/utils/getSupportedGPUCompressedTextureFormats';
+export * from './renderers/gpu/texture/utils/Gpu3dMipmapGenerator';
 export * from './renderers/gpu/texture/utils/GpuMipmapGenerator';
 export * from './renderers/gpu/WebGPURenderer';
 export * from './renderers/shared/background/BackgroundSystem';

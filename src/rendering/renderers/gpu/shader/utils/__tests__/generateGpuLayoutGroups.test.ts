@@ -21,4 +21,17 @@ describe('generateGpuLayoutGroups', () =>
             'sint',
         ]);
     });
+
+    it('should give a texture_3d binding a 3d view dimension', () =>
+    {
+        const [group] = generateGpuLayoutGroups(extractStructAndGroups(`
+            @group(0) @binding(0) var uVolume: texture_3d<f32>;
+            @group(0) @binding(1) var uVolumeIds: texture_3d<u32>;
+        `));
+
+        expect(group.map((entry) => entry.texture)).toEqual([
+            { sampleType: 'float', viewDimension: '3d', multisampled: false },
+            { sampleType: 'uint', viewDimension: '3d', multisampled: false },
+        ]);
+    });
 });

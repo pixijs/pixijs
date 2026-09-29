@@ -108,7 +108,6 @@ export class CubeTextureSource extends TextureSource<CubeTextureFaces<TextureSou
             // Keep these aligned with the face sources so any code that reads width/height works.
             width: first.width,
             height: first.height,
-            dimensions: '2d',
             viewDimension: 'cube',
             arrayLayerCount: 6,
             resolution: derivedResolution,

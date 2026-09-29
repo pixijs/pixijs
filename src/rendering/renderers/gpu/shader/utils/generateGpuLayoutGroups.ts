@@ -149,6 +149,18 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
                 }
             });
         }
+        else if (group.type === 'texture_3d' || group.type.startsWith('texture_3d<'))
+        {
+            layout[group.group].push({
+                binding: group.binding,
+                visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
+                texture: {
+                    sampleType: getTextureSampleType(group.type),
+                    viewDimension: '3d',
+                    multisampled: false,
+                }
+            });
+        }
         else if (group.type === 'texture_cube' || group.type.startsWith('texture_cube<'))
         {
             layout[group.group].push({
