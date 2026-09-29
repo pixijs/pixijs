@@ -734,7 +734,7 @@ export class EventSystem implements System<EventSystemOptions>
     }
 
     /**
-     * Passive handler for `wheel` events on {@link EventSystem.domElement this.domElement}.
+     * Handler for `wheel` events on {@link EventSystem.domElement this.domElement}.
      * @param nativeEvent - The native wheel event.
      */
     protected onWheel(nativeEvent: WheelEvent): void
@@ -840,7 +840,7 @@ export class EventSystem implements System<EventSystemOptions>
         }
 
         this.domElement.addEventListener('wheel', this.onWheel, {
-            passive: true,
+            passive: false,
             capture: true,
         });
 
