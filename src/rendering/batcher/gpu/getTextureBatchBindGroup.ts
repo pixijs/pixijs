@@ -22,7 +22,41 @@ export function getTextureBatchBindGroup(textures: TextureSource[], size: number
         uid >>>= 0;
     }
 
-    return cachedGroups[uid] || generateTextureBatchBindGroup(textures, size, uid, maxTextures);
+    const cachedGroup = cachedGroups[uid];
+
+    if (matchesTextureBatch(cachedGroup, textures, size, maxTextures))
+    {
+        return cachedGroup;
+    }
+
+    return generateTextureBatchBindGroup(textures, size, uid, maxTextures);
+}
+
+function matchesTextureBatch(
+    group: BindGroup,
+    textures: TextureSource[],
+    size: number,
+    maxTextures: number,
+): boolean
+{
+    const resources = group?.resources;
+
+    if (!resources || Object.keys(resources).length !== maxTextures * 2)
+    {
+        return false;
+    }
+
+    for (let i = 0; i < maxTextures; i++)
+    {
+        const texture = i < size ? textures[i] : Texture.EMPTY.source;
+
+        if (resources[i * 2] !== texture.source || resources[(i * 2) + 1] !== texture.style)
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 function generateTextureBatchBindGroup(textures: TextureSource[], size: number, key: number, maxTextures: number): BindGroup
@@ -46,4 +80,3 @@ function generateTextureBatchBindGroup(textures: TextureSource[], size: number, 
 
     return bindGroup;
 }
-
