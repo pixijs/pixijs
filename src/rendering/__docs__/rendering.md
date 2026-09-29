@@ -308,7 +308,7 @@ Call `destroy()` to clean up all GPU resources, systems, event listeners, and in
 renderer.destroy();
 ```
 
-This removes all `EventEmitter` listeners attached to the renderer and nullifies internal systems and pipes. On WebGPU it also destroys the `GPUDevice` the renderer created (a device passed in through the `gpu` option is left alone). A destroyed renderer cannot be used for further rendering.
+This removes all `EventEmitter` listeners attached to the renderer and nullifies internal systems and pipes. On WebGPU it also destroys the `GPUDevice` the renderer created (a device passed in through the `gpu` option is left alone). A destroyed renderer cannot be used for further rendering. The containers it drew are not destroyed with it. A new renderer rebuilds the GPU data it needs the first time it renders them.
 
 ---
 
