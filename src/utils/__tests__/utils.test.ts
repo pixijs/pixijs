@@ -1,9 +1,9 @@
 import earcut from 'earcut';
 import { isMobile } from '../browser/isMobile';
 import { isWebGLSupported } from '../browser/isWebGLSupported';
-import { EventEmitter } from '../const';
 import { removeItems } from '../data/removeItems';
 import { uid } from '../data/uid';
+import { EventEmitter } from '../EventEmitter';
 import { getResolutionOfUrl } from '../network/getResolutionOfUrl';
 import { sayHello } from '../sayHello';
 

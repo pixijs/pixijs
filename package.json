@@ -63,7 +63,6 @@
     "@webgpu/types": "^0.1.69",
     "@xmldom/xmldom": "^0.8.15",
     "earcut": "^3.0.2",
-    "eventemitter3": "^5.0.1",
     "gifuct-js": "^2.1.2",
     "ismobilejs": "^1.1.1",
     "parse-svg-path": "^0.2.0",
