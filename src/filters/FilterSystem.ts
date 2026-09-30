@@ -1055,24 +1055,22 @@ export class FilterSystem implements System
         return this._filterStack[this._filterStackIndex];
     }
 
+    /**
+     * Finds the closest non-skipped entry that encloses the filter being pushed.
+     *
+     * `push()` has already added that filter's own entry, so the search starts one entry below it.
+     * @returns The entry, or null if there is none
+     */
     private _getPreviousFilterData(): FilterData | null
     {
-        let previousFilterData: FilterData;
-
-        let index = this._filterStackIndex - 1;
-
-        while (index > 0)
+        for (let i = this._filterStackIndex - 2; i >= 0; i--)
         {
-            index--;
-            previousFilterData = this._filterStack[index];
+            const filterData = this._filterStack[i];
 
-            if (!previousFilterData.skip)
-            {
-                break;
-            }
+            if (!filterData.skip) return filterData;
         }
 
-        return previousFilterData;
+        return null;
     }
 
     private _pushFilterData(): FilterData
