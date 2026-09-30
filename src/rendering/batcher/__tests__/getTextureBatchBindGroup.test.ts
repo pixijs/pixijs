@@ -3,6 +3,7 @@ import { describeLocalOnly, getTexture, getWebGPURenderer } from '@test-utils';
 import { RenderTexture } from '~/rendering/renderers/shared/texture/RenderTexture';
 import { TextureSource } from '~/rendering/renderers/shared/texture/sources/TextureSource';
 import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { TextureStyle } from '~/rendering/renderers/shared/texture/TextureStyle';
 import { Container } from '~/scene/container/Container';
 import { Graphics } from '~/scene/graphics/shared/Graphics';
 import { Sprite } from '~/scene/sprite/Sprite';
@@ -50,6 +51,18 @@ describe('getTextureBatchBindGroup', () =>
         const group = getTextureBatchBindGroup([a, b], 2, 16);
 
         expect(getTextureBatchBindGroup([a, b], 2, 16)).toBe(group);
+    });
+
+    it('should bind a texture\'s replaced style in the groups that already hold it', () =>
+    {
+        const source = createSource();
+        const group = getTextureBatchBindGroup([source], 1, 16);
+        const style = new TextureStyle();
+
+        source.style = style;
+
+        expect(group.resources[1]).toBe(style);
+        expect(getTextureBatchBindGroup([source], 1, 16)).toBe(group);
     });
 
     it('should release a group without warning when one of its textures is destroyed', () =>
@@ -111,11 +124,13 @@ describe('getTextureBatchBindGroup', () =>
     {
         const source = createSource();
         const listenersBefore = source.listenerCount('change');
+        const styleListenersBefore = source.listenerCount('styleChange');
         const group = getTextureBatchBindGroup([source], 1, 16);
 
         GlobalResourceRegistry.release();
 
         expect(source.listenerCount('change')).toBe(listenersBefore);
+        expect(source.listenerCount('styleChange')).toBe(styleListenersBefore);
         expect(getTextureBatchBindGroup([source], 1, 16)).not.toBe(group);
     });
 

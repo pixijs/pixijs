@@ -13,6 +13,8 @@ const cache: { groups: Record<number, TextureBatchBindGroup> } = { groups: Objec
  *
  * It listens for `change` only on the batch's textures. The padding slots hold `Texture.EMPTY`
  * without a listener of their own; one module level listener re-keys every group instead.
+ * Replacing a texture's style emits `styleChange` rather than `change`, so the group also listens
+ * for it and swaps the style slot in place.
  * @internal
  */
 class TextureBatchBindGroup extends BindGroup implements GCable
@@ -21,18 +23,21 @@ class TextureBatchBindGroup extends BindGroup implements GCable
     public readonly autoGarbageCollect = true;
     /** Part of the {@link GCable} contract; a cached bind group owns no per-renderer GPU data */
     public readonly _gpuData: GCable['_gpuData'] = null;
+    /** A second hash of the textures, checked on a cache hit because the 32 bit cache key can collide */
+    public readonly _checkKey: number;
 
     private readonly _cacheKey: number;
     private readonly _textureCount: number;
-    private readonly _maxTextures: number;
+    private readonly _sources: TextureSource[];
 
-    constructor(textures: TextureSource[], textureCount: number, maxTextures: number, cacheKey: number)
+    constructor(textures: TextureSource[], textureCount: number, maxTextures: number, cacheKey: number, checkKey: number)
     {
         super();
 
         this._cacheKey = cacheKey;
+        this._checkKey = checkKey;
         this._textureCount = textureCount;
-        this._maxTextures = maxTextures;
+        this._sources = textures.slice(0, textureCount);
 
         let bindIndex = 0;
 
@@ -40,6 +45,7 @@ class TextureBatchBindGroup extends BindGroup implements GCable
         {
             const texture = textures[i];
 
+            texture.on('styleChange', this._onStyleChange, this);
             this.setResource(texture, bindIndex++);
 
             // a destroyed texture has no style, and BindGroupSystem reports it when the group is drawn
@@ -57,27 +63,6 @@ class TextureBatchBindGroup extends BindGroup implements GCable
             resources[bindIndex++] = pad;
             resources[bindIndex++] = pad.style;
         }
-    }
-
-    /**
-     * Whether this group still binds exactly these textures in these slots
-     * @param textures - The texture sources of a batch.
-     * @param textureCount - How many of `textures` the batch uses.
-     * @param maxTextures - The slot count of the batch shader.
-     * @returns True when every slot up to `textureCount` holds the matching source.
-     */
-    public binds(textures: TextureSource[], textureCount: number, maxTextures: number): boolean
-    {
-        const resources = this.resources;
-
-        if (!resources || this._textureCount !== textureCount || this._maxTextures !== maxTextures) return false;
-
-        for (let i = 0; i < textureCount; i++)
-        {
-            if (resources[i * 2] !== textures[i]) return false;
-        }
-
-        return true;
     }
 
     /**
@@ -116,6 +101,13 @@ class TextureBatchBindGroup extends BindGroup implements GCable
     {
         if (!this.resources) return;
 
+        const sources = this._sources;
+
+        for (let i = 0; i < sources.length; i++)
+        {
+            sources[i].off('styleChange', this._onStyleChange, this);
+        }
+
         super.destroy();
 
         if (cache.groups[this._cacheKey] === this) cache.groups[this._cacheKey] = null;
@@ -131,6 +123,16 @@ class TextureBatchBindGroup extends BindGroup implements GCable
         else
         {
             super.onResourceChange(resource);
+        }
+    }
+
+    private _onStyleChange(source: TextureSource): void
+    {
+        const sources = this._sources;
+
+        for (let i = 0; i < sources.length; i++)
+        {
+            if (sources[i] === source && source.style) this.setResource(source.style, (i * 2) + 1);
         }
     }
 }
@@ -185,24 +187,29 @@ export function collectTextureBatchBindGroups(gc: GCSystem): void
  */
 export function getTextureBatchBindGroup(textures: TextureSource[], size: number, maxTextures: number): BindGroup
 {
-    let uid = 2166136261; // FNV-1a 32-bit offset basis
+    let key = 2166136261; // FNV-1a 32-bit offset basis
+    // a second hash from the same loop confirms a hit: a wrong hit needs both 32 bit hashes to
+    // collide, and it costs far less than comparing every texture
+    let check = size;
 
     for (let i = 0; i < size; i++)
     {
-        uid ^= textures[i].uid;
-        uid = Math.imul(uid, 16777619);
-        uid >>>= 0;
+        const uid = textures[i].uid;
+
+        key = Math.imul(key ^ uid, 16777619);
+        check = Math.imul(check ^ uid, 0x5bd1e995);
+        check ^= check >>> 15;
     }
 
     // a group holds maxTextures slots, so the slot count is part of the key
-    uid = Math.imul(uid ^ maxTextures, 16777619) >>> 0;
+    key = Math.imul(key ^ maxTextures, 16777619) >>> 0;
+    check = Math.imul(check ^ maxTextures, 0x5bd1e995);
 
-    const group = cache.groups[uid];
+    const group = cache.groups[key];
 
-    // the key is a 32 bit hash, so a different texture set can share it
-    if (group?.binds(textures, size, maxTextures)) return group;
+    if (group?._checkKey === check) return group;
 
     group?.destroy();
 
-    return (cache.groups[uid] = new TextureBatchBindGroup(textures, size, maxTextures, uid));
+    return (cache.groups[key] = new TextureBatchBindGroup(textures, size, maxTextures, key, check));
 }
