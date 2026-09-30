@@ -363,6 +363,28 @@ export interface FederatedOptions
     onclick?: FederatedEventHandler | null;
 
     /**
+     * Property-based event handler for the `contextmenu` event.
+     * Fired when the browser is about to open its context menu over the object, such as on a right click.
+     * Call `event.preventDefault()` to keep the browser menu closed.
+     * @example
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('contextmenu', (event) => {
+     *     event.preventDefault();
+     * });
+     * // Using property-based handler
+     * sprite.oncontextmenu = (event) => {
+     *     event.preventDefault();
+     * };
+     * ```
+     * @default null
+     */
+    oncontextmenu?: FederatedEventHandler | null;
+
+    /**
      * Property-based event handler for the `mousedown` event.
      * Fired when a mouse button is pressed while the pointer is over the object.
      * @example
@@ -805,7 +827,8 @@ export interface FederatedOptions
 
     /**
      * Property-based event handler for the `rightclick` event.
-     * Fired when a right-click (context menu) action is performed on the object.
+     * Fired when the right mouse button is pressed and released on the object.
+     * To keep the browser's context menu closed, listen for `contextmenu` instead.
      * @example
      * ```ts
      * const sprite = new Sprite(texture);
@@ -1197,6 +1220,7 @@ export interface IFederatedContainer extends FederatedOptions
 /** @internal */
 export const FederatedContainer: IFederatedContainer = {
     onclick: null,
+    oncontextmenu: null,
     onmousedown: null,
     onmouseenter: null,
     onmouseleave: null,

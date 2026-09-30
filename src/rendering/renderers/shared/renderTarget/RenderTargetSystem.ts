@@ -491,11 +491,12 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
 
         const source = renderTarget.colorAttachments[0]?.texture || renderTarget.depthStencilAttachment?.texture;
         const viewport = this.viewport;
-        const arrayLayerCount = source.arrayLayerCount || 1;
 
-        if (layer < 0 || layer >= arrayLayerCount)
+        const layerCount = source.dimension === '3d' ? Math.max(source.depth >> mipLevel, 1) : source.depthOrArrayLayers;
+
+        if (layer < 0 || layer >= layerCount)
         {
-            throw new Error(`[RenderTargetSystem] layer ${layer} is out of bounds (arrayLayerCount=${arrayLayerCount}).`);
+            throw new Error(`[RenderTargetSystem] layer ${layer} is out of bounds (layer count=${layerCount}).`);
         }
 
         // retain the as-passed bind state for the getters and getBindState; the frame is

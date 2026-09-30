@@ -14,8 +14,9 @@ import { Graphics } from '~/scene/graphics/shared/Graphics';
 import type { WebGLRenderer } from '../gl/WebGLRenderer';
 import type { WebGPURenderer } from '../gpu/WebGPURenderer';
 import type { BindOptions } from '../shared/renderTarget/RenderTargetSystem';
+import type { TextureShapeOptions, TextureSourceOptions } from '../shared/texture/sources/TextureSource';
 
-function createTarget(options: Partial<ConstructorParameters<typeof TextureSource>[0]> = {})
+function createTarget(options: TextureSourceOptions & TextureShapeOptions = {})
 {
     return new RenderTarget({
         colorTextures: [new TextureSource({ width: 64, height: 64, ...options })],
@@ -65,6 +66,16 @@ describe('RenderTargetSystem', () =>
         const target = renderer.renderTarget.getRenderTarget(canvas);
 
         expect(target).toBeInstanceOf(RenderTarget);
+    });
+
+    it('should bound the layer of a 3D target by the depth of the bound mip level', async () =>
+    {
+        renderer = await getWebGLRenderer() as WebGLRenderer;
+
+        const target = createTarget({ width: 8, height: 8, depth: 4, mipLevelCount: 2 });
+
+        expect(() => renderer.renderTarget.bind({ target, mipLevel: 1, layer: 1 })).not.toThrow();
+        expect(() => renderer.renderTarget.bind({ target, mipLevel: 1, layer: 3 })).toThrow(/out of bounds/);
     });
 });
 

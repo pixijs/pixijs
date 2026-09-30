@@ -120,6 +120,22 @@ renderer.render({
 
 If your `target` is a {@link Texture} with a `frame` (e.g. an atlas sub-texture), that frame is interpreted in **mip 0** pixel space and is scaled/clamped when rendering to `mipLevel > 0`.
 
+## Rendering to layers and slices (advanced)
+
+`layer` picks which part of a layered texture to render into: an array layer of a 2D array (`arrayLayerCount`), a face of a cube map, or a depth slice of a 3D texture (`depth`). Pass the `TextureSource` itself as `target`; `RenderTexture.create` doesn't take `depth`.
+
+```ts
+import { TextureSource } from 'pixi.js';
+
+const volume = new TextureSource({ width: 64, height: 64, depth: 4, format: 'rgba8unorm' });
+
+for (let z = 0; z < 4; z++) {
+    renderer.render({ container, target: volume, layer: z, clear: true });
+}
+```
+
+Custom render code can bind a layer the same way with `renderer.renderTarget.push({ target, layer })`.
+
 ## Flipping the output (advanced)
 
 By default a texture render is stored in PixiJS's Y-down orientation, which the 2D pipeline samples upright but 3D UV conventions read upside down. Pass `flipY: true` to invert the Y orientation of the render. Back-face culling stays correct because the winding order flips together with the projection.
@@ -235,6 +251,23 @@ const shader = Shader.from({
 ```
 
 Browsers without pipeline constant support (Safari) get the values substituted into the source instead. `renderer.limits.supportsOverrideConstants` reports which path is in use.
+
+### Storage textures
+
+Set `storage: true` on a `TextureSource` so your own compute pass can write to it. PixiJS adds `GPUTextureUsage.STORAGE_BINDING` to the texture and still samples it like any other texture.
+
+```ts
+import { TextureSource } from 'pixi.js';
+
+const volume = new TextureSource({ width: 64, height: 64, depth: 64, format: 'rgba8unorm', storage: true });
+
+// bind this view to a texture_storage_3d<rgba8unorm, write> in your compute pass
+const view = renderer.texture.getGpuSource(volume).createView();
+```
+
+Every device accepts `rgba8unorm`, `rgba16float`, `r32float`, `rg32float`, `rgba32float` and the matching integer formats as storage textures. `bgra8unorm` needs the `bgra8unorm-storage` feature, and formats such as `r8unorm` or `r16float` need `texture-formats-tier1`. PixiJS enables both features when the GPU has them. WebGPU rejects any other format when the texture is created.
+
+A 3D texture with `autoGenerateMipmaps` needs `storage: true` and the `rgba8unorm` or `rgba16float` format on WebGPU, because a compute shader writes its mips.
 
 ### Render bundles
 

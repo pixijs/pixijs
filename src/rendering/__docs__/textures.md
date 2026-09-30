@@ -105,7 +105,47 @@ data.fill(1, 100 * 4, 116 * 4); // change texels 100 to 115
 source.update(100, 116); // upload only those 16 texels
 ```
 
-The upload happens during the `update` call on every renderer that already holds the texture. The range applies to that call only, so if you change several parts of the buffer in a frame, track the lowest and highest changed texel yourself and call `update` once with that span. Each call has a fixed cost on top of the bytes it moves, which reaches tens of microseconds on some mobile GPUs. One span usually beats many small calls. Partial uploads assume the buffer holds exactly `width * height` texels.
+The upload happens during the `update` call on every renderer that already holds the texture. The range applies to that call only, so if you change several parts of the buffer in a frame, track the lowest and highest changed texel yourself and call `update` once with that span. Each call has a fixed cost on top of the bytes it moves, which reaches tens of microseconds on some mobile GPUs. One span usually beats many small calls. Partial uploads assume the buffer holds exactly `width * height` texels. A 3D texture (`depth`) or 2D array (`arrayLayerCount`) always uploads whole, so call `update()` with no range.
+
+### 3D and array textures (advanced)
+
+Pass `depth` to a `TextureSource` or `BufferImageSource` to make a `'3d'` texture, or `arrayLayerCount` above 1 to make a `'2d-array'` texture. A texture can't have both, and TypeScript rejects options that set both. Pass `viewDimension` only when the size doesn't decide it, such as `'cube'` for 6 layers viewed as a cube map. These textures need WebGL2 or WebGPU; WebGL1 has no 3D or array textures.
+
+```ts
+import { BufferImageSource } from 'pixi.js';
+
+const size = 64;
+const data = new Uint8Array(size * size * size * 4);
+
+for (let z = 0; z < size; z++) {
+    for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+            const i = (x + (y * size) + (z * size * size)) * 4;
+
+            data[i] = data[i + 1] = data[i + 2] = Math.random() * 255;
+            data[i + 3] = 255;
+        }
+    }
+}
+
+const noise = new BufferImageSource({
+    resource: data,
+    width: size,
+    height: size,
+    depth: size,
+    format: 'rgba8unorm',
+});
+```
+
+The buffer holds the slices (or layers) one after another, each in row-major order, so texel `(x, y, z)` sits at index `x + y * width + z * width * height`. `resolution` scales `width` and `height` but not `depth`. A 3D or array `BufferImageSource` defaults to `alphaMode: 'no-premultiply-alpha'`.
+
+Sample a 3D texture with `uniform sampler3D` in GLSL or `texture_3d<f32>` in WGSL, and a 2D array with `sampler2DArray` or `texture_2d_array<f32>`. PixiJS declares `precision highp` for the sampler types GLSL ES 3.0 gives no default, such as `sampler3D`, `sampler2DArray`, `usampler2D` and `isampler2D`, so you don't need a precision line. A precision you write yourself is kept. `sampler2D` and `samplerCube` keep their `lowp` default.
+
+A `Float32Array` gives `rgba32float` by default. On WebGPU, linear filtering of that format needs an optional feature PixiJS doesn't request, so use `scaleMode: 'nearest'` with it, or pick `rgba8unorm`, `r8unorm` or `rgba16float` for smooth sampling.
+
+With `autoGenerateMipmaps`, WebGL fills a 3D texture's mip chain with `gl.generateMipmap`. WebGPU writes the mips with a compute shader, so the texture needs `storage: true` and the `rgba8unorm` or `rgba16float` format. To draw into one slice or layer, see the [rendering guide](./rendering.md).
+
+The `dimensions` option is deprecated because PixiJS derives it from the view; leave it out.
 
 ## Texture properties
 
@@ -129,6 +169,10 @@ Key properties on `TextureSource`:
 - `alphaMode`: How alpha is interpreted on upload.
 - `wrapMode` / `scaleMode`: Sampling behavior outside bounds or when scaled.
 - `autoGenerateMipmaps`: Whether to generate mipmaps on upload.
+- `depth`: Depth of a 3D texture in texels. Setting it makes a `'3d'` texture. `resolution` doesn't scale it.
+- `arrayLayerCount`: Number of array layers. Above 1 makes a `'2d-array'` texture. Can't be combined with `depth`.
+- `viewDimension`: How shaders view the texture, such as `'2d'`, `'2d-array'`, `'cube'` or `'3d'`. The size decides it unless you pass one, for example `'cube'` for 6 layers.
+- `storage`: WebGPU only. Lets your own compute shaders write to the texture. WebGL ignores it.
 - `transient`: WebGPU only. Marks an antialiased render texture as drawn in a single pass, so its multisample depth/stencil buffer is discarded instead of written to memory, and its colour buffer too on GPUs that aren't tile-based (tile-based GPUs discard colour already). Set at creation time.
 
 ```ts

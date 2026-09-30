@@ -193,10 +193,15 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         this.screen = new Rectangle(0, 0, options.width, options.height);
         this.canvas = options.canvas || DOMAdapter.get().createCanvas();
         this.antialias = !!options.antialias;
-        this.texture = getCanvasTexture(this.canvas, options);
+
+        // `depth` asks for a depth buffer here, but on a TextureSource it's a 3D texture's depth,
+        // so it goes to the render target and not to the canvas source
+        const { depth, ...canvasOptions } = options;
+
+        this.texture = getCanvasTexture(this.canvas, canvasOptions);
         this.renderTarget = new RenderTarget({
             colorTextures: [this.texture],
-            depth: !!options.depth,
+            depth: !!depth,
             isRoot: true,
         });
 

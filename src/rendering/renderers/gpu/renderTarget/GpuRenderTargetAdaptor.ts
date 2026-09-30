@@ -424,6 +424,11 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     loadOp,
                 };
 
+                if (colorTexture.dimension === '3d')
+                {
+                    baseAttachment.depthSlice = layer;
+                }
+
                 if (load)
                 {
                     // restored over, or a new canvas frame, which starts transparent
