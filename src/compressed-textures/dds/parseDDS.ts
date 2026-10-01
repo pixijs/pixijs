@@ -1,4 +1,10 @@
-import { DDS, DXGI_TO_TEXTURE_FORMAT, FOURCC_TO_TEXTURE_FORMAT, TEXTURE_FORMAT_BLOCK_SIZE } from './const';
+import {
+    DDS,
+    DXGI_TO_TEXTURE_FORMAT,
+    FOURCC_TO_TEXTURE_FORMAT,
+    TEXTURE_FORMAT_BLOCK_SIZE,
+    TEXTURE_FORMAT_BYTES_PER_PIXEL
+} from './const';
 
 import type { TEXTURE_FORMATS } from '../../rendering/renderers/shared/texture/const';
 import type { TextureSourceOptions } from '../../rendering/renderers/shared/texture/sources/TextureSource';
@@ -53,6 +59,7 @@ function getMipmapLevelBuffers(format: TEXTURE_FORMATS, width: number, height: n
 {
     const levelBuffers = [];
     const blockBytes = TEXTURE_FORMAT_BLOCK_SIZE[format];
+    const bytesPerPixel = TEXTURE_FORMAT_BYTES_PER_PIXEL[format] ?? 4;
 
     let mipWidth = width;
     let mipHeight = height;
@@ -65,7 +72,7 @@ function getMipmapLevelBuffers(format: TEXTURE_FORMATS, width: number, height: n
         const alignedHeight = Math.ceil(Math.max(4, mipHeight) / 4) * 4;
         const byteLength = blockBytes
             ? alignedWidth / 4 * alignedHeight / 4 * blockBytes
-            : mipWidth * mipHeight * 4;
+            : mipWidth * mipHeight * bytesPerPixel;
 
         const levelBuffer = new Uint8Array(arrayBuffer, offset, byteLength);
 
