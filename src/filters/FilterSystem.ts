@@ -1,7 +1,7 @@
 import { ExtensionType } from '../extensions/Extensions';
 import { PassthroughFilter } from '../filters/defaults/passthrough/PassthroughFilter';
 import { Matrix } from '../maths/matrix/Matrix';
-import { type Rectangle } from '../maths/shapes/Rectangle';
+import { Rectangle } from '../maths/shapes/Rectangle';
 import { BindGroup } from '../rendering/renderers/gpu/shader/BindGroup';
 import { Geometry } from '../rendering/renderers/shared/geometry/Geometry';
 import { UniformGroup } from '../rendering/renderers/shared/shader/UniformGroup';
@@ -23,6 +23,8 @@ import type { Container } from '../scene/container/Container';
 import type { Sprite } from '../scene/sprite/Sprite';
 import type { Filter } from './Filter';
 import type { FilterEffect } from './FilterEffect';
+
+const tempViewPort = new Rectangle();
 
 const quadGeometry = new Geometry({
     attributes: {
@@ -299,7 +301,10 @@ export class FilterSystem implements System
         bounds.clear();
         bounds.addRect(texture.frame);
 
-        this._calculateFilterBounds(filterData, bounds.rectangle, rootAntialias, rootResolution, 0);
+        // the viewport is in pixels, like the root viewport that push() passes
+        tempViewPort.set(0, 0, colorTextureSource.pixelWidth, colorTextureSource.pixelHeight);
+
+        this._calculateFilterBounds(filterData, tempViewPort, rootAntialias, rootResolution, 0);
 
         if (filterData.skip)
         {

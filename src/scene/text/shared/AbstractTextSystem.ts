@@ -84,40 +84,43 @@ export abstract class AbstractTextSystem implements System
             resolution,
         });
 
+        if (style.trim)
+        {
+            // the trimmed box excludes the padding that updateTextBounds compensates for
+            frame.pad(style.padding);
+        }
+
+        // filters sample the canvas from its origin, so the frame runs from there to the far corner of the text
         const texture = getPo2TextureFromSource(
             canvasAndContext.canvas,
-            frame.width,
-            frame.height,
+            frame.right,
+            frame.bottom,
             resolution,
             autoGenerateMipmaps,
             textureStyle?.scaleMode
         );
 
+        const outputTexture = style.filters ? this._applyFilters(texture, style.filters as Filter[]) : texture;
+
         if (style.trim)
         {
-            // reapply the padding to the frame
-            frame.pad(style.padding);
-            texture.frame.copyFrom(frame);
+            // the trimmed frame goes on the filter output, since the filters sampled their input from its origin
+            outputTexture.frame.copyFrom(frame);
 
             // We initially increased the frame size by a resolution factor to achieve a crisper display.
             // Now we need to scale down the already trimmed frame to render the texture in the expected size.
-            texture.frame.scale(1 / resolution);
-            texture.updateUvs();
+            outputTexture.frame.scale(1 / resolution);
+            outputTexture.updateUvs();
         }
 
-        if (style.filters)
+        if (outputTexture !== texture)
         {
-            // apply the filters to the texture if required..
-            // this returns a new texture with the filters applied
-            const filteredTexture = this._applyFilters(texture, style.filters as Filter[]);
-
             // return the original texture to the pool so we can reuse the next frame
             this.returnTexture(texture);
 
             CanvasTextGenerator.returnCanvasAndContext(canvasAndContext);
 
-            // return the new texture with the filters applied
-            return filteredTexture;
+            return outputTexture;
         }
 
         this._renderer.texture.initSource(texture._source);

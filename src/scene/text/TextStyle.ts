@@ -633,6 +633,9 @@ export interface TextStyleOptions
      *
      * These filters will be applied to the text as it is created, resulting in faster rendering for static text
      * compared to applying the filter directly to the text object (which would be applied at run time).
+     *
+     * Filters render at their own `resolution`, default 1. For text at a higher resolution,
+     * set the filter's `resolution` to `'inherit'` to keep the text sharp.
      * @default undefined
      */
     filters?: Filter[] | readonly Filter[];
@@ -1045,6 +1048,9 @@ export class TextStyle extends EventEmitter<{
      * An optional filter or array of filters to apply to the text, allowing for advanced visual effects.
      * These filters will be applied to the text as it is created, resulting in faster rendering for static text
      * compared to applying the filter directly to the text object (which would be applied at run time).
+     *
+     * Filters render at their own `resolution`, default 1. For text at a higher resolution,
+     * set the filter's `resolution` to `'inherit'` to keep the text sharp.
      * @default null
      */
     get filters(): readonly Filter[] { return this._filters; }
