@@ -91,11 +91,12 @@ function autoGenerateUboUnsafeEvalFunctions()
 {
     const out: string[] = [header];
 
-    out.push(`export type UboUploadFunction = (name:string, data:Float32Array, offset:number, uv:any, v:any) => void;`);
+    // eslint-disable-next-line max-len
+    out.push(`export type UboUploadFunction = (name:string, data:Float32Array, offset:number, uv:any, v:any, dataInt32:Int32Array) => void;`);
 
     function convertToFunction(body: string)
     {
-        return `(name:string, data:Float32Array, offset:number, uv:any, v:any):void =>
+        return `(name:string, data:Float32Array, offset:number, uv:any, v:any, dataInt32:Int32Array):void =>
         {
             ${body}
         }`;
