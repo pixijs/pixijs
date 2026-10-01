@@ -1,3 +1,4 @@
+import '~/scene/graphics/init';
 import '~/scene/text/init';
 import '~/scene/text-bitmap/init';
 import '~/scene/text-html/init';
@@ -196,5 +197,43 @@ describe('PrepareSystem', () =>
         await prepare.upload(text);
 
         expect(() => text.destroy()).not.toThrow();
+    });
+
+    // https://github.com/pixijs/pixijs/issues/12181
+    it('should not clobber a rendered Text batchable when prepare.upload races with render', async () =>
+    {
+        const text = new Text({ text: 'race' });
+        const mask = new Graphics().rect(0, 0, 50, 50).fill(0xffffff);
+        const masked = new Graphics().circle(25, 25, 20).fill(0xff0000);
+
+        masked.mask = mask;
+
+        const stage = new Container();
+
+        // Text must be collected before the masked object so an undefined-texture
+        // batch element is present when StencilMaskPipe asks the batcher to break.
+        stage.addChild(text, mask, masked);
+
+        const uploadPromise = prepare.upload(text);
+
+        renderer.render(stage);
+
+        const gpuTextAfterRender = text._gpuData[renderer.uid];
+
+        expect(text._didTextUpdate).toBe(false);
+        expect(gpuTextAfterRender.texture).toBeDefined();
+
+        await uploadPromise;
+
+        const gpuTextAfterPrepare = text._gpuData[renderer.uid];
+
+        expect(gpuTextAfterPrepare === gpuTextAfterRender).toBe(true);
+        expect(gpuTextAfterPrepare.texture?._source).toBeDefined();
+        expect(text._didTextUpdate).toBe(false);
+
+        // Force an instruction rebuild so the batcher picks up current GPU data.
+        stage.addChild(new Container());
+
+        expect(() => renderer.render(stage)).not.toThrow();
     });
 });
