@@ -197,7 +197,9 @@ export class GpuProgram
     {
         const { vertex, fragment } = this;
 
-        const bigKey = vertex.source + fragment.source + vertex.entryPoint + fragment.entryPoint;
+        // Delimit the four parts so different tuples cannot concatenate to
+        // the same key (e.g. entry points "ab"/"c" vs "a"/"bc").
+        const bigKey = `${vertex.source}:${fragment.source}:${vertex.entryPoint}:${fragment.entryPoint}`;
 
         this._layoutKey = createIdFromString(bigKey, 'program');
     }
