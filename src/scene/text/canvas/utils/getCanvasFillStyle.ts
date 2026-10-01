@@ -109,14 +109,23 @@ export function getCanvasFillStyle(
             );
         }
 
-        // For vertical gradients in local space, repeat gradient per text line
+        // For vertical gradients in local space, repeat gradient per text line.
+        // The gradient is anchored to the glyph box, not the line box: glyphs are vertically
+        // centered inside the line box and only ~fontSize tall. Anchoring to the line top and
+        // using lineHeight as the cycle length made the gradient shift whenever lineHeight changed
+        // (see pixijs/pixijs#12167).
         if (isNearlyVertical && isLocal && textMetrics)
         {
-            const ratio = (textMetrics.lineHeight) / height;
+            const { lineHeight, fontProperties } = textMetrics;
+            // Tagged-text runs don't carry fontProperties - fall back so they keep the old behaviour
+            const fontSize = fontProperties?.fontSize ?? lineHeight;
+            // Same vertical-centering shift the text renderer applies (see CanvasTextGenerator)
+            const lineShift = Math.max(0, (lineHeight - fontSize) / 2);
+            const ratio = fontSize / height;
 
             for (let i = 0; i < textMetrics.lines.length; i++)
             {
-                const start = ((i * textMetrics.lineHeight) + (padding / 2)) / height;
+                const start = ((i * lineHeight) + lineShift + (padding / 2)) / height;
 
                 fillGradient.colorStops.forEach((stop) =>
                 {
