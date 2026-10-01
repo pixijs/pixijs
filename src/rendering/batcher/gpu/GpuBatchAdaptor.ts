@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { State } from '../../renderers/shared/state/State';
-import { getTextureBatchBindGroup } from './getTextureBatchBindGroup';
+import { collectTextureBatchBindGroups, getTextureBatchBindGroup } from './getTextureBatchBindGroup';
 
 import type { GpuEncoderSystem } from '../../renderers/gpu/GpuEncoderSystem';
 import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
@@ -28,6 +28,11 @@ export class GpuBatchAdaptor implements BatcherAdaptor
 
     private _shader: Shader;
     private _geometry: Geometry;
+
+    public init(batchPipe: BatcherPipe): void
+    {
+        collectTextureBatchBindGroups(batchPipe.renderer.gc);
+    }
 
     public start(batchPipe: BatcherPipe, geometry: Geometry, shader: Shader): void
     {
@@ -69,7 +74,8 @@ export class GpuBatchAdaptor implements BatcherAdaptor
         const renderer = batchPipe.renderer as WebGPURenderer;
         const encoder = renderer.encoder as GpuEncoderSystem;
 
-        if (!batch.bindGroup)
+        // a batch can still hold a group the cache has since released
+        if (!batch.bindGroup?.resources)
         {
             const textureBatch = batch.textures;
 
