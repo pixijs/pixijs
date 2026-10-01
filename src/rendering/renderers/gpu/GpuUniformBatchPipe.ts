@@ -191,7 +191,11 @@ export class GpuUniformBatchPipe
 
         for (let i = 0; i < this._bufferResources.length; i++)
         {
-            this._bufferResources[i].destroy();
+            const bufferResource = this._bufferResources[i];
+
+            // filters keep these bound between frames and cannot unbind them before teardown
+            bufferResource._destroyedByRenderer = true;
+            bufferResource.destroy();
         }
 
         this._bufferResources = null;

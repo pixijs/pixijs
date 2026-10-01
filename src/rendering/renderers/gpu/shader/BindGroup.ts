@@ -200,8 +200,11 @@ export class BindGroup
             }
 
             // #if _DEBUG
-            warn(`[BindGroup] a '${resource._resourceType}' was destroyed while still bound to a shader. `
-                + 'Remove it from the shader before destroying it.');
+            if (!resource._destroyedByRenderer)
+            {
+                warn(`[BindGroup] a '${resource._resourceType}' was destroyed while still bound to a shader. `
+                    + 'Remove it from the shader before destroying it.');
+            }
             // #endif
         }
     }
