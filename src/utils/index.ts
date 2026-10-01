@@ -13,6 +13,7 @@ export * from './data/removeItems';
 export * from './data/uid';
 export * from './data/updateQuadBounds';
 export * from './data/ViewableBuffer';
+export * from './EventEmitter';
 export * from './global/globalHooks';
 export * from './logging/deprecation';
 export * from './logging/logDebugTexture';
