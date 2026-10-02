@@ -2,6 +2,7 @@ import { warn } from '../../../../utils/logging/warn';
 import { CLEAR } from '../../gl/const';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
 import { TextureSource } from '../../shared/texture/sources/TextureSource';
+import { GpuMsaaDepthResolve } from './GpuMsaaDepthResolve';
 import { GpuMsaaRestore } from './GpuMsaaRestore';
 import { GpuRenderTarget } from './GpuRenderTarget';
 
@@ -58,6 +59,8 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
     /** Restores discarded MSAA colour buffers on reopen. Created on first use, per device. */
     private _msaaRestore: GpuMsaaRestore;
+    /** Resolves multisampled depth for {@link copyDepthTexture}. Created on first use, per device. */
+    private _msaaDepthResolve: GpuMsaaDepthResolve;
 
     public init(renderer: WebGPURenderer, renderTargetSystem: RenderTargetSystem<GpuRenderTarget>): void
     {
@@ -68,15 +71,17 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         renderer.runners.destroy.add(this);
     }
 
-    /** Drops the restore helper, whose pipelines belong to the old device. The next restore makes a new one. */
+    /** Drops the MSAA helpers, whose pipelines belong to the old device. The next use makes new ones. */
     public contextChange(): void
     {
         this._msaaRestore = null;
+        this._msaaDepthResolve = null;
     }
 
     public destroy(): void
     {
         this._msaaRestore = null;
+        this._msaaDepthResolve = null;
     }
 
     public copyToTexture(
@@ -130,22 +135,48 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         // close the pass first (no-op when none is open), matching the GL adaptor
         this.finishRenderPass();
 
-        // depth is just a GPUTexture, so it copies straight into the destination's source
         const srcDepth = source.depthStencilAttachment.texture;
+        const multisampled = srcDepth.sampleCount > 1;
 
-        const srcGpu = renderer.texture.getGpuSource(srcDepth);
-        const dstGpu = renderer.texture.getGpuSource(destination.source);
+        if (multisampled)
+        {
+            if (srcDepth.transient)
+            {
+                warn('[RenderTargetSystem] copyDepthTexture: the source target is transient, so its '
+                    + 'multisampled depth is discarded at the end of each pass and there is nothing to copy');
+
+                return;
+            }
+
+            if (!srcDepth.format.includes('depth') || !destination.source.format.includes('depth'))
+            {
+                warn('[RenderTargetSystem] copyDepthTexture: copying from an antialiased target resolves depth only, '
+                    + `so both textures need a depth aspect (got '${srcDepth.format}' to '${destination.source.format}')`);
+
+                return;
+            }
+        }
 
         const standAlone = renderer.encoder.commandEncoder === null;
         const commandEncoder = standAlone
             ? renderer.gpu.device.createCommandEncoder()
             : renderer.encoder.commandEncoder;
 
-        commandEncoder.copyTextureToTexture(
-            { texture: srcGpu, origin: originSrc },
-            { texture: dstGpu, origin: originDest },
-            { width: size.width, height: size.height },
-        );
+        if (multisampled)
+        {
+            // WebGPU only copies between textures of the same sample count, so multisampled depth is resolved
+            this._msaaDepthResolve ??= new GpuMsaaDepthResolve(renderer);
+            this._msaaDepthResolve.resolve(commandEncoder, srcDepth, destination.source, originSrc, size, originDest);
+        }
+        else
+        {
+            // depth is just a GPUTexture, so it copies straight into the destination's source
+            commandEncoder.copyTextureToTexture(
+                { texture: renderer.texture.getGpuSource(srcDepth), origin: originSrc },
+                { texture: renderer.texture.getGpuSource(destination.source), origin: originDest },
+                { width: size.width, height: size.height },
+            );
+        }
 
         if (standAlone)
         {

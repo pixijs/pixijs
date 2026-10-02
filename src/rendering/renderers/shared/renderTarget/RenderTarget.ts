@@ -26,7 +26,11 @@ export interface RenderTargetOptions
     stencil?: boolean;
     /** should this render target have a depth buffer? */
     depth?: boolean;
-    /** a depth stencil texture that the depth and stencil outputs will be written to */
+    /**
+     * a depth stencil texture that the depth and stencil outputs will be written to.
+     * With `antialias`, shaders can't read it as a normal depth texture: copy depth out with
+     * `renderer.renderTarget.copyDepthTexture`, which resolves the samples.
+     */
     depthStencilTexture?: BindableTexture | boolean;
     /** a label for debugging — shows up on the render pass in GPU debuggers (WebGPU) */
     label?: string;
@@ -358,7 +362,10 @@ export class RenderTarget extends EventEmitter<{
         return this._colorTextures;
     }
 
-    /** The stencil and depth buffer will write to this texture in WebGPU. */
+    /**
+     * The texture the depth and stencil buffers write to. On an antialiased target shaders can't
+     * read it as a normal depth texture, see {@link RenderTargetOptions.depthStencilTexture}.
+     */
     get depthStencilTexture(): TextureSource | null
     {
         return this.depthStencilAttachment?.texture ?? null;

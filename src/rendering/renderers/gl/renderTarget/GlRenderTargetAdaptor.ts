@@ -110,7 +110,26 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         const srcGl = renderTargetSystem.getGpuRenderTarget(source);
         const dstGl = renderTargetSystem.getGpuRenderTarget(destinationRenderTarget);
 
-        gl.bindFramebuffer(gl.READ_FRAMEBUFFER, srcGl.framebuffer);
+        let readFramebuffer = srcGl.framebuffer;
+
+        // a blit that resolves samples can't move them, so an offset copy from an MSAA target first resolves
+        // in place into the target's depth texture (which MSAA rendering leaves unused), then copies from there
+        if (srcGl.msaa && (originSrc.x !== originDest.x || originSrc.y !== originDest.y))
+        {
+            gl.bindFramebuffer(gl.FRAMEBUFFER, srcGl.resolveTargetFramebuffer);
+            this._attachDepthStencilTexture(source, 0, 0);
+
+            gl.bindFramebuffer(gl.READ_FRAMEBUFFER, srcGl.framebuffer);
+            gl.blitFramebuffer(
+                originSrc.x, originSrc.y, originSrc.x + size.width, originSrc.y + size.height,
+                originSrc.x, originSrc.y, originSrc.x + size.width, originSrc.y + size.height,
+                gl.DEPTH_BUFFER_BIT, gl.NEAREST,
+            );
+
+            readFramebuffer = srcGl.resolveTargetFramebuffer;
+        }
+
+        gl.bindFramebuffer(gl.READ_FRAMEBUFFER, readFramebuffer);
         gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, dstGl.framebuffer);
         // READ/DRAW were bound independently, leaving the unified FRAMEBUFFER state ambiguous
         this._boundFramebuffer = undefined;
@@ -234,7 +253,9 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         // the root target renders to the canvas, whose context owns its depth/stencil buffers
         if (gpuRenderTarget.framebuffer)
         {
-            if (renderTarget.depthStencilAttachment)
+            // WebGL textures can't be multisampled, so an MSAA target keeps its depth/stencil in a
+            // multisampled renderbuffer even when a depth-stencil texture was requested
+            if (renderTarget.depthStencilAttachment && !gpuRenderTarget.msaa)
             {
                 this._attachDepthStencilTexture(renderTarget, mipLevel, layer);
             }
@@ -242,7 +263,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             // and (unlike a texture) can be multisampled to match an MSAA color attachment
             else if (!gpuRenderTarget.depthStencilRenderBuffer && (renderTarget.stencil || renderTarget.depth))
             {
-                this._initStencil(gpuRenderTarget);
+                this._initStencil(renderTarget, gpuRenderTarget);
             }
         }
 
@@ -341,7 +362,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             this._initColor(renderTarget, glRenderTarget);
         }
 
-        if (renderTarget.depthStencilAttachment)
+        if (renderTarget.depthStencilAttachment && !glRenderTarget.msaa)
         {
             this._attachDepthStencilTexture(renderTarget, 0, 0);
         }
@@ -466,7 +487,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         if (glRenderTarget.depthStencilRenderBuffer)
         {
-            this._resizeStencil(glRenderTarget);
+            this._resizeStencil(renderTarget, glRenderTarget);
         }
 
         // _resizeColor (MSAA) rebinds framebuffers; force the next startRenderPass to bind explicitly
@@ -663,23 +684,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         const glSource = renderer.texture.getGlSource(source);
         const glTexture = glSource.texture;
-        const format = source.format;
-
-        // the attachment point must match the texture's aspects, or the framebuffer is incomplete
-        let attachment: number;
-
-        if (format === 'depth24plus-stencil8' || format === 'depth32float-stencil8')
-        {
-            attachment = gl.DEPTH_STENCIL_ATTACHMENT;
-        }
-        else if (format === 'stencil8')
-        {
-            attachment = gl.STENCIL_ATTACHMENT;
-        }
-        else
-        {
-            attachment = gl.DEPTH_ATTACHMENT;
-        }
+        const attachment = this._getDepthStencilAttachmentPoint(renderTarget);
 
         if (glSource.target === gl.TEXTURE_2D)
         {
@@ -713,7 +718,31 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         }
     }
 
-    private _initStencil(glRenderTarget: GlRenderTarget)
+    /**
+     * The framebuffer attachment point for a target's depth/stencil buffer. It must match the
+     * buffer's aspects, or the framebuffer is incomplete.
+     * @param renderTarget - the target whose depth/stencil buffer is being attached
+     */
+    private _getDepthStencilAttachmentPoint(renderTarget: RenderTarget): number
+    {
+        const gl = this._renderer.gl;
+        const format = renderTarget.depthStencilAttachment?.texture.format;
+
+        // without a texture the renderbuffer is always depth24plus-stencil8
+        if (!format || format === 'depth24plus-stencil8' || format === 'depth32float-stencil8')
+        {
+            return gl.DEPTH_STENCIL_ATTACHMENT;
+        }
+
+        if (format === 'stencil8')
+        {
+            return gl.STENCIL_ATTACHMENT;
+        }
+
+        return gl.DEPTH_ATTACHMENT;
+    }
+
+    private _initStencil(renderTarget: RenderTarget, glRenderTarget: GlRenderTarget)
     {
         // this already exists on the default screen
         if (glRenderTarget.framebuffer === null) return;
@@ -731,16 +760,16 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         gl.framebufferRenderbuffer(
             gl.FRAMEBUFFER,
-            gl.DEPTH_STENCIL_ATTACHMENT,
+            this._getDepthStencilAttachmentPoint(renderTarget),
             gl.RENDERBUFFER,
             depthStencilRenderBuffer
         );
 
         // TODO
-        this._resizeStencil(glRenderTarget);
+        this._resizeStencil(renderTarget, glRenderTarget);
     }
 
-    private _resizeStencil(glRenderTarget: GlRenderTarget)
+    private _resizeStencil(renderTarget: RenderTarget, glRenderTarget: GlRenderTarget)
     {
         const gl = this._renderer.gl;
 
@@ -751,10 +780,16 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         if (glRenderTarget.msaa)
         {
+            const depthStencilTexture = renderTarget.depthStencilAttachment?.texture;
+
+            // stands in for the depth-stencil texture, so it takes the texture's format —
+            // copyDepthTexture's blit out of it needs the formats to match
             gl.renderbufferStorageMultisample(
                 gl.RENDERBUFFER,
                 4,
-                gl.DEPTH24_STENCIL8,
+                depthStencilTexture
+                    ? this._renderer.texture.getGlSource(depthStencilTexture).internalFormat
+                    : gl.DEPTH24_STENCIL8,
                 glRenderTarget.width,
                 glRenderTarget.height
             );
