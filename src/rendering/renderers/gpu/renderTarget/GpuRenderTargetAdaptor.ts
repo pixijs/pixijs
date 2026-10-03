@@ -2,7 +2,7 @@ import { warn } from '../../../../utils/logging/warn';
 import { CLEAR } from '../../gl/const';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
 import { TextureSource } from '../../shared/texture/sources/TextureSource';
-import { GpuMsaaDepthResolve } from './GpuMsaaDepthResolve';
+import { GpuDepthCopy } from './GpuDepthCopy';
 import { GpuMsaaRestore } from './GpuMsaaRestore';
 import { GpuRenderTarget } from './GpuRenderTarget';
 
@@ -59,8 +59,8 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
     /** Restores discarded MSAA colour buffers on reopen. Created on first use, per device. */
     private _msaaRestore: GpuMsaaRestore;
-    /** Resolves multisampled depth for {@link copyDepthTexture}. Created on first use, per device. */
-    private _msaaDepthResolve: GpuMsaaDepthResolve;
+    /** Draws the depth copies `copyTextureToTexture` can't make. Created on first use, per device. */
+    private _depthCopy: GpuDepthCopy;
 
     public init(renderer: WebGPURenderer, renderTargetSystem: RenderTargetSystem<GpuRenderTarget>): void
     {
@@ -75,13 +75,13 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
     public contextChange(): void
     {
         this._msaaRestore = null;
-        this._msaaDepthResolve = null;
+        this._depthCopy = null;
     }
 
     public destroy(): void
     {
         this._msaaRestore = null;
-        this._msaaDepthResolve = null;
+        this._depthCopy = null;
     }
 
     public copyToTexture(
@@ -136,9 +136,18 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         this.finishRenderPass();
 
         const srcDepth = source.depthStencilAttachment.texture;
-        const multisampled = srcDepth.sampleCount > 1;
+        const dstDepth = destination.source;
+        const srcGpu = renderer.texture.getGpuSource(srcDepth);
+        const dstGpu = renderer.texture.getGpuSource(dstDepth);
 
-        if (multisampled)
+        // copyTextureToTexture only copies a depth texture whole, into one of the same size and sample count;
+        // anything else is drawn
+        const drawn = srcGpu.sampleCount > 1
+            || originSrc.x !== 0 || originSrc.y !== 0 || originDest.x !== 0 || originDest.y !== 0
+            || size.width !== srcGpu.width || size.height !== srcGpu.height
+            || size.width !== dstGpu.width || size.height !== dstGpu.height;
+
+        if (drawn)
         {
             if (srcDepth.transient)
             {
@@ -148,10 +157,10 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                 return;
             }
 
-            if (!srcDepth.format.includes('depth') || !destination.source.format.includes('depth'))
+            if (!srcDepth.format.includes('depth') || !dstDepth.format.includes('depth'))
             {
-                warn('[RenderTargetSystem] copyDepthTexture: copying from an antialiased target resolves depth only, '
-                    + `so both textures need a depth aspect (got '${srcDepth.format}' to '${destination.source.format}')`);
+                warn('[RenderTargetSystem] copyDepthTexture: copying from an antialiased target or a region copies '
+                    + `depth only, so both textures need a depth aspect (got '${srcDepth.format}' to '${dstDepth.format}')`);
 
                 return;
             }
@@ -162,20 +171,15 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             ? renderer.gpu.device.createCommandEncoder()
             : renderer.encoder.commandEncoder;
 
-        if (multisampled)
+        if (drawn)
         {
-            // WebGPU only copies between textures of the same sample count, so multisampled depth is resolved
-            this._msaaDepthResolve ??= new GpuMsaaDepthResolve(renderer);
-            this._msaaDepthResolve.resolve(commandEncoder, srcDepth, destination.source, originSrc, size, originDest);
+            this._depthCopy ??= new GpuDepthCopy(renderer);
+            this._depthCopy.copy(commandEncoder, srcDepth, dstDepth, originSrc, size, originDest);
         }
         else
         {
-            // depth is just a GPUTexture, so it copies straight into the destination's source
-            commandEncoder.copyTextureToTexture(
-                { texture: renderer.texture.getGpuSource(srcDepth), origin: originSrc },
-                { texture: renderer.texture.getGpuSource(destination.source), origin: originDest },
-                { width: size.width, height: size.height },
-            );
+            // a whole depth texture copies straight into the destination's source
+            commandEncoder.copyTextureToTexture({ texture: srcGpu }, { texture: dstGpu }, size);
         }
 
         if (standAlone)

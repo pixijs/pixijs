@@ -32,6 +32,11 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
      * it unknown when external GL code may have changed the binding.
      */
     private _boundFramebuffer: WebGLFramebuffer | null | undefined = undefined;
+    /**
+     * Whether the canvas's own framebuffer is multisampled: the browser antialiases it when the context
+     * was created with `antialias`, which a root target's `msaa` flag (Pixi's own MSAA) doesn't cover.
+     */
+    private _canvasMultisampled = false;
 
     public init(renderer: WebGLRenderer, renderTargetSystem: RenderTargetSystem<GlRenderTarget>): void
     {
@@ -49,6 +54,8 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         // Pre-compute draw buffers arrays for all possible MRT configurations
         const gl = this._renderer.gl;
+
+        this._canvasMultisampled = !!gl.getContextAttributes()?.antialias;
 
         this._drawBuffersCache = [];
 
@@ -111,11 +118,16 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         const dstGl = renderTargetSystem.getGpuRenderTarget(destinationRenderTarget);
 
         let readFramebuffer = srcGl.framebuffer;
+        const multisampled = srcGl.msaa || (source.isRoot && this._canvasMultisampled);
 
-        // a blit that resolves samples can't move them, so an offset copy from an MSAA target first resolves
-        // in place into the target's depth texture (which MSAA rendering leaves unused), then copies from there
-        if (srcGl.msaa && (originSrc.x !== originDest.x || originSrc.y !== originDest.y))
+        // a blit that resolves samples can't move them, so an offset copy from a multisampled target first
+        // resolves in place into the target's depth texture, then copies from there. An MSAA target leaves that
+        // texture unused, and so does the canvas, whose depth lives in the browser's own buffer; the canvas has
+        // no resolve framebuffer of its own, so it gets one here.
+        if (multisampled && (originSrc.x !== originDest.x || originSrc.y !== originDest.y))
         {
+            srcGl.resolveTargetFramebuffer ??= gl.createFramebuffer();
+
             gl.bindFramebuffer(gl.FRAMEBUFFER, srcGl.resolveTargetFramebuffer);
             this._attachDepthStencilTexture(source, 0, 0);
 
