@@ -216,6 +216,8 @@ renderer.render({ container, target: destTarget, clear: CLEAR.COLOR });
 
 `copyDepthTexture` warns and does nothing when the source has no depth attachment or the destination texture is not a depth or stencil format. Clear only the color buffer afterwards, or the copied depth is lost.
 
+Antialiased targets keep depth in a multisampled buffer, so shaders can't read their depth texture as a normal depth texture. Copy it out with `copyDepthTexture` instead, which resolves the samples into the destination. It keeps one sample per pixel, so depth along object edges is aliased, the same as without antialiasing. Only depth is resolved: the destination's stencil is left as it was. A `transient` target discards its depth after each pass, so there is nothing to copy from one.
+
 3D code that needs the resolved winding of the current target can call `renderer.renderTarget.isFrontFaceInverted()`, or `isFrontFaceInverted(target, flipY)` to ask about a target before binding it. The target is a `RenderTarget`; get one for a texture with `renderer.renderTarget.getRenderTarget(texture)`.
 
 ### Destroying targets
