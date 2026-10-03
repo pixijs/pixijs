@@ -6,7 +6,14 @@ import { UniformGroup } from '../shared/shader/UniformGroup';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
 import { TextureStyle } from '../shared/texture/TextureStyle';
 import { itLocalOnly } from '@test-utils';
-import { resetUids } from '~/utils';
+
+import type { BindResource } from '../gpu/shader/BindResource';
+
+// both halves of the key, as one comparable value
+function keyOf(bindGroup: BindGroup): string
+{
+    return `${bindGroup._keyLow}:${bindGroup._keyHigh}`;
+}
 
 describe('BindGroup', () =>
 {
@@ -81,11 +88,11 @@ describe('BindGroup', () =>
             0: buffer,
         });
 
-        const bindGroupKey = bindGroup._key;
+        const bindGroupKey = keyOf(bindGroup);
 
         buffer.data = new Float32Array(200);
 
-        expect(bindGroupKey).not.toBe(bindGroup._key);
+        expect(bindGroupKey).not.toBe(keyOf(bindGroup));
     });
 
     it('should let a BindGroup know if bufferResource has changed correctly', () =>
@@ -105,11 +112,11 @@ describe('BindGroup', () =>
             0: bufferResource,
         });
 
-        const bindGroupKey = bindGroup._key;
+        const bindGroupKey = keyOf(bindGroup);
 
         buffer.data = new Float32Array(200);
 
-        expect(bindGroupKey).not.toBe(bindGroup._key);
+        expect(bindGroupKey).not.toBe(keyOf(bindGroup));
     });
 
     it('should let a BindGroup know when a buffer is unloaded', () =>
@@ -123,11 +130,11 @@ describe('BindGroup', () =>
             0: buffer,
         });
 
-        const bindGroupKey = bindGroup._key;
+        const bindGroupKey = keyOf(bindGroup);
 
         buffer.unload();
 
-        expect(bindGroup._key).not.toBe(bindGroupKey);
+        expect(keyOf(bindGroup)).not.toBe(bindGroupKey);
     });
 
     it('should re-key when the buffer behind a uniform group is unloaded', () =>
@@ -147,11 +154,11 @@ describe('BindGroup', () =>
             0: uniformGroup,
         });
 
-        const bindGroupKey = bindGroup._key;
+        const bindGroupKey = keyOf(bindGroup);
 
         buffer.unload();
 
-        expect(bindGroup._key).not.toBe(bindGroupKey);
+        expect(keyOf(bindGroup)).not.toBe(bindGroupKey);
     });
 
     it('_touch should stamp the buffers behind uniform groups and buffer resources', () =>
@@ -205,35 +212,201 @@ describe('BindGroup', () =>
         expect(buffer._gcLastUsed).toBe(456);
     });
 
-    it('should let have a unique id for a bind group, no clashes', () =>
+    it('should key a group by the resources it holds and the bindings they are at', () =>
     {
-        resetUids();
-
-        const group1 = new UniformGroup({
-            test: { value: 1, type: 'f32' }
-        });
-
-        const bindGroup1 = new BindGroup({
-            0: group1,
-        });
-
-        expect(bindGroup1._key).toBe('0');
-
         const texture = new TextureSource();
-
-        const bindGroup2 = new BindGroup({
-            0: texture,
-        });
-
-        expect(bindGroup2._key).toBe('1');
-
+        const other = new TextureSource();
         const style = new TextureStyle();
 
-        const bindGroup3 = new BindGroup({
-            0: style,
-        });
+        const bindGroup = new BindGroup({ 0: texture, 1: style });
 
-        expect(bindGroup3._key).toBe('2');
+        // same resources, same bindings: same key, whichever group holds them
+        expect(keyOf(new BindGroup({ 0: texture, 1: style }))).toBe(keyOf(bindGroup));
+
+        // one different resource
+        expect(keyOf(new BindGroup({ 0: other, 1: style }))).not.toBe(keyOf(bindGroup));
+
+        // the same resources at other bindings
+        const swapped = new BindGroup();
+
+        swapped.setResource(style, 0);
+        swapped.setResource(texture, 1);
+
+        expect(keyOf(swapped)).not.toBe(keyOf(bindGroup));
+
+        const gapped = new BindGroup();
+
+        gapped.setResource(texture, 0);
+        gapped.setResource(style, 2);
+
+        expect(keyOf(gapped)).not.toBe(keyOf(bindGroup));
+
+        // the order the bindings were filled in does not matter
+        const reversed = new BindGroup();
+
+        reversed.setResource(style, 1);
+        reversed.setResource(texture, 0);
+
+        expect(keyOf(reversed)).toBe(keyOf(bindGroup));
+    });
+
+    it('should return to the same key when a binding is re-pointed and pointed back', () =>
+    {
+        const texture = new TextureSource();
+        const other = new TextureSource();
+        const bindGroup = new BindGroup({ 0: texture, 1: texture.style });
+        const bindGroupKey = keyOf(bindGroup);
+
+        bindGroup.setResource(other, 0);
+
+        expect(keyOf(bindGroup)).not.toBe(bindGroupKey);
+
+        bindGroup.setResource(texture, 0);
+
+        expect(keyOf(bindGroup)).toBe(bindGroupKey);
+    });
+
+    it('should stay in step with a group built from scratch through every kind of change', () =>
+    {
+        const first = new TextureSource();
+        const second = new TextureSource();
+        const third = new TextureSource();
+        const bindGroup = new BindGroup({ 0: first, 1: second, 2: first });
+
+        // an id that moves, in a resource held at two bindings
+        first.unload();
+        expect(keyOf(bindGroup)).toBe(keyOf(new BindGroup({ 0: first, 1: second, 2: first })));
+
+        // a re-point after the id moved takes the id it was keyed with back out, not the current one
+        second.unload();
+        bindGroup.setResource(third, 1);
+        expect(keyOf(bindGroup)).toBe(keyOf(new BindGroup({ 0: first, 1: third, 2: first })));
+
+        // a destroyed resource's null slot, refilled
+        third.destroy();
+        expect(bindGroup.resources[1]).toBeNull();
+
+        bindGroup.setResource(second, 1);
+        expect(keyOf(bindGroup)).toBe(keyOf(new BindGroup({ 0: first, 1: second, 2: first })));
+    });
+
+    it('should drop its resolved entry whenever the key moves', () =>
+    {
+        const texture = new TextureSource();
+        const other = new TextureSource();
+        const bindGroup = new BindGroup({ 0: texture });
+        const entry = {} as BindGroup['_gpuEntry'];
+
+        bindGroup._gpuEntry = entry;
+        bindGroup.setResource(texture, 0);
+
+        // setting the resource already there changes nothing
+        expect(bindGroup._gpuEntry).toBe(entry);
+
+        bindGroup.setResource(other, 0);
+        expect(bindGroup._gpuEntry).toBeNull();
+
+        bindGroup._gpuEntry = entry;
+        other.unload();
+        expect(bindGroup._gpuEntry).toBeNull();
+
+        bindGroup._gpuEntry = entry;
+        bindGroup.setResource(texture.style, 1);
+        expect(bindGroup._gpuEntry).toBeNull();
+    });
+
+    it('should key an unwatched resource without listening to it', () =>
+    {
+        const texture = new TextureSource();
+        const other = new TextureSource();
+        const bindGroup = new BindGroup();
+
+        bindGroup['setResourceUnwatched'](texture, 0);
+        bindGroup['setResourceUnwatched'](other, 0);
+        bindGroup['setResourceUnwatched'](texture, 0);
+
+        expect(texture.listenerCount('change')).toBe(0);
+        expect(other.listenerCount('change')).toBe(0);
+        expect(bindGroup._resourceKeys).toEqual([0]);
+        expect(keyOf(bindGroup)).toBe(keyOf(new BindGroup({ 0: texture })));
+
+        // nothing tells the group the id moved until its owner does
+        const bindGroupKey = keyOf(bindGroup);
+
+        texture.unload();
+        expect(keyOf(bindGroup)).toBe(bindGroupKey);
+
+        bindGroup['onResourceChange'](texture);
+        expect(keyOf(bindGroup)).toBe(keyOf(new BindGroup({ 0: texture })));
+    });
+
+    it('should give every distinct set of resources its own key', () =>
+    {
+        // dense ascending ids, as uid('resource') hands them out, in the two shapes groups come in
+        const resource = (id: number) => ({ _resourceId: id }) as BindResource;
+        const resources: BindResource[] = [];
+
+        for (let i = 0; i < 4096; i++) resources.push(resource(i));
+
+        const keys = new Set<string>();
+        const lows = new Set<number>();
+        const highs = new Set<number>();
+        let count = 0;
+        let seed = 1234;
+
+        const random = () =>
+        {
+            seed = (Math.imul(seed, 1664525) + 1013904223) | 0;
+
+            return (seed >>> 8) & 4095;
+        };
+
+        const add = (bindGroup: BindGroup) =>
+        {
+            keys.add(keyOf(bindGroup));
+            lows.add(bindGroup._keyLow);
+            highs.add(bindGroup._keyHigh);
+            count++;
+        };
+
+        // every pair of neighbouring ids, both ways round: 2D's texture + style shape
+        for (let i = 0; i + 1 < resources.length; i++)
+        {
+            add(new BindGroup({ 0: resources[i], 1: resources[i + 1] }));
+            add(new BindGroup({ 0: resources[i + 1], 1: resources[i] }));
+        }
+
+        // one wide group re-pointed a binding at a time: a batcher's texture group
+        const wide = new BindGroup();
+        const held: number[] = [];
+
+        for (let i = 0; i < 16; i++)
+        {
+            held.push(i);
+            wide.setResource(resources[i], i);
+        }
+
+        const seen = new Set<string>([held.join()]);
+
+        add(wide);
+
+        for (let i = 0; i < 60000; i++)
+        {
+            const index = i & 15;
+
+            held[index] = random();
+            wide.setResource(resources[held[index]], index);
+
+            if (seen.has(held.join())) continue;
+
+            seen.add(held.join());
+            add(wide);
+        }
+
+        // the whole key never repeats; a 32-bit half may, about count² / 2³³ times (~0.6 here)
+        expect(keys.size).toBe(count);
+        expect(count - lows.size).toBeLessThan(8);
+        expect(count - highs.size).toBeLessThan(8);
     });
 
     it('should null the slot when a destroyed buffer resource has no safe fallback', () =>
@@ -253,12 +426,13 @@ describe('BindGroup', () =>
             0: bufferResource,
         });
 
+        const bindGroupKey = keyOf(bindGroup);
+
         bufferResource.destroy();
 
         // the group survives with a null slot, and every consumer must tolerate it
         expect(bindGroup.resources[0]).toBeNull();
-        expect(() => bindGroup._key).not.toThrow();
-        expect(bindGroup._key).toBe('-1');
+        expect(keyOf(bindGroup)).not.toBe(bindGroupKey);
         expect(() => bindGroup._touch(0)).not.toThrow();
     });
 
@@ -323,11 +497,12 @@ describe('BindGroup', () =>
             0: source,
         });
 
+        const bindGroupKey = keyOf(bindGroup);
+
         source.destroy();
 
         expect(bindGroup.resources[0]).toBeNull();
-        expect(() => bindGroup._key).not.toThrow();
-        expect(bindGroup._key).toBe('-1');
+        expect(keyOf(bindGroup)).not.toBe(bindGroupKey);
         expect(() => bindGroup._touch(0)).not.toThrow();
     });
 

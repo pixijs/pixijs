@@ -11,6 +11,7 @@ import type { Shader } from '../shared/shader/Shader';
 import type { UniformGroup } from '../shared/shader/UniformGroup';
 import type { State } from '../shared/state/State';
 import type { System } from '../shared/system/System';
+import type { GpuBindGroupEntry } from './BindGroupSystem';
 import type { GPU } from './GpuDeviceSystem';
 import type { GpuRenderTarget } from './renderTarget/GpuRenderTarget';
 import type { BindGroup } from './shader/BindGroup';
@@ -21,7 +22,7 @@ interface BoundBindGroupSlot
 {
     bindGroup: BindGroup;
     program: GpuProgram;
-    key: string;
+    entry: GpuBindGroupEntry;
 }
 
 /**
@@ -54,7 +55,7 @@ export class GpuEncoderSystem implements System
 
     private _gpu: GPU;
     /**
-     * Per-slot cache of the last (bindGroup, program, resource-key) bound to that
+     * Per-slot cache of the last (bindGroup, program, cache entry) bound to that
      * group index. All three prongs must match for the encoder to skip rebinding —
      * see {@link setBindGroup}. Slots are allocated once in the constructor and
      * mutated in place to avoid per-call allocation on the hot path.
@@ -87,7 +88,7 @@ export class GpuEncoderSystem implements System
 
         for (let i = 0; i < 16; i++)
         {
-            this._boundBindGroup[i] = { bindGroup: null, program: null, key: null };
+            this._boundBindGroup[i] = { bindGroup: null, program: null, entry: null };
         }
     }
 
@@ -336,28 +337,30 @@ export class GpuEncoderSystem implements System
 
         slot.bindGroup = null;
         slot.program = null;
-        slot.key = null;
+        slot.entry = null;
     }
 
     public setBindGroup(index: number, bindGroup: BindGroup, program: GpuProgram)
     {
         // The cached GPUBindGroup is only valid when the JS BindGroup, the program
-        // (its layout key), and the BindGroup's resource set (its _key) are all unchanged.
+        // (its layout key), and the BindGroup's resource set are all unchanged.
         // BindGroupSystem interns one GPUBindGroup per (bindGroup, program, groupIndex),
-        // so if any prong differs we must re-resolve and rebind.
+        // so if any prong differs we must re-resolve and rebind. A group drops its entry
+        // whenever a resource in it is set or changes, so the entry stands for the resource set.
         const slot = this._boundBindGroup[index];
 
         if (slot.bindGroup === bindGroup
             && slot.program === program
-            && slot.key === bindGroup._key) return;
+            && slot.entry === bindGroup._gpuEntry) return;
 
         slot.bindGroup = bindGroup;
         slot.program = program;
-        slot.key = bindGroup._key;
 
         bindGroup._touch(this._renderer.gc.now);
 
         const gpuBindGroup = this._renderer.bindGroup.getBindGroup(bindGroup, program, index);
+
+        slot.entry = bindGroup._gpuEntry;
 
         this.renderPassEncoder.setBindGroup(index, gpuBindGroup);
     }
@@ -535,7 +538,7 @@ export class GpuEncoderSystem implements System
 
             slot.bindGroup = null;
             slot.program = null;
-            slot.key = null;
+            slot.entry = null;
             this._boundVertexBuffer[i] = null;
         }
 
