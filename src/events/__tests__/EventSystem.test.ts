@@ -897,8 +897,24 @@ describe('EventSystem', () =>
         expect(optOutWheelCall).toBeDefined();
         expect((optOutWheelCall![2] as AddEventListenerOptions).passive).toBe(false);
 
+        // runtime toggle: the listener is re-registered so the change takes effect
+        const runtimeCanvas = document.createElement('canvas');
+        const runtimeSpy = jest.spyOn(runtimeCanvas, 'addEventListener');
+
+        const runtimeRenderer = await createRenderer(runtimeCanvas);
+
+        (runtimeRenderer.events as EventSystem).features.wheelPassive = false;
+
+        const runtimeWheelCall = runtimeSpy.mock.calls
+            .filter(([type]) => type === 'wheel')
+            .pop();
+
+        expect(runtimeWheelCall).toBeDefined();
+        expect((runtimeWheelCall![2] as AddEventListenerOptions).passive).toBe(false);
+
         defaultSpy.mockRestore();
         optOutSpy.mockRestore();
+        runtimeSpy.mockRestore();
     });
 
     it('should dispatch global pointer move event with custom hitArea', async () =>

@@ -489,6 +489,13 @@ export class EventSystem implements System<EventSystemOptions>
                 }
                 target[key as keyof EventSystemFeatures] = value;
 
+                if (key === 'wheelPassive' && this._eventsAdded && this.domElement)
+                {
+                    // `passive` cannot be changed after registration, so re-add the listener
+                    this.domElement.removeEventListener('wheel', this.onWheel, true);
+                    this._addWheelListener();
+                }
+
                 return true;
             }
         });
@@ -508,10 +515,12 @@ export class EventSystem implements System<EventSystemOptions>
     {
         const { canvas, resolution } = this.renderer;
 
+        // features must be applied before the listeners are added, as some of them
+        // (e.g. `wheelPassive`) are baked into the listener registration options
+        Object.assign(this.features, options.eventFeatures ?? {});
         this.setTargetElement(canvas as HTMLCanvasElement);
         this.resolution = resolution;
         EventSystem._defaultEventMode = options.eventMode ?? 'passive';
-        Object.assign(this.features, options.eventFeatures ?? {});
         this.rootBoundary.enableGlobalMoveEvents = this.features.globalMove;
     }
 
@@ -867,12 +876,22 @@ export class EventSystem implements System<EventSystemOptions>
             }
         }
 
+        this._addWheelListener();
+
+        this._eventsAdded = true;
+    }
+
+    /**
+     * Register the `wheel` listener on {@link EventSystem#domElement this.domElement}.
+     * `passive` is fixed when the listener is added, so changing
+     * {@link EventSystemFeatures.wheelPassive} requires re-registering the listener.
+     */
+    private _addWheelListener(): void
+    {
         this.domElement.addEventListener('wheel', this.onWheel, {
             passive: this.features.wheelPassive,
             capture: true,
         });
-
-        this._eventsAdded = true;
     }
 
     /** Unregister event listeners on {@link EventSystem#domElement this.domElement}. */
