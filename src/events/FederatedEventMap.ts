@@ -8,6 +8,7 @@ import type { FederatedWheelEvent } from './FederatedWheelEvent';
  */
 export type FederatedEventMap = {
     click: FederatedPointerEvent;
+    contextmenu: FederatedPointerEvent;
     mousedown: FederatedPointerEvent;
     mouseenter: FederatedPointerEvent;
     mouseleave: FederatedPointerEvent;

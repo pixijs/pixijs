@@ -163,6 +163,27 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
+ * Fired when the browser is about to open its context menu over the container, such as on a
+ * right click. On macOS it also fires for ctrl + click. Container's `eventMode`
+ * property must be set to `static` or `dynamic` to fire the event.
+ *
+ * PixiJS doesn't cancel the native event, so the browser menu opens unless a listener
+ * calls `event.preventDefault()`.
+ *
+ * These events are propagating from the {@link EventSystem EventSystem}.
+ * @event Container#contextmenu
+ * @param {FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Capture phase equivalent of `contextmenu`.
+ *
+ * These events are propagating from the {@link EventSystem EventSystem}.
+ * @event Container#contextmenucapture
+ * @param {FederatedPointerEvent} event - Event
+ */
+
+/**
  * Fired when a pointer device button (usually a mouse left-button) is released outside the
  * container that initially registered a
  * [mousedown]{@link Container#event:mousedown}.

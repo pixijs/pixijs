@@ -114,7 +114,8 @@ export class EventBoundary
      * Maps event types to forwarding handles for them.
      *
      * {@link EventBoundary EventBoundary} provides mapping for "pointerdown", "pointermove",
-     * "pointerout", "pointerleave", "pointerover", "pointerup", and "pointerupoutside" by default.
+     * "pointerout", "pointerleave", "pointerover", "pointerup", "pointerupoutside", "wheel",
+     * and "contextmenu" by default.
      * @see EventBoundary#addEventMapping
      */
     protected mappingTable: Record<string, Array<{
@@ -160,6 +161,7 @@ export class EventBoundary
         this.mapPointerUp = this.mapPointerUp.bind(this);
         this.mapPointerUpOutside = this.mapPointerUpOutside.bind(this);
         this.mapWheel = this.mapWheel.bind(this);
+        this.mapContextMenu = this.mapContextMenu.bind(this);
 
         this.mappingTable = {};
         this.addEventMapping('pointerdown', this.mapPointerDown);
@@ -170,6 +172,7 @@ export class EventBoundary
         this.addEventMapping('pointerup', this.mapPointerUp);
         this.addEventMapping('pointerupoutside', this.mapPointerUpOutside);
         this.addEventMapping('wheel', this.mapWheel);
+        this.addEventMapping('contextmenu', this.mapContextMenu);
     }
 
     /**
@@ -1151,6 +1154,27 @@ export class EventBoundary
 
         this.dispatchEvent(wheelEvent);
         this.freeEvent(wheelEvent);
+    }
+
+    /**
+     * Maps the upstream `contextmenu` event to a downstream `contextmenu` event.
+     * @param from - The upstream `contextmenu` event.
+     */
+    protected mapContextMenu(from: FederatedEvent): void
+    {
+        if (!(from instanceof FederatedPointerEvent))
+        {
+            // #if _DEBUG
+            warn('EventBoundary cannot map a non-pointer event as a pointer event');
+            // #endif
+
+            return;
+        }
+
+        const e = this.createPointerEvent(from);
+
+        this.dispatchEvent(e, 'contextmenu');
+        this.freeEvent(e);
     }
 
     /**
