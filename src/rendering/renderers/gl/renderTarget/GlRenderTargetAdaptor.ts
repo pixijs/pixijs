@@ -196,13 +196,8 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
                         mipLevel
                     );
                 }
-                else if (glSource.target === (gl as any).TEXTURE_2D_ARRAY)
+                else if (glSource.target === gl.TEXTURE_2D_ARRAY || glSource.target === gl.TEXTURE_3D)
                 {
-                    if (this._renderer.context.webGLVersion < 2)
-                    {
-                        throw new Error('[RenderTargetSystem] Rendering to 2D array textures requires WebGL2.');
-                    }
-
                     gl.framebufferTextureLayer(
                         gl.FRAMEBUFFER,
                         gl.COLOR_ATTACHMENT0 + i,
@@ -526,13 +521,8 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
                     0
                 );
             }
-            else if (glSource.target === gl.TEXTURE_2D_ARRAY)
+            else if (glSource.target === gl.TEXTURE_2D_ARRAY || glSource.target === gl.TEXTURE_3D)
             {
-                if (renderer.context.webGLVersion < 2)
-                {
-                    throw new Error('[RenderTargetSystem] TEXTURE_2D_ARRAY requires WebGL2.');
-                }
-
                 gl.framebufferTextureLayer(
                     gl.FRAMEBUFFER,
                     gl.COLOR_ATTACHMENT0 + i,
@@ -701,7 +691,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
                 mipLevel
             );
         }
-        else if (glSource.target === gl.TEXTURE_2D_ARRAY)
+        else if (glSource.target === gl.TEXTURE_2D_ARRAY || glSource.target === gl.TEXTURE_3D)
         {
             gl.framebufferTextureLayer(
                 gl.FRAMEBUFFER,

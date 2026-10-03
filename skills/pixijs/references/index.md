@@ -12,7 +12,7 @@ Create and configure a PixiJS v8 `Application`. Covers `new Application()` + asy
 ### pixijs-core-concepts
 How PixiJS v8 renders frames: the systems-and-pipes renderer, the render loop, and how the library adapts to different environments. Covers `WebGLRenderer`/`WebGPURenderer`/`CanvasRenderer` selection, `renderer.render()` pipeline, environment detection, and pointers to per-topic deep dives.
 
-**Triggers:** renderer, WebGL, WebGPU, Canvas, render loop, render pipeline, systems, environments, autoDetectRenderer, RenderTexture, RenderTarget, render to texture, flipY, mipLevel, renderTarget.bind, copyToTexture, copyDepthTexture, depth-only, WebGLLoader, WebGPULoader, CanvasLoader, RendererLoader, lazy-load renderer systems, context lost, webglcontextlost, device lost, GPUDevice.lost.
+**Triggers:** renderer, WebGL, WebGPU, Canvas, render loop, render pipeline, systems, environments, autoDetectRenderer, RenderTexture, RenderTarget, render to texture, flipY, mipLevel, layer, 3D texture, depth slice, renderTarget.bind, copyToTexture, copyDepthTexture, depth-only, WebGLLoader, WebGPULoader, CanvasLoader, RendererLoader, lazy-load renderer systems, context lost, webglcontextlost, device lost, GPUDevice.lost.
 
 ### pixijs-create
 Scaffold a new PixiJS v8 project with the `create-pixi` CLI or add PixiJS to an existing project. Covers npm/yarn/pnpm/bun create commands, interactive vs non-interactive flows, available template presets (bundler-vite, bundler-webpack, bundler-esbuild, bundler-import-map, creation-web, framework-react, extension-default), Node version requirements, TypeScript 5/6/7 tsconfig setup (`moduleResolution`, `@webgpu/types`, `@types/web`), and post-scaffold dev flow.
@@ -121,9 +121,9 @@ Composite display objects with blend modes. Covers standard modes (`normal`, `ad
 **Triggers:** blendMode, additive, multiply, screen, overlay, color-burn, color-dodge, advanced-blend-modes, glow, erase.
 
 ### pixijs-custom-rendering
-Write custom shaders, uniforms, or batchers. Covers `Shader.from({gl, gpu, resources})`, `GlProgram`/`GpuProgram`, `UniformGroup` with typed uniforms (`f32`, `vec2`, `mat4x4`), UBO mode, textures as resources, custom `Filter`, custom `Batcher` via extensions.
+Write custom shaders, uniforms, or batchers. Covers `Shader.from({gl, gpu, resources})`, `GlProgram`/`GpuProgram`, `UniformGroup` with typed uniforms (`f32`, `vec2`, `mat4x4`), UBO mode, textures as resources, 3D and array textures, WebGPU storage textures, custom `Filter`, custom `Batcher` via extensions.
 
-**Triggers:** Shader, GlProgram, GpuProgram, UniformGroup, Batcher, Filter, GLSL, WGSL, UBO, uniform, custom shader, ShaderOverrides, gpuLayout, bind group layout, TextureView, depth texture, Buffer.update, vertexCount, indexCount, getSize, clockwiseFrontFace, cullMode, render bundle, beginBundle, executeBundle, RenderBundle, TexturePool, getOptimalTexture, InstructionPipe, destroyInstructionSet.
+**Triggers:** Shader, GlProgram, GpuProgram, UniformGroup, Batcher, Filter, GLSL, WGSL, UBO, uniform, custom shader, ShaderOverrides, gpuLayout, bind group layout, TextureView, depth texture, 3D texture, sampler3D, texture_3d, storage texture, Buffer.update, vertexCount, indexCount, getSize, clockwiseFrontFace, cullMode, render bundle, beginBundle, executeBundle, RenderBundle, TexturePool, getOptimalTexture, InstructionPipe, destroyInstructionSet.
 
 ### pixijs-filters
 Apply visual effects to containers via the filter pipeline. Covers built-in filters (`AlphaFilter`, `BlurFilter`, `ColorMatrixFilter`, `DisplacementFilter`, `NoiseFilter`), custom `Filter.from()` with GLSL/WGSL, options (`resolution`, `padding`, `antialias`, `blendRequired`), `filterArea` optimization, `pixi-filters` community package.
