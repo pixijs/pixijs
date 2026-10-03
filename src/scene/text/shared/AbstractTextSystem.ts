@@ -140,6 +140,13 @@ export abstract class AbstractTextSystem implements System
         const source = texture.source;
         const resource = source.resource as ICanvas | null;
 
+        // The pool may reuse this texture for different text with the same dimensions.
+        // Canvas tint and pattern caches contain pixels from the previous text.
+        const cachedTexture = texture as Texture & { tintCache?: unknown; patternCache?: unknown };
+
+        delete cachedTexture.tintCache;
+        delete cachedTexture.patternCache;
+
         if (this._retainCanvasContext && resource?.getContext)
         {
             const context = resource.getContext('2d');
