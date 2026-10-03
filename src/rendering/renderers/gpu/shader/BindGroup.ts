@@ -1,7 +1,37 @@
 import { warn } from '../../../../utils/logging/warn';
 import { type GCable } from '../../shared/GCSystem';
 
+import type { GpuBindGroupEntry } from '../BindGroupSystem';
 import type { BindResource } from './BindResource';
+
+// The key is two 32-bit halves. Each binding contributes one mix of (binding number, resource id) to
+// each half, and the bindings are combined with XOR, so re-pointing one binding takes its old mix out
+// and puts the new one in without visiting the others. The two mixes are independent: the pair behaves
+// as one 64-bit hash, and BindGroupSystem compares both halves.
+
+function mixLow(binding: number, id: number): number
+{
+    let h = Math.imul(id + 0x9E3779B9, 0x85EBCA6B) ^ Math.imul(binding + 1, 0xC2B2AE35);
+
+    h ^= h >>> 16;
+    h = Math.imul(h, 0x7FEB352D);
+    h ^= h >>> 15;
+    h = Math.imul(h, 0x846CA68B);
+
+    return h ^ (h >>> 16);
+}
+
+function mixHigh(binding: number, id: number): number
+{
+    let h = Math.imul(id + 0x7F4A7C15, 0x27D4EB2F) ^ Math.imul(binding + 0x165667B1, 0x9E3779B1);
+
+    h ^= h >>> 15;
+    h = Math.imul(h, 0x2C1B3C6D);
+    h ^= h >>> 12;
+    h = Math.imul(h, 0x297A2D39);
+
+    return h ^ (h >>> 15);
+}
 
 /**
  * A bind group is a collection of resources that are bound together for use by a shader.
@@ -60,33 +90,36 @@ export class BindGroup
     private _resourceKeysValue: number[] = null;
 
     /**
-     * A key used internally to match it up to a WebGPU BindGroup.
-     * Lazily rebuilt from resource IDs when dirty.
+     * One half of the key used internally to match this group up to a WebGPU BindGroup: a hash of
+     * every binding number and the id of the resource bound there, kept up to date as resources
+     * are set and as they change. Two groups holding the same resources at the same bindings have
+     * the same key, and share one WebGPU BindGroup.
      * @internal
      */
-    public get _key(): string
-    {
-        if (this._dirty)
-        {
-            this._dirty = false;
+    public _keyLow = 0;
+    /**
+     * The other half of the key, see {@link BindGroup#_keyLow}.
+     * @internal
+     */
+    public _keyHigh = 0;
 
-            const keyParts = [];
-            let index = 0;
+    /**
+     * The cache entry {@link BindGroupSystem} last resolved this group to, so binding a group that
+     * has not changed skips the cache lookup. Cleared whenever the key moves.
+     * @internal
+     */
+    public _gpuEntry: GpuBindGroupEntry | null = null;
+    /**
+     * The program layout and group index {@link BindGroup#_gpuEntry} was resolved for.
+     * @internal
+     */
+    public _gpuEntryLayoutKey = -1;
 
-            for (const i in this.resources)
-            {
-                // -1 marks a destroyed buffer-like resource's null slot
-                keyParts[index++] = this.resources[i] ? this.resources[i]._resourceId : -1;
-            }
-
-            this._keyValue = keyParts.join('|');
-        }
-
-        return this._keyValue;
-    }
-
-    private _keyValue: string;
-    private _dirty = true;
+    /**
+     * The resource id each binding is in the key with, by binding number. A resource's id can move
+     * before this group hears about it, so the mix taken out is this one, never the resource's own.
+     */
+    private readonly _keyedIds: number[] = [];
 
     /**
      * Create a new instance of the Bind Group.
@@ -124,14 +157,54 @@ export class BindGroup
 
         resource.on?.('change', this.onResourceChange, this);
 
+        this.setResourceUnwatched(resource, index);
+    }
+
+    /**
+     * Sets a resource at a given index without listening for its changes. For a subclass that already
+     * watches its resources and re-points them often enough for the listeners to cost more than the
+     * binds: it must pass every change of a resource it holds to {@link BindGroup#onResourceChange}.
+     * @param resource - The resource to set.
+     * @param index - The index to set the resource at.
+     */
+    protected setResourceUnwatched(resource: BindResource, index: number): void
+    {
+        const currentResource = this.resources[index];
+
+        if (resource === currentResource) return;
+
+        const id = resource._resourceId;
+
         // a destroyed resource leaves null, not undefined, so this is only true for a new binding
         if (currentResource === undefined)
         {
             this._resourceKeysValue = null;
+            this._keyLow ^= mixLow(index, id);
+            this._keyHigh ^= mixHigh(index, id);
+            this._keyedIds[index] = id;
+            this._gpuEntry = null;
+        }
+        else
+        {
+            this._rekey(index, id);
         }
 
         this.resources[index] = resource;
-        this._dirty = true;
+    }
+
+    /**
+     * Swaps the id a binding is in the key with.
+     * @param index - The binding number.
+     * @param id - The id of the resource now bound there, -1 for a destroyed resource's null slot.
+     */
+    private _rekey(index: number, id: number): void
+    {
+        const keyedId = this._keyedIds[index];
+
+        this._keyLow ^= mixLow(index, keyedId) ^ mixLow(index, id);
+        this._keyHigh ^= mixHigh(index, keyedId) ^ mixHigh(index, id);
+        this._keyedIds[index] = id;
+        this._gpuEntry = null;
     }
 
     /**
@@ -179,26 +252,34 @@ export class BindGroup
 
         this.resources = null;
         this._resourceKeysValue = null;
+        this._gpuEntry = null;
     }
 
     protected onResourceChange(resource: BindResource)
     {
-        this._dirty = true;
+        const resources = this.resources;
 
-        // A destroyed resource must not stay bound — null the slot. Consumers tolerate the
-        // null; actually rendering with it raises a clear error in BindGroupSystem.
-        if (resource.destroyed)
+        // a destroyed group has let go of its resources; only an unwatched one can still be told
+        if (!resources) return;
+
+        const keys = this._resourceKeys;
+        const destroyed = resource.destroyed;
+
+        for (let i = 0; i < keys.length; i++)
         {
-            const resources = this.resources;
+            const index = keys[i];
 
-            for (const i in resources)
-            {
-                if (resources[i] === resource)
-                {
-                    resources[i] = null;
-                }
-            }
+            if (resources[index] !== resource) continue;
 
+            // A destroyed resource must not stay bound — null the slot. Consumers tolerate the
+            // null; actually rendering with it raises a clear error in BindGroupSystem.
+            if (destroyed) resources[index] = null;
+
+            this._rekey(index, destroyed ? -1 : resource._resourceId);
+        }
+
+        if (destroyed)
+        {
             // #if _DEBUG
             warn(`[BindGroup] a '${resource._resourceType}' was destroyed while still bound to a shader. `
                 + 'Remove it from the shader before destroying it.');

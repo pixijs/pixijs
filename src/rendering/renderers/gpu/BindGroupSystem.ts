@@ -20,7 +20,7 @@ import type { WebGPURenderer } from './WebGPURenderer';
  * stops being requested can never be hit again and would otherwise live as long as the device.
  * @internal
  */
-class GpuBindGroupEntry implements GCable
+export class GpuBindGroupEntry implements GCable
 {
     public gpuBindGroup: GPUBindGroup;
     public _gcLastUsed: number;
@@ -28,10 +28,23 @@ class GpuBindGroupEntry implements GCable
     /** Part of the {@link GCable} contract; a cached bind group owns no per-renderer GPU data. */
     public readonly _gpuData: GCable['_gpuData'] = null;
 
-    constructor(gpuBindGroup: GPUBindGroup, now: number)
+    /** The {@link BindGroup#_keyLow} of the resources the native group was built from. */
+    public readonly keyLow: number;
+    /** The {@link BindGroup#_keyHigh} of the resources the native group was built from. */
+    public readonly keyHigh: number;
+    /** The program layout and group index the native group was built for. */
+    public readonly layoutKey: number;
+    /** The device the native group was built on: a restored device, or another renderer's, has its own. */
+    public readonly gpu: GPU;
+
+    constructor(gpuBindGroup: GPUBindGroup, now: number, keyLow: number, keyHigh: number, layoutKey: number, gpu: GPU)
     {
         this.gpuBindGroup = gpuBindGroup;
         this._gcLastUsed = now;
+        this.keyLow = keyLow;
+        this.keyHigh = keyHigh;
+        this.layoutKey = layoutKey;
+        this.gpu = gpu;
     }
 
     /**
@@ -62,7 +75,12 @@ export class BindGroupSystem implements System
 
     private readonly _renderer: WebGPURenderer;
 
-    private _hash: Record<string, GpuBindGroupEntry> = Object.create(null);
+    /**
+     * The cached native bind groups, one per slot. A slot is 30 bits of the content and layout keys,
+     * which keeps it a small integer; the entry holds the whole of both keys and a hit compares them.
+     * Two different keys that land on one slot replace each other.
+     */
+    private _hash: Record<number, GpuBindGroupEntry> = Object.create(null);
     private _gpu: GPU;
 
     constructor(renderer: WebGPURenderer)
@@ -89,21 +107,47 @@ export class BindGroupSystem implements System
         // Two programs with different layouts cannot share a GPUBindGroup,
         // even if they use the same resources.
         // Bit shift combines layoutKey and groupIndex into single number (groupIndex < 16)
-        const key = `${bindGroup._key}:${(program._layoutKey << 4) | groupIndex}`;
-        const entry = this._hash[key];
+        const layoutKey = (program._layoutKey << 4) | groupIndex;
+        let entry = bindGroup._gpuEntry;
 
-        // a swept slot holds null rather than being deleted, so this covers both kinds of miss
-        if (entry)
+        // the group has not changed since it was last resolved: the entry it got is still the answer,
+        // unless the GC swept it, or it was resolved for another layout or on another device
+        if (entry !== null
+            && bindGroup._gpuEntryLayoutKey === layoutKey
+            && entry.gpuBindGroup !== null
+            && entry.gpu === this._gpu)
         {
             entry._gcLastUsed = this._renderer.gc.now;
 
             return entry.gpuBindGroup;
         }
 
-        return this._createBindGroup(key, bindGroup, program, groupIndex);
+        const keyLow = bindGroup._keyLow;
+        const keyHigh = bindGroup._keyHigh;
+        const slot = (keyLow ^ Math.imul(layoutKey + 1, 0x9E3779B1)) & 0x3FFFFFFF;
+
+        entry = this._hash[slot];
+
+        // a swept slot holds null rather than being deleted, so this covers both kinds of miss
+        if (entry && entry.keyLow === keyLow && entry.keyHigh === keyHigh && entry.layoutKey === layoutKey)
+        {
+            entry._gcLastUsed = this._renderer.gc.now;
+        }
+        else
+        {
+            const gpuBindGroup = this._createBindGroup(bindGroup, program, groupIndex);
+
+            entry = new GpuBindGroupEntry(gpuBindGroup, this._renderer.gc.now, keyLow, keyHigh, layoutKey, this._gpu);
+            this._hash[slot] = entry;
+        }
+
+        bindGroup._gpuEntry = entry;
+        bindGroup._gpuEntryLayoutKey = layoutKey;
+
+        return entry.gpuBindGroup;
     }
 
-    private _createBindGroup(key: string, group: BindGroup, program: GpuProgram, groupIndex: number): GPUBindGroup
+    private _createBindGroup(group: BindGroup, program: GpuProgram, groupIndex: number): GPUBindGroup
     {
         const device = this._gpu.device;
         const groupLayout = program.layout[groupIndex];
@@ -187,14 +231,10 @@ export class BindGroupSystem implements System
 
         const layout = renderer.shader.getProgramData(program).bindGroups[groupIndex];
 
-        const gpuBindGroup = device.createBindGroup({
+        return device.createBindGroup({
             layout,
             entries,
         });
-
-        this._hash[key] = new GpuBindGroupEntry(gpuBindGroup, renderer.gc.now);
-
-        return gpuBindGroup;
     }
 
     public destroy(): void
