@@ -879,6 +879,57 @@ describe('EventSystem', () =>
         expect(eventSpy).toHaveBeenCalledTimes(3);
     });
 
+    it('should register the wheel listener as passive by default and non-passive when opted out', async () =>
+    {
+        // default: passive listener, preserves existing behaviour
+        const defaultCanvas = document.createElement('canvas');
+        const defaultSpy = jest.spyOn(defaultCanvas, 'addEventListener');
+
+        await createRenderer(defaultCanvas);
+
+        const defaultWheelCall = defaultSpy.mock.calls.find(([type]) => type === 'wheel');
+
+        expect(defaultWheelCall).toBeDefined();
+        expect((defaultWheelCall![2] as AddEventListenerOptions).passive).toBe(true);
+
+        // opted out: non-passive so users can call preventDefault() from a wheel
+        // handler on a PIXI Container and have the browser honour it
+        // (see https://github.com/pixijs/pixijs/issues/9227)
+        const optOutCanvas = document.createElement('canvas');
+        const optOutSpy = jest.spyOn(optOutCanvas, 'addEventListener');
+
+        await createRenderer(optOutCanvas, undefined, {
+            eventFeatures: {
+                wheel: true,
+                wheelPassive: false,
+            },
+        });
+
+        const optOutWheelCall = optOutSpy.mock.calls.find(([type]) => type === 'wheel');
+
+        expect(optOutWheelCall).toBeDefined();
+        expect((optOutWheelCall![2] as AddEventListenerOptions).passive).toBe(false);
+
+        // runtime toggle: the listener is re-registered so the change takes effect
+        const runtimeCanvas = document.createElement('canvas');
+        const runtimeSpy = jest.spyOn(runtimeCanvas, 'addEventListener');
+
+        const runtimeRenderer = await createRenderer(runtimeCanvas);
+
+        (runtimeRenderer.events as EventSystem).features.wheelPassive = false;
+
+        const runtimeWheelCall = runtimeSpy.mock.calls
+            .filter(([type]) => type === 'wheel')
+            .pop();
+
+        expect(runtimeWheelCall).toBeDefined();
+        expect((runtimeWheelCall![2] as AddEventListenerOptions).passive).toBe(false);
+
+        defaultSpy.mockRestore();
+        optOutSpy.mockRestore();
+        runtimeSpy.mockRestore();
+    });
+
     it('should dispatch global pointer move event with custom hitArea', async () =>
     {
         const renderer = await createRenderer();
