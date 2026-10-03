@@ -187,6 +187,8 @@ export class RenderTarget extends EventEmitter<{
     private readonly _size = new Float32Array(2);
     /** if true, then when the render target is destroyed, it will destroy all the textures that were created for it. */
     private _managedColorTextures: boolean = false;
+    /** if true, the target created its depth-stencil texture, so destroying the target destroys it too */
+    private _managedDepthStencilTexture = false;
 
     /** depth capability requested for this target — via options, attachment format, or the mask system @internal */
     public _depth = false;
@@ -449,7 +451,8 @@ export class RenderTarget extends EventEmitter<{
 
         if (this.depthStencilAttachment)
         {
-            this.depthStencilAttachment.texture.destroy();
+            // a depth-stencil texture the caller passed in is theirs, as color textures are
+            if (this._managedDepthStencilTexture) this.depthStencilAttachment.texture.destroy();
             delete this.depthStencilAttachment;
         }
 
@@ -466,7 +469,10 @@ export class RenderTarget extends EventEmitter<{
      */
     private _createDepthStencilTexture(width: number, height: number, resolution: number): PixiDepthStencilAttachment
     {
-        this.depthStencilAttachment ??= {
+        if (this.depthStencilAttachment) return this.depthStencilAttachment;
+
+        this._managedDepthStencilTexture = true;
+        this.depthStencilAttachment = {
             texture: new TextureSource({
                 width,
                 height,
