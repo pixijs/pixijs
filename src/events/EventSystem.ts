@@ -166,6 +166,7 @@ export interface EventSystemFeatures
      * - `pointerup` / `mouseup` / `touchend` / `rightup`
      * - `pointerupoutside` / `mouseupoutside` / `touchendoutside` / `rightupoutside`
      * - `click` / `tap`
+     * - `contextmenu`
      * @example
      * ```ts
      * // Enable click events
@@ -327,6 +328,7 @@ export class EventSystem implements System<EventSystemOptions>
      * - preventDefault on pointer events stops mouse events from firing
      * - For every pointer event, there will always be either a mouse or touch event alongside it
      * - Setting this to false allows default browser actions (text selection, dragging images, etc.)
+     * - Does not apply to `contextmenu`; call `event.preventDefault()` in a `contextmenu` listener instead
      * @example
      * ```ts
      * // Allow default browser actions
@@ -430,6 +432,8 @@ export class EventSystem implements System<EventSystemOptions>
     private _currentCursor: string;
     private readonly _rootPointerEvent: FederatedPointerEvent;
     private readonly _rootWheelEvent: FederatedWheelEvent;
+    /** Separate root event for `contextmenu`, so `pointer` and EventsTicker keep the last pointer state. */
+    private readonly _rootContextMenuEvent: FederatedPointerEvent;
     private _eventsAdded: boolean;
 
     /**
@@ -446,6 +450,7 @@ export class EventSystem implements System<EventSystemOptions>
 
         this._rootPointerEvent = new FederatedPointerEvent(null);
         this._rootWheelEvent = new FederatedWheelEvent(null);
+        this._rootContextMenuEvent = new FederatedPointerEvent(null);
 
         this.cursorStyles = {
             default: 'inherit',
@@ -469,6 +474,7 @@ export class EventSystem implements System<EventSystemOptions>
         this._onPointerMove = this._onPointerMove.bind(this);
         this._onPointerUp = this._onPointerUp.bind(this);
         this._onPointerOverOut = this._onPointerOverOut.bind(this);
+        this._onContextMenu = this._onContextMenu.bind(this);
         this.onWheel = this.onWheel.bind(this);
     }
 
@@ -734,6 +740,30 @@ export class EventSystem implements System<EventSystemOptions>
     }
 
     /**
+     * Event handler for `contextmenu` events on {@link EventSystem#domElement this.domElement}.
+     *
+     * {@link EventSystem#autoPreventDefault autoPreventDefault} does not apply, so the browser menu
+     * opens unless a listener calls `preventDefault()`.
+     * @param nativeEvent - The native mouse/pointer event.
+     */
+    private _onContextMenu(nativeEvent: MouseEvent | PointerEvent): void
+    {
+        if (!this.features.click) return;
+        this.rootBoundary.rootTarget = this.renderer.lastObjectRendered;
+
+        const normalizedEvents = this._normalizeToPointerData(nativeEvent);
+
+        for (let i = 0, j = normalizedEvents.length; i < j; i++)
+        {
+            const event = this._bootstrapEvent(this._rootContextMenuEvent, normalizedEvents[i]);
+
+            this.rootBoundary.mapEvent(event);
+        }
+
+        this.setCursor(this.rootBoundary.cursor);
+    }
+
+    /**
      * Passive handler for `wheel` events on {@link EventSystem.domElement this.domElement}.
      * @param nativeEvent - The native wheel event.
      */
@@ -843,6 +873,7 @@ export class EventSystem implements System<EventSystemOptions>
             passive: true,
             capture: true,
         });
+        this.domElement.addEventListener('contextmenu', this._onContextMenu, true);
 
         this._eventsAdded = true;
     }
@@ -900,6 +931,7 @@ export class EventSystem implements System<EventSystemOptions>
         }
 
         this.domElement.removeEventListener('wheel', this.onWheel, true);
+        this.domElement.removeEventListener('contextmenu', this._onContextMenu, true);
 
         this.domElement = null;
         this._eventsAdded = false;

@@ -123,12 +123,6 @@ class FilterData
     public outputRenderSurface: RenderSurface = null;
 
     /**
-     * The global frame of the filter area.
-     * @type {{ x: number, y: number, width: number, height: number }}
-     */
-    public globalFrame = { x: 0, y: 0, width: 0, height: 0 };
-
-    /**
      * Indicates whether antialiasing is enabled for the filter.
      * @type {boolean}
      */
@@ -242,24 +236,6 @@ export class FilterSystem implements System
 
         const previousFilterData = this._getPreviousFilterData();
 
-        const globalResolution = this._findFilterResolution(rootResolution);
-        let offsetX = 0;
-        let offsetY = 0;
-
-        if (previousFilterData)
-        {
-            offsetX = previousFilterData.bounds.minX;
-            offsetY = previousFilterData.bounds.minY;
-        }
-
-        this._calculateGlobalFrame(
-            filterData,
-            offsetX, offsetY,
-            globalResolution,
-            colorTextureSource.width,
-            colorTextureSource.height
-        );
-
         // set all the filter data
 
         this._setupFilterTextures(filterData, bounds, renderer, previousFilterData);
@@ -282,7 +258,7 @@ export class FilterSystem implements System
      * const filters = [new BlurFilter(), new ColorMatrixFilter()];
      *
      * // Apply the filters to the texture
-     * const resultTexture = filterSystem.applyToTexture({ texture, filters });
+     * const resultTexture = renderer.filter.generateFilteredTexture({ texture, filters });
      *
      * // Use the resulting texture
      * sprite.texture = resultTexture;
@@ -294,6 +270,12 @@ export class FilterSystem implements System
      */
     public generateFilteredTexture({ texture, filters }: {texture: Texture, filters: Filter[]}): Texture
     {
+        // with no enabled filter there is nothing to apply, so return before taking a stack entry
+        if (filters.every((filter) => !filter.enabled))
+        {
+            return texture;
+        }
+
         // get a filter data from the stack. They can be reused multiple times each frame,
         // so we don't need to worry about overwriting them in a single pass.
         const filterData = this._pushFilterData();
@@ -308,40 +290,23 @@ export class FilterSystem implements System
         const rootResolution = colorTextureSource.resolution;
         const rootAntialias = colorTextureSource.antialias;
 
-        // if there are no filters, or all of them disabled, we skip the pass
-        if (filters.every((filter) => !filter.enabled))
-        {
-            filterData.skip = true;
-
-            return texture;
-        }
-
         const bounds = filterData.bounds;
 
         // this path is used by the blend modes mostly!
         // they collect all renderables and push them into a list.
         // this list is then used to calculate the bounds of the filter area
 
+        bounds.clear();
         bounds.addRect(texture.frame);
 
         this._calculateFilterBounds(filterData, bounds.rectangle, rootAntialias, rootResolution, 0);
 
         if (filterData.skip)
         {
+            this._popFilterData();
+
             return texture;
         }
-
-        const globalResolution = rootResolution;
-        const offsetX = 0;
-        const offsetY = 0;
-
-        this._calculateGlobalFrame(
-            filterData,
-            offsetX, offsetY,
-            globalResolution,
-            colorTextureSource.width,
-            colorTextureSource.height
-        );
 
         /// /////////
 
@@ -377,6 +342,8 @@ export class FilterSystem implements System
         const outputTexture = filterData.outputRenderSurface as Texture;
 
         outputTexture.source.alphaMode = 'premultiplied-alpha';
+
+        this._popFilterData();
 
         return outputTexture;
     }
@@ -471,20 +438,19 @@ export class FilterSystem implements System
 
         const isFinalTarget = outputRenderSurface === output;
 
-        // Find the correct resolution by looking back through the filter stack
-        const rootResolution = renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
-        const resolution = this._findFilterResolution(rootResolution);
+        const closestFilterData = this._findClosestFilterData();
+        const resolution = closestFilterData
+            ? closestFilterData.inputTexture.source._resolution
+            : renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
 
         // Calculate the offset for both outputFrame and globalFrame
         let offsetX = 0;
         let offsetY = 0;
 
-        if (isFinalTarget)
+        if (isFinalTarget && closestFilterData)
         {
-            const offset = this._findPreviousFilterOffset();
-
-            offsetX = offset.x;
-            offsetY = offset.y;
+            offsetX = closestFilterData.bounds.minX;
+            offsetY = closestFilterData.bounds.minY;
         }
 
         this._updateFilterUniforms(input, output, filterData, offsetX, offsetY, resolution, isFinalTarget, clear);
@@ -648,32 +614,6 @@ export class FilterSystem implements System
     }
 
     /**
-     * Calculates and sets the global frame for the filter.
-     * @param filterData - The filter data to update
-     * @param offsetX - The X offset
-     * @param offsetY - The Y offset
-     * @param globalResolution - The global resolution
-     * @param sourceWidth - The source texture width
-     * @param sourceHeight - The source texture height
-     */
-    private _calculateGlobalFrame(
-        filterData: FilterData,
-        offsetX: number,
-        offsetY: number,
-        globalResolution: number,
-        sourceWidth: number,
-        sourceHeight: number
-    ): void
-    {
-        const globalFrame = filterData.globalFrame;
-
-        globalFrame.x = offsetX * globalResolution;
-        globalFrame.y = offsetY * globalResolution;
-        globalFrame.width = sourceWidth * globalResolution;
-        globalFrame.height = sourceHeight * globalResolution;
-    }
-
-    /**
      * Updates the filter uniforms with the current filter state.
      * @param input - The input texture
      * @param output - The output render surface
@@ -766,48 +706,22 @@ export class FilterSystem implements System
     }
 
     /**
-     * Finds the correct resolution by looking back through the filter stack.
-     * @param rootResolution - The fallback root resolution to use
-     * @returns The resolution from the previous filter or root resolution
+     * Finds the non-skipped entry closest to the top of the filter stack.
+     *
+     * `pop()` removes its entry before it applies the filters, so the result is the enclosing filter's entry.
+     * `generateFilteredTexture()` applies the filters while its entry is still on the stack, so the result is that entry.
+     * @returns The entry, or null if there is none
      */
-    private _findFilterResolution(rootResolution: number): number
+    private _findClosestFilterData(): FilterData | null
     {
-        let currentIndex = this._filterStackIndex - 1;
-
-        while (currentIndex > 0 && this._filterStack[currentIndex].skip)
+        for (let i = this._filterStackIndex - 1; i >= 0; i--)
         {
-            --currentIndex;
+            const filterData = this._filterStack[i];
+
+            if (!filterData.skip) return filterData;
         }
 
-        return currentIndex > 0 && this._filterStack[currentIndex].inputTexture
-            ? this._filterStack[currentIndex].inputTexture.source._resolution
-            : rootResolution;
-    }
-
-    /**
-     * Finds the offset from the previous non-skipped filter in the stack.
-     * @returns The offset coordinates from the previous filter
-     */
-    private _findPreviousFilterOffset(): { x: number, y: number }
-    {
-        let offsetX = 0;
-        let offsetY = 0;
-        let lastIndex = this._filterStackIndex;
-
-        while (lastIndex > 0)
-        {
-            lastIndex--;
-            const prevFilterData = this._filterStack[lastIndex];
-
-            if (!prevFilterData.skip)
-            {
-                offsetX = prevFilterData.bounds.minX;
-                offsetY = prevFilterData.bounds.minY;
-                break;
-            }
-        }
-
-        return { x: offsetX, y: offsetY };
+        return null;
     }
 
     /**
@@ -1033,13 +947,6 @@ export class FilterSystem implements System
             return;
         }
 
-        // set the global frame to the root texture
-
-        // get previous bounds.. we must take into account skipped filters also..
-
-        // // to find the previous resolution we need to account for the skipped filters
-        // // the following will find the last non skipped filter...
-
         // store the values that will be used to apply the filters
         filterData.antialias = antialias;
         filterData.resolution = resolution;
@@ -1055,24 +962,22 @@ export class FilterSystem implements System
         return this._filterStack[this._filterStackIndex];
     }
 
+    /**
+     * Finds the closest non-skipped entry that encloses the filter being pushed.
+     *
+     * `push()` has already added that filter's own entry, so the search starts one entry below it.
+     * @returns The entry, or null if there is none
+     */
     private _getPreviousFilterData(): FilterData | null
     {
-        let previousFilterData: FilterData;
-
-        let index = this._filterStackIndex - 1;
-
-        while (index > 0)
+        for (let i = this._filterStackIndex - 2; i >= 0; i--)
         {
-            index--;
-            previousFilterData = this._filterStack[index];
+            const filterData = this._filterStack[i];
 
-            if (!previousFilterData.skip)
-            {
-                break;
-            }
+            if (!filterData.skip) return filterData;
         }
 
-        return previousFilterData;
+        return null;
     }
 
     private _pushFilterData(): FilterData

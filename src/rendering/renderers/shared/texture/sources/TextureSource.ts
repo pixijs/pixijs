@@ -2,6 +2,7 @@ import EventEmitter from 'eventemitter3';
 import { isPow2 } from '../../../../../maths/misc/pow2';
 import { definedProps } from '../../../../../scene/container/utils/definedProps';
 import { uid } from '../../../../../utils/data/uid';
+import { deprecation, v8_22_0 } from '../../../../../utils/logging/deprecation';
 import { type GPUDataOwner } from '../../../../renderers/types';
 import { type GlTexture } from '../../../gl/texture/GlTexture';
 import { type GPUTextureGpuData } from '../../../gpu/texture/GpuTextureSystem';
@@ -22,6 +23,8 @@ import type { TextureResourceOrOptions } from '../utils/textureFrom';
 
 /**
  * options for creating a new TextureSource
+ *
+ * `depth`, which makes a 3D texture, is on {@link TextureShapeOptions}; the constructor takes both.
  * @category rendering
  * @advanced
  */
@@ -51,20 +54,26 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
      * Blit operation will be required to resolve the texture.
      */
     antialias?: boolean;
-    /** how many dimensions does this texture have? currently v8 only supports 2d */
+    /**
+     * How the texture is stored. Derived from {@link TextureSourceOptions.viewDimension}: `'3d'` and `'1d'` views
+     * are stored as themselves, every other view as `'2d'`.
+     * @deprecated since 8.22.0 - derived from `viewDimension` and `depth`, so leave it out. A value that disagrees
+     * with the view throws in debug builds.
+     */
     dimensions?: TEXTURE_DIMENSIONS;
     /**
      * How this texture is viewed/sampled by shaders.
      *
-     * This aligns with WebGPU's `GPUTextureViewDescriptor.dimension`. For example, cube maps are typically stored as a
-     * 2D texture with 6 array layers (`dimensions: '2d'`) but viewed as `viewDimension: 'cube'`.
+     * This aligns with WebGPU's `GPUTextureViewDescriptor.dimension`. It defaults from the size:
+     * `depth` gives `'3d'`, `arrayLayerCount > 1` gives `'2d-array'`, anything else `'2d'`.
+     * Pass it only when the size doesn't decide it, e.g. `'cube'` for 6 layers viewed as a cube map.
      */
     viewDimension?: TEXTURE_VIEW_DIMENSIONS;
     /**
-     * The number of array layers for this texture source.
+     * The number of array layers for this texture source. Setting it above 1 makes a `'2d-array'` texture.
      *
      * This maps to WebGPU's `GPUTextureDescriptor.size.depthOrArrayLayers` and is used for array-backed textures
-     * such as cube maps (6 layers).
+     * such as cube maps (6 layers). Can't be combined with `depth`.
      * @default 1
      * @advanced
      */
@@ -78,6 +87,9 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
      *
      * For performance reasons, it is recommended to NOT use this with RenderTextures, as they are often updated every frame.
      * If you do, make sure to call `updateMipmaps` after you update the texture.
+     *
+     * A 3D texture on WebGPU needs {@link TextureSourceOptions.storage} and `rgba8unorm` or `rgba16float`,
+     * because a compute shader writes the mips. WebGL fills the chain with `gl.generateMipmap`.
      */
     autoGenerateMipmaps?: boolean;
     /** the alpha mode of the texture */
@@ -89,22 +101,68 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
     /** Used by RenderTexture.create to allow resizing. Not used by TextureSource itself. */
     dynamic?: boolean;
     /**
-     * Mark this texture as transient — its contents are scratch and do not need to persist
-     * beyond a single render pass. When the WebGPU backend sees this:
-     *
-     * - It uses `storeOp: 'discard'` on the attachment at end-of-pass, skipping the writeback to DRAM.
-     * - When the browser exposes `GPUTextureUsage.TRANSIENT_ATTACHMENT`, it adds that bit so the
-     *   driver can keep contents in tile memory on TBDR mobile GPUs and never allocate DRAM at all.
-     *
-     * Only safe when no later render pass needs to load the prior contents back
-     * (`loadOp: 'load'` on a transient attachment is a spec violation, and discarding makes
-     * loaded contents undefined even without the bit set). Pixi sets this internally for the
-     * MSAA buffer attached to the canvas root, which is rendered as a single pass per frame.
-     * Set it yourself only on textures you know follow the same single-pass-then-discard pattern.
+     * WebGPU only. Marks an antialiased render target as single-pass: it is never rendered into again
+     * with `clear: false`, never has a filter or mask pop back onto it, and its depth/stencil is never
+     * needed after the pass. PixiJS then discards its multisample buffers at the end of the pass instead
+     * of writing them to memory: depth/stencil, and on GPUs that aren't tile-based also colour (tile-based
+     * GPUs already discard colour; see {@link GpuExtensions.tileBased}). If the target is reopened anyway,
+     * the colour is restored from the resolved texture but the depth/stencil is lost.
      * @default false
      */
     transient?: boolean;
+    /**
+     * WebGPU only. Lets compute shaders write to this texture as a storage texture (a `texture_storage_2d` or
+     * `texture_storage_3d` binding in WGSL). PixiJS still samples it as a normal texture. WebGL has no storage
+     * textures and ignores this.
+     *
+     * Only some formats can be storage textures: every device supports `rgba8unorm`, `rgba16float`,
+     * `r32float`, `rg32float`, `rgba32float` and the matching `rgba8`, `rgba16`, `r32`, `rg32` and `rgba32`
+     * integer formats. `bgra8unorm` needs the `bgra8unorm-storage` feature and formats such as `r8unorm`
+     * or `r16float` need `texture-formats-tier1`; PixiJS enables both when the GPU has them. WebGPU rejects any
+     * other format when the texture is created.
+     * @example
+     * ```ts
+     * const volume = new TextureSource({ width: 64, height: 64, depth: 64, format: 'rgba8unorm', storage: true });
+     *
+     * // write it from your own compute pass (renderer is a WebGPURenderer)
+     * const view = renderer.texture.getGpuSource(volume).createView();
+     * // ... bind `view` to a `texture_storage_3d<rgba8unorm, write>`, dispatch, submit
+     *
+     * // then sample it in any PixiJS shader as a texture_3d
+     * ```
+     * @default false
+     */
+    storage?: boolean;
 }
+
+/**
+ * The `depth` option, which makes a 3D texture. A texture is 3D (`depth`) or layered (`arrayLayerCount`),
+ * never both, and TypeScript rejects options that set both.
+ *
+ * `depth` lives here rather than on {@link TextureSourceOptions} so that options typed with that interface
+ * still pass to the constructor.
+ * @category rendering
+ * @advanced
+ */
+export type TextureShapeOptions =
+    | {
+        /**
+         * The depth of a 3D texture, in texels. Setting it makes a `'3d'` texture.
+         *
+         * Unlike `width` and `height`, `resolution` doesn't scale it. Can't be combined with `arrayLayerCount`.
+         */
+        depth: number;
+        /** A 3D texture has no array layers */
+        arrayLayerCount?: never;
+        /** `depth` already makes the view `'3d'`, so only that value is accepted */
+        viewDimension?: '3d';
+        /** A 3D texture can't be multisampled. WebGPU has no such texture, and a volume is sampled, not resolved. */
+        antialias?: false;
+    }
+    | {
+        /** Not a 3D texture: `arrayLayerCount` and `viewDimension` decide the shape */
+        depth?: never;
+    };
 
 /**
  * A TextureSource stores the information that represents an image.
@@ -113,6 +171,8 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
  *
  * This is an class is extended depending on the source of the texture.
  * Eg if you are using an an image as your resource, then an ImageSource is used.
+ *
+ * Pass `depth` for a 3D texture or `arrayLayerCount` for a 2D array (see {@link TextureShapeOptions}).
  * @category rendering
  * @advanced
  */
@@ -132,8 +192,6 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         resolution: 1,
         format: 'bgra8unorm',
         alphaMode: 'premultiply-alpha-on-upload',
-        dimensions: '2d',
-        viewDimension: '2d',
         arrayLayerCount: 1,
         mipLevelCount: 1,
         autoGenerateMipmaps: false,
@@ -218,16 +276,31 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      *
      * For performance reasons, it is recommended to NOT use this with RenderTextures, as they are often updated every frame.
      * If you do, make sure to call `updateMipmaps` after you update the texture.
+     *
+     * A 3D texture on WebGPU needs {@link TextureSourceOptions.storage} and `rgba8unorm` or `rgba16float`,
+     * because a compute shader writes the mips. WebGL fills the chain with `gl.generateMipmap`.
      */
     public autoGenerateMipmaps = false;
     /** the format that the texture data has */
     public format: TEXTURE_FORMATS = 'rgba8unorm';
-    /** how many dimensions does this texture have? currently v8 only supports 2d */
+    /** how the texture is stored (WebGPU texture dimension), derived from {@link TextureSource#viewDimension} */
     public dimension: TEXTURE_DIMENSIONS = '2d';
     /** how this texture is viewed/sampled by shaders (WebGPU view dimension) */
     public viewDimension: TEXTURE_VIEW_DIMENSIONS = '2d';
-    /** how many array layers this texture has (WebGPU depthOrArrayLayers) */
+    /** how many array layers this texture has; 1 for a 3D texture */
     public arrayLayerCount = 1;
+    /** the depth of a 3D texture in texels; 1 for every other texture */
+    public depth = 1;
+
+    /**
+     * The size along z that the GPU allocates: {@link TextureSource#depth} for a 3D texture,
+     * {@link TextureSource#arrayLayerCount} otherwise. WebGPU's `depthOrArrayLayers`.
+     */
+    public get depthOrArrayLayers(): number
+    {
+        return this.dimension === '3d' ? this.depth : (this.arrayLayerCount || 1);
+    }
+
     /** the alpha mode of the texture */
     public alphaMode: ALPHA_MODES;
     private _style: TextureStyle;
@@ -246,6 +319,12 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      * @internal
      */
     public transient = false;
+
+    /**
+     * Whether compute shaders can write to this texture on WebGPU. See {@link TextureSourceOptions.storage}.
+     * Read when the GPU texture is created.
+     */
+    public storage = false;
 
     /**
      * Has the source been destroyed?
@@ -278,11 +357,22 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     /**
      * @param options - options for creating a new TextureSource
      */
-    constructor(protected readonly options: TextureSourceOptions<T> = {})
+    constructor(protected readonly options: TextureSourceOptions<T> & TextureShapeOptions = {})
     {
         super();
 
-        options = { ...TextureSource.defaultOptions, ...options };
+        const passedOptions = options;
+
+        options = { ...TextureSource.defaultOptions, ...options } as TextureSourceOptions<T> & TextureShapeOptions;
+
+        // the size decides the view unless one is given, and the view decides the texture dimension
+        const viewDimension = resolveViewDimension(options);
+        const dimension = viewDimension === '3d' || viewDimension === '1d' ? viewDimension : '2d';
+
+        // #if _DEBUG
+        // only what the caller passed: a global default such as `antialias: true` mustn't make a 3D texture throw
+        validateTextureShape(passedOptions, viewDimension, dimension);
+        // #endif
 
         this.label = options.label ?? '';
         this.resource = options.resource;
@@ -311,14 +401,17 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.height = this.pixelHeight / this._resolution;
 
         this.format = options.format;
-        this.dimension = options.dimensions;
-        this.viewDimension = options.viewDimension ?? options.dimensions;
+        this.dimension = dimension;
+        this.viewDimension = viewDimension;
         this.arrayLayerCount = options.arrayLayerCount;
+        this.depth = dimension === '3d' ? (options.depth ?? 1) : 1;
         this.mipLevelCount = options.mipLevelCount;
         this.autoGenerateMipmaps = options.autoGenerateMipmaps;
         this.sampleCount = options.sampleCount;
-        this.antialias = options.antialias;
+        // a 3D texture can't be multisampled, whatever the defaults say
+        this.antialias = dimension === '3d' ? false : options.antialias;
         this.transient = options.transient ?? false;
+        this.storage = options.storage ?? false;
         this.alphaMode = options.alphaMode;
 
         this.style = new TextureStyle(definedProps(options));
@@ -642,4 +735,68 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      * @param resource - The resource to create the texture source from.
      */
     public static from: (resource: TextureResourceOrOptions) => TextureSource;
+}
+
+/**
+ * Picks the view dimension: the one given, else `'3d'` when `depth` is set, `'2d-array'` when `arrayLayerCount`
+ * is above 1, otherwise `'2d'`.
+ * @param options - the TextureSource options, merged with the defaults
+ */
+function resolveViewDimension(options: TextureSourceOptions & TextureShapeOptions): TEXTURE_VIEW_DIMENSIONS
+{
+    if (options.viewDimension) return options.viewDimension;
+    if (options.depth) return '3d';
+
+    return options.arrayLayerCount > 1 ? '2d-array' : '2d';
+}
+
+/**
+ * Throws on size and dimension options that contradict each other.
+ * @param options - the options passed to the TextureSource constructor, without the defaults
+ * @param viewDimension - the view dimension resolved from the options
+ * @param dimension - the texture dimension resolved from the view
+ */
+function validateTextureShape(
+    options: TextureSourceOptions & TextureShapeOptions,
+    viewDimension: TEXTURE_VIEW_DIMENSIONS,
+    dimension: TEXTURE_DIMENSIONS,
+): void
+{
+    if (options.depth !== undefined && typeof options.depth !== 'number')
+    {
+        throw new Error(`[TextureSource] depth is a 3D texture's depth in texels, but got ${options.depth}. `
+            + 'For a depth buffer, use the depth option of a RenderTarget or the renderer.');
+    }
+
+    if (options.depth && options.arrayLayerCount > 1)
+    {
+        throw new Error('[TextureSource] depth and arrayLayerCount can\'t be combined: '
+            + 'use depth for a 3D texture or arrayLayerCount for a 2D array.');
+    }
+
+    if (options.depth && viewDimension !== '3d')
+    {
+        throw new Error(`[TextureSource] depth makes a 3D texture, but viewDimension is '${viewDimension}'. `
+            + 'Use arrayLayerCount for layered textures.');
+    }
+
+    if (viewDimension === '3d' && options.arrayLayerCount > 1)
+    {
+        throw new Error('[TextureSource] a 3D texture takes depth, not arrayLayerCount.');
+    }
+
+    if (options.dimensions && options.dimensions !== dimension)
+    {
+        throw new Error(`[TextureSource] dimensions '${options.dimensions}' doesn't match viewDimension `
+            + `'${viewDimension}'. Leave dimensions out; it is derived from the view.`);
+    }
+    else if (options.dimensions)
+    {
+        deprecation(v8_22_0, 'TextureSource dimensions is derived from viewDimension and depth; leave it out.');
+    }
+
+    if (dimension === '3d' && options.antialias)
+    {
+        throw new Error('[TextureSource] a 3D texture can\'t be antialiased: WebGPU has no multisampled 3D textures.');
+    }
 }

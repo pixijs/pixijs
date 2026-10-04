@@ -123,4 +123,67 @@ describe('glEnsureAttributes', () =>
             start: 16,
         });
     });
+
+    describe('attributes the shader does not read', () =>
+    {
+        function ensureWithShaderReadingOnlyA(geometry: Geometry): void
+        {
+            const program = new GlProgram({
+                vertex: `
+                    attribute vec4 a;
+
+                    void main() {
+                        gl_Position = a;
+                    }
+                `,
+                fragment: `
+                    void main() {
+                        gl_FragColor = vec4(1.0);
+                    }
+                `,
+            });
+
+            const gl = getTestContext();
+            const glProgram = generateProgram(gl, program);
+
+            gl.useProgram(glProgram.program);
+
+            ensureAttributes(geometry, program._attributeData);
+        }
+
+        it('should not warn when the attribute has a format', async () =>
+        {
+            const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { /* silence */ });
+
+            ensureWithShaderReadingOnlyA(new Geometry({
+                attributes: {
+                    a: { buffer: [1, 2, 3, 4] },
+                    b: { buffer: [1, 2], format: 'float32x2' },
+                }
+            }));
+
+            expect(warnSpy).not.toHaveBeenCalled();
+
+            warnSpy.mockRestore();
+        });
+
+        it('should warn when the attribute has no format', async () =>
+        {
+            const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { /* silence */ });
+
+            ensureWithShaderReadingOnlyA(new Geometry({
+                attributes: {
+                    a: { buffer: [1, 2, 3, 4] },
+                    b: { buffer: [1, 2] },
+                }
+            }));
+
+            expect(warnSpy).toHaveBeenCalledWith(
+                expect.any(String),
+                expect.stringContaining('Attribute b is not present in the shader'),
+            );
+
+            warnSpy.mockRestore();
+        });
+    });
 });
