@@ -102,6 +102,9 @@ export class DOMContainer extends ViewContainer<never>
     /** The DOM element that this container is using. */
     private _element: HTMLElement;
 
+    /** The DOM root that last rendered this container's element. @internal */
+    public _domElementParent: HTMLElement = null;
+
     /**
      * @param options - The options for creating the DOM container.
      */
@@ -175,6 +178,12 @@ export class DOMContainer extends ViewContainer<never>
     {
         if (this._element === value) return;
 
+        if (this._domElementParent?.contains(this._element))
+        {
+            this._element.remove();
+        }
+
+        this._domElementParent = null;
         this._element = value;
         this.onViewUpdate();
     }
@@ -231,6 +240,7 @@ export class DOMContainer extends ViewContainer<never>
 
         this._element?.parentNode?.removeChild(this._element);
         this._element = null;
+        this._domElementParent = null;
         (this._anchor as null) = null;
     }
 }
