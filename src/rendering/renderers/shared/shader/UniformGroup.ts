@@ -194,9 +194,12 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
         this.ubo = options.ubo;
         this.isStatic = options.isStatic;
 
-        this._signature = createIdFromString(Object.keys(uniforms).map(
-            (i) => `${i}-${(uniformStructures[i as keyof typeof uniformStructures] as UniformData).type}`
-        ).join('-'), 'uniform-group');
+        this._signature = createIdFromString(Object.keys(uniforms).map((i) =>
+        {
+            const uniform = uniformStructures[i as keyof typeof uniformStructures] as UniformData;
+
+            return `${i}-${uniform.type}-${uniform.size}`;
+        }).join('-'), 'uniform-group');
     }
 
     /**
