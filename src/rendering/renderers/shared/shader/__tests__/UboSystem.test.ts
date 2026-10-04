@@ -1,20 +1,32 @@
 import { GlUboSystem } from '../../../gl/GlUboSystem';
+import { createUboElementsSTD40 } from '../../../gl/shader/utils/createUboElementsSTD40';
 import { GpuUboSystem } from '../../../gpu/GpuUboSystem';
+import { createUboElementsWGSL } from '../../../gpu/shader/utils/createUboElementsWGSL';
+import { UboSystem } from '../UboSystem';
 import { UniformGroup } from '../UniformGroup';
+import { generateUboSyncPolyfillSTD40, generateUboSyncPolyfillWGSL } from '~/unsafe-eval/ubo/generateUboSyncPolyfill';
 
 describe.each([
-    ['WebGL', GlUboSystem, [1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0]],
-    ['WebGPU', GpuUboSystem, [1, 2, 3, 4]],
-] as const)('%s UBO layout caching', (_name, System, expectedArray) =>
+    ['WebGL', () => new GlUboSystem()],
+    ['WebGPU', () => new GpuUboSystem()],
+    ['WebGL polyfill', () => new UboSystem({
+        createUboElements: createUboElementsSTD40,
+        generateUboSync: generateUboSyncPolyfillSTD40,
+    })],
+    ['WebGPU polyfill', () => new UboSystem({
+        createUboElements: createUboElementsWGSL,
+        generateUboSync: generateUboSyncPolyfillWGSL,
+    })],
+] as const)('%s UBO layout caching', (_name, createSystem) =>
 {
     it.each([false, true])('should sync different array sizes independently (array first: %s)', (arrayFirst) =>
     {
-        const system = new System();
+        const system = createSystem();
         const scalar = new UniformGroup({
-            uValues: { value: 10, type: 'f32' },
+            uValues: { value: [10, 20, 30, 40], type: 'vec4<f32>' },
         }, { ubo: true });
         const array = new UniformGroup({
-            uValues: { value: [1, 2, 3, 4], type: 'f32', size: 4 },
+            uValues: { value: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], type: 'vec4<f32>', size: 4 },
         }, { ubo: true });
 
         const groups = arrayFirst ? [array, scalar] : [scalar, array];
@@ -24,8 +36,8 @@ describe.each([
             system.syncUniformGroup(group);
         }
 
-        expect(Array.from(scalar.buffer.data)).toEqual([10, 0, 0, 0]);
-        expect(Array.from(array.buffer.data)).toEqual(expectedArray);
+        expect(Array.from(scalar.buffer.data)).toEqual([10, 20, 30, 40]);
+        expect(Array.from(array.buffer.data)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
 
         scalar.buffer.destroy();
         array.buffer.destroy();
@@ -34,12 +46,12 @@ describe.each([
 
     it('should reuse layouts for matching sizes with different values', () =>
     {
-        const system = new System();
+        const system = createSystem();
         const first = new UniformGroup({
-            uValues: { value: [1, 2, 3, 4], type: 'f32', size: 4 },
+            uValues: { value: [1, 2, 3, 4, 5, 6, 7, 8], type: 'vec4<f32>', size: 2 },
         }, { ubo: true });
         const second = new UniformGroup({
-            uValues: { value: [5, 6, 7, 8], type: 'f32', size: 4 },
+            uValues: { value: [8, 7, 6, 5, 4, 3, 2, 1], type: 'vec4<f32>', size: 2 },
         }, { ubo: true });
 
         expect(system.getUniformGroupData(first)).toBe(system.getUniformGroupData(second));
@@ -49,21 +61,19 @@ describe.each([
 
     it('should sync arrays of different lengths independently', () =>
     {
-        const system = new System();
+        const system = createSystem();
         const small = new UniformGroup({
-            uValues: { value: [1, 2], type: 'f32', size: 2 },
+            uValues: { value: [1, 2, 3, 4, 5, 6, 7, 8], type: 'vec4<f32>', size: 2 },
         }, { ubo: true });
         const large = new UniformGroup({
-            uValues: { value: [1, 2, 3, 4], type: 'f32', size: 4 },
+            uValues: { value: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], type: 'vec4<f32>', size: 4 },
         }, { ubo: true });
 
         system.syncUniformGroup(small);
         system.syncUniformGroup(large);
 
-        expect(Array.from(small.buffer.data)).toEqual(
-            expectedArray.length === 4 ? [1, 2, 0, 0] : [1, 0, 0, 0, 2, 0, 0, 0]
-        );
-        expect(Array.from(large.buffer.data)).toEqual(expectedArray);
+        expect(Array.from(small.buffer.data)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+        expect(Array.from(large.buffer.data)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
 
         small.buffer.destroy();
         large.buffer.destroy();
@@ -72,7 +82,7 @@ describe.each([
 
     it('should treat an omitted size as size one when caching layouts', () =>
     {
-        const system = new System();
+        const system = createSystem();
         const implicit = new UniformGroup({
             uValues: { value: 10, type: 'f32' },
         }, { ubo: true });
