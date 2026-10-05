@@ -441,6 +441,9 @@ export abstract class Batcher
 
     public checkAndUpdateTexture(batchableObject: BatchableElement, texture: Texture): boolean
     {
+        // A changed source can leave the old one in the batch after it is destroyed.
+        if (batchableObject._batch.textures.textures[batchableObject._textureId] !== texture._source) return false;
+
         const textureId = batchableObject._batch.textures.ids[texture._source.uid];
 
         // TODO could try to be a bit smarter if there are spare textures..
