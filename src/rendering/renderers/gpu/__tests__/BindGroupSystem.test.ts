@@ -301,6 +301,38 @@ describeLocalOnly('BindGroupSystem lookup', () =>
         expect(liveEntries()).toHaveLength(1);
     });
 
+    it('builds its own native group when another renderer on the same device resolved the group first', async () =>
+    {
+        const sharing = await getWebGPURenderer({ gpu: renderer.gpu });
+        const bindGroup = createGroup(new TextureSource({ width: 16, height: 16 }));
+        const sharingNative = sharing.bindGroup.getBindGroup(bindGroup, program, 0);
+
+        expect(resolve(bindGroup)).not.toBe(sharingNative);
+        expect(liveEntries()).toHaveLength(1);
+
+        sharing.destroy();
+    });
+
+    it('keeps rendering after a renderer sharing its device is destroyed', async () =>
+    {
+        const sharing = await getWebGPURenderer({ gpu: renderer.gpu });
+        const texture = getTexture();
+        const sprite = new Sprite({ texture });
+        const { device } = renderer.gpu;
+
+        sharing.render(new Sprite({ texture }));
+        renderer.render(sprite);
+        sharing.destroy();
+
+        device.pushErrorScope('validation');
+        renderer.render(sprite);
+
+        const { pixels } = renderer.extract.pixels(sprite);
+
+        expect(await device.popErrorScope()).toBeNull();
+        expect(Array.from(pixels.slice(0, 4))).toEqual([255, 255, 255, 255]);
+    });
+
     it('keeps two keys that land on one cache slot apart', () =>
     {
         const bindGroup = createGroup(new TextureSource({ width: 16, height: 16 }));

@@ -14,6 +14,9 @@ import type { BindResource } from './shader/BindResource';
 import type { GpuProgram } from './shader/GpuProgram';
 import type { WebGPURenderer } from './WebGPURenderer';
 
+// Cache ids come from this counter, not uid(), because resetUids() could give two live systems the same id
+let nextCacheId = 0;
+
 /**
  * A cached native bind group, shaped so the renderer's GC can sweep it. Cache keys are built from
  * resource ids that change whenever a resource is unloaded, resized or destroyed, so an entry that
@@ -34,17 +37,22 @@ export class GpuBindGroupEntry implements GCable
     public readonly keyHigh: number;
     /** The program layout and group index the native group was built for. */
     public readonly layoutKey: number;
-    /** The device the native group was built on: a restored device, or another renderer's, has its own. */
-    public readonly gpu: GPU;
+    /**
+     * The id of the cache that built the native group. Each renderer, and each device a renderer restores,
+     * gets a new cache id, so an entry answers only for the system and device that built it.
+     */
+    public readonly cacheId: number;
 
-    constructor(gpuBindGroup: GPUBindGroup, now: number, keyLow: number, keyHigh: number, layoutKey: number, gpu: GPU)
+    constructor(
+        gpuBindGroup: GPUBindGroup, now: number, keyLow: number, keyHigh: number, layoutKey: number, cacheId: number
+    )
     {
         this.gpuBindGroup = gpuBindGroup;
         this._gcLastUsed = now;
         this.keyLow = keyLow;
         this.keyHigh = keyHigh;
         this.layoutKey = layoutKey;
-        this.gpu = gpu;
+        this.cacheId = cacheId;
     }
 
     /**
@@ -82,6 +90,7 @@ export class BindGroupSystem implements System
      */
     private _hash: Record<number, GpuBindGroupEntry> = Object.create(null);
     private _gpu: GPU;
+    private _cacheId = 0;
 
     constructor(renderer: WebGPURenderer)
     {
@@ -97,6 +106,7 @@ export class BindGroupSystem implements System
     protected contextChange(gpu: GPU): void
     {
         this._gpu = gpu;
+        this._cacheId = ++nextCacheId;
         this._hash = Object.create(null);
     }
 
@@ -110,12 +120,12 @@ export class BindGroupSystem implements System
         const layoutKey = (program._layoutKey << 4) | groupIndex;
         let entry = bindGroup._gpuEntry;
 
-        // the group has not changed since it was last resolved: the entry it got is still the answer,
-        // unless the GC swept it, or it was resolved for another layout or on another device
+        // An unchanged group can reuse the entry it last resolved to. The entry must not be swept,
+        // must match this layout, and must come from this system's cache on its current device.
         if (entry !== null
             && bindGroup._gpuEntryLayoutKey === layoutKey
             && entry.gpuBindGroup !== null
-            && entry.gpu === this._gpu)
+            && entry.cacheId === this._cacheId)
         {
             entry._gcLastUsed = this._renderer.gc.now;
 
@@ -137,7 +147,9 @@ export class BindGroupSystem implements System
         {
             const gpuBindGroup = this._createBindGroup(bindGroup, program, groupIndex);
 
-            entry = new GpuBindGroupEntry(gpuBindGroup, this._renderer.gc.now, keyLow, keyHigh, layoutKey, this._gpu);
+            entry = new GpuBindGroupEntry(
+                gpuBindGroup, this._renderer.gc.now, keyLow, keyHigh, layoutKey, this._cacheId
+            );
             this._hash[slot] = entry;
         }
 
