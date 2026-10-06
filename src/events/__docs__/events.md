@@ -83,6 +83,7 @@ PixiJS supports pointer, mouse, and touch event types. Pointer events are recomm
 | `rightup` | Right mouse button released over the object. |
 | `rightupoutside` | Right mouse button released outside the object that received `rightdown`. |
 | `rightclick` | Right mouse click (press and release) on the object. |
+| `contextmenu` | The browser is about to open its context menu over the object. |
 | `globalmousemove` | Fires on every mouse move, regardless of hit target. |
 | `wheel` | Mouse wheel scrolled over the object. |
 
@@ -115,6 +116,22 @@ sprite.on('globalpointermove', (event) => {
     console.log('Pointer moved:', event.global.x, event.global.y);
 });
 ```
+
+### Context menu
+
+PixiJS doesn't block the browser's context menu. To keep it closed over an object, call `event.preventDefault()` in a `contextmenu` listener:
+
+```ts
+const sprite = Sprite.from('image.png');
+sprite.eventMode = 'static';
+sprite.on('contextmenu', (event) => {
+    event.preventDefault();
+});
+```
+
+Canceling `rightdown`, `rightup`, or `rightclick` doesn't keep the menu closed. Only `contextmenu` does. On macOS, ctrl + click also opens the menu and fires `contextmenu`. The browser can report that click as the left button, and then `rightdown`, `rightup`, and `rightclick` don't fire.
+
+Firefox opens its menu on shift + right click without firing `contextmenu`, so a page can't block that.
 
 ### Capture phase events
 
@@ -214,7 +231,7 @@ await app.init({
     eventFeatures: {
         move: true,           // pointer/mouse/touch move events
         globalMove: true,     // global move events (globalpointermove, etc.)
-        click: true,          // click/tap/press events
+        click: true,          // click/tap/press and contextmenu events
         wheel: true,          // mouse wheel events
     }
 });

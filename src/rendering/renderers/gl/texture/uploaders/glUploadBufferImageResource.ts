@@ -1,5 +1,6 @@
 import { Rectangle } from '../../../../../maths/shapes/Rectangle';
 import { getTexelRangeRects } from '../../../shared/texture/utils/getTexelRangeRects';
+import { GL_TARGETS } from '../const';
 
 import type { TypedArray } from '../../../shared/buffer/Buffer';
 import type { BufferImageSource } from '../../../shared/texture/sources/BufferImageSource';
@@ -25,6 +26,47 @@ export const glUploadBufferImageResource = {
     {
         const target = targetOverride || glTexture.target;
         const resource = source.resource as TypedArray;
+
+        // a 3D texture or 2D array uploads as one box; BufferImageSource.update rejects partial ranges for these
+        if (target === GL_TARGETS.TEXTURE_3D || target === GL_TARGETS.TEXTURE_2D_ARRAY)
+        {
+            if (forceAllocation || glTexture.width !== source.width || glTexture.height !== source.height)
+            {
+                gl.texImage3D(
+                    target,
+                    0,
+                    glTexture.internalFormat,
+                    source.width,
+                    source.height,
+                    source.depthOrArrayLayers,
+                    0,
+                    glTexture.format,
+                    glTexture.type,
+                    resource
+                );
+            }
+            else
+            {
+                gl.texSubImage3D(
+                    target,
+                    0,
+                    0,
+                    0,
+                    0,
+                    source.width,
+                    source.height,
+                    source.depthOrArrayLayers,
+                    glTexture.format,
+                    glTexture.type,
+                    resource
+                );
+            }
+
+            glTexture.width = source.width;
+            glTexture.height = source.height;
+
+            return;
+        }
 
         const texelCount = source.width * source.height;
         const needsAllocation = forceAllocation || glTexture.width !== source.width || glTexture.height !== source.height;
