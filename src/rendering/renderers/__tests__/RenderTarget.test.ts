@@ -367,3 +367,56 @@ describe('caller-owned RenderTarget lifecycle', () =>
         renderer.destroy();
     });
 });
+
+describe('RenderTarget depth-stencil texture ownership', () =>
+{
+    const depthTexture = () => new TextureSource({ width: 16, height: 16, format: 'depth24plus-stencil8' });
+
+    it('should destroy a depth-stencil texture it created', () =>
+    {
+        const renderTarget = new RenderTarget({ width: 16, height: 16, depthStencilTexture: true });
+        const texture = renderTarget.depthStencilTexture;
+
+        renderTarget.destroy();
+
+        expect(texture.destroyed).toBe(true);
+    });
+
+    it('should not destroy a depth-stencil texture the caller passed in', () =>
+    {
+        const texture = depthTexture();
+        const renderTarget = new RenderTarget({ width: 16, height: 16, depthStencilTexture: texture });
+
+        renderTarget.destroy();
+
+        expect(texture.destroyed).toBe(false);
+    });
+
+    it('should keep a copyDepthTexture destination alive when the renderer that copied into it is destroyed', async () =>
+    {
+        const destination = new Texture({ source: depthTexture() });
+
+        const copyWith = async () =>
+        {
+            const renderer = (await getWebGLRenderer({ width: 16, height: 16 })) as WebGLRenderer;
+            const source = new RenderTarget({ width: 16, height: 16, depthStencilTexture: true });
+
+            renderer.render({ target: source, container: new Container() });
+            renderer.renderTarget.copyDepthTexture(source, destination, { x: 0, y: 0 }, { width: 16, height: 16 });
+
+            return renderer;
+        };
+
+        const rendererA = await copyWith();
+
+        rendererA.destroy();
+
+        expect(destination.source.destroyed).toBe(false);
+
+        const rendererB = await copyWith();
+
+        expect(rendererB.gl.getError()).toBe(rendererB.gl.NO_ERROR);
+
+        rendererB.destroy();
+    });
+});

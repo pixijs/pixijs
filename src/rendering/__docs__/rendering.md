@@ -222,7 +222,7 @@ Antialiased targets keep depth in a multisampled buffer, so shaders can't read t
 
 ### Destroying targets
 
-A `RenderTarget` you construct is yours to destroy. Every renderer that drew into it frees the framebuffers and MSAA textures it built for it. Destroying the renderer frees those too, without destroying your target.
+A `RenderTarget` you construct is yours to destroy. Every renderer that drew into it frees the framebuffers and MSAA textures it built for it. Destroying the renderer frees those too, without destroying your target. Destroying a target destroys the color and depth-stencil textures it created, and leaves the ones you passed in alone.
 
 ```ts
 import { RenderTarget } from 'pixi.js';
