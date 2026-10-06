@@ -648,76 +648,76 @@ describe('TexturePool', () =>
         });
     });
 
-    describe('Prune Event', () =>
+    describe('Evict Event', () =>
     {
-        it('should emit prune before destroying the textures a screen change drops', () =>
+        it('should emit evict before destroying the textures a screen change drops', () =>
         {
             pool.setScreenSize(1, 1280, 720);
 
             const texture = pool.getOptimalTexture({ width: 1280, height: 720 });
-            const destroyedAtPrune: boolean[] = [];
+            const destroyedAtEvict: boolean[] = [];
 
             pool.returnTexture(texture);
-            pool.on('prune', () => destroyedAtPrune.push(texture.destroyed));
+            pool.on('evict', () => destroyedAtEvict.push(texture.destroyed));
             pool.setScreenSize(1, 800, 600);
 
-            expect(destroyedAtPrune).toEqual([false]);
+            expect(destroyedAtEvict).toEqual([false]);
             expect(texture.destroyed).toBe(true);
         });
 
-        it('should emit prune before a clear destroys the idle textures', () =>
+        it('should emit evict before a clear destroys the idle textures', () =>
         {
             const texture = pool.getOptimalTexture({ width: 64, height: 64 });
-            const destroyedAtPrune: boolean[] = [];
+            const destroyedAtEvict: boolean[] = [];
 
             pool.returnTexture(texture);
-            pool.on('prune', () => destroyedAtPrune.push(texture.destroyed));
+            pool.on('evict', () => destroyedAtEvict.push(texture.destroyed));
             pool.clear();
 
-            expect(destroyedAtPrune).toEqual([false]);
+            expect(destroyedAtEvict).toEqual([false]);
             expect(texture.destroyed).toBe(true);
         });
 
-        it('should emit prune before destroying a texture returned to a pruned bucket', () =>
+        it('should emit evict before destroying a texture returned to a pruned bucket', () =>
         {
             pool.setScreenSize(1, 1280, 720);
 
             const texture = pool.getOptimalTexture({ width: 1280, height: 720 });
-            const destroyedAtPrune: boolean[] = [];
+            const destroyedAtEvict: boolean[] = [];
 
             pool.setScreenSize(1, 800, 600);
-            pool.on('prune', () => destroyedAtPrune.push(texture.destroyed));
+            pool.on('evict', () => destroyedAtEvict.push(texture.destroyed));
             pool.returnTexture(texture);
 
-            expect(destroyedAtPrune).toEqual([false]);
+            expect(destroyedAtEvict).toEqual([false]);
             expect(texture.destroyed).toBe(true);
         });
 
-        it('should not emit prune for a clear that keeps the textures alive', () =>
+        it('should not emit evict for a clear that keeps the textures alive', () =>
         {
             const texture = pool.getOptimalTexture({ width: 64, height: 64 });
-            const onPrune = jest.fn();
+            const onEvict = jest.fn();
 
             pool.returnTexture(texture);
-            pool.on('prune', onPrune);
+            pool.on('evict', onEvict);
             pool.clear(false);
 
-            expect(onPrune).not.toHaveBeenCalled();
+            expect(onEvict).not.toHaveBeenCalled();
 
             texture.destroy(true);
         });
 
-        it('should not emit prune when the dropped bucket holds no idle textures', () =>
+        it('should not emit evict when the dropped bucket holds no idle textures', () =>
         {
             pool.setScreenSize(1, 1280, 720);
 
             const inUse = pool.getOptimalTexture({ width: 1280, height: 720 });
-            const onPrune = jest.fn();
+            const onEvict = jest.fn();
 
-            pool.on('prune', onPrune);
+            pool.on('evict', onEvict);
             pool.setScreenSize(1, 800, 600);
 
-            expect(onPrune).not.toHaveBeenCalled();
+            expect(onEvict).not.toHaveBeenCalled();
             expect(inUse.destroyed).toBe(false);
 
             inUse.destroy(true);

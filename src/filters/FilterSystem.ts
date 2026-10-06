@@ -189,7 +189,7 @@ export class FilterSystem implements System
     /** @internal */
     public init(): void
     {
-        TexturePool.on('prune', this._unbindPassTextures, this);
+        TexturePool.on('evict', this._unbindPassTextures, this);
     }
 
     /**
@@ -549,7 +549,7 @@ export class FilterSystem implements System
     {
         this._passthroughFilter?.destroy(true);
         (this._passthroughFilter as null) = null;
-        TexturePool.off('prune', this._unbindPassTextures, this);
+        TexturePool.off('evict', this._unbindPassTextures, this);
         this._globalFilterBindGroup.destroy();
     }
 

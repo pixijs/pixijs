@@ -68,11 +68,11 @@ function bucketKey(
  * Stores collection of temporary pow2 or screen-sized renderTextures. Textures are bucketed by size,
  * flags, format and scale mode, so one pool can serve colour, float and depth targets side by side.
  *
- * Emits `prune` just before it destroys idle textures, so anything still holding one can release it first.
+ * Emits `evict` just before it destroys idle textures, so anything still holding one can release it first.
  * @category rendering
  * @advanced
  */
-export class TexturePoolClass extends EventEmitter<{ prune: [] }>
+export class TexturePoolClass extends EventEmitter<{ evict: [] }>
 {
     /** The default options for texture pool */
     public textureOptions: TextureSourceOptions;
@@ -454,7 +454,7 @@ export class TexturePoolClass extends EventEmitter<{ prune: [] }>
      */
     private _dropTextures(textures: Texture[], destroy: boolean): void
     {
-        if (destroy && textures.length > 0) this.emit('prune');
+        if (destroy && textures.length > 0) this.emit('evict');
 
         for (let i = 0; i < textures.length; i++)
         {

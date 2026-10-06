@@ -352,20 +352,20 @@ describe('FilterSystem resize', () =>
         renderer.destroy();
     }
 
-    it('should add one pool prune listener per renderer and remove it on destroy', async () =>
+    it('should add one pool evict listener per renderer and remove it on destroy', async () =>
     {
-        const before = TexturePool.listenerCount('prune');
+        const before = TexturePool.listenerCount('evict');
         const first = await getWebGLRenderer({ width: 100, height: 100 });
         const second = await getWebGLRenderer({ width: 100, height: 100 });
-        const withTwo = TexturePool.listenerCount('prune');
+        const withTwo = TexturePool.listenerCount('evict');
 
         first.destroy();
 
-        const withOne = TexturePool.listenerCount('prune');
+        const withOne = TexturePool.listenerCount('evict');
 
         second.destroy();
 
-        expect([before, withTwo, withOne, TexturePool.listenerCount('prune')]).toEqual([0, 2, 1, 0]);
+        expect([before, withTwo, withOne, TexturePool.listenerCount('evict')]).toEqual([0, 2, 1, 0]);
     });
 
     it('should not keep listeners on the empty texture after the renderer is destroyed', async () =>
