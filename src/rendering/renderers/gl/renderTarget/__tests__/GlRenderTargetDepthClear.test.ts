@@ -100,3 +100,78 @@ describe('GlRenderTargetAdaptor depth clear', () =>
         renderer.destroy();
     });
 });
+
+describe('GlRenderTargetAdaptor MSAA depth-stencil texture', () =>
+{
+    it('should depth test an antialiased target that has a depth-stencil texture', async () =>
+    {
+        const renderer = (await getWebGLRenderer({ width: 128, height: 128 })) as WebGLRenderer;
+        const gl = renderer.gl;
+
+        const renderTarget = new RenderTarget({
+            width: 128,
+            height: 128,
+            antialias: true,
+            depthStencilTexture: true,
+        });
+        const colorTexture = new Texture({ source: renderTarget.colorTexture });
+
+        const near = quad([-1, -1, 0.5, -1, 0.5, 1, -1, -1, 0.5, 1, -1, 1], [0, 0, 1, 1], 0.2);
+        const far = quad([-0.5, -1, 1, -1, 1, 1, -0.5, -1, 1, 1, -0.5, 1], [1, 1, 0, 1], 0.8);
+
+        renderer.render({ target: renderTarget, container: near, clear: true, clearColor: [0, 0, 0, 1] });
+
+        const glRenderTarget = renderer.renderTarget.getGpuRenderTarget(renderTarget);
+
+        expect(glRenderTarget.msaa).toBe(true);
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, glRenderTarget.framebuffer);
+        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toBe(gl.FRAMEBUFFER_COMPLETE);
+        renderer.resetState();
+
+        renderer.render({ target: renderTarget, container: far, clear: false });
+
+        expect(pixelAt(renderer, colorTexture, 64, 64)).toEqual([0, 0, 255, 255]); // near wins overlap
+        expect(pixelAt(renderer, colorTexture, 120, 64)).toEqual([255, 255, 0, 255]); // far-only region
+        expect(gl.getError()).toBe(gl.NO_ERROR);
+
+        renderer.destroy();
+    });
+
+    it('should copy depth out of an antialiased target', async () =>
+    {
+        const renderer = (await getWebGLRenderer({ width: 128, height: 128 })) as WebGLRenderer;
+        const gl = renderer.gl;
+
+        const renderTarget = new RenderTarget({
+            width: 128,
+            height: 128,
+            antialias: true,
+            depthStencilTexture: true,
+        });
+        const destination = new Texture({
+            source: new TextureSource({
+                width: 128, height: 128, resolution: 1, format: 'depth24plus-stencil8',
+                mipLevelCount: 1, autoGenerateMipmaps: false,
+            }),
+        });
+
+        const fullQuad = quad([-1, -1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1], [1, 0, 0, 1], 0.2);
+
+        renderer.render({ target: renderTarget, container: fullQuad });
+        renderer.renderTarget.copyDepthTexture(
+            renderTarget, destination, { x: 0, y: 0 }, { width: 128, height: 128 }, { x: 0, y: 0 },
+        );
+
+        expect(gl.getError()).toBe(gl.NO_ERROR);
+
+        // a resolving blit can't move pixels, so an offset copy takes a different path
+        renderer.renderTarget.copyDepthTexture(
+            renderTarget, destination, { x: 32, y: 16 }, { width: 64, height: 64 }, { x: 16, y: 0 },
+        );
+
+        expect(gl.getError()).toBe(gl.NO_ERROR);
+
+        renderer.destroy();
+    });
+});

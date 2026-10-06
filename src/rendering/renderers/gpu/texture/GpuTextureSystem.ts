@@ -181,16 +181,24 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
         if (source.sampleCount > 1)
         {
-            // MSAA textures are only rendered into and resolved — never sampled, uploaded, or
-            // copied — so they need RENDER_ATTACHMENT alone.
+            // MSAA textures are rendered into and resolved — never uploaded or copied — so they need
+            // RENDER_ATTACHMENT, and only stored depth is ever sampled.
             usage = GPUTextureUsage.RENDER_ATTACHMENT;
 
-            // TRANSIENT_ATTACHMENT goes on top when the source is marked transient AND the browser
-            // exposes the bit. The render target adaptor never loads or stores a transient MSAA colour
-            // buffer (a reopened pass restores it from the resolved texture instead).
-            if (source.transient && this._renderer.device.extensions.transientAttachment)
+            if (source.transient)
             {
-                usage |= (GPUTextureUsage as { TRANSIENT_ATTACHMENT: number }).TRANSIENT_ATTACHMENT;
+                // TRANSIENT_ATTACHMENT goes on top when the browser exposes the bit. The render target adaptor
+                // never loads or stores a transient MSAA buffer (a reopened pass restores colour from the
+                // resolved texture instead).
+                if (this._renderer.device.extensions.transientAttachment)
+                {
+                    usage |= GPUTextureUsage.TRANSIENT_ATTACHMENT;
+                }
+            }
+            else if (source.format.includes('depth'))
+            {
+                // copyDepthTexture resolves stored multisampled depth with a shader that reads its samples
+                usage |= GPUTextureUsage.TEXTURE_BINDING;
             }
         }
         else
