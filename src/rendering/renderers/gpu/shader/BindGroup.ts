@@ -90,6 +90,14 @@ export class BindGroup
     private _resourceKeysValue: number[] = null;
 
     /**
+     * The binding numbers {@link BindGroup#_touch} stamps: every binding but the samplers. A
+     * `TextureStyle` is never collected (`GpuTextureSystem` keeps one `GPUSampler` per style id for
+     * the renderer's life), so stamping it does nothing, and a group of texture and sampler pairs
+     * would stamp twice the resources it needs to. Rebuilt when a binding is added or changes type.
+     */
+    private _touchKeysValue: number[] = null;
+
+    /**
      * One half of the key used internally to match this group up to a WebGPU BindGroup: a hash of
      * every binding number and the id of the resource bound there, kept up to date as resources
      * are set and as they change. Two groups holding the same resources at the same bindings have
@@ -179,6 +187,7 @@ export class BindGroup
         if (currentResource === undefined)
         {
             this._resourceKeysValue = null;
+            this._touchKeysValue = null;
             this._keyLow ^= mixLow(index, id);
             this._keyHigh ^= mixHigh(index, id);
             this._keyedIds[index] = id;
@@ -186,7 +195,11 @@ export class BindGroup
         }
         else
         {
-            this._rekey(index, id);
+            if (currentResource?._resourceType !== resource._resourceType) this._touchKeysValue = null;
+
+            // Two resources with one id resolve to the same GPU object: two `TextureStyle`s with equal
+            // settings share a `GPUSampler`. The key, and the WebGPU bind group it names, stay as they are.
+            if (this._keyedIds[index] !== id) this._rekey(index, id);
         }
 
         this.resources[index] = resource;
@@ -226,7 +239,7 @@ export class BindGroup
     public _touch(now: number): void
     {
         const resources = this.resources;
-        const keys = this._resourceKeys;
+        const keys = this._touchKeys;
 
         for (let i = 0; i < keys.length; i++)
         {
@@ -236,6 +249,15 @@ export class BindGroup
 
             resource._gcLastUsed = now;
         }
+    }
+
+    /** The binding numbers {@link BindGroup#_touch} stamps, see {@link BindGroup#_touchKeysValue}. */
+    private get _touchKeys(): number[]
+    {
+        this._touchKeysValue ??= this._resourceKeys.filter((index) =>
+            this.resources[index]?._resourceType !== 'textureSampler');
+
+        return this._touchKeysValue;
     }
 
     /** Destroys this bind group and removes all listeners. */
@@ -252,6 +274,7 @@ export class BindGroup
 
         this.resources = null;
         this._resourceKeysValue = null;
+        this._touchKeysValue = null;
         this._gpuEntry = null;
     }
 
