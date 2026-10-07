@@ -539,4 +539,63 @@ describe('BindGroup', () =>
 
         expect(bindGroup._resourceKeys).toEqual([0, 1, 3]);
     });
+
+    it('stamps the textures it binds for the GC and leaves the samplers alone', () =>
+    {
+        const source = new TextureSource({ width: 2, height: 2 });
+        const style = new TextureStyle();
+        const bindGroup = new BindGroup({ 0: source, 1: style });
+
+        bindGroup._touch(42);
+
+        expect(source._gcLastUsed).toBe(42);
+        expect(style).not.toHaveProperty('_gcLastUsed');
+
+        // after a binding changes type, _touch stamps what it holds now
+        const other = new TextureSource({ width: 2, height: 2 });
+
+        bindGroup.setResource(other, 1);
+        bindGroup._touch(43);
+
+        expect(other._gcLastUsed).toBe(43);
+        expect(source._gcLastUsed).toBe(43);
+
+        bindGroup.destroy();
+        source.destroy();
+        other.destroy();
+        style.destroy();
+    });
+
+    it('keeps its key and cached GPU bind group when a binding moves to a resource with the same id', () =>
+    {
+        const source = new TextureSource({ width: 2, height: 2 });
+        const linear = new TextureStyle({ scaleMode: 'linear' });
+        const linearToo = new TextureStyle({ scaleMode: 'linear' });
+        const nearest = new TextureStyle({ scaleMode: 'nearest' });
+
+        expect(linearToo._resourceId).toBe(linear._resourceId);
+
+        const bindGroup = new BindGroup({ 0: source, 1: linear });
+        const key = keyOf(bindGroup);
+        const entry = {} as BindGroup['_gpuEntry'];
+
+        bindGroup._gpuEntry = entry;
+        bindGroup.setResource(linearToo, 1);
+
+        expect(bindGroup.getResource(1)).toBe(linearToo);
+        // equal settings resolve to one GPUSampler, so the key and the entry don't change
+        expect(keyOf(bindGroup)).toBe(key);
+        expect(bindGroup._gpuEntry).toBe(entry);
+
+        bindGroup.setResource(nearest, 1);
+
+        expect(keyOf(bindGroup)).not.toBe(key);
+        expect(bindGroup._gpuEntry).toBeNull();
+
+        bindGroup.destroy();
+        source.destroy();
+        linear.destroy();
+        linearToo.destroy();
+        nearest.destroy();
+    });
 });
