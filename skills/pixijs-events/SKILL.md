@@ -1,6 +1,6 @@
 ---
 name: pixijs-events
-description: "Use this skill when handling pointer, mouse, touch, or wheel input in PixiJS v8. Covers eventMode (none, passive, auto, static, dynamic), FederatedEvent types, propagation and capture phase, hitArea, interactiveChildren, cursor and cursorStyles, global move events for drag, eventFeatures config. Triggers on: eventMode, FederatedPointerEvent, pointerdown, click, tap, globalpointermove, drag, hitArea, cursor, stopPropagation, persistentDeviceId, contextmenu, rightclick."
+description: "Use this skill when handling pointer, mouse, touch, or wheel input in PixiJS v8. Covers eventMode (none, passive, auto, static, dynamic), FederatedEvent types, propagation and capture phase, hitArea, interactiveChildren, cursor and cursorStyles, global move events for drag, eventFeatures config. Triggers on: eventMode, FederatedPointerEvent, pointerdown, click, tap, globalpointermove, drag, hitArea, cursor, stopPropagation, persistentDeviceId, contextmenu, rightclick, wheelPassive, wheel preventDefault."
 license: MIT
 ---
 
@@ -263,7 +263,7 @@ sprite.on("pointerdown", (event: FederatedPointerEvent) => {
 });
 ```
 
-`FederatedWheelEvent` adds `deltaX`, `deltaY`, `deltaZ`, and `deltaMode`. Wheel events fire on the same hit-tested object as pointer events.
+`FederatedWheelEvent` adds `deltaX`, `deltaY`, `deltaZ`, and `deltaMode`. Wheel events fire on the same hit-tested object as pointer events. The wheel listener is passive by default, so `event.preventDefault()` doesn't stop the page from scrolling. Set `eventFeatures.wheelPassive: false` to allow it.
 
 ### Event features
 
@@ -276,6 +276,7 @@ await app.init({
     globalMove: true, // global move events (globalpointermove, etc.)
     click: true, // click/tap/press and contextmenu events
     wheel: true, // mouse wheel events
+    wheelPassive: true, // set false so wheel listeners can stop page scrolling
   },
 });
 

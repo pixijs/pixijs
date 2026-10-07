@@ -197,32 +197,29 @@ export interface EventSystemFeatures
      * @default true
      */
     wheel: boolean;
-
     /**
-     * Controls whether the underlying `wheel` event listener is registered as
-     * passive on the DOM element. When `true` (the default), the browser may
-     * fast-path scrolling and will silently ignore any `preventDefault()` call
-     * from a user-supplied wheel handler, including those attached to a PIXI
-     * `Container`. Set to `false` to opt in to letting user handlers call
-     * `preventDefault()` and stop the page from scrolling while interacting
-     * with the canvas (see https://github.com/pixijs/pixijs/issues/9227).
+     * Registers the DOM `wheel` listener as passive.
      *
-     * Only has an effect when `wheel` is also enabled.
+     * When this is `true` or omitted, the browser ignores `preventDefault()` in `wheel` listeners and
+     * the page keeps scrolling. Set it to `false` to let a `wheel` listener stop the page from scrolling.
+     * A non-passive listener can delay scrolling over the canvas, so only turn this off when you need it.
      * @example
      * ```ts
      * await app.init({
-     *     eventFeatures: {
-     *         wheel: true,
-     *         wheelPassive: false,
-     *     },
+     *     eventFeatures: { wheelPassive: false },
      * });
      *
-     * // Or at runtime:
+     * sprite.eventMode = 'static';
+     * sprite.on('wheel', (event) => {
+     *     event.preventDefault(); // the page doesn't scroll
+     * });
+     *
+     * // Or after init
      * app.renderer.events.features.wheelPassive = false;
      * ```
      * @default true
      */
-    wheelPassive: boolean;
+    wheelPassive?: boolean;
 }
 
 /**
@@ -287,6 +284,8 @@ export class EventSystem implements System<EventSystemOptions>
      *     click: true,
      *     // Enable wheel events
      *     wheel: true,
+     *     // Register the wheel listener as passive
+     *     wheelPassive: true,
      * };
      * ```
      */
@@ -299,7 +298,7 @@ export class EventSystem implements System<EventSystemOptions>
         click: true,
         /** Enables wheel events. */
         wheel: true,
-        /** Registers the wheel DOM event listener as passive. */
+        /** Registers the wheel listener as passive. */
         wheelPassive: true,
     };
 
@@ -496,7 +495,7 @@ export class EventSystem implements System<EventSystemOptions>
 
                 if (key === 'wheelPassive' && this._eventsAdded && this.domElement)
                 {
-                    // `passive` cannot be changed after registration, so re-add the listener
+                    // The browser fixes `passive` when the listener is added, so re-add it to apply the change
                     this.domElement.removeEventListener('wheel', this.onWheel, true);
                     this._addWheelListener();
                 }
@@ -521,8 +520,7 @@ export class EventSystem implements System<EventSystemOptions>
     {
         const { canvas, resolution } = this.renderer;
 
-        // features must be applied before the listeners are added, as some of them
-        // (e.g. `wheelPassive`) are baked into the listener registration options
+        // Apply features before adding listeners so the wheel listener starts with the right `passive` value
         Object.assign(this.features, options.eventFeatures ?? {});
         this.setTargetElement(canvas as HTMLCanvasElement);
         this.resolution = resolution;
@@ -777,7 +775,6 @@ export class EventSystem implements System<EventSystemOptions>
     }
 
     /**
-    /**
      * Event handler for `contextmenu` events on {@link EventSystem#domElement this.domElement}.
      *
      * {@link EventSystem#autoPreventDefault autoPreventDefault} does not apply, so the browser menu
@@ -913,15 +910,11 @@ export class EventSystem implements System<EventSystemOptions>
         this._eventsAdded = true;
     }
 
-    /**
-     * Register the `wheel` listener on {@link EventSystem#domElement this.domElement}.
-     * `passive` is fixed when the listener is added, so changing
-     * {@link EventSystemFeatures.wheelPassive} requires re-registering the listener.
-     */
+    /** Register the `wheel` listener on {@link EventSystem#domElement this.domElement}. */
     private _addWheelListener(): void
     {
         this.domElement.addEventListener('wheel', this.onWheel, {
-            passive: this.features.wheelPassive,
+            passive: this.features.wheelPassive ?? true,
             capture: true,
         });
     }

@@ -8,6 +8,7 @@ import { Rectangle } from '~/maths';
 import { Container, Graphics } from '~/scene';
 
 import type { FederatedPointerEvent } from '../FederatedPointerEvent';
+import type { FederatedWheelEvent } from '../FederatedWheelEvent';
 import type { RendererOptions } from '~/rendering';
 
 async function createRenderer(
@@ -100,6 +101,15 @@ function createScene(nested = true)
 function dispatchContextMenu(target: EventTarget, clientX = 25, clientY = 25): MouseEvent
 {
     const event = new MouseEvent('contextmenu', { clientX, clientY, bubbles: true, cancelable: true });
+
+    target.dispatchEvent(event);
+
+    return event;
+}
+
+function dispatchWheel(target: EventTarget, clientX = 25, clientY = 25): WheelEvent
+{
+    const event = new WheelEvent('wheel', { clientX, clientY, bubbles: true, cancelable: true });
 
     target.dispatchEvent(event);
 
@@ -879,55 +889,62 @@ describe('EventSystem', () =>
         expect(eventSpy).toHaveBeenCalledTimes(3);
     });
 
-    it('should register the wheel listener as passive by default and non-passive when opted out', async () =>
+    it('should keep the wheel listener passive when defaultEventFeatures omits wheelPassive', async () =>
     {
-        // default: passive listener, preserves existing behaviour
-        const defaultCanvas = document.createElement('canvas');
-        const defaultSpy = jest.spyOn(defaultCanvas, 'addEventListener');
+        const defaults = EventSystem.defaultEventFeatures;
 
-        await createRenderer(defaultCanvas);
+        EventSystem.defaultEventFeatures = { move: true, globalMove: true, click: true, wheel: true };
 
-        const defaultWheelCall = defaultSpy.mock.calls.find(([type]) => type === 'wheel');
+        try
+        {
+            const renderer = await createRenderer();
+            const [stage, graphics] = createScene(false);
+            const listener = jest.fn((e: FederatedWheelEvent) => e.preventDefault());
 
-        expect(defaultWheelCall).toBeDefined();
-        expect((defaultWheelCall![2] as AddEventListenerOptions).passive).toBe(true);
+            renderer.render(stage);
+            graphics.on('wheel', listener);
 
-        // opted out: non-passive so users can call preventDefault() from a wheel
-        // handler on a PIXI Container and have the browser honour it
-        // (see https://github.com/pixijs/pixijs/issues/9227)
-        const optOutCanvas = document.createElement('canvas');
-        const optOutSpy = jest.spyOn(optOutCanvas, 'addEventListener');
+            const nativeEvent = dispatchWheel(renderer.canvas);
 
-        await createRenderer(optOutCanvas, undefined, {
-            eventFeatures: {
-                wheel: true,
-                wheelPassive: false,
-            },
-        });
+            expect(listener).toHaveBeenCalledOnce();
+            expect(nativeEvent.defaultPrevented).toBe(false);
+        }
+        finally
+        {
+            EventSystem.defaultEventFeatures = defaults;
+        }
+    });
 
-        const optOutWheelCall = optOutSpy.mock.calls.find(([type]) => type === 'wheel');
+    it('should cancel the native wheel event when wheelPassive is false', async () =>
+    {
+        const renderer = await createRenderer(undefined, undefined, { eventFeatures: { wheelPassive: false } });
+        const [stage, graphics] = createScene(false);
 
-        expect(optOutWheelCall).toBeDefined();
-        expect((optOutWheelCall![2] as AddEventListenerOptions).passive).toBe(false);
+        renderer.render(stage);
+        graphics.on('wheel', (e) => e.preventDefault());
 
-        // runtime toggle: the listener is re-registered so the change takes effect
-        const runtimeCanvas = document.createElement('canvas');
-        const runtimeSpy = jest.spyOn(runtimeCanvas, 'addEventListener');
+        const nativeEvent = dispatchWheel(renderer.canvas);
 
-        const runtimeRenderer = await createRenderer(runtimeCanvas);
+        expect(nativeEvent.defaultPrevented).toBe(true);
+    });
 
-        (runtimeRenderer.events as EventSystem).features.wheelPassive = false;
+    it('should apply wheelPassive changes at runtime', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene(false);
 
-        const runtimeWheelCall = runtimeSpy.mock.calls
-            .filter(([type]) => type === 'wheel')
-            .pop();
+        renderer.render(stage);
+        graphics.on('wheel', (e) => e.preventDefault());
 
-        expect(runtimeWheelCall).toBeDefined();
-        expect((runtimeWheelCall![2] as AddEventListenerOptions).passive).toBe(false);
+        expect(dispatchWheel(renderer.canvas).defaultPrevented).toBe(false);
 
-        defaultSpy.mockRestore();
-        optOutSpy.mockRestore();
-        runtimeSpy.mockRestore();
+        renderer.events.features.wheelPassive = false;
+
+        expect(dispatchWheel(renderer.canvas).defaultPrevented).toBe(true);
+
+        renderer.events.features.wheelPassive = true;
+
+        expect(dispatchWheel(renderer.canvas).defaultPrevented).toBe(false);
     });
 
     it('should dispatch global pointer move event with custom hitArea', async () =>
