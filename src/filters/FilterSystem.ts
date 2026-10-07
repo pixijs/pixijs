@@ -180,6 +180,12 @@ export class FilterSystem implements System
         this.renderer = renderer;
     }
 
+    /** @internal */
+    public init(): void
+    {
+        TexturePool.on('evict', this._unbindPassTextures, this);
+    }
+
     /**
      * The back texture of the currently active filter. Requires the filter to have `blendRequired` set to true.
      * @readonly
@@ -509,6 +515,21 @@ export class FilterSystem implements System
     {
         this._passthroughFilter?.destroy(true);
         (this._passthroughFilter as null) = null;
+        TexturePool.off('evict', this._unbindPassTextures, this);
+        this._globalFilterBindGroup.destroy();
+    }
+
+    /**
+     * Swaps the last pass's textures in the filter bind group for the empty texture before the texture pool
+     * destroys idle textures, as a bind group warns when a texture bound to it is destroyed.
+     */
+    private _unbindPassTextures(): void
+    {
+        const bindGroup = this._globalFilterBindGroup;
+
+        bindGroup.setResource(Texture.EMPTY.source, 1);
+        bindGroup.setResource(Texture.EMPTY.source.style, 2);
+        bindGroup.setResource(Texture.EMPTY.source, 3);
     }
 
     private _getPassthroughFilter(): Filter

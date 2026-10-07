@@ -1,3 +1,4 @@
+import EventEmitter from 'eventemitter3';
 import { isPow2, nextPow2 } from '../../../../maths/misc/pow2';
 import { deprecation, v8_21_0 } from '../../../../utils/logging/deprecation';
 import { warn } from '../../../../utils/logging/warn';
@@ -66,10 +67,12 @@ function bucketKey(
  *
  * Stores collection of temporary pow2 or screen-sized renderTextures. Textures are bucketed by size,
  * flags, format and scale mode, so one pool can serve colour, float and depth targets side by side.
+ *
+ * Emits `evict` just before it destroys idle textures, so anything still holding one can release it first.
  * @category rendering
  * @advanced
  */
-export class TexturePoolClass
+export class TexturePoolClass extends EventEmitter<{ evict: [] }>
 {
     /** The default options for texture pool */
     public textureOptions: TextureSourceOptions;
@@ -92,6 +95,7 @@ export class TexturePoolClass
      */
     constructor(textureOptions?: TextureSourceOptions)
     {
+        super();
         this.textureOptions = textureOptions || {};
     }
 
@@ -384,9 +388,7 @@ export class TexturePoolClass
         {
             // the bucket this texture belongs to was pruned (its size no longer matches a screen),
             // so there is nothing to return it to - destroy it rather than resurrect a dead bucket
-            delete this._poolKey[uid];
-            delete this._poolStyle[uid];
-            renderTexture.destroy(true);
+            this._dropTextures([renderTexture], true);
 
             return;
         }
@@ -452,6 +454,8 @@ export class TexturePoolClass
      */
     private _dropTextures(textures: Texture[], destroy: boolean): void
     {
+        if (destroy && textures.length > 0) this.emit('evict');
+
         for (let i = 0; i < textures.length; i++)
         {
             const texture = textures[i];
