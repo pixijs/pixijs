@@ -346,7 +346,8 @@ export class GpuEncoderSystem implements System
         // (its layout key), and the BindGroup's resource set are all unchanged.
         // BindGroupSystem interns one GPUBindGroup per (bindGroup, program, groupIndex),
         // so if any prong differs we must re-resolve and rebind. A group drops its entry
-        // whenever a resource in it is set or changes, so the entry stands for the resource set.
+        // whenever a resource in it changes or a binding moves to a resource with a different
+        // id, so the entry stands for the resource set.
         const slot = this._boundBindGroup[index];
 
         if (slot.bindGroup === bindGroup

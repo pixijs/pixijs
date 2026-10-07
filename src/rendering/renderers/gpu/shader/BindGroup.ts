@@ -90,10 +90,10 @@ export class BindGroup
     private _resourceKeysValue: number[] = null;
 
     /**
-     * The binding numbers {@link BindGroup#_touch} stamps: every binding but the samplers. A
-     * `TextureStyle` is never collected (`GpuTextureSystem` keeps one `GPUSampler` per style id for
-     * the renderer's life), so stamping it does nothing, and a group of texture and sampler pairs
-     * would stamp twice the resources it needs to. Rebuilt when a binding is added or changes type.
+     * The binding numbers {@link BindGroup#_touch} stamps: every binding but the samplers. The GC
+     * never collects a `TextureStyle` (`GpuTextureSystem` caches one `GPUSampler` per style id, outside
+     * the GC), so stamping one does nothing, and a group of texture and sampler pairs would stamp twice
+     * as many resources as it needs. Rebuilt when a binding is added or changes type.
      */
     private _touchKeysValue: number[] = null;
 
@@ -183,23 +183,22 @@ export class BindGroup
 
         const id = resource._resourceId;
 
+        if (currentResource?._resourceType !== resource._resourceType) this._touchKeysValue = null;
+
         // a destroyed resource leaves null, not undefined, so this is only true for a new binding
         if (currentResource === undefined)
         {
             this._resourceKeysValue = null;
-            this._touchKeysValue = null;
             this._keyLow ^= mixLow(index, id);
             this._keyHigh ^= mixHigh(index, id);
             this._keyedIds[index] = id;
             this._gpuEntry = null;
         }
-        else
+        // Two resources with one id resolve to the same GPU object: two `TextureStyle`s with equal
+        // settings share a `GPUSampler`. The key, and the WebGPU bind group it names, stay as they are.
+        else if (this._keyedIds[index] !== id)
         {
-            if (currentResource?._resourceType !== resource._resourceType) this._touchKeysValue = null;
-
-            // Two resources with one id resolve to the same GPU object: two `TextureStyle`s with equal
-            // settings share a `GPUSampler`. The key, and the WebGPU bind group it names, stay as they are.
-            if (this._keyedIds[index] !== id) this._rekey(index, id);
+            this._rekey(index, id);
         }
 
         this.resources[index] = resource;
@@ -231,8 +230,8 @@ export class BindGroup
     }
 
     /**
-     * Used internally to 'touch' each resource, to ensure that the GC
-     * knows that all resources in this bind group are still being used.
+     * Used internally to 'touch' each resource but the samplers, so the GC knows this bind group still
+     * uses them. See {@link BindGroup#_touchKeysValue}.
      * @param now - The current time in milliseconds.
      * @internal
      */

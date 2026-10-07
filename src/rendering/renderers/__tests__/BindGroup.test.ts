@@ -549,9 +549,9 @@ describe('BindGroup', () =>
         bindGroup._touch(42);
 
         expect(source._gcLastUsed).toBe(42);
-        expect((style as unknown as { _gcLastUsed?: number })._gcLastUsed).toBeUndefined();
+        expect(style).not.toHaveProperty('_gcLastUsed');
 
-        // a binding that changes type is stamped, or not, for what it holds now
+        // after a binding changes type, _touch stamps what it holds now
         const other = new TextureSource({ width: 2, height: 2 });
 
         bindGroup.setResource(other, 1);
@@ -583,7 +583,7 @@ describe('BindGroup', () =>
         bindGroup.setResource(linearToo, 1);
 
         expect(bindGroup.getResource(1)).toBe(linearToo);
-        // equal settings resolve to one GPUSampler, so the key and the entry stand
+        // equal settings resolve to one GPUSampler, so the key and the entry don't change
         expect(keyOf(bindGroup)).toBe(key);
         expect(bindGroup._gpuEntry).toBe(entry);
 
