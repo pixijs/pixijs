@@ -70,6 +70,14 @@ export type BindGroupLayout = Record<string, number>;
  *
  * global.setResource(batchInstances, global.layout.instances);
  *
+ * The names must be the ones the shader declares its bindings with. A name the shader doesn't
+ * declare is ignored, and a shader binding the group has no name for gets no resource: WebGPU
+ * throws, and WebGL draws without it.
+ *
+ * On WebGL, set a binding declared `null` before a shader first draws with the group, or declare it
+ * with a placeholder resource. WebGL works out what to bind the first time a program is used, and a
+ * binding still empty then is never bound, even once it is set.
+ *
  * Keyed by number, the group has no layout and a shader reads binding `n` from the group's binding `n`.
  *
  * This bind group class will also watch for changes in its resources ensuring that the changes
@@ -161,8 +169,8 @@ export class BindGroup
      * Create a new instance of the Bind Group.
      * @param resources - The resources that are bound together for use by a shader, keyed by binding
      * name or by binding number. Don't mix the two: the first key decides which the group is. Either
-     * way they take binding numbers `0, 1, 2...` in order. By name, a `null` declares a binding to be
-     * set later with {@link BindGroup#setResource}.
+     * way they take binding numbers `0, 1, 2...` in order. By name, the keys are the shader's binding
+     * names, and a `null` declares a binding to be set later with {@link BindGroup#setResource}.
      */
     constructor(resources?: Record<string, BindResource | null>)
     {
