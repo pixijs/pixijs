@@ -426,7 +426,7 @@ describe('AccessibilitySystem', () =>
     it('should not throw when destroyed before the canvas is attached to the DOM', async () =>
     {
         const renderer = await getWebGLRenderer();
-        const canvas = renderer.view.canvas;
+        const canvas = renderer.view.canvas as HTMLCanvasElement;
 
         // The renderer canvas starts detached from the DOM
         expect(canvas.parentNode).toBe(null);
@@ -445,13 +445,11 @@ describe('AccessibilitySystem', () =>
 
         // Appending the canvas after destroy fires the pending MutationObserver,
         // which must no longer run against destroyed state
-        document.body.appendChild(canvas as unknown as Node);
+        document.body.appendChild(canvas);
 
         await nextTick();
 
-        const detach = canvas as unknown as ChildNode;
-
-        detach.remove();
+        canvas.remove();
         expect(system.isActive).toBe(false);
         renderer.destroy();
     });
@@ -459,7 +457,7 @@ describe('AccessibilitySystem', () =>
     it('should finish activation when the canvas is attached to the DOM after being created detached', async () =>
     {
         const renderer = await getWebGLRenderer();
-        const canvas = renderer.view.canvas;
+        const canvas = renderer.view.canvas as HTMLCanvasElement;
 
         const system = new AccessibilitySystem(renderer);
 
@@ -472,7 +470,7 @@ describe('AccessibilitySystem', () =>
         // The accessibility div waits for the canvas to enter the DOM
         expect(system.div?.parentNode).toBe(null);
 
-        document.body.appendChild(canvas as unknown as Node);
+        document.body.appendChild(canvas);
 
         await nextTick();
 
@@ -480,9 +478,7 @@ describe('AccessibilitySystem', () =>
         expect(system.div?.parentNode).toBe(document.body);
         expect(system.isActive).toBe(true);
 
-        const detach = canvas as unknown as ChildNode;
-
-        detach.remove();
+        canvas.remove();
         system.destroy();
         expect(document.querySelector('div[style*="pointer-events: none"]')).toBe(null);
         renderer.destroy();
