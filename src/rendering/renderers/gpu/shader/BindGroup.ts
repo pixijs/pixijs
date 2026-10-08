@@ -34,6 +34,14 @@ function mixHigh(binding: number, id: number): number
 }
 
 /**
+ * The binding number of each resource in a {@link BindGroup}, by name: the same shape as one group of
+ * {@link GpuProgram#layout}.
+ * @category rendering
+ * @advanced
+ */
+export type BindGroupLayout = Record<string, number>;
+
+/**
  * A bind group is a collection of resources that are bound together for use by a shader.
  * They are essentially a wrapper for the WebGPU BindGroup class. But with the added bonus
  * that WebGL can also work with them.
@@ -42,7 +50,7 @@ function mixHigh(binding: number, id: number): number
  * // Create a bind group with a single texture and sampler
  * const bindGroup = new BindGroup({
  *    uTexture: texture.source,
- *    uTexture: texture.style,
+ *    uSampler: texture.style,
  * });
  *
  * Bind groups resources must implement the {@link BindResource} interface.
@@ -53,7 +61,16 @@ function mixHigh(binding: number, id: number): number
  * - {@link BufferResource}
  * - {@link UniformGroup}
  *
- * The keys in the bind group must correspond to the names of the resources in the GPU program.
+ * Keyed by name, as above, the group knows which binding each name is, and the renderers match a
+ * shader's bindings to the group's resources by name. The shader's own binding numbers then don't
+ * matter, so shaders that number the same bindings differently, or declare only some of them, can
+ * share one group. Declare every binding the group will ever hold; `null` marks one to be set later:
+ * @example
+ * const global = new BindGroup({ camera, lights, shadowMap, shadowSampler, instances: null });
+ *
+ * global.setResource(batchInstances, global.layout.instances);
+ *
+ * Keyed by number, the group has no layout and a shader reads binding `n` from the group's binding `n`.
  *
  * This bind group class will also watch for changes in its resources ensuring that the changes
  * are reflected in the WebGPU BindGroup.
@@ -130,18 +147,40 @@ export class BindGroup
     private readonly _keyedIds: number[] = [];
 
     /**
-     * Create a new instance of the Bind Group.
-     * @param resources - The resources that are bound together for use by a shader.
+     * The binding number of each resource by name, in the order the constructor was given them, or
+     * `null` for a group keyed by number. With a layout, a shader's bindings are matched to this
+     * group's resources by name, whatever numbers the shader gives them.
+     *
+     * WebGL generates its sync code once per program from the first shader bound with it, so every
+     * shader on one program must bring groups of one kind, keyed in one order, at each group index.
+     * @readonly
      */
-    constructor(resources?: Record<string, BindResource>)
+    public readonly layout: BindGroupLayout | null = null;
+
+    /**
+     * Create a new instance of the Bind Group.
+     * @param resources - The resources that are bound together for use by a shader, keyed by binding
+     * name or by binding number. Don't mix the two: the first key decides which the group is. Either
+     * way they take binding numbers `0, 1, 2...` in order. By name, a `null` declares a binding to be
+     * set later with {@link BindGroup#setResource}.
+     */
+    constructor(resources?: Record<string, BindResource | null>)
     {
         let index = 0;
 
         for (const i in resources)
         {
-            const resource: BindResource = resources[i];
+            // a shader binding name can't start with a digit, so a first key that does means the
+            // group is keyed by number
+            if (index === 0 && !(/^\d/).test(i)) this.layout = {};
 
-            this.setResource(resource, index++);
+            if (this.layout) this.layout[i] = index;
+
+            const resource = resources[i];
+
+            if (resource) this.setResource(resource, index);
+
+            index++;
         }
     }
 

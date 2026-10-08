@@ -162,21 +162,23 @@ export class BindGroupSystem implements System
     private _createBindGroup(group: BindGroup, program: GpuProgram, groupIndex: number): GPUBindGroup
     {
         const device = this._gpu.device;
-        const groupLayout = program.layout[groupIndex];
+        const programLayout = program.layout[groupIndex];
+        const groupLayout = group.layout;
         const entries: GPUBindGroupEntry[] = [];
         const renderer = this._renderer;
 
-        for (const j in groupLayout)
+        for (const j in programLayout)
         {
-            // resources may be keyed by resource name or by binding index — try the name first
-            const resource: BindResource = group.resources[j] ?? group.resources[groupLayout[j]];
+            // a group keyed by name holds the shader's binding at the number its layout gives the name;
+            // a group keyed by number holds it at the shader's own number
+            const resource: BindResource = group.resources[groupLayout ? groupLayout[j] : programLayout[j]];
 
-            // a destroyed resource leaves a null slot (see BindGroup.onResourceChange) or may
-            // have been handed in already destroyed — either way this group cannot render
+            // no resource: never set, nulled by a destroy (see BindGroup.onResourceChange), handed in
+            // already destroyed, or a name the group's layout does not have — none of them can render
             if (!resource || resource.destroyed)
             {
-                throw new Error(`[BindGroup] the resource bound as '${j}' was destroyed while a shader still uses it. `
-                    + 'Remove it from the shader before destroying it.');
+                throw new Error(`[BindGroup] no usable resource for the shader's '${j}' binding: it was never set, `
+                    + 'was destroyed while a shader still uses it, or is missing from the bind group\'s layout.');
             }
 
             let gpuResource: GPUSampler | GPUTextureView | GPUExternalTexture | GPUBufferBinding;
@@ -236,7 +238,7 @@ export class BindGroupSystem implements System
             }
 
             entries.push({
-                binding: groupLayout[j],
+                binding: programLayout[j],
                 resource: gpuResource,
             });
         }

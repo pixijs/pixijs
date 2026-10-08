@@ -1,7 +1,9 @@
 import { BindGroup } from '../gpu/shader/BindGroup';
+import { GpuProgram } from '../gpu/shader/GpuProgram';
 import { Buffer } from '../shared/buffer/Buffer';
 import { BufferResource } from '../shared/buffer/BufferResource';
 import { BufferUsage } from '../shared/buffer/const';
+import { Shader } from '../shared/shader/Shader';
 import { UniformGroup } from '../shared/shader/UniformGroup';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
 import { TextureStyle } from '../shared/texture/TextureStyle';
@@ -597,5 +599,101 @@ describe('BindGroup', () =>
         linear.destroy();
         linearToo.destroy();
         nearest.destroy();
+    });
+});
+
+describe('BindGroup layout', () =>
+{
+    function uniforms()
+    {
+        return new UniformGroup({ uValue: { value: 1, type: 'f32' } });
+    }
+
+    it('should number resources keyed by name in order and remember the names', () =>
+    {
+        const texture = new TextureSource();
+        const block = uniforms();
+
+        const bindGroup = new BindGroup({ block, uTexture: texture });
+
+        expect(bindGroup.layout).toEqual({ block: 0, uTexture: 1 });
+        expect(bindGroup.getResource(0)).toBe(block);
+        expect(bindGroup.getResource(1)).toBe(texture);
+    });
+
+    it('should let a null declare a binding to be set later', () =>
+    {
+        const texture = new TextureSource();
+        const bindGroup = new BindGroup({ uniforms: null, uTexture: texture, lights: null });
+
+        expect(bindGroup.layout).toEqual({ uniforms: 0, uTexture: 1, lights: 2 });
+        expect(bindGroup.getResource(0)).toBeUndefined();
+        expect(bindGroup.getResource(1)).toBe(texture);
+        expect(bindGroup._resourceKeys).toEqual([1]);
+
+        const lights = uniforms();
+
+        bindGroup.setResource(lights, bindGroup.layout.lights);
+
+        expect(bindGroup.getResource(2)).toBe(lights);
+    });
+
+    it('should have no layout when keyed by number', () =>
+    {
+        const a = uniforms();
+        const b = uniforms();
+
+        const bindGroup = new BindGroup({ 0: a, 1: b });
+
+        expect(bindGroup.layout).toBeNull();
+        expect(bindGroup.getResource(0)).toBe(a);
+        expect(bindGroup.getResource(1)).toBe(b);
+        expect(new BindGroup().layout).toBeNull();
+        expect(new BindGroup({}).layout).toBeNull();
+    });
+
+    it('should resolve a shader\'s resource accessor through the group\'s layout', () =>
+    {
+        const gpuProgram = new GpuProgram({
+            vertex: {
+                entryPoint: 'main',
+                source: '@vertex fn main() -> @builtin(position) vec4<f32> { return vec4<f32>(0.0); }',
+            },
+            fragment: {
+                entryPoint: 'main', source: `
+                struct Tint { uTint: vec4<f32> }
+                @group(0) @binding(0) var uTexture: texture_2d<f32>;
+                @group(0) @binding(1) var uSampler: sampler;
+                @group(0) @binding(2) var<uniform> tintUniforms: Tint;
+                @fragment fn main() -> @location(0) vec4<f32> { return tintUniforms.uTint; }`
+            },
+        });
+        const tint = uniforms();
+        const texture = new TextureSource();
+
+        // the group stores tint first; the shader numbers it last
+        const group = new BindGroup({ tintUniforms: tint, uTexture: texture, uSampler: texture.style });
+        const shader = new Shader({ gpuProgram, groups: { 0: group } });
+
+        expect(shader.resources.tintUniforms).toBe(tint);
+        expect(shader.resources.uTexture).toBe(texture);
+
+        const other = uniforms();
+
+        shader.resources.tintUniforms = other;
+
+        expect(group.getResource(group.layout.tintUniforms)).toBe(other);
+        expect(group.getResource(2)).toBe(texture.style);
+    });
+
+    it('should key the group the same whether keyed by name or by number', () =>
+    {
+        const texture = new TextureSource();
+        const group = uniforms();
+
+        const byName = new BindGroup({ uniforms: group, uTexture: texture });
+        const byNumber = new BindGroup({ 0: group, 1: texture });
+
+        expect(keyOf(byName)).toBe(keyOf(byNumber));
     });
 });
