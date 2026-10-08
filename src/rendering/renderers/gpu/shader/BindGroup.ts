@@ -68,7 +68,7 @@ export type BindGroupLayout = Record<string, number>;
  * @example
  * const global = new BindGroup({ camera, lights, shadowMap, shadowSampler, instances: null });
  *
- * global.setResource(batchInstances, global.layout.instances);
+ * global.setResource(batchInstances, 'instances');
  *
  * The names must be the ones the shader declares its bindings with. A name the shader doesn't
  * declare is ignored, and a shader binding the group has no name for gets no resource: WebGPU
@@ -197,10 +197,12 @@ export class BindGroup
      * ensure that listeners will be removed from the current resource
      * and added to the new resource.
      * @param resource - The resource to set.
-     * @param index - The index to set the resource at.
+     * @param index - The binding number to set the resource at, or its name in a group keyed by name.
      */
-    public setResource(resource: BindResource, index: number): void
+    public setResource(resource: BindResource, index: number | string): void
     {
+        if (typeof index === 'string') index = this._bindingOf(index);
+
         const currentResource = this.resources[index];
 
         if (resource === currentResource) return;
@@ -268,12 +270,29 @@ export class BindGroup
 
     /**
      * Returns the resource at the current specified index.
-     * @param index - The index of the resource to get.
+     * @param index - The binding number of the resource to get, or its name in a group keyed by name.
      * @returns - The resource at the specified index.
      */
-    public getResource(index: number): BindResource
+    public getResource(index: number | string): BindResource
     {
-        return this.resources[index];
+        return this.resources[typeof index === 'string' ? this._bindingOf(index) : index];
+    }
+
+    /**
+     * The binding number a name has in this group's layout. A name the group doesn't have is a
+     * mistake, and this is the only moment it is visible: by number nothing checks.
+     * @param name - The binding name.
+     */
+    private _bindingOf(name: string): number
+    {
+        const index = this.layout?.[name];
+
+        if (index === undefined)
+        {
+            throw new Error(`[BindGroup] no binding named '${name}' in this group`);
+        }
+
+        return index;
     }
 
     /**

@@ -652,6 +652,29 @@ describe('BindGroup layout', () =>
         expect(new BindGroup({}).layout).toBeNull();
     });
 
+    it('should set and get a resource by name', () =>
+    {
+        const texture = new TextureSource();
+        const bindGroup = new BindGroup({ uniforms: null, uTexture: texture });
+        const group = uniforms();
+
+        bindGroup.setResource(group, 'uniforms');
+
+        expect(bindGroup.getResource('uniforms')).toBe(group);
+        expect(bindGroup.getResource(0)).toBe(group);
+        expect(bindGroup.getResource('uTexture')).toBe(texture);
+    });
+
+    it('should throw for a name the group does not have', () =>
+    {
+        const named = new BindGroup({ uTexture: new TextureSource() });
+        const numbered = new BindGroup({ 0: new TextureSource() });
+
+        expect(() => named.setResource(uniforms(), 'typo')).toThrow(/no binding named 'typo'/);
+        expect(() => named.getResource('typo')).toThrow(/no binding named 'typo'/);
+        expect(() => numbered.getResource('uTexture')).toThrow(/no binding named 'uTexture'/);
+    });
+
     it('should resolve a shader\'s resource accessor through the group\'s layout', () =>
     {
         const gpuProgram = new GpuProgram({
