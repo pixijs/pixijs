@@ -290,9 +290,11 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
                 {
                     const uniformName = groupMap[i][j];
 
+                    // `for...in` hands the indices over as strings, and a bind group reads a
+                    // string as a binding name
                     nameHash[uniformName] = {
-                        group: i as unknown as number,
-                        binding: j as unknown as number,
+                        group: Number(i),
+                        binding: Number(j),
                         name: uniformName
                     };
                 }

@@ -1,3 +1,4 @@
+import { GlProgram } from '../gl/shader/GlProgram';
 import { BindGroup } from '../gpu/shader/BindGroup';
 import { GpuProgram } from '../gpu/shader/GpuProgram';
 import { Buffer } from '../shared/buffer/Buffer';
@@ -707,6 +708,31 @@ describe('BindGroup layout', () =>
 
         expect(group.getResource(group.layout.tintUniforms)).toBe(other);
         expect(group.getResource(2)).toBe(texture.style);
+    });
+
+    it('should read and write a group keyed by number through a shader built from a group map', () =>
+    {
+        const glProgram = new GlProgram({
+            vertex: 'in vec2 aPosition; void main() { gl_Position = vec4(aPosition, 0.0, 1.0); }',
+            fragment: 'uniform sampler2D uTexture; void main() { gl_FragColor = texture2D(uTexture, vec2(0.5)); }',
+        });
+        const tint = uniforms();
+        const texture = new TextureSource();
+        const group = new BindGroup({ 0: tint, 1: texture });
+        const shader = new Shader({
+            glProgram,
+            groups: { 0: group },
+            groupMap: { 0: { 0: 'tintUniforms', 1: 'uTexture' } },
+        });
+
+        expect(shader.resources.tintUniforms).toBe(tint);
+        expect(shader.resources.uTexture).toBe(texture);
+
+        const other = new TextureSource();
+
+        shader.resources.uTexture = other;
+
+        expect(group.getResource(1)).toBe(other);
     });
 
     it('should key the group the same whether keyed by name or by number', () =>
