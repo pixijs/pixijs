@@ -321,9 +321,9 @@ describe('BindGroup', () =>
         const other = new TextureSource();
         const bindGroup = new BindGroup();
 
-        bindGroup['setResourceUnwatched'](texture, 0);
-        bindGroup['setResourceUnwatched'](other, 0);
-        bindGroup['setResourceUnwatched'](texture, 0);
+        bindGroup.setResourceUnwatched(texture, 0);
+        bindGroup.setResourceUnwatched(other, 0);
+        bindGroup.setResourceUnwatched(texture, 0);
 
         expect(texture.listenerCount('change')).toBe(0);
         expect(other.listenerCount('change')).toBe(0);

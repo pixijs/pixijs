@@ -169,13 +169,18 @@ export class BindGroup
     }
 
     /**
-     * Sets a resource at a given index without listening for its changes. For a subclass that already
-     * watches its resources and re-points them often enough for the listeners to cost more than the
-     * binds: it must pass every change of a resource it holds to {@link BindGroup#onResourceChange}.
+     * Sets a resource at a given index without listening for its changes.
+     *
+     * {@link BindGroup#setResource} adds a `change` listener to every resource it holds, so the group
+     * re-keys when the resource changes or is destroyed. That listener costs more than the bind for a
+     * slot that is re-pointed on every draw, such as a pass that binds this frame's pooled texture,
+     * draws, and puts a placeholder back. Use this form for such a slot, and either re-point it before
+     * the resource changes or dies, or pass every change of a resource it holds to
+     * {@link BindGroup#onResourceChange} yourself.
      * @param resource - The resource to set.
      * @param index - The index to set the resource at.
      */
-    protected setResourceUnwatched(resource: BindResource, index: number): void
+    public setResourceUnwatched(resource: BindResource, index: number): void
     {
         const currentResource = this.resources[index];
 
