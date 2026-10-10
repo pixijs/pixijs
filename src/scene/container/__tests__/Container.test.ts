@@ -3,6 +3,23 @@ import { Container } from '../Container';
 import { updateRenderGroupTransforms } from '../utils/updateRenderGroupTransforms';
 import { Matrix } from '~/maths/matrix/Matrix';
 
+/* eslint-disable jest/expect-expect */
+class OnRenderContainer extends Container
+{
+    constructor()
+    {
+        super();
+
+        this.onRender = this._onRender.bind(this);
+    }
+
+    private _onRender()
+    {
+        // User-defined render hook.
+    }
+}
+/* eslint-enable jest/expect-expect */
+
 describe('Container', () =>
 {
     describe('constructor', () =>
@@ -82,6 +99,11 @@ describe('Container', () =>
         expect(container.children).toContain(children[0]);
         expect(container.children).toContain(children[1]);
         expect(addedSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should allow subclasses to define an _onRender method', () =>
+    {
+        expect(new OnRenderContainer().onRender).toBeInstanceOf(Function);
     });
 
     it('should assign to parent correctly is passed to constructor', () =>
