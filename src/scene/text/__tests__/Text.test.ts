@@ -9,6 +9,7 @@ import '../../text-bitmap/init';
 import '../init';
 import { getWebGLRenderer, getWebGPURenderer, itLocalOnly, loseAndRestoreContext, loseAndRestoreDevice } from '@test-utils';
 import { Point } from '~/maths';
+import { CanvasRenderer } from '~/rendering';
 import { TextureSource } from '~/rendering/renderers/shared/texture/sources/TextureSource';
 
 import type { DestroyOptions } from '../../container/destroyTypes';
@@ -318,6 +319,30 @@ describe('Text', () =>
             expect(text.width).toEqual(100);
             expect(text.height).toEqual(100);
         });
+    });
+
+    it('updates tinted canvas text when its value changes without changing its size', async () =>
+    {
+        const renderer = new CanvasRenderer();
+
+        await renderer.init({ width: 64, height: 64, backgroundAlpha: 0 });
+
+        const text = new Text({ text: '1', style: { fontSize: 40, fill: 0xffffff } });
+
+        text.tint = 0xffff00;
+        renderer.render(text);
+
+        const firstTexture = text._gpuData[renderer.uid].texture;
+        const firstFrame = renderer.canvas.toDataURL();
+
+        text.text = '2';
+        renderer.render(text);
+
+        expect(text._gpuData[renderer.uid].texture).toBe(firstTexture);
+        expect(renderer.canvas.toDataURL()).not.toBe(firstFrame);
+
+        text.destroy();
+        renderer.destroy();
     });
 
     it('should measure bounds of text correctly when padding is set', () =>
