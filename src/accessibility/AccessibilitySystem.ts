@@ -796,6 +796,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         else
         {
             event = new FederatedEvent(boundary);
+            event.type = nativeEvent.type;
         }
 
         event.target = target;
