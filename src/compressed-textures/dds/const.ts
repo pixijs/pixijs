@@ -385,3 +385,16 @@ export const TEXTURE_FORMAT_BLOCK_SIZE: Record<string, number> = {
     'bc7-rgba-unorm':  16,
     'bc7-rgba-unorm-srgb':  16
 };
+
+/** @internal */
+export const TEXTURE_FORMAT_BYTES_PER_PIXEL: Record<string, number> = {
+    r8unorm: 1,
+    rg8unorm: 2,
+    r16uint: 2,
+    r16float: 2,
+    rgba16uint: 8,
+    rgba16sint: 8,
+    rgba16float: 8,
+    rg32float: 8,
+    rgba32float: 16
+};
