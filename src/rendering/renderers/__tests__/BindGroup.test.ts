@@ -506,6 +506,22 @@ describe('BindGroup', () =>
         expect(() => bindGroup._touch(0)).not.toThrow();
     });
 
+    it('should warn when a texture it binds is destroyed', () =>
+    {
+        const source = new TextureSource({ width: 16, height: 16 });
+        const bindGroup = new BindGroup({ 0: source, 1: source.style });
+        const warn = jest.spyOn(console, 'warn').mockImplementation(() => { /* silenced */ });
+
+        source.destroy();
+
+        expect(warn).toHaveBeenCalledWith(
+            expect.any(String),
+            expect.stringContaining('was destroyed while still bound to a shader'),
+        );
+        warn.mockRestore();
+        expect(bindGroup.resources[0]).toBeNull();
+    });
+
     it('should track each binding number once, gaps included', () =>
     {
         const source = new TextureSource({ width: 16, height: 16 });
