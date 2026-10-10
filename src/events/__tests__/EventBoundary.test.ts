@@ -366,6 +366,75 @@ describe('EventBoundary', () =>
         expect(toOverSpy).toHaveBeenCalledOnce();
     });
 
+    it('should fire global move events once on each interactive ancestor of the hit target', () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const container = stage.addChild(new Container());
+
+        container.addChild(graphicsWithRect(0, 0, 100, 100));
+
+        const interactiveChild = container.addChild(graphicsWithRect(100, 0, 100, 100));
+
+        stage.eventMode = 'static';
+        container.eventMode = 'static';
+        interactiveChild.eventMode = 'static';
+
+        const stageSpy = jest.fn();
+        const containerSpy = jest.fn();
+        const childSpy = jest.fn();
+
+        stage.addEventListener('globalpointermove', stageSpy);
+        container.addEventListener('globalpointermove', containerSpy);
+        interactiveChild.addEventListener('globalpointermove', childSpy);
+
+        const move = new FederatedPointerEvent(boundary);
+
+        move.pointerId = 1;
+        move.type = 'pointermove';
+
+        // over the passive child, so the container is the hit target
+        move.global.set(50, 50);
+        boundary.mapEvent(move);
+
+        expect(stageSpy).toHaveBeenCalledOnce();
+        expect(containerSpy).toHaveBeenCalledOnce();
+        expect(childSpy).toHaveBeenCalledOnce();
+
+        // over the interactive child
+        move.global.set(150, 50);
+        boundary.mapEvent(move);
+
+        expect(stageSpy).toHaveBeenCalledTimes(2);
+        expect(containerSpy).toHaveBeenCalledTimes(2);
+        expect(childSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should fire pointermove once on each interactive container with moveOnAll', () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const container = stage.addChild(new Container());
+
+        container.addChild(graphicsWithRect(0, 0, 100, 100));
+
+        container.eventMode = 'static';
+        boundary.moveOnAll = true;
+
+        const eventSpy = jest.fn();
+
+        container.addEventListener('pointermove', eventSpy);
+
+        const move = new FederatedPointerEvent(boundary);
+
+        move.pointerId = 1;
+        move.type = 'pointermove';
+        move.global.set(50, 50);
+        boundary.mapEvent(move);
+
+        expect(eventSpy).toHaveBeenCalledOnce();
+    });
+
     it('should only call listener once when using .once() to register listener', () =>
     {
         const stage = new Container();
