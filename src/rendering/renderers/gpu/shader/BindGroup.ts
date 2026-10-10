@@ -34,16 +34,17 @@ function mixHigh(binding: number, id: number): number
 }
 
 /**
+ * The binding number of each resource in a {@link BindGroup}, by name: the same shape as one group of
+ * {@link GpuProgram#layout}.
+ * @category rendering
+ * @advanced
+ */
+export type BindGroupLayout = Record<string, number>;
+
+/**
  * A bind group is a collection of resources that are bound together for use by a shader.
  * They are essentially a wrapper for the WebGPU BindGroup class. But with the added bonus
  * that WebGL can also work with them.
- * @see https://gpuweb.github.io/gpuweb/#dictdef-gpubindgroupdescriptor
- * @example
- * // Create a bind group with a single texture and sampler
- * const bindGroup = new BindGroup({
- *    uTexture: texture.source,
- *    uTexture: texture.style,
- * });
  *
  * Bind groups resources must implement the {@link BindResource} interface.
  * The following resources are supported:
@@ -53,10 +54,40 @@ function mixHigh(binding: number, id: number): number
  * - {@link BufferResource}
  * - {@link UniformGroup}
  *
- * The keys in the bind group must correspond to the names of the resources in the GPU program.
+ * Keyed by name, as in the examples below, the group knows which binding each name is, and the
+ * renderers match a shader's bindings to the group's resources by name. The shader's own binding
+ * numbers then don't matter, so shaders that number the same bindings differently, or declare only
+ * some of them, can share one group. Declare every binding the group will ever hold; `null` marks
+ * one to be set later.
+ *
+ * The names must be the ones the shader declares its bindings with. A name the shader doesn't
+ * declare is ignored, and a shader binding the group has no name for gets no resource: WebGPU
+ * throws, and WebGL draws without it.
+ *
+ * On WebGL, set a binding declared `null` before a shader first draws with the group, or declare it
+ * with a placeholder resource. WebGL works out what to bind the first time a program is used, and a
+ * binding still empty then is never bound, even once it is set.
+ *
+ * Keyed by number, the group has no layout and a shader reads binding `n` from the group's binding `n`.
  *
  * This bind group class will also watch for changes in its resources ensuring that the changes
  * are reflected in the WebGPU BindGroup.
+ * @see https://gpuweb.github.io/gpuweb/#dictdef-gpubindgroupdescriptor
+ * @example
+ * ```ts
+ * // Create a bind group with a single texture and sampler
+ * const bindGroup = new BindGroup({
+ *     uTexture: texture.source,
+ *     uSampler: texture.source.style,
+ * });
+ * ```
+ * @example
+ * ```ts
+ * // One group shared by several shaders; `instances` is declared now and set later
+ * const global = new BindGroup({ camera, lights, shadowMap, shadowSampler, instances: null });
+ *
+ * global.setResource(batchInstances, 'instances');
+ * ```
  * @category rendering
  * @advanced
  */
@@ -130,18 +161,41 @@ export class BindGroup
     private readonly _keyedIds: number[] = [];
 
     /**
-     * Create a new instance of the Bind Group.
-     * @param resources - The resources that are bound together for use by a shader.
+     * The binding number of each resource by name, in the order the constructor was given them, or
+     * `null` for a group keyed by number. With a layout, a shader's bindings are matched to this
+     * group's resources by name, whatever numbers the shader gives them.
+     *
+     * WebGL works out what to bind once per program, from the first shader drawn with it. Shaders that
+     * share a program must key the group at each group index the same way: all by number, or all by
+     * name with the names in the same order.
+     * @readonly
      */
-    constructor(resources?: Record<string, BindResource>)
+    public readonly layout: BindGroupLayout | null = null;
+
+    /**
+     * Create a new instance of the Bind Group.
+     * @param resources - The resources that are bound together for use by a shader, keyed by binding
+     * name or by binding number. Don't mix the two: the first key decides which the group is. Either
+     * way they take binding numbers `0, 1, 2...` in order. By name, the keys are the shader's binding
+     * names, and a `null` declares a binding to be set later with {@link BindGroup#setResource}.
+     */
+    constructor(resources?: Record<string, BindResource | null>)
     {
         let index = 0;
 
         for (const i in resources)
         {
-            const resource: BindResource = resources[i];
+            // a shader binding name can't start with a digit, so a first key that does means the
+            // group is keyed by number
+            if (index === 0 && !(/^\d/).test(i)) this.layout = {};
 
-            this.setResource(resource, index++);
+            if (this.layout) this.layout[i] = index;
+
+            const resource = resources[i];
+
+            if (resource) this.setResource(resource, index);
+
+            index++;
         }
     }
 
@@ -150,10 +204,12 @@ export class BindGroup
      * ensure that listeners will be removed from the current resource
      * and added to the new resource.
      * @param resource - The resource to set.
-     * @param index - The index to set the resource at.
+     * @param index - The binding number to set the resource at, or its name in a group keyed by name.
      */
-    public setResource(resource: BindResource, index: number): void
+    public setResource(resource: BindResource, index: number | string): void
     {
+        if (typeof index === 'string') index = this._bindingOf(index);
+
         const currentResource = this.resources[index];
 
         if (resource === currentResource) return;
@@ -226,12 +282,29 @@ export class BindGroup
 
     /**
      * Returns the resource at the current specified index.
-     * @param index - The index of the resource to get.
+     * @param index - The binding number of the resource to get, or its name in a group keyed by name.
      * @returns - The resource at the specified index.
      */
-    public getResource(index: number): BindResource
+    public getResource(index: number | string): BindResource
     {
-        return this.resources[index];
+        return this.resources[typeof index === 'string' ? this._bindingOf(index) : index];
+    }
+
+    /**
+     * The binding number a name has in this group's layout. A name the group doesn't have is a
+     * mistake, and this is the only moment it is visible: by number nothing checks.
+     * @param name - The binding name.
+     */
+    private _bindingOf(name: string): number
+    {
+        const index = this.layout?.[name];
+
+        if (index === undefined)
+        {
+            throw new Error(`[BindGroup] no binding named '${name}' in this group`);
+        }
+
+        return index;
     }
 
     /**

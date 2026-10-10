@@ -6,6 +6,16 @@ import { TextureView } from '../../shared/texture/TextureView';
 import type { Shader } from '../../shared/shader/Shader';
 import type { GlShaderSystem, ShaderSyncFunction } from './GlShaderSystem';
 
+// the name at each binding number of a layout; this runs once per program, so nothing caches it
+function invert(layout: Record<string, number>): Record<number, string>
+{
+    const names: Record<number, string> = {};
+
+    for (const name in layout) names[layout[name]] = name;
+
+    return names;
+}
+
 /**
  * Generates the a function that will efficiently sync shader resources with the GPU.
  * @param shader - The shader to generate the code for
@@ -42,6 +52,9 @@ export function generateShaderSyncCode(shader: Shader, shaderSystem: GlShaderSys
     {
         const group = shader.groups[i];
 
+        // a group with a layout names its own binding numbers; otherwise the shader's numbering names them
+        const bindingNames = group.layout ? invert(group.layout) : shader._uniformBindMap[i];
+
         funcFragments.push(`
             resources = g[${i}].resources;
         `);
@@ -50,42 +63,32 @@ export function generateShaderSyncCode(shader: Shader, shaderSystem: GlShaderSys
         {
             const resource = group.resources[j];
 
-            if (resource instanceof UniformGroup)
+            if (resource instanceof UniformGroup && !resource.ubo)
             {
-                if (resource.ubo)
-                {
-                    const resName = shader._uniformBindMap[i][Number(j)];
+                funcFragments.push(`
+                    ugS.updateUniformGroup(resources[${j}], p, sD);
+                `);
+            }
+            else if (resource instanceof UniformGroup || resource instanceof BufferResource)
+            {
+                const resName = bindingNames[Number(j)];
+                // a shared group can hold a block this program never declares
+                const blockData = shader.glProgram._uniformBlockData[resName];
 
+                if (blockData)
+                {
                     funcFragments.push(`
                         sS.bindUniformBlock(
                             resources[${j}],
                             '${resName}',
-                            ${shader.glProgram._uniformBlockData[resName].index}
+                            ${blockData.index}
                         );
                     `);
                 }
-                else
-                {
-                    funcFragments.push(`
-                        ugS.updateUniformGroup(resources[${j}], p, sD);
-                    `);
-                }
-            }
-            else if (resource instanceof BufferResource)
-            {
-                const resName = shader._uniformBindMap[i][Number(j)];
-
-                funcFragments.push(`
-                    sS.bindUniformBlock(
-                        resources[${j}],
-                        '${resName}',
-                        ${shader.glProgram._uniformBlockData[resName].index}
-                    );
-                `);
             }
             else if (resource instanceof TextureSource || resource instanceof TextureView)
             {
-                const uniformName = shader._uniformBindMap[i as unknown as number][j as unknown as number];
+                const uniformName = bindingNames[Number(j)];
 
                 const uniformData = programData.uniformData[uniformName];
 
