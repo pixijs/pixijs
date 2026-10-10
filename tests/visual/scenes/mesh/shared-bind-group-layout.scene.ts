@@ -174,7 +174,9 @@ export const scene: TestScene = {
             indexBuffer: [0, 1, 2, 0, 2, 3],
         });
 
-        scene.addChild(new Mesh({ geometry: quad(8, 56), shader: mainPass }));
+        // shadow pass first: drawn after the main pass, WebGL would draw it from the state that
+        // pass leaves behind, even with its own bindings never synced
         scene.addChild(new Mesh({ geometry: quad(72, 120), shader: shadowPass }));
+        scene.addChild(new Mesh({ geometry: quad(8, 56), shader: mainPass }));
     },
 };

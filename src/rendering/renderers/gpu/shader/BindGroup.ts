@@ -45,13 +45,6 @@ export type BindGroupLayout = Record<string, number>;
  * A bind group is a collection of resources that are bound together for use by a shader.
  * They are essentially a wrapper for the WebGPU BindGroup class. But with the added bonus
  * that WebGL can also work with them.
- * @see https://gpuweb.github.io/gpuweb/#dictdef-gpubindgroupdescriptor
- * @example
- * // Create a bind group with a single texture and sampler
- * const bindGroup = new BindGroup({
- *    uTexture: texture.source,
- *    uSampler: texture.style,
- * });
  *
  * Bind groups resources must implement the {@link BindResource} interface.
  * The following resources are supported:
@@ -61,14 +54,11 @@ export type BindGroupLayout = Record<string, number>;
  * - {@link BufferResource}
  * - {@link UniformGroup}
  *
- * Keyed by name, as above, the group knows which binding each name is, and the renderers match a
- * shader's bindings to the group's resources by name. The shader's own binding numbers then don't
- * matter, so shaders that number the same bindings differently, or declare only some of them, can
- * share one group. Declare every binding the group will ever hold; `null` marks one to be set later:
- * @example
- * const global = new BindGroup({ camera, lights, shadowMap, shadowSampler, instances: null });
- *
- * global.setResource(batchInstances, 'instances');
+ * Keyed by name, as in the examples below, the group knows which binding each name is, and the
+ * renderers match a shader's bindings to the group's resources by name. The shader's own binding
+ * numbers then don't matter, so shaders that number the same bindings differently, or declare only
+ * some of them, can share one group. Declare every binding the group will ever hold; `null` marks
+ * one to be set later.
  *
  * The names must be the ones the shader declares its bindings with. A name the shader doesn't
  * declare is ignored, and a shader binding the group has no name for gets no resource: WebGPU
@@ -82,6 +72,22 @@ export type BindGroupLayout = Record<string, number>;
  *
  * This bind group class will also watch for changes in its resources ensuring that the changes
  * are reflected in the WebGPU BindGroup.
+ * @see https://gpuweb.github.io/gpuweb/#dictdef-gpubindgroupdescriptor
+ * @example
+ * ```ts
+ * // Create a bind group with a single texture and sampler
+ * const bindGroup = new BindGroup({
+ *     uTexture: texture.source,
+ *     uSampler: texture.source.style,
+ * });
+ * ```
+ * @example
+ * ```ts
+ * // One group shared by several shaders; `instances` is declared now and set later
+ * const global = new BindGroup({ camera, lights, shadowMap, shadowSampler, instances: null });
+ *
+ * global.setResource(batchInstances, 'instances');
+ * ```
  * @category rendering
  * @advanced
  */
@@ -159,8 +165,9 @@ export class BindGroup
      * `null` for a group keyed by number. With a layout, a shader's bindings are matched to this
      * group's resources by name, whatever numbers the shader gives them.
      *
-     * WebGL generates its sync code once per program from the first shader bound with it, so every
-     * shader on one program must bring groups of one kind, keyed in one order, at each group index.
+     * WebGL works out what to bind once per program, from the first shader drawn with it. Shaders that
+     * share a program must key the group at each group index the same way: all by number, or all by
+     * name with the names in the same order.
      * @readonly
      */
     public readonly layout: BindGroupLayout | null = null;

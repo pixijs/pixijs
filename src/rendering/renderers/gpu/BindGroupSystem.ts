@@ -174,7 +174,7 @@ export class BindGroupSystem implements System
             const resource: BindResource = group.resources[groupLayout ? groupLayout[j] : programLayout[j]];
 
             // no resource: never set, nulled by a destroy (see BindGroup.onResourceChange), handed in
-            // already destroyed, or a name the group's layout does not have — none of them can render
+            // already destroyed, or a name the group's layout does not have; none of them can render
             if (!resource || resource.destroyed)
             {
                 throw new Error(`[BindGroup] no usable resource for the shader's '${j}' binding: it was never set, `

@@ -155,8 +155,10 @@ describe('generateShaderSyncPolyfill', () =>
         const subset = new Shader({ ...makePrograms(['uTexture', 'uSampler', 'tintUniforms']), groups: { 2: bindGroup } });
 
         // red top row of the stripe, tinted yellow: red survives, green is zeroed by the texture
-        expect(topLeftPixel(renderer, full)).toEqual([255, 0, 0, 255]);
+        // subset first: drawn after the full shader, it would pass on the GL state that draw leaves
+        // behind, even with its own bindings never synced
         expect(topLeftPixel(renderer, subset)).toEqual([255, 0, 0, 255]);
+        expect(topLeftPixel(renderer, full)).toEqual([255, 0, 0, 255]);
     });
 
     it('should draw a group keyed by number as before', () =>

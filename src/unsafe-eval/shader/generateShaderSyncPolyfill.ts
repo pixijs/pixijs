@@ -40,7 +40,7 @@ function syncShader(renderer: WebGLRenderer, shader: Shader, syncData: ShaderSyn
             // otherwise the shader's numbering names them. A group the renderer adds outside that
             // numbering (the GL mesh adapter's global and local uniforms) has no names, and its
             // plain uniform groups sync without one
-            const bindingNames = shader._uniformBindMap[i as unknown as number];
+            const bindingNames = shader._uniformBindMap[i];
 
             for (const j in resources)
             {
