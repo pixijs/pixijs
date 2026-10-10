@@ -101,6 +101,13 @@ export class RenderGroupSystem implements System
     {
         renderGroup._parentCacheAsTextureRenderGroup = closestCacheAsTexture;
 
+        // instructions and cached textures belong to the renderer that built them, so another renderer must rebuild them
+        if (renderGroup.instructionSet.renderPipes !== this._renderer.renderPipes)
+        {
+            renderGroup.structureDidChange = true;
+            if (renderGroup.isCachedAsTexture) renderGroup.textureNeedsUpdate = true;
+        }
+
         if (renderGroup.isCachedAsTexture)
         {
             // Early out as nothing further needs to be updated!
