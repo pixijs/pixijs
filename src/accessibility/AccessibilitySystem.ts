@@ -177,6 +177,9 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
     private readonly _androidUpdateFrequency = 500; // 2fps
     private _canvasObserver: CanvasObserver;
 
+    /** Waits for the renderer canvas to be added to the DOM so activation can finish. */
+    private _pendingAttachObserver: MutationObserver | null = null;
+
     // eslint-disable-next-line @typescript-eslint/prefer-readonly
     private _isRunningTests: boolean = false;
 
@@ -322,11 +325,14 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
         if (!canvas.parentNode)
         {
+            this._pendingAttachObserver?.disconnect();
+
             const observer = new MutationObserver(() =>
             {
                 if (canvas.parentNode)
                 {
                     observer.disconnect();
+                    this._pendingAttachObserver = null;
 
                     // Add to DOM
                     this._canvasObserver.ensureAttached();
@@ -336,6 +342,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             });
 
             observer.observe(document.body, { childList: true, subtree: true });
+            this._pendingAttachObserver = observer;
         }
         else
         {
@@ -865,6 +872,9 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
     {
         this._deactivate();
         this._destroyTouchHook();
+
+        this._pendingAttachObserver?.disconnect();
+        this._pendingAttachObserver = null;
 
         this._canvasObserver?.destroy();
         this._canvasObserver = null;
