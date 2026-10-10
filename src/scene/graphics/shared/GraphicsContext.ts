@@ -1,11 +1,11 @@
 /* eslint-disable max-len */
-import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../../color/Color';
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { Point } from '../../../maths/point/Point';
 import { type GCable, type GCData } from '../../../rendering/renderers/shared/GCSystem';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { uid } from '../../../utils/data/uid';
+import { EventEmitter } from '../../../utils/EventEmitter';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { Bounds } from '../../container/bounds/Bounds';
 import { type GpuGraphicsContext } from './GraphicsContextSystem';
