@@ -119,7 +119,8 @@ export class RenderGroupSystem implements System
 
         if (renderGroup.isCachedAsTexture)
         {
-            if (renderGroup.textureNeedsUpdate)
+            // Keep a hidden group's cache dirty until it can actually be rendered.
+            if (renderGroup.textureNeedsUpdate && renderGroup.root.localDisplayStatus === 0b111)
             {
                 // lets get the texture ready for rendering
                 // but the rendering will not happen until the renderGroup is rendered!

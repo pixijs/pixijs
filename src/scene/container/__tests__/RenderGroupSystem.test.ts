@@ -2,7 +2,8 @@ import '~/rendering/renderers/shared/texture/Texture';
 import { Container } from '../Container';
 import '../../text/init';
 import { getWebGLRenderer } from '@test-utils';
-import { Text } from '~/scene';
+import { TexturePool } from '~/rendering/renderers/shared/texture/TexturePool';
+import { Graphics, Text } from '~/scene';
 
 describe('RenderGroupSystem', () =>
 {
@@ -70,5 +71,43 @@ describe('RenderGroupSystem', () =>
         renderer.render(container);
 
         expect(container.renderGroup.texture._source.scaleMode).toEqual('nearest');
+    });
+
+    it('should defer refreshing a cached render group while it is culled', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const stage = new Container();
+        const cached = new Container();
+
+        cached.addChild(new Graphics().rect(0, 0, 20, 20).fill(0xffffff));
+        cached.cacheAsTexture(true);
+        stage.addChild(cached);
+
+        renderer.render(stage);
+
+        cached.culled = true;
+        cached.updateCacheTexture();
+
+        const prepareTexture = jest.spyOn(TexturePool, 'getOptimalTexture');
+
+        try
+        {
+            renderer.render(stage);
+            renderer.render(stage);
+
+            expect(prepareTexture).not.toHaveBeenCalled();
+            expect(cached.renderGroup.textureNeedsUpdate).toBe(true);
+
+            cached.culled = false;
+            renderer.render(stage);
+
+            expect(prepareTexture).toHaveBeenCalledTimes(1);
+            expect(cached.renderGroup.textureNeedsUpdate).toBe(false);
+        }
+        finally
+        {
+            prepareTexture.mockRestore();
+            renderer.destroy();
+        }
     });
 });
