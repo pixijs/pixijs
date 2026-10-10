@@ -91,11 +91,18 @@ function getImageBuffers(dataView: DataView, glType: number, imagePixelByteSize:
         // Calculate mipWidth, mipHeight for _next_ iteration
         mipWidth = (mipWidth >> 1) || 1;
         mipHeight = (mipHeight >> 1) || 1;
-        alignedMipWidth = (mipWidth + 4 - 1) & ~(4 - 1);
-        alignedMipHeight = (mipHeight + 4 - 1) & ~(4 - 1);
 
-        // Each mipmap level is 4-times smaller?
-        mipByteSize = alignedMipWidth * alignedMipHeight * imagePixelByteSize;
+        let mipPixels = mipWidth * mipHeight;
+
+        if (glType === 0)
+        {
+            // Align to 16 pixels (4x4 blocks)
+            alignedMipWidth = (mipWidth + 4 - 1) & ~(4 - 1);
+            alignedMipHeight = (mipHeight + 4 - 1) & ~(4 - 1);
+            mipPixels = alignedMipWidth * alignedMipHeight;
+        }
+
+        mipByteSize = mipPixels * imagePixelByteSize;
     }
 
     return imageBuffers;
