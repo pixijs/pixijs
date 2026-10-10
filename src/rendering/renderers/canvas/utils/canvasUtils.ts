@@ -463,11 +463,31 @@ export const canvasUtils = {
 
         context.restore();
 
+        if (color === 0xFFFFFF)
+        {
+            return;
+        }
+
         const r = (color >> 16) & 0xFF;
         const g = (color >> 8) & 0xFF;
         const b = color & 0xFF;
 
-        const imageData = context.getImageData(0, 0, outWidth, outHeight);
+        let imageData: ImageData;
+
+        try
+        {
+            imageData = context.getImageData(0, 0, outWidth, outHeight);
+        }
+        catch
+        {
+            // The canvas is tainted (e.g. cross-origin texture without CORS), so pixels
+            // cannot be read: fall back to the approximate composite-based tint, which
+            // is the only option that works without pixel access.
+            canvasUtils.tintWithMultiply(texture, color, canvas);
+
+            return;
+        }
+
         const data = imageData.data;
 
         for (let i = 0; i < data.length; i += 4)
@@ -511,4 +531,9 @@ export const canvasUtils = {
     },
 };
 
-canvasUtils.tintMethod = canvasUtils.canUseMultiply ? canvasUtils.tintWithMultiply : canvasUtils.tintWithPerPixel;
+// Per-pixel tinting is the default: it is the only exact implementation, because the
+// 'multiply' composite operation always adds an unmultiplied (1 - alpha) * tint term,
+// which shifts the colour of every translucent pixel (issue #12272). The composite-based
+// method is kept as a fallback for tainted (cross-origin) canvases, whose pixels cannot
+// be read, and remains available for manual opt-in via `canvasUtils.tintMethod`.
+canvasUtils.tintMethod = canvasUtils.tintWithPerPixel;
