@@ -174,9 +174,9 @@ export class BindGroup
      * {@link BindGroup#setResource} adds a `change` listener to every resource it holds, so the group
      * re-keys when the resource changes or is destroyed. That listener costs more than the bind for a
      * slot that is re-pointed on every draw, such as a pass that binds this frame's pooled texture,
-     * draws, and puts a placeholder back. Use this form for such a slot, and either re-point it before
-     * the resource changes or dies, or pass every change of a resource it holds to
-     * {@link BindGroup#onResourceChange} yourself.
+     * draws, and puts a placeholder back. Use this form for such a slot, and re-point it before the
+     * resource changes or is destroyed. A subclass that watches its own resources can instead pass
+     * every change of a resource it holds to `onResourceChange`.
      * @param resource - The resource to set.
      * @param index - The index to set the resource at.
      */
