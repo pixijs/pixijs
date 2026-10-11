@@ -1,6 +1,7 @@
 /* eslint-disable no-restricted-globals */
 import { CanvasObserver } from '../dom/CanvasObserver';
 import { FederatedEvent } from '../events/FederatedEvent';
+import { FederatedPointerEvent } from '../events/FederatedPointerEvent';
 import { ExtensionType } from '../extensions/Extensions';
 import { isMobile } from '../utils/browser/isMobile';
 import { removeItems } from '../utils/data/removeItems';
@@ -772,15 +773,33 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
     /**
      * Dispatch events with the EventSystem.
-     * @param e
+     * @param nativeEvent
      * @param type
      * @private
      */
-    private _dispatchEvent(e: UIEvent, type: string[]): void
+    private _dispatchEvent(nativeEvent: UIEvent, type: string[]): void
     {
-        const { container: target } = e.target as AccessibleHTMLElement;
-        const boundary = this._renderer.events.rootBoundary;
-        const event: FederatedEvent = Object.assign(new FederatedEvent(boundary), { target });
+        const { container: target } = nativeEvent.target as AccessibleHTMLElement;
+        const eventSystem = this._renderer.events;
+        const boundary = eventSystem.rootBoundary;
+
+        let event: FederatedEvent;
+
+        // Apply available native event data in case of pointer event
+        if (nativeEvent instanceof PointerEvent)
+        {
+            const me = new FederatedPointerEvent(boundary);
+
+            eventSystem._bootstrapPointerEvent(me, nativeEvent);
+            event = me;
+        }
+        else
+        {
+            event = new FederatedEvent(boundary);
+            event.type = nativeEvent.type;
+        }
+
+        event.target = target;
 
         boundary.rootTarget = this._renderer.lastObjectRendered as Container;
         type.forEach((type) => boundary.dispatchEvent(event, type));
