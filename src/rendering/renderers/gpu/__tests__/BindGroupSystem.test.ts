@@ -1,3 +1,4 @@
+import { UniformGroup } from '../../shared/shader/UniformGroup';
 import { TextureSource } from '../../shared/texture/sources/TextureSource';
 import { BindGroup } from '../shader/BindGroup';
 import { GpuProgram } from '../shader/GpuProgram';
@@ -358,5 +359,116 @@ describeLocalOnly('BindGroupSystem lookup', () =>
 
         expect(rebuilt).not.toBe(native);
         expect(rebuilt).not.toBe(clashingNative);
+    });
+});
+
+describeLocalOnly('BindGroupSystem with a bind group layout', () =>
+{
+    const vertex = {
+        entryPoint: 'main',
+        source: /* wgsl */`
+            @vertex fn main(@location(0) aPosition: vec2<f32>) -> @builtin(position) vec4<f32> {
+                return vec4<f32>(aPosition, 0.0, 1.0);
+            }
+        `,
+    };
+
+    // the bindings a program can declare, each numbered by its place in the list it is declared in
+    const declarations: Record<string, string> = {
+        tintUniforms: 'var<uniform> tintUniforms: Tint;',
+        uTexture: 'var uTexture: texture_2d<f32>;',
+        uSampler: 'var uSampler: sampler;',
+        offsetUniforms: 'var<uniform> offsetUniforms: Offset;',
+    };
+    const uses: Record<string, string> = {
+        tintUniforms: 'color *= tintUniforms.uTint;',
+        uTexture: 'color *= textureSample(uTexture, uSampler, uv);',
+        uSampler: '',
+        offsetUniforms: 'uv += offsetUniforms.uOffset;',
+    };
+
+    function makeProgram(bindings: string[])
+    {
+        return new GpuProgram({
+            vertex,
+            fragment: {
+                entryPoint: 'main',
+                source: /* wgsl */`
+                    struct Tint { uTint: vec4<f32> }
+                    struct Offset { uOffset: vec2<f32> }
+                    ${bindings.map((name, i) => `@group(0) @binding(${i}) ${declarations[name]}`).join('\n')}
+
+                    @fragment fn main() -> @location(0) vec4<f32> {
+                        var uv = vec2<f32>(0.5);
+                        var color = vec4<f32>(1.0);
+                        ${bindings.map((name) => uses[name]).join('\n')}
+                        return color;
+                    }
+                `,
+            },
+        });
+    }
+
+    // the native entries the system hands the device for one bind group
+    function entriesFor(bindGroup: BindGroup, program: GpuProgram): GPUBindGroupEntry[]
+    {
+        const createBindGroup = jest.spyOn(renderer.gpu.device, 'createBindGroup');
+
+        renderer.bindGroup.getBindGroup(bindGroup, program, 0);
+
+        const [descriptor] = createBindGroup.mock.calls[0];
+
+        createBindGroup.mockRestore();
+
+        return [...descriptor.entries];
+    }
+
+    it('should bind each of the shader\'s bindings to the resource of the same name', async () =>
+    {
+        renderer = await getWebGPURenderer();
+
+        const tint = new UniformGroup({ uTint: { value: [1, 1, 1, 1], type: 'vec4<f32>' } });
+        const offset = new UniformGroup({ uOffset: { value: [0, 0], type: 'vec2<f32>' } });
+        const texture = getTexture().source;
+        const bindGroup = new BindGroup({
+            tintUniforms: tint, uTexture: texture, uSampler: texture.style, offsetUniforms: offset,
+        });
+
+        // numbered as the group is, and numbered differently with one binding left out
+        const full = makeProgram(['tintUniforms', 'uTexture', 'uSampler', 'offsetUniforms']);
+        const subset = makeProgram(['uTexture', 'uSampler', 'tintUniforms']);
+
+        // a uniform group's buffer is created by the ubo system on first use
+        renderer.ubo.updateUniformGroup(tint);
+        renderer.ubo.updateUniformGroup(offset);
+
+        const textureView = renderer.texture.getTextureView(texture);
+        const tintBuffer = renderer.buffer.getGPUBuffer(tint.buffer);
+        const offsetBuffer = renderer.buffer.getGPUBuffer(offset.buffer);
+
+        const fullEntries = entriesFor(bindGroup, full);
+
+        expect(fullEntries.map((entry) => entry.binding)).toEqual([0, 1, 2, 3]);
+        expect((fullEntries[0].resource as GPUBufferBinding).buffer).toBe(tintBuffer);
+        expect(fullEntries[1].resource).toBe(textureView);
+        expect((fullEntries[3].resource as GPUBufferBinding).buffer).toBe(offsetBuffer);
+
+        const subsetEntries = entriesFor(bindGroup, subset);
+
+        expect(subsetEntries.map((entry) => entry.binding)).toEqual([0, 1, 2]);
+        expect(subsetEntries[0].resource).toBe(textureView);
+        expect((subsetEntries[2].resource as GPUBufferBinding).buffer).toBe(tintBuffer);
+    });
+
+    it('should name the shader binding the layout lacks', async () =>
+    {
+        renderer = await getWebGPURenderer();
+
+        const texture = getTexture().source;
+        const bindGroup = new BindGroup({ uTexture: texture, uSampler: texture.style });
+        const program = makeProgram(['uTexture', 'uSampler', 'tintUniforms']);
+
+        expect(() => renderer.bindGroup.getBindGroup(bindGroup, program, 0))
+            .toThrow(/no usable resource for the shader's 'tintUniforms' binding/);
     });
 });
