@@ -10,6 +10,7 @@ import { blockDataMap, gpuUploadCompressedTextureResource } from './uploaders/gp
 import { createGpuUploadCubeTextureResource } from './uploaders/gpuUploadCubeTextureResource';
 import { gpuUploadImageResource } from './uploaders/gpuUploadImageSource';
 import { gpuUploadVideoResource } from './uploaders/gpuUploadVideoSource';
+import { assertMipmap3dTexture, Gpu3dMipmapGenerator } from './utils/Gpu3dMipmapGenerator';
 import { GpuMipmapGenerator } from './utils/GpuMipmapGenerator';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
@@ -45,6 +46,21 @@ export class GPUTextureGpuData implements GPUData
         this.textureViews = null;
         this.gpuTexture = null;
     }
+}
+
+/** formats that have an `-srgb` version (8-bit RGBA/BGRA and the compressed colour formats) */
+const SRGB_CAPABLE = /^(rgba8|bgra8|bc[1237]-rgba-|etc2-rgb8|etc2-rgb8a1|etc2-rgba8|astc-\d+x\d+-)unorm$/;
+
+/**
+ * Declares the `-srgb` version of a format as an extra view format, so any texture that has one can
+ * also be bound through an sRGB `TextureView` (the GPU decodes gamma when sampling) from the same bytes.
+ * Pixi's own rendering keeps using the plain view. Declaring it measured free on Apple, Mali, Adreno
+ * and PowerVR GPUs.
+ * @param format - the texture's format
+ */
+function srgbViewFormat(format: GPUTextureFormat): GPUTextureFormat[] | undefined
+{
+    return SRGB_CAPABLE.test(format) ? [`${format}-srgb` as GPUTextureFormat] : undefined;
 }
 
 /**
@@ -111,6 +127,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     private _gpu: GPU;
     private _mipmapGenerator?: GpuMipmapGenerator;
+    private _mipmap3dGenerator?: Gpu3dMipmapGenerator;
 
     private readonly _renderer: WebGPURenderer;
     private readonly _managedTextures: GCManagedHash<TextureSource>;
@@ -148,6 +165,12 @@ export class GpuTextureSystem implements System, CanvasGenerator
     protected contextChange(gpu: GPU): void
     {
         this._gpu = gpu;
+
+        // everything created by the previous device died with it
+        this._managedTextures.removeAll();
+        this._gpuSamplers = Object.create(null);
+        this._mipmapGenerator = null;
+        this._mipmap3dGenerator = null;
     }
 
     /**
@@ -164,12 +187,16 @@ export class GpuTextureSystem implements System, CanvasGenerator
     {
         if (source.autoGenerateMipmaps)
         {
-            const biggestDimension = Math.max(source.pixelWidth, source.pixelHeight);
+            // fail before allocating a mip chain that could never be filled
+            if (source.dimension === '3d') assertMipmap3dTexture(source.format, source.storage);
+
+            const biggestDimension = Math.max(source.pixelWidth, source.pixelHeight, source.depth);
 
             source.mipLevelCount = Math.floor(Math.log2(biggestDimension)) + 1;
         }
 
         let usage: number;
+        let viewFormats: GPUTextureFormat[];
 
         if (source.sampleCount > 1)
         {
@@ -177,10 +204,9 @@ export class GpuTextureSystem implements System, CanvasGenerator
             // copied — so they need RENDER_ATTACHMENT alone.
             usage = GPUTextureUsage.RENDER_ATTACHMENT;
 
-            // TRANSIENT_ATTACHMENT goes on top only when the source is marked transient AND the
-            // browser exposes the bit. Mixing transient with any later loadOp:'load' is a spec
-            // violation, so callers must opt in via `transient: true` (pixi sets this for the
-            // canvas-root MSAA buffer; not for RenderTexture MSAA, which can be rebound by filters).
+            // TRANSIENT_ATTACHMENT goes on top when the source is marked transient AND the browser
+            // exposes the bit. The render target adaptor never loads or stores a transient MSAA colour
+            // buffer (a reopened pass restores it from the resolved texture instead).
             if (source.transient && this._renderer.device.extensions.transientAttachment)
             {
                 usage |= (GPUTextureUsage as { TRANSIENT_ATTACHMENT: number }).TRANSIENT_ATTACHMENT;
@@ -195,6 +221,10 @@ export class GpuTextureSystem implements System, CanvasGenerator
                 usage |= GPUTextureUsage.RENDER_ATTACHMENT;
                 usage |= GPUTextureUsage.COPY_SRC;
             }
+
+            if (source.storage) usage |= GPUTextureUsage.STORAGE_BINDING;
+
+            viewFormats = srgbViewFormat(source.format);
         }
 
         const blockData = blockDataMap[source.format] || { blockBytes: 4, blockWidth: 1, blockHeight: 1 };
@@ -205,8 +235,9 @@ export class GpuTextureSystem implements System, CanvasGenerator
         const textureDescriptor: GPUTextureDescriptor = {
             label: source.label,
             // WebGPU cube textures are 2D textures with 6 array layers and a cube view.
-            size: { width, height, depthOrArrayLayers: source.arrayLayerCount },
+            size: { width, height, depthOrArrayLayers: source.depthOrArrayLayers },
             format: source.format,
+            viewFormats,
             sampleCount: source.sampleCount,
             mipLevelCount: source.mipLevelCount,
             dimension: source.dimension,
@@ -251,13 +282,17 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     protected onUpdateMipmaps(source: TextureSource): void
     {
-        if (!this._mipmapGenerator)
-        {
-            this._mipmapGenerator = new GpuMipmapGenerator(this._gpu.device);
-        }
-
         const gpuTexture = this.getGpuSource(source);
 
+        if (source.dimension === '3d')
+        {
+            this._mipmap3dGenerator ??= new Gpu3dMipmapGenerator(this._gpu.device);
+            this._mipmap3dGenerator.generateMipmap(gpuTexture);
+
+            return;
+        }
+
+        this._mipmapGenerator ??= new GpuMipmapGenerator(this._gpu.device);
         this._mipmapGenerator.generateMipmap(gpuTexture);
     }
 
@@ -377,6 +412,11 @@ export class GpuTextureSystem implements System, CanvasGenerator
             gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
         }
 
+        // a 3D texture renders through a whole-volume view, and the pass picks the slice with `depthSlice`
+        const is3D = source.dimension === '3d';
+
+        if (is3D) layer = 0;
+
         // numeric fast path for the common case; explicit descriptors get the full string key.
         // (+1 keeps mip 0 / layer 0 distinct from the default bind view at key 0)
         let descriptorKey: string | number = (layer * (source.mipLevelCount || 1)) + mipLevel + 1;
@@ -387,7 +427,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
         }
 
         gpuData.textureViews[descriptorKey] ||= gpuData.gpuTexture.createView({
-            dimension: '2d',
+            dimension: is3D ? '3d' : '2d',
             baseMipLevel: mipLevel,
             mipLevelCount: 1,
             baseArrayLayer: layer,
@@ -485,6 +525,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
         (this._renderer as null) = null;
         this._gpu = null;
         this._mipmapGenerator = null;
+        this._mipmap3dGenerator = null;
         this._gpuSamplers = null;
         this._bindGroupHash = null;
     }

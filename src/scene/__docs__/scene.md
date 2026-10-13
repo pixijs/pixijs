@@ -206,6 +206,7 @@ sprite.setMask({ mask: maskSprite, channel: 'alpha' });
 - The mask is **not rendered**; it only defines the visible area. It must be added to the display list.
 - Only one mask can be assigned per object.
 - For advanced blending, use **alpha masks** or **filters** (covered in later guides).
+- Remove a mask (`container.mask = null`) before destroying the mask or its texture. If a sprite mask's texture is destroyed while still assigned, PixiJS renders the mask as empty and logs `[MaskFilter] The mask texture was destroyed while the mask is still in use. Remove the mask before destroying its texture.` in debug builds.
 
 ## Filters
 

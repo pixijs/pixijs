@@ -66,6 +66,10 @@ loadSvg.config.parseAsGraphicsContext = true;
 
 Flip the default mode globally. Any subsequent `Assets.load('*.svg')` call parses as Graphics unless overridden in the asset's `data` options.
 
+### What Graphics mode parses
+
+Graphics mode reads `<path>` (including `fill-rule="evenodd"` holes), `<rect>`, `<circle>`, `<ellipse>`, `<line>`, `<polygon>`, `<polyline>`, and `<g>`. Styling comes from the `fill`, `stroke`, `stroke-width`, `fill-opacity`, `stroke-opacity`, and `opacity` attributes or inline `style="..."`. Fills and strokes can reference `<linearGradient>` and `<radialGradient>` definitions through `url(#id)`; `gradientUnits` and percentage coordinates are honored. Not supported: `transform` attributes, `<style>` blocks, `stroke-dasharray`/`stroke-linecap`/`stroke-linejoin`, `gradientTransform`, `spreadMethod`, `stop-opacity`, `<text>`, `<image>`, `<use>`, `<clipPath>`, `<mask>`, `<pattern>`, and filters. Unsupported elements are skipped with a console warning. Texture mode has none of these limits because the browser rasterizes the file.
+
 ### When to use which mode
 
 | Mode                                      | Best for                                          | Cost                                                           |
@@ -117,7 +121,7 @@ SVGs that reference external images via `<image href="...">` may fail to load if
 
 ### [MEDIUM] CSS in `<style>` elements
 
-Not all CSS features are supported in Graphics mode; the parser extracts geometry, fill, and stroke, but ignores advanced CSS like `filter` or `mask`. For full CSS fidelity, use texture mode.
+Graphics mode does not read `<style>` blocks or class selectors at all; only presentation attributes and inline `style="..."` are parsed, so class-styled shapes render with the default black fill. Move the styling inline, or use texture mode for full CSS fidelity.
 
 
 ## API Reference

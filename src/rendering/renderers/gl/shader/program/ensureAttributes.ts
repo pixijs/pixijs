@@ -32,7 +32,7 @@ export function ensureAttributes(
             attribute.offset ??= attributeData.offset;
             attribute.instance ??= attributeData.instance;
         }
-        else
+        else if (!attribute.format)
         {
             // eslint-disable-next-line max-len
             warn(`Attribute ${i} is not present in the shader, but is present in the geometry. Unable to infer attribute details.`);

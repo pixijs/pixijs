@@ -1,10 +1,16 @@
 import { AccessibilitySystem } from '../AccessibilitySystem';
 import '../init';
 import { getWebGLRenderer } from '@test-utils';
+import { Application } from '~/app';
 import { Container } from '~/scene';
 
 describe('AccessibilitySystem', () =>
 {
+    afterEach(() =>
+    {
+        jest.restoreAllMocks();
+    });
+
     it('should be plugin for renderer', async () =>
     {
         const renderer = await getWebGLRenderer();
@@ -65,6 +71,62 @@ describe('AccessibilitySystem', () =>
         system['_onMouseMove'](new MouseEvent('mousemove', { movementX: 10, movementY: 10 }));
         expect(system.isActive).toBe(false);
 
+        renderer.destroy();
+    });
+
+    it('should register the keydown listener in init and keep it across activate and deactivate cycles', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const system = new AccessibilitySystem(renderer);
+
+        const addSpy = jest.spyOn(globalThis, 'addEventListener');
+        const removeSpy = jest.spyOn(globalThis, 'removeEventListener');
+        const keydownAdds = () => addSpy.mock.calls.filter(([type]) => type === 'keydown');
+        const keydownRemovals = () => removeSpy.mock.calls.filter(([type]) => type === 'keydown');
+
+        system.init();
+
+        const onKeyDown = system['_boundOnKeyDown'];
+        const pressTab = () => onKeyDown(new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
+
+        expect(keydownAdds()).toHaveLength(1);
+        expect(addSpy).toHaveBeenCalledWith('keydown', onKeyDown, false);
+
+        pressTab();
+        expect(system.isActive).toBe(true);
+
+        system.setAccessibilityEnabled(false);
+        expect(system.isActive).toBe(false);
+        expect(keydownAdds()).toHaveLength(1);
+
+        pressTab();
+        expect(system.isActive).toBe(true);
+        expect(keydownAdds()).toHaveLength(1);
+
+        system.destroy();
+        expect(keydownRemovals()).toHaveLength(1);
+        expect(removeSpy).toHaveBeenCalledWith('keydown', onKeyDown);
+
+        renderer.destroy();
+    });
+
+    it('should not register a keydown listener when activateOnTab is false', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const system = new AccessibilitySystem(renderer);
+
+        const addSpy = jest.spyOn(globalThis, 'addEventListener');
+
+        system.init({ accessibilityOptions: { activateOnTab: false } });
+
+        system.setAccessibilityEnabled(true);
+        expect(system.isActive).toBe(true);
+        system.setAccessibilityEnabled(false);
+        expect(system.isActive).toBe(false);
+
+        expect(addSpy.mock.calls.filter(([type]) => type === 'keydown')).toHaveLength(0);
+
+        system.destroy();
         renderer.destroy();
     });
 
@@ -129,6 +191,7 @@ describe('AccessibilitySystem', () =>
         const expectedInnerHTML = `type: button<br> title : myCustomTitle<br> tabIndex: 2`;
 
         expect(container._accessibleDiv.innerHTML).toBe(expectedInnerHTML);
+        expect(container._accessibleDiv.style.color).toBe('');
 
         renderer.destroy();
     });
@@ -159,6 +222,58 @@ describe('AccessibilitySystem', () =>
         expect(container._accessibleDiv.type).toBe('button');
         expect(container._accessibleDiv.title).toBe('myCustomTitle');
         expect(container._accessibleDiv.getAttribute('aria-label')).toBe('myCustomHint');
+
+        renderer.destroy();
+    });
+
+    it('should set accessibleText on the default button type, and on recycled divs', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        const system = new AccessibilitySystem(renderer);
+
+        system.init({
+            accessibilityOptions: {
+                enabledByDefault: true
+            }
+        });
+
+        system['_isRunningTests'] = true;
+
+        const stage = new Container();
+
+        // `accessibleType` defaults to 'button'
+        const myButton = new Container();
+
+        myButton.accessible = true;
+        myButton.accessibleText = 'myButtonText';
+        stage.addChild(myButton);
+
+        renderer.render(stage);
+        system.postrender();
+
+        expect(myButton._accessibleDiv.tagName).toBe('BUTTON');
+        expect(myButton._accessibleDiv.innerText).toBe('myButtonText');
+        expect(myButton._accessibleDiv.style.color).toBe('transparent');
+
+        const firstDiv = myButton._accessibleDiv;
+
+        // Disable it so its div goes back to the pool
+        myButton.accessible = false;
+        renderer.render(stage);
+        system.postrender();
+
+        const myOtherButton = new Container();
+
+        myOtherButton.accessible = true;
+        myOtherButton.accessibleText = 'myOtherButtonText';
+        stage.addChild(myOtherButton);
+
+        renderer.render(stage);
+        system.postrender();
+
+        expect(myOtherButton._accessibleDiv).toBe(firstDiv);
+        expect(myOtherButton._accessibleDiv.innerText).toBe('myOtherButtonText');
 
         renderer.destroy();
     });
@@ -285,5 +400,26 @@ describe('AccessibilitySystem', () =>
         expect(myButton2._accessibleDiv.hasAttribute('aria-label')).toBe(false);
 
         renderer.destroy();
+    });
+
+    it('should accept accessibilityOptions through the public application options', async () =>
+    {
+        // `accessibilityOptions` is documented on AccessibilitySystem and used by the guides,
+        // but the accessibility system is registered as an extension rather than a shared
+        // system, so it is not picked up by ExtractRendererOptions. This asserts the option
+        // is part of the public option type: without the mixin declaration this file does
+        // not type check.
+        const app = new Application();
+
+        await app.init({
+            accessibilityOptions: {
+                enabledByDefault: true,
+                deactivateOnMouseMove: false,
+            },
+        });
+
+        expect(app.renderer.accessibility.isActive).toBe(true);
+
+        app.destroy();
     });
 });

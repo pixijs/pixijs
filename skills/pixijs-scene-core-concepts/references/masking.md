@@ -99,12 +99,14 @@ Both alpha and stencil masks support inverse on WebGL and WebGPU. Canvas2D does 
 
 ```ts
 container.mask = null;
-
-container.mask = null;
 mask.destroy();
+
+// Sprite masks: clear the mask before destroying its texture
+photoGroup.mask = null;
+maskSprite.destroy({ texture: true, textureSource: true });
 ```
 
-Always use `container.mask = null` to clear a mask. `setMask({ mask: null })` does not work due to an internal falsy check. Always remove the mask reference before destroying either the mask or the masked object.
+Always use `container.mask = null` to clear a mask. `setMask({ mask: null })` does not work due to an internal falsy check. Remove the mask reference before destroying the mask, the masked object, or (for sprite masks) the mask's texture. A sprite mask whose texture is destroyed while still assigned renders as empty and, in debug builds, logs `[MaskFilter] The mask texture was destroyed while the mask is still in use. Remove the mask before destroying its texture.`
 
 ## Common Mistakes
 

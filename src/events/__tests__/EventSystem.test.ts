@@ -1,3 +1,4 @@
+import { expectTypeOf } from 'expect-type';
 import { setTimeout } from 'timers/promises';
 import '~/scene/graphics/init';
 import { EventSystem } from '../EventSystem';
@@ -6,6 +7,7 @@ import { getApp, getWebGLRenderer } from '@test-utils';
 import { Rectangle } from '~/maths';
 import { Container, Graphics } from '~/scene';
 
+import type { FederatedPointerEvent } from '../FederatedPointerEvent';
 import type { RendererOptions } from '~/rendering';
 
 async function createRenderer(
@@ -95,6 +97,15 @@ function createScene(nested = true)
     return [stage, graphics];
 }
 
+function dispatchContextMenu(target: EventTarget, clientX = 25, clientY = 25): MouseEvent
+{
+    const event = new MouseEvent('contextmenu', { clientX, clientY, bubbles: true, cancelable: true });
+
+    target.dispatchEvent(event);
+
+    return event;
+}
+
 class CustomElement extends HTMLElement
 {
     static tagName = 'custom-element';
@@ -167,6 +178,7 @@ describe('EventSystem', () =>
             { type: 'pointerover' },
             { type: 'pointerout', native: 'pointerleave', clientX: 150, clientY: 150 },
         ],
+        { type: 'contextmenu' },
         /* mouse- events */
         { type: 'mousedown' },
         { type: 'mousemove' },
@@ -208,6 +220,7 @@ describe('EventSystem', () =>
         pointerup: '_onPointerUp',
         pointerover: '_onPointerOverOut',
         pointerleave: '_onPointerOverOut',
+        contextmenu: '_onContextMenu',
         mousedown: '_onPointerDown',
         mousemove: '_onPointerMove',
         mouseup: '_onPointerUp',
@@ -1218,5 +1231,188 @@ describe('EventSystem', () =>
         click(); // Three times
 
         expect(eventSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should dispatch contextmenu to the object under the pointer', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene(false);
+        const listener = jest.fn();
+
+        renderer.render(stage);
+        graphics.on('contextmenu', (e) => listener(e.type, e.target, e.global.x, e.global.y));
+
+        dispatchContextMenu(renderer.canvas, 20, 30);
+
+        expect(listener).toHaveBeenCalledOnce();
+        expect(listener).toHaveBeenCalledWith('contextmenu', graphics, 20, 30);
+    });
+
+    it('should call oncontextmenu and addEventListener listeners for contextmenu', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene(false);
+        const handler = jest.fn();
+        const listener = jest.fn();
+
+        renderer.render(stage);
+        graphics.oncontextmenu = handler;
+        graphics.addEventListener('contextmenu', (e) =>
+        {
+            expectTypeOf(e).toEqualTypeOf<FederatedPointerEvent>();
+            listener();
+        });
+
+        dispatchContextMenu(renderer.canvas);
+
+        expect(handler).toHaveBeenCalledOnce();
+        expect(listener).toHaveBeenCalledOnce();
+    });
+
+    it('should not cancel the native contextmenu event when autoPreventDefault is on', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene(false);
+        const listener = jest.fn();
+
+        renderer.render(stage);
+        renderer.events.autoPreventDefault = true;
+        graphics.on('contextmenu', listener);
+
+        const nativeEvent = dispatchContextMenu(renderer.canvas);
+
+        expect(listener).toHaveBeenCalledOnce();
+        expect(nativeEvent.defaultPrevented).toBe(false);
+    });
+
+    it('should cancel the native contextmenu event when a listener calls preventDefault', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene(false);
+
+        renderer.render(stage);
+        graphics.on('contextmenu', (e) => e.preventDefault());
+
+        const nativeEvent = dispatchContextMenu(renderer.canvas);
+
+        expect(nativeEvent.defaultPrevented).toBe(true);
+    });
+
+    it('should not dispatch contextmenu when the click feature is off', async () =>
+    {
+        const renderer = await createRenderer(undefined, undefined, {
+            eventFeatures: { click: false },
+        });
+        const [stage, graphics] = createScene(false);
+        const listener = jest.fn();
+
+        renderer.render(stage);
+        graphics.on('contextmenu', listener);
+
+        dispatchContextMenu(renderer.canvas);
+
+        expect(listener).not.toHaveBeenCalled();
+    });
+
+    it('should not dispatch or cancel contextmenu over empty space', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene(false);
+        const listener = jest.fn((e: FederatedPointerEvent) => e.preventDefault());
+
+        stage.eventMode = 'static';
+        renderer.render(stage);
+        stage.on('contextmenu', listener);
+        graphics.on('contextmenu', listener);
+
+        const nativeEvent = dispatchContextMenu(renderer.canvas, 75, 75);
+
+        expect(listener).not.toHaveBeenCalled();
+        expect(nativeEvent.defaultPrevented).toBe(false);
+    });
+
+    it('should move the contextmenu listener to the new element on setTargetElement', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene(false);
+        const listener = jest.fn();
+        const oldCanvas = renderer.canvas;
+        const newCanvas = document.createElement('canvas');
+
+        renderer.render(stage);
+        graphics.on('contextmenu', listener);
+        renderer.events.setTargetElement(newCanvas);
+
+        dispatchContextMenu(oldCanvas);
+
+        expect(listener).not.toHaveBeenCalled();
+
+        dispatchContextMenu(newCanvas);
+
+        expect(listener).toHaveBeenCalledOnce();
+    });
+
+    it('should leave the last pointer state untouched when contextmenu fires', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene(false);
+        const listener = jest.fn();
+
+        renderer.render(stage);
+        graphics.on('contextmenu', listener);
+
+        renderer.canvas.dispatchEvent(new PointerEvent('pointerdown', {
+            pointerType: 'touch',
+            pointerId: 5,
+            clientX: 10,
+            clientY: 10,
+            bubbles: true,
+        }));
+        dispatchContextMenu(renderer.canvas, 30, 40);
+
+        const pointer = renderer.events.pointer;
+
+        expect(listener).toHaveBeenCalledOnce();
+        expect(pointer.type).toBe('pointerdown');
+        expect(pointer.pointerType).toBe('touch');
+        expect(pointer.pointerId).toBe(5);
+        expect(pointer.global.x).toBe(10);
+        expect(pointer.global.y).toBe(10);
+    });
+
+    it('should capture and bubble contextmenu through the scene', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene(false);
+        const order: string[] = [];
+
+        stage.eventMode = 'static';
+        renderer.render(stage);
+        stage.on('contextmenucapture', () => order.push('stage capture'));
+        graphics.on('contextmenu', () => order.push('graphics'));
+        stage.on('contextmenu', (e) =>
+        {
+            order.push('stage');
+            e.preventDefault();
+        });
+
+        const nativeEvent = dispatchContextMenu(renderer.canvas);
+
+        expect(order).toEqual(['stage capture', 'graphics', 'stage']);
+        expect(nativeEvent.defaultPrevented).toBe(true);
+    });
+
+    it('should dispatch contextmenu when pointer events are not supported', async () =>
+    {
+        const renderer = await createRenderer(undefined, false);
+        const [stage, graphics] = createScene(false);
+        const listener = jest.fn();
+
+        renderer.render(stage);
+        graphics.on('contextmenu', listener);
+
+        dispatchContextMenu(renderer.canvas);
+
+        expect(listener).toHaveBeenCalledOnce();
     });
 });

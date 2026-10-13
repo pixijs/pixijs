@@ -1,6 +1,6 @@
 ---
 name: pixijs-custom-rendering
-description: "Use this skill when writing custom shaders, uniforms, filters, or batchers in PixiJS v8. Covers Shader.from({gl, gpu, resources}), GlProgram/GpuProgram, UniformGroup with typed uniforms (f32, vec2, mat4x4), UBO mode, textures as resources, custom Filter via Filter.from, GLSL ES 3.0 conventions (in/out, finalColor, texture()), uBackTexture sampling, pixi.js/unsafe-eval for strict CSP, custom Batcher via extensions. Triggers on: Shader, GlProgram, GpuProgram, UniformGroup, Batcher, Filter, Filter.from, GLSL, WGSL, UBO, uniform, custom shader, finalColor, uBackTexture, blendRequired, unsafe-eval."
+description: "Use this skill when writing custom shaders, uniforms, filters, batchers, or low-level draw code in PixiJS v8. Covers Shader.from({gl, gpu, resources}), GlProgram/GpuProgram, UniformGroup with typed uniforms (f32, vec2, mat4x4), UBO mode, textures as resources, TextureView for depth sampling, 3D and array textures (depth, arrayLayerCount, sampler3D, texture_3d), WebGPU storage textures (storage: true), WGSL override constants, custom bind group layouts (gpuLayout), partial buffer updates (Buffer.update), Geometry.vertexCount/indexCount, TexturePool scratch textures, State winding and culling (clockwiseFrontFace, cullMode), WebGPU render bundles, custom Filter via Filter.from, GLSL ES 3.0 conventions (finalColor), uBackTexture sampling, pixi.js/unsafe-eval for strict CSP, custom Batcher and InstructionPipe.destroyInstructionSet via extensions. Triggers on: Shader, GLSL, WGSL, uniform, custom shader, blendRequired, ShaderOverrides, bind group layout, depth texture, 3D texture, sampler3D, texture_3d, storage texture, getSize, indexCount, TexturePool, getOptimalTexture, destroyInstructionSet, beginBundle, executeBundle, RenderBundle."
 license: MIT
 ---
 
@@ -65,7 +65,7 @@ const shader = Shader.from({
 
 If only `gl` is provided, the shader works with WebGL only. If only `gpu` is provided, it works with WebGPU only. The `compatibleRenderers` bitmask is set automatically.
 
-`GlProgram` does **not** auto-inject `#version 300 es`. If you write `#version 300 es` yourself, PixiJS preserves it and treats the shader as GLSL ES 3.0; otherwise it injects WebGL1 compat macros (`#define in varying`, `#define texture texture2D`) and runs the shader as WebGL1-style GLSL. `GlProgram` always injects a default precision (`highp` vertex, `mediump` fragment) and the program name. For GLSL ES 3.0, use `in`/`out` instead of `attribute`/`varying`, `texture()` instead of `texture2D()`, and an `out vec4` instead of `gl_FragColor`.
+`GlProgram` does **not** auto-inject `#version 300 es`. If you write `#version 300 es` yourself, PixiJS preserves it and treats the shader as GLSL ES 3.0; otherwise it injects WebGL1 compat macros (`#define in varying`, `#define texture texture2D`) and runs the shader as WebGL1-style GLSL. `GlProgram` always injects a default precision (`highp` vertex, `mediump` fragment) and the program name. It also declares `highp` for sampler types GLSL ES 3.0 gives no default (`usampler2D`, `isampler2D`, `sampler2DArray`, `sampler3D`, and others), so you don't need a precision line for them; one you write yourself is kept. `sampler2D` and `samplerCube` keep their `lowp` default. For GLSL ES 3.0, use `in`/`out` instead of `attribute`/`varying`, `texture()` instead of `texture2D()`, and an `out vec4` instead of `gl_FragColor`.
 
 ### Textures as resources
 
@@ -198,6 +198,21 @@ shader.resources.myUniforms.uniforms.uTime = performance.now() / 1000;
 shader.resources.myUniforms.update();
 ```
 
+### Advanced GPU features
+
+See [references/advanced-gpu.md](references/advanced-gpu.md) for full samples of:
+
+- **Partial buffer and texture uploads**: `buffer.update(sizeInBytes, offsetInBytes)` uploads only the changed byte range; `bufferImageSource.update(startTexel, endTexel)` uploads only a texel range of a data texture.
+- **Vertex and index counts, winding, culling**: `geometry.vertexCount` (replaces the deprecated `getSize()`), `geometry.indexCount` to draw a prefix of a shared index buffer, `state.clockwiseFrontFace` and `cullMode`.
+- **WGSL override constants** (WebGPU): `Shader.from({ gpu, resources, overrides: { STEPS: 8 } })`; each distinct set compiles its own pipeline.
+- **Custom bind group layouts** (WebGPU): generate the default with `generateGpuLayoutGroups(extractStructAndGroups(source))`, edit it, pass it as `gpuLayout`.
+- **Depth sampling with `TextureView`** (WebGPU): bind `new TextureView(depth, { aspect: "depth-only" })` as a resource while the target's depth attachment is `depthReadOnly`.
+- **Integer textures**: `BufferImageSource` with `rgba32uint` etc., `usampler2D`/`texelFetch` and `texture_2d<u32>`/`textureLoad`, `scaleMode: "nearest"`.
+- **3D and array textures**: `depth` or `arrayLayerCount` on a `TextureSource`/`BufferImageSource`, sampled with `sampler3D`/`texture_3d<f32>` or `sampler2DArray`/`texture_2d_array<f32>`; they upload whole, and `renderer.render({ container, target: source, layer })` draws into one slice or layer.
+- **Storage textures** (WebGPU): `storage: true` on a `TextureSource`, then `renderer.texture.getGpuSource(source).createView()` to write it from your own compute pass.
+- **Render bundles** (WebGPU): record draws once with `encoder.beginBundle()` / `endBundle()` and replay with `executeBundle()` while `isBundleValid()` holds.
+- **Pooled scratch textures**: `TexturePool.getOptimalTexture({ width, height, resolution, antialias })` and `returnTexture()`.
+
 ### Uniform type reference
 
 See [references/uniform-types.md](references/uniform-types.md) for the complete table of supported types, their WGSL/GLSL equivalents, and value formats.
@@ -257,6 +272,15 @@ extensions.add(MyBatcher);
 ```
 
 Elements reference the batcher by `batcherName`. The `BatchableElement` interface requires: `batcherName`, `texture`, `blendMode`, `indexSize`, `attributeSize`, `topology`, and `packAsQuad`.
+
+A custom `InstructionPipe` that caches state per `InstructionSet` (the way `BatcherPipe` keeps its batchers) should implement `destroyInstructionSet(instructionSet)`. The renderer calls it when the owning render group is destroyed, so the cached GPU objects are released with it instead of leaking.
+
+```ts
+public destroyInstructionSet(instructionSet: InstructionSet): void {
+  this._cache[instructionSet.uid]?.destroy();
+  delete this._cache[instructionSet.uid];
+}
+```
 
 ## Common Mistakes
 
@@ -336,6 +360,33 @@ const shader = Shader.from({
 Textures are resources, not uniforms. Pass `texture.source` (TextureSource) and `texture.source.style` (TextureStyle) as top-level resource entries.
 
 
+### [HIGH] Replaying a render bundle against a different render target
+
+Wrong:
+
+```ts
+const bundle = encoder.endBundle();
+// later, on every frame, regardless of what is bound
+encoder.executeBundle(bundle);
+```
+
+Correct:
+
+```ts
+if (!bundle || !encoder.isBundleValid(bundle)) {
+  bundle = record();
+}
+encoder.executeBundle(bundle);
+```
+
+A bundle bakes the attachments and winding of the pass it was recorded in, and the device it was recorded on. Replaying it under a different target either fails WebGPU validation for the whole frame or silently renders inside out; replaying it after a device loss is rejected outright.
+
+
+### [MEDIUM] Reading Geometry.getSize()
+
+`geometry.getSize()` is deprecated since 8.20.0 and logs a warning. Use `geometry.vertexCount`, which is cached and only recomputed when buffers or attributes change.
+
+
 ## API Reference
 
 - [Shader](https://pixijs.download/release/docs/rendering.Shader.html.md)
@@ -345,3 +396,10 @@ Textures are resources, not uniforms. Pass `texture.source` (TextureSource) and 
 - [Filter](https://pixijs.download/release/docs/filters.Filter.html.md)
 - [Batcher](https://pixijs.download/release/docs/rendering.Batcher.html.md)
 - [BatcherPipe](https://pixijs.download/release/docs/rendering.BatcherPipe.html.md)
+- [ShaderOverrides](https://pixijs.download/release/docs/rendering.ShaderOverrides.html.md)
+- [TextureView](https://pixijs.download/release/docs/rendering.TextureView.html.md)
+- [RenderTarget](https://pixijs.download/release/docs/rendering.RenderTarget.html.md)
+- [GpuEncoderSystem](https://pixijs.download/release/docs/rendering.GpuEncoderSystem.html.md)
+- [RenderBundle](https://pixijs.download/release/docs/rendering.RenderBundle.html.md)
+- [Geometry](https://pixijs.download/release/docs/rendering.Geometry.html.md)
+- [State](https://pixijs.download/release/docs/rendering.State.html.md)

@@ -2,8 +2,10 @@ import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
-import { type RendererOptions } from '../../types';
+import { type Renderer, type RendererOptions } from '../../types';
 import { RenderTarget } from '../renderTarget/RenderTarget';
+import { CanvasPool } from '../texture/CanvasPool';
+import { TexturePool } from '../texture/TexturePool';
 import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
@@ -49,6 +51,15 @@ export interface ViewSystemOptions
     antialias?: boolean;
     /** Whether to ensure the main view has can make use of the depth buffer. Always true for WebGL renderer. */
     depth?: boolean;
+    /**
+     * WebGPU only, with `antialias`. WebGL ignores it. Discards the canvas's multisample buffers at the end of each pass
+     * instead of writing them to memory: depth/stencil, and colour on GPUs that aren't tile-based (tile-based GPUs
+     * already discard colour). Only for apps that never reopen the canvas pass while still needing its depth or stencil:
+     * no filters or masks popping back onto it, no second `render` with `clear: false`.
+     * See {@link TextureSourceOptions.transient}.
+     * @default false
+     */
+    transient?: boolean;
 }
 
 /**
@@ -137,6 +148,8 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
     /** The render target that the view is drawn to. */
     public renderTarget: RenderTarget;
 
+    private readonly _renderer: Renderer;
+
     /** The resolution / device pixel ratio of the renderer. */
     get resolution(): number
     {
@@ -150,6 +163,11 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
             this.texture.source.height,
             value
         );
+    }
+
+    constructor(renderer: Renderer)
+    {
+        this._renderer = renderer;
     }
 
     /**
@@ -175,15 +193,27 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         this.screen = new Rectangle(0, 0, options.width, options.height);
         this.canvas = options.canvas || DOMAdapter.get().createCanvas();
         this.antialias = !!options.antialias;
-        this.texture = getCanvasTexture(this.canvas, options);
+
+        // `depth` asks for a depth buffer here, but on a TextureSource it's a 3D texture's depth,
+        // so it goes to the render target and not to the canvas source
+        const { depth, ...canvasOptions } = options;
+
+        this.texture = getCanvasTexture(this.canvas, canvasOptions);
         this.renderTarget = new RenderTarget({
             colorTextures: [this.texture],
-            depth: !!options.depth,
+            depth: !!depth,
             isRoot: true,
         });
 
         this.texture.source.transparent = (options as RendererOptions).backgroundAlpha < 1;
+
+        // every change of screen size - the resolution set below, the resolution setter and
+        // renderer.resize - ends in the source resizing, so this is the one place to hook the pools
+        this.texture.source.on('resize', this._updateScreenSize, this);
+
         this.resolution = options.resolution;
+
+        this._updateScreenSize();
     }
 
     /**
@@ -217,9 +247,27 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
             this.canvas.parentNode.removeChild(this.canvas);
         }
 
+        this.texture.source.off('resize', this._updateScreenSize, this);
+
+        TexturePool.removeScreen(this._renderer.uid);
+        CanvasPool.removeScreen(this._renderer.uid);
+
         this.texture.destroy();
 
         // note: don't nullify the element
         //       other systems may need to unbind from it during the destroy iteration (eg. GLContextSystem)
+    }
+
+    /**
+     * Tells the texture and canvas pools how big this renderer's screen is, in physical pixels, so they
+     * can hand out screen sized resources instead of rounding every request up to a power of two.
+     */
+    private _updateScreenSize(): void
+    {
+        const { pixelWidth, pixelHeight } = this.texture.source;
+        const uid = this._renderer.uid;
+
+        TexturePool.setScreenSize(uid, pixelWidth, pixelHeight);
+        CanvasPool.setScreenSize(uid, pixelWidth, pixelHeight);
     }
 }

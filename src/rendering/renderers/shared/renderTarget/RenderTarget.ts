@@ -1,5 +1,6 @@
 // what we are building is a platform and a framework.
 // import { Matrix } from '../../shared/maths/Matrix';
+import EventEmitter from 'eventemitter3';
 import { uid } from '../../../../utils/data/uid';
 import { TextureSource } from '../texture/sources/TextureSource';
 import { Texture } from '../texture/Texture';
@@ -121,8 +122,16 @@ export interface PixiDepthStencilAttachment extends Omit<GPURenderPassDepthStenc
  * @category rendering
  * @advanced
  */
-export class RenderTarget
+export class RenderTarget extends EventEmitter<{
+    destroy: RenderTarget,
+}>
 {
+    /**
+     * emits when the render target is destroyed, before its attachments are released.
+     * letting the renderer know that it needs to free the framebuffers and MSAA buffers it built for it
+     * @event destroy
+     */
+
     /** The default options for a render target */
     public static defaultOptions: RenderTargetOptions = {
         /** the width of the RenderTarget */
@@ -189,6 +198,8 @@ export class RenderTarget
      */
     constructor(options: RenderTargetOptions | RenderTargetDescriptor = {})
     {
+        super();
+
         const descriptor = 'colorAttachments' in options ? options : this._normalizeOptions(options);
 
         this.isRoot = descriptor.isRoot ?? false;
@@ -423,6 +434,9 @@ export class RenderTarget
     {
         // return if already destroyed
         if (!this.colorAttachments && !this.depthStencilAttachment) return;
+
+        // announced before the attachments go, so listeners can still reach them
+        this.emit('destroy', this);
         this.sizeSource.off('resize', this.onSourceResize, this);
 
         if (this._managedColorTextures)
@@ -441,6 +455,7 @@ export class RenderTarget
 
         this.colorAttachments = null;
         this._colorTextures = null;
+        this.removeAllListeners();
     }
 
     /**

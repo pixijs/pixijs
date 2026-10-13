@@ -124,16 +124,88 @@ const obj = new Graphics().rect(0, 0, 100, 100).fill({
 
 ### Texture gotchas
 
-1. **Sprite Sheets**: Texture fills use the entire source image, not the cropped frame. To fill with a specific spritesheet frame, render it to a standalone texture first:
+1. **Sprite sheets**: In the default `'local'` space, a texture fill maps the whole source image (the entire atlas) onto the shape, not just the frame. Pass a `matrix` that maps the shape onto the frame's region of the source, or render the frame to a standalone texture first:
 
 ```ts
-const frame = Sprite.from('myFrame.png'); // a spritesheet frame
-const standalone = renderer.generateTexture(frame);
+import { Matrix, Sprite } from 'pixi.js';
 
-const obj = new Graphics().rect(0, 0, 100, 100).fill(standalone);
+const { frame, source } = texture; // a spritesheet frame
+const matrix = new Matrix(
+  frame.width / source.width, 0,
+  0, frame.height / source.height,
+  frame.x / source.width, frame.y / source.height,
+).invert();
+
+const obj = new Graphics().rect(0, 0, 100, 100).fill({ texture, matrix });
+
+// or bake the frame into its own texture
+const standalone = renderer.generateTexture(Sprite.from('myFrame.png'));
 ```
 
+In `'global'` space the frame origin and rotation are honored on every renderer, so a shape drawn at the frame's size shows exactly what a `Sprite` would. Tiling past the frame edges samples the surrounding atlas rather than repeating the frame.
+
 2. **Power of Two Textures**: Textures should be power-of-two dimensions for proper tiling in WebGL1 (WebGL2 and WebGPU are fine).
+
+## Fill with patterns
+
+`FillPattern` tiles a texture across a fill or stroke. Pass an options object with the texture and how it repeats:
+
+```ts
+import { Assets, FillPattern, Graphics } from 'pixi.js';
+
+const texture = await Assets.load('assets/bricks.png');
+
+const pattern = new FillPattern({
+  texture,
+  repetition: 'repeat', // 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat'
+});
+
+const obj = new Graphics().rect(0, 0, 200, 100).fill(pattern);
+```
+
+The positional form `new FillPattern(texture, 'repeat')` still works. If `repetition` is omitted the texture keeps its current wrap mode. Setting it changes the wrap mode on the texture's source, so every fill sharing that texture is affected.
+
+### Pattern texture space
+
+Unlike plain texture fills, patterns default to `textureSpace: 'global'`: tiles repeat continuously across the Graphics object's coordinate system, so adjacent shapes share one tiling grid. This is what you want for backgrounds and seamless textures.
+
+```ts
+const pattern = new FillPattern({ texture, repetition: 'repeat' }); // global by default
+
+const shapes = new Graphics()
+  .rect(0, 0, 60, 60)
+  .fill(pattern)
+  .rect(64, 64, 60, 60)
+  .fill(pattern); // the same grid continues into the second rect
+```
+
+Pass `textureSpace: 'local'` to stretch a single tile to each shape's bounds instead:
+
+```ts
+const fitted = new FillPattern({ texture, repetition: 'repeat', textureSpace: 'local' });
+
+const shapes = new Graphics()
+  .rect(0, 0, 192, 60)
+  .fill(fitted) // one tile stretched over 192x60
+  .rect(208, 0, 48, 60)
+  .fill(fitted); // one tile stretched over 48x60
+```
+
+Set `textureSpace` on the `FillPattern` itself. When a pattern is passed inside a style object, as in `fill({ fill: pattern, textureSpace: 'local' })`, the pattern's own `textureSpace` and transform replace the style's.
+
+### Transforming a pattern
+
+`setTransform(matrix)` copies the matrix onto the pattern to scale, rotate, or offset the tiling. Call it with no argument to reset. In local space a scale subdivides every shape into the same grid of tiles, whatever its size:
+
+```ts
+import { Matrix } from 'pixi.js';
+
+const grid = new FillPattern({ texture, repetition: 'repeat', textureSpace: 'local' });
+
+grid.setTransform(new Matrix().scale(0.25, 0.25)); // 4 tiles across every shape
+```
+
+Patterns work for strokes too: `.stroke({ width: 12, fill: pattern })`. They can also fill `Text`; see the [text style guide](../text/style.md).
 
 ## Fill with gradients
 
@@ -163,8 +235,8 @@ You can control the gradient direction with the following properties:
 - `end {x, y}`: Where the gradient ends, same coordinate space.
 
 Common patterns:
-- **Horizontal** (default): `start: {x: 0, y: 0}`, `end: {x: 1, y: 0}`
-- **Vertical**: `start: {x: 0, y: 0}`, `end: {x: 0, y: 1}`
+- **Vertical** (default): `start: {x: 0, y: 0}`, `end: {x: 0, y: 1}`
+- **Horizontal**: `start: {x: 0, y: 0}`, `end: {x: 1, y: 0}`
 - **Diagonal**: `start: {x: 0, y: 0}`, `end: {x: 1, y: 1}`
 
 ```ts
@@ -205,6 +277,11 @@ You can control the gradient's shape and size using the following properties:
 - `innerRadius`: Radius of the inner circle (normalized). The gradient starts here.
 - `outerCenter {x, y}`: Center of the outer circle. Usually the same as `center`.
 - `outerRadius`: Radius of the outer circle. The gradient ends here.
+- `rotation`: Rotation of the gradient in radians (default `0`).
+- `scale`: Vertical scale of the gradient (default `1`). Combine with `rotation` for an elliptical gradient.
+- `textureSpace`: `'local'` (default) reads all of the above as normalized 0-1 shape coordinates. `'global'` reads them as pixel coordinates of the Graphics object, so one gradient can span several shapes.
+
+`rotation` and `scale` apply to Graphics fills only, not text.
 
 The gradient transitions between the two circles. Set a small `innerRadius` and larger `outerRadius` to create a spotlight effect where the center color holds before blending outward.
 
@@ -225,6 +302,27 @@ const obj = new Graphics().rect(0, 0, 100, 100).fill(radialGradient);
 ```
 
 ![alt text](../media/graphics/image-8.png)
+
+Use `textureSpace: 'global'` to define one gradient in pixel coordinates and share it across shapes:
+
+```ts
+const shared = new FillGradient({
+  type: 'radial',
+  center: { x: 64, y: 64 },
+  outerRadius: 50,
+  textureSpace: 'global',
+  colorStops: [
+    { offset: 0, color: 'white' },
+    { offset: 1, color: 'red' },
+  ],
+});
+
+const obj = new Graphics()
+  .rect(8, 8, 50, 50)
+  .fill(shared)
+  .rect(64, 64, 56, 56)
+  .fill(shared); // both rects sample the same 100px gradient
+```
 
 ### Gradient gotchas
 

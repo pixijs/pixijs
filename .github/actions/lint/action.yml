@@ -5,4 +5,4 @@ runs:
   steps:
     - name: Run Tests
       shell: bash
-      run: npm run test -- lint types index prune
+      run: npm run test -- lint types index prune dts

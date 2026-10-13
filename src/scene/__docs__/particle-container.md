@@ -110,6 +110,19 @@ You can also use the shorthand:
 const particle = new Particle(Texture.from('spark.png'));
 ```
 
+## Inherited properties
+
+A `ParticleContainer` is a normal scene object, so `alpha`, `tint`, and `blendMode` set on it or on any ancestor apply to every particle it renders. Each particle's own `alpha` and `tint` multiply on top of that.
+
+```ts
+const group = new Container();
+group.alpha = 0.5;
+group.tint = 0xff0000;
+group.addChild(particleContainer); // every particle renders at half alpha with a red tint
+```
+
+`blendMode` defaults to `'inherit'`, so the container takes the blend mode of its nearest ancestor that sets one. Set `particleContainer.blendMode` directly to override it. All particles in a container share one blend mode.
+
 ---
 
 ## API reference

@@ -19,8 +19,6 @@ export interface BindResource
      */
     _resourceId: number;
 
-    _touched: number;
-
     /**
      * a boolean that indicates if the resource has been destroyed.
      * If true, the resource should not be used and any bind groups

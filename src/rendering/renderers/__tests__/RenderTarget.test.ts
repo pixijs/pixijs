@@ -5,8 +5,12 @@ import { RenderTexture } from '../shared/texture/RenderTexture';
 import { CanvasSource } from '../shared/texture/sources/CanvasSource';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
 import { Texture } from '../shared/texture/Texture';
-import { getWebGLRenderer } from '@test-utils';
+import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
 import { DOMAdapter } from '~/environment';
+import { Container } from '~/scene/container/Container';
+
+import type { WebGLRenderer } from '../gl/WebGLRenderer';
+import type { WebGPURenderer } from '../gpu/WebGPURenderer';
 
 describe('isRenderingToScreen', () =>
 {
@@ -125,7 +129,7 @@ describe('isRenderingToScreen', () =>
 
         expect(glRenderTarget.framebuffer).toBeNull();
         expect(glRenderTarget.resolveTargetFramebuffer).toBeNull();
-        expect(glRenderTarget.msaaRenderBuffer).toBeNull();
+        expect(glRenderTarget.msaaRenderBuffer).toEqual([]);
 
         expect(glRenderTarget).toBeInstanceOf(GlRenderTarget);
     });
@@ -263,5 +267,103 @@ describe('Depth-only RenderTarget', () =>
         expect(() => renderer.renderTarget.bind({ target: renderTarget, clear: true })).not.toThrow();
 
         renderTarget.destroy();
+    });
+});
+
+describe('caller-owned RenderTarget lifecycle', () =>
+{
+    const makeTarget = () => new RenderTarget({
+        colorTextures: [new TextureSource({ width: 16, height: 16 })],
+    });
+
+    it('should emit destroy once, before its attachments are released', () =>
+    {
+        const renderTarget = makeTarget();
+        const onDestroy = jest.fn((target: RenderTarget) => target.colorTextures.length);
+
+        renderTarget.on('destroy', onDestroy);
+        renderTarget.destroy();
+        renderTarget.on('destroy', onDestroy);
+
+        expect(() => renderTarget.destroy()).not.toThrow();
+        expect(onDestroy).toHaveBeenCalledTimes(1);
+        expect(onDestroy).toHaveReturnedWith(1);
+        expect(renderTarget.colorAttachments).toBeNull();
+    });
+
+    const backendLifecycleTests = (getRenderer: () => Promise<WebGLRenderer | WebGPURenderer>) =>
+    {
+        it('should drop its caches and free the backend counterpart when the target is destroyed', async () =>
+        {
+            const renderer = await getRenderer();
+            const system = renderer.renderTarget;
+            const renderTarget = makeTarget();
+
+            renderer.render({ container: new Container(), target: renderTarget });
+
+            expect(system['_renderSurfaceToRenderTargetHash'].get(renderTarget)).toBe(renderTarget);
+            expect(system['_gpuRenderTargetHash'][renderTarget.uid]).toBeDefined();
+
+            const destroyGpuRenderTargetSpy = jest.spyOn(system.adaptor, 'destroyGpuRenderTarget');
+            const destroySpy = jest.spyOn(renderTarget, 'destroy');
+
+            renderTarget.destroy();
+
+            expect(system['_renderSurfaceToRenderTargetHash'].has(renderTarget)).toBe(false);
+            expect(system['_gpuRenderTargetHash'][renderTarget.uid]).toBeNull();
+            expect(destroyGpuRenderTargetSpy).toHaveBeenCalledTimes(1);
+            expect(destroySpy).toHaveBeenCalledTimes(1);
+
+            renderer.destroy();
+        });
+
+        it('should free the backend counterpart on renderer teardown and leave the target intact', async () =>
+        {
+            const renderer = await getRenderer();
+            const system = renderer.renderTarget;
+            const renderTarget = makeTarget();
+
+            renderer.render({ container: new Container(), target: renderTarget });
+
+            const gpuRenderTarget = system.getGpuRenderTarget(renderTarget);
+            const destroyGpuRenderTargetSpy = jest.spyOn(system.adaptor, 'destroyGpuRenderTarget');
+            const destroySpy = jest.spyOn(renderTarget, 'destroy');
+
+            renderer.destroy();
+
+            const releases = destroyGpuRenderTargetSpy.mock.calls.filter(([target]) => target === gpuRenderTarget);
+
+            expect(releases).toHaveLength(1);
+            expect(destroySpy).not.toHaveBeenCalled();
+            expect(renderTarget.colorTextures).toHaveLength(1);
+            expect(renderTarget.listenerCount('destroy')).toBe(0);
+            expect(() => renderTarget.destroy()).not.toThrow();
+        });
+    };
+
+    describe('on WebGL', () =>
+    {
+        backendLifecycleTests(getWebGLRenderer);
+    });
+
+    describeLocalOnly('on WebGPU', () =>
+    {
+        backendLifecycleTests(getWebGPURenderer);
+    });
+
+    it('should delete the framebuffers of a destroyed target in WebGL', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const renderTarget = makeTarget();
+
+        renderer.render({ container: new Container(), target: renderTarget });
+
+        const deleteFramebufferSpy = jest.spyOn(renderer.gl, 'deleteFramebuffer');
+
+        renderTarget.destroy();
+
+        expect(deleteFramebufferSpy).toHaveBeenCalled();
+
+        renderer.destroy();
     });
 });

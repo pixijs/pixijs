@@ -114,6 +114,50 @@ describe('Ellipse', () =>
             expect(ellipse.strokeContains(9, 0, 3, 1)).toBe(true);
             expect(ellipse.strokeContains(8, 0, 3, 1)).toBe(false);
         });
+
+        it('should stroke the whole shape when the stroke reaches past the center', () =>
+        {
+            // both half-axes are 10, so an inner stroke of 40 leaves no unstroked interior and
+            // every point out to the unchanged outer edge lies on the stroke
+            const ellipse = new Ellipse(2, 2, 10, 10);
+
+            expect(ellipse.strokeContains(2, 2, 40, 1)).toBe(true);
+            expect(ellipse.strokeContains(8, 2, 40, 1)).toBe(true);
+            expect(ellipse.strokeContains(2, 11, 40, 1)).toBe(true);
+            expect(ellipse.strokeContains(12, 2, 40, 1)).toBe(true);
+
+            // beyond the outer edge is still not stroked
+            expect(ellipse.strokeContains(13, 2, 40, 1)).toBe(false);
+            expect(ellipse.strokeContains(2, -9, 40, 1)).toBe(false);
+        });
+
+        it('should stroke the whole shape when the stroke reaches exactly the center', () =>
+        {
+            // a centered stroke of 20 puts 10 of it inside, landing both inner half-axes on
+            // exactly 0, so the unstroked interior has shrunk to nothing
+            const ellipse = new Ellipse(0, 0, 10, 10);
+
+            expect(ellipse.strokeContains(0, 0, 20, 0.5)).toBe(true);
+            expect(ellipse.strokeContains(5, 0, 20, 0.5)).toBe(true);
+            expect(ellipse.strokeContains(0, 5, 20, 0.5)).toBe(true);
+            expect(ellipse.strokeContains(5, 5, 20, 0.5)).toBe(true);
+
+            // the other 10 grows the outer edge to 20, and beyond it is still not stroked
+            expect(ellipse.strokeContains(20, 0, 20, 0.5)).toBe(true);
+            expect(ellipse.strokeContains(21, 0, 20, 0.5)).toBe(false);
+        });
+
+        it('should stroke the whole shape when only the shorter axis is covered', () =>
+        {
+            // the half-width of 50 keeps an inner half-width of 35, but the inner stroke of 15
+            // covers the whole half-height of 10, so there is no unstroked interior left
+            const ellipse = new Ellipse(0, 0, 50, 10);
+
+            expect(ellipse.strokeContains(0, 0, 30, 0.5)).toBe(true);
+            expect(ellipse.strokeContains(20, 0, 30, 0.5)).toBe(true);
+            expect(ellipse.strokeContains(64, 0, 30, 0.5)).toBe(true);
+            expect(ellipse.strokeContains(66, 0, 30, 0.5)).toBe(false);
+        });
     });
 
     it('should return framing rectangle', () =>

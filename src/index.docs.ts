@@ -8,6 +8,7 @@
  * @document __docs__/concepts/environments.md
  * @document __docs__/concepts/garbage-collection.md
  * @document __docs__/concepts/performance-tips.md
+ * @document __docs__/concepts/typescript.md
  * @document accessibility/__docs__/accessibility.md
  * @document app/__docs__/app.md
  * @document assets/__docs__/assets.md
@@ -20,6 +21,7 @@
  * @document rendering/__docs__/rendering.md
  * @document scene/__docs__/scene.md
  * @document gif/__docs__/scene-gif.md
+ * @document html-source/__docs__/html-source.md
  * @document ticker/__docs__/ticker.md
  * @document utils/__docs__/utils.md
  * @document __docs__/migrations/v8.md

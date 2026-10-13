@@ -1,10 +1,10 @@
 ---
 name: pixijs-html-source
-description: "Use this skill when rendering live HTML/DOM elements (or frozen snapshots of them) as PixiJS v8 textures via the EXPERIMENTAL HTML-in-Canvas browser APIs. Covers the pixi.js/html-source side-effect import, feature-detection with canvas.requestPaint, HTMLSource for a live, repainting element kept interactive in the browser (autoLayout/autoUpdate/autoRequestPaint, requestPaint, isReady, the direct-child-of-canvas + layoutsubtree requirement), ElementImageSource for an immutable captureElementImage() snapshot (autoClose, ready immediately), using the source on a Sprite/Texture/Mesh, fallback-only auto-detection via Texture.from at priority -10, and destroy/cleanup. Triggers on: HTMLSource, ElementImageSource, pixi.js/html-source, requestPaint, captureElementImage, ElementImage, layoutsubtree, autoRequestPaint, autoUpdate, autoClose, HTML in canvas, render DOM to texture, HTMLSourceOptions, ElementImageSourceOptions, HTMLSourceCanvas, experimental."
+description: "Use this skill when rendering live HTML/DOM elements (or frozen snapshots of them) as PixiJS v8 textures via the EXPERIMENTAL HTML-in-Canvas browser APIs. Covers the pixi.js/html-source import, feature detection with canvas.requestPaint, HTMLSource for a live, repainting, still-interactive element (autoLayout/autoUpdate/autoRequestPaint, requestPaint, isReady, HTMLSource.defaultOptions, the direct-child-of-canvas + layoutsubtree requirement), ElementImageSource for an immutable captureElementImage() snapshot (autoClose, ready immediately), using the source on a Sprite/Texture/Mesh, fallback-only auto-detection via Texture.from at priority -10, uploader error messages, and destroy/cleanup. Triggers on: HTMLSource, ElementImageSource, ElementImage, HTML in canvas, render DOM to texture, render HTML to texture, texElementImage2D, copyElementImageToTexture, HTMLSourceOptions, ElementImageSourceOptions, HTMLSourceCanvas."
 license: MIT
 ---
 
-`HTMLSource` and `ElementImageSource` turn a DOM element into a `TextureSource` you can use anywhere a normal texture works: on a `Sprite`, as a `Texture` frame, or mapped onto a `Mesh`. `HTMLSource` mirrors a live element's pixels into the GPU (the element stays editable and clickable in the browser); `ElementImageSource` wraps an immutable snapshot that never repaints. Both require a side-effect `import 'pixi.js/html-source'` to register their extensions.
+`HTMLSource` and `ElementImageSource` turn a DOM element into a `TextureSource` you can use anywhere a normal texture works: on a `Sprite`, as a `Texture` frame, or mapped onto a `Mesh`. `HTMLSource` mirrors a live element's pixels into the GPU (the element stays editable and clickable in the browser); `ElementImageSource` wraps an immutable snapshot that never repaints. Both live in `pixi.js/html-source`; importing from that path registers their extensions.
 
 > These sources rely on the experimental HTML-in-Canvas browser proposal and are marked EXPERIMENTAL in PixiJS v8. The browser API must be enabled or the texture uploader throws on first render; feature-detect with `canvas.requestPaint` before relying on it. The API may change between minor releases.
 
@@ -13,7 +13,6 @@ Assumes familiarity with `pixijs-scene-sprite` and textures. These are texture *
 ## Quick Start
 
 ```ts
-import "pixi.js/html-source";
 import { Application, Sprite } from "pixi.js";
 import { HTMLSource } from "pixi.js/html-source";
 
@@ -58,6 +57,8 @@ Both sources extend `TextureSource`, so all `TextureSourceOptions` (`resolution`
 | `resource`   | `ElementImage` | —       | Required. A snapshot from `canvas.captureElementImage(element)`.                                                                        |
 | `autoClose`  | `boolean`      | `false` | Call `snapshot.close()` when the source is destroyed. Leave `false` when the snapshot is shared with other sources, or you risk a use-after-free. |
 
+Change the defaults for every `HTMLSource` through the static `HTMLSource.defaultOptions` object, for example `HTMLSource.defaultOptions.autoUpdate = false`.
+
 ## Core Patterns
 
 ### Setup and the side-effect import
@@ -87,6 +88,8 @@ if (canvas.requestPaint) {
 
 Cast `app.canvas` to `HTMLSourceCanvas` for the typed `requestPaint` and `captureElementImage` members. `source.requestPaint()` returns `false` when the browser lacks the API; the texture uploader throws on first render when it is disabled.
 
+When the API is missing the first upload throws `[HTMLSource] WebGLRenderingContext.texElementImage2D is not available...` on WebGL or `[HTMLSource] GPUQueue.copyElementImageToTexture is not available...` on WebGPU.
+
 ### Live element with HTMLSource
 
 ```ts
@@ -97,7 +100,7 @@ const source = new HTMLSource({ resource: form });
 const sprite = Sprite.from(source);
 ```
 
-The element must be a direct child of the renderer's `<canvas>`; the source infers the owning canvas from `resource.parentElement` (or pass `canvas`). With the defaults, it sets `layoutsubtree` on the canvas, listens for the canvas `paint` event, and requests one initial paint. `source.isReady` is `false` until that first paint lands, then `true`. `resourceWidth`/`resourceHeight` report the element's real-pixel size (`offsetWidth`/`offsetHeight`).
+The element must be a direct child of the renderer's `<canvas>`; the source infers the owning canvas from `resource.parentElement` (or pass `canvas`). With the defaults, it sets `layoutsubtree` on the canvas, listens for the canvas `paint` event, and requests one initial paint. `source.isReady` is `false` until that first paint lands, then `true`. It is `true` immediately when `autoUpdate` is `false`. `resourceWidth`/`resourceHeight` report the element's real-pixel size (`offsetWidth`/`offsetHeight`).
 
 ### Continuous animation with requestPaint
 
@@ -156,23 +159,21 @@ A generic HTML element or an `ElementImage` passed to `Texture.from`/`Sprite.fro
 
 ## Common Mistakes
 
-### [HIGH] Not importing pixi.js/html-source
+### [HIGH] Importing from pixi.js instead of pixi.js/html-source
 
 Wrong:
 
 ```ts
-import { HTMLSource } from "pixi.js/html-source";
-// ...but never importing the side effect, in a build that tree-shakes it away
+import { HTMLSource } from "pixi.js"; // not exported from the core entry
 ```
 
 Correct:
 
 ```ts
-import "pixi.js/html-source";
 import { HTMLSource } from "pixi.js/html-source";
 ```
 
-The `'html'` uploaders are registered by the side-effect import. Without it, the source has no uploader and the texture never renders.
+`HTMLSource`, `ElementImageSource`, and the `'html'` uploaders live only in `pixi.js/html-source`. Importing anything from that path registers the extensions; the module is marked side-effectful, so bundlers keep the registration even when you only import a class.
 
 ### [HIGH] Assuming the browser API is enabled
 

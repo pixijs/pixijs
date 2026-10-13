@@ -2,6 +2,7 @@ import { DOMAdapter } from '../../../../environment/adapter';
 import { extensions, ExtensionType } from '../../../../extensions/Extensions';
 import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
 import { Texture } from '../../shared/texture/Texture';
+import { isIntegerFormat } from '../../shared/texture/utils/isIntegerFormat';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
 import { glUploadCompressedTextureResource } from './uploaders/glUploadCompressedTextureResource';
@@ -60,6 +61,8 @@ export class GlTextureSystem implements System, CanvasGenerator
     private _glSamplers: Record<string, WebGLSampler> = Object.create(null);
 
     private _boundTextures: TextureSource[] = [];
+    /** Bit `n` is set while unit `n` may hold an integer-format texture; `resetState` sets every unit. */
+    private _integerUnits = 0;
     private _activeTextureLocation = -1;
 
     private _boundSamplers: Record<number, WebGLSampler> = Object.create(null);
@@ -171,7 +174,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         if (this._boundTextures[location] !== source)
         {
-            this._boundTextures[location] = source;
+            this._setBoundTexture(location, source);
             this._activateLocation(location);
 
             source ||= Texture.EMPTY.source;
@@ -180,6 +183,63 @@ export class GlTextureSystem implements System, CanvasGenerator
             const glTexture = this.getGlSource(source);
 
             gl.bindTexture(glTexture.target, glTexture.texture);
+        }
+    }
+
+    /**
+     * Binds the empty texture over every integer texture on unit `location` and above
+     *
+     * WebGL fails a draw when a float sampler's unit holds an integer texture, even if the shader
+     * never samples it. Call this after binding a batch's textures when the shader declares more
+     * samplers than the batch binds.
+     * @param location - The first texture unit to check.
+     */
+    public unbindIntegerTextures(location: number): void
+    {
+        // the mask covers units 0-31
+        if (location >= 32) return;
+
+        let units = (this._integerUnits >>> location) << location;
+
+        while (units)
+        {
+            const unit = 31 - Math.clz32(units);
+
+            units &= ~(1 << unit);
+
+            // clears the unit's bit through _setBoundTexture
+            this.bind(Texture.EMPTY, unit);
+        }
+    }
+
+    /**
+     * Records the source bound to a unit, keeping `_integerUnits` in step. Every per-unit write to
+     * `_boundTextures` goes through here so the two can't drift apart.
+     *
+     * A unit has a separate binding per target (2D, 2D array, cube), and the batch shaders sample
+     * the 2D target, so only a 2D source changes the unit's bit. Anything else, including null,
+     * leaves it as it was: a bit left set after the integer texture is gone only costs one extra
+     * `bind(Texture.EMPTY)` in `unbindIntegerTextures`, while a cleared bit over an integer texture
+     * fails the next batch.
+     * @param location - The texture unit.
+     * @param source - The source now bound there, or null.
+     */
+    private _setBoundTexture(location: number, source: TextureSource | null): void
+    {
+        this._boundTextures[location] = source;
+
+        // the mask covers units 0-31, every unit the batchers use; -1 is the active location before any bind
+        if (location < 0 || location > 31) return;
+
+        if (!source || source.viewDimension !== '2d') return;
+
+        if (isIntegerFormat(source.format))
+        {
+            this._integerUnits |= 1 << location;
+        }
+        else
+        {
+            this._integerUnits &= ~(1 << location);
         }
     }
 
@@ -219,7 +279,7 @@ export class GlTextureSystem implements System, CanvasGenerator
                 const glTexture = this.getGlSource(source);
 
                 gl.bindTexture(glTexture.target, null);
-                boundTextures[i] = null;
+                this._setBoundTexture(i, null);
             }
         }
     }
@@ -252,7 +312,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         if (source.autoGenerateMipmaps && (this._renderer.context.supports.nonPowOf2mipmaps || source.isPowerOfTwo))
         {
-            const biggestDimension = Math.max(source.width, source.height);
+            const biggestDimension = Math.max(source.width, source.height, source.depth);
 
             source.mipLevelCount = Math.floor(Math.log2(biggestDimension)) + 1;
         }
@@ -288,7 +348,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         gl.bindTexture(glTexture.target, glTexture.texture);
 
-        this._boundTextures[this._activeTextureLocation] = source;
+        this._setBoundTexture(this._activeTextureLocation, source);
 
         applyStyleParams(
             source.style,
@@ -328,9 +388,14 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         gl.bindTexture(glTexture.target, glTexture.texture);
 
-        this._boundTextures[this._activeTextureLocation] = source;
+        this._setBoundTexture(this._activeTextureLocation, source);
 
-        const premultipliedAlpha = source.alphaMode === 'premultiply-alpha-on-upload';
+        // integer texels have no alpha to premultiply, and a premultiplied 32-bit integer upload never returns in Chromium.
+        // 3D and array textures upload from buffers with texImage3D, which rejects premultiply (INVALID_OPERATION)
+        const premultipliedAlpha = source.alphaMode === 'premultiply-alpha-on-upload'
+            && !isIntegerFormat(source.format)
+            && glTexture.target !== gl.TEXTURE_3D
+            && glTexture.target !== gl.TEXTURE_2D_ARRAY;
 
         if (this._premultiplyAlpha !== premultipliedAlpha)
         {
@@ -348,9 +413,9 @@ export class GlTextureSystem implements System, CanvasGenerator
             // This allocates level 0 and, if needed, the full mip chain so any mip can be attached/rendered into (WebGL2).
             this._initEmptyTexture2D(glTexture, source);
         }
-        else if (glTexture.target === (gl as any).TEXTURE_2D_ARRAY)
+        else if (glTexture.target === gl.TEXTURE_2D_ARRAY || glTexture.target === gl.TEXTURE_3D)
         {
-            this._initEmptyTexture2DArray(glTexture, source);
+            this._initEmptyTexture3D(glTexture, source);
         }
         else if (glTexture.target === gl.TEXTURE_CUBE_MAP)
         {
@@ -420,43 +485,30 @@ export class GlTextureSystem implements System, CanvasGenerator
         }
     }
 
-    private _initEmptyTexture2DArray(glTexture: GlTexture, source: TextureSource): void
+    /**
+     * Allocates a texture with a depth: the layers of a 2D array or the slices of a 3D texture.
+     * Layer counts stay the same at every mip level; 3D depth halves like width and height.
+     * @param glTexture - The GL texture wrapper.
+     * @param source - The texture source describing the size.
+     */
+    private _initEmptyTexture3D(glTexture: GlTexture, source: TextureSource): void
     {
-        if (this._renderer.context.webGLVersion !== 2)
+        const gl = this._gl;
+        const is3D = glTexture.target === gl.TEXTURE_3D;
+
+        let w = source.pixelWidth;
+        let h = source.pixelHeight;
+        let d = source.depthOrArrayLayers;
+
+        for (let level = 0; level < source.mipLevelCount; level++)
         {
-            throw new Error('[GlTextureSystem] TEXTURE_2D_ARRAY requires WebGL2.');
-        }
-
-        const gl2 = this._gl;
-        const depth = Math.max(source.arrayLayerCount | 0, 1);
-
-        // Level 0
-        gl2.texImage3D(
-            gl2.TEXTURE_2D_ARRAY,
-            0,
-            glTexture.internalFormat,
-            source.pixelWidth,
-            source.pixelHeight,
-            depth,
-            0,
-            glTexture.format,
-            glTexture.type,
-            null,
-        );
-
-        // Mips (if requested)
-        let w = Math.max(source.pixelWidth >> 1, 1);
-        let h = Math.max(source.pixelHeight >> 1, 1);
-
-        for (let level = 1; level < source.mipLevelCount; level++)
-        {
-            gl2.texImage3D(
-                gl2.TEXTURE_2D_ARRAY,
+            gl.texImage3D(
+                glTexture.target,
                 level,
                 glTexture.internalFormat,
                 w,
                 h,
-                depth,
+                d,
                 0,
                 glTexture.format,
                 glTexture.type,
@@ -465,6 +517,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
             w = Math.max(w >> 1, 1);
             h = Math.max(h >> 1, 1);
+            if (is3D) d = Math.max(d >> 1, 1);
         }
     }
 
@@ -649,8 +702,14 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     public resetState(): void
     {
+        const maxTextures = this._renderer.limits.maxTextures;
+
         this._activeTextureLocation = -1;
-        this._boundTextures.fill(Texture.EMPTY.source);
+        // the context was used outside pixi, so nothing is known about what any unit holds. Forget the
+        // slots so the next bind is never skipped, and treat every unit as possibly integer until
+        // unbindIntegerTextures clears it
+        this._boundTextures.fill(null);
+        this._integerUnits = maxTextures >= 32 ? -1 : (1 << maxTextures) - 1;
         this._boundSamplers = Object.create(null);
 
         const gl = this._gl;

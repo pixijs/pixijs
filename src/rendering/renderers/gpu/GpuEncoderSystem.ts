@@ -1,5 +1,7 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { warn } from '../../../utils/logging/warn';
 import { type ShaderOverrides } from '../shared/shader/ShaderOverrides';
+import { RenderBundle } from './RenderBundle';
 
 import type { Rectangle } from '../../../maths/shapes/Rectangle';
 import type { Buffer } from '../shared/buffer/Buffer';
@@ -41,9 +43,9 @@ export class GpuEncoderSystem implements System
      * The active command target that draws and state are recorded into. This is the live render
      * pass during normal rendering, or a {@link GPURenderBundleEncoder} while a render bundle is
      * being recorded (see {@link beginBundle}). Both encoders expose the same render/bind command
-     * API the encoder relies on ({@link GPURenderCommandsMixin} + {@link GPUBindingCommandsMixin}),
+     * API the encoder relies on (`GPURenderCommandsMixin` + `GPUBindingCommandsMixin`),
      * so callers write to it without caring which one is active. Pass-level commands (viewport,
-     * stencil, executeBundles, end) are not part of that shared API and go through {@link _passEncoder}.
+     * stencil, executeBundles, end) are not part of that shared API and go through the private pass encoder.
      */
     public renderPassEncoder: GPURenderPassEncoder | GPURenderBundleEncoder;
     public commandFinished: Promise<void>;
@@ -67,6 +69,15 @@ export class GpuEncoderSystem implements System
      * a correctly typed target — even while a bundle is being recorded.
      */
     private _passEncoder: GPURenderPassEncoder;
+    /**
+     * {@link PipelineSystem.bundleStateKey} as it was when {@link beginBundle} built the bundle
+     * encoder's descriptor, ready to stamp onto the {@link RenderBundle} that {@link endBundle}
+     * returns. Sampled at that moment so the stamp and the state the bundle actually baked cannot
+     * describe different render targets.
+     */
+    private _bundleStateKey: number;
+    /** The label passed to {@link beginBundle}, carried through to the finished bundle. */
+    private _bundleLabel: string;
 
     private readonly _renderer: WebGPURenderer;
 
@@ -92,7 +103,12 @@ export class GpuEncoderSystem implements System
         this.commandEncoder = this._renderer.gpu.device.createCommandEncoder();
     }
 
-    public beginRenderPass(gpuRenderTarget: GpuRenderTarget)
+    /**
+     * Ends any open pass and begins one on the target's descriptor.
+     * @param gpuRenderTarget - the target to render to
+     * @returns the begun pass
+     */
+    public beginRenderPass(gpuRenderTarget: GpuRenderTarget): GPURenderPassEncoder
     {
         this.endRenderPass();
 
@@ -100,6 +116,8 @@ export class GpuEncoderSystem implements System
 
         this._passEncoder = this.commandEncoder.beginRenderPass(gpuRenderTarget.descriptor);
         this.renderPassEncoder = this._passEncoder;
+
+        return this._passEncoder;
     }
 
     public endRenderPass()
@@ -120,9 +138,11 @@ export class GpuEncoderSystem implements System
      *
      * Render bundles allow pre-recording of draw commands that can be replayed multiple times
      * via {@link executeBundle}, reducing CPU overhead for repeated draw sequences.
+     * @param label - Optional debug label. Names the bundle in GPU captures and in the WebGPU
+     * validation errors it can raise when replayed, instead of `(unlabeled)`.
      * @throws If a render bundle is already being recorded.
      */
-    public beginBundle(): void
+    public beginBundle(label?: string): void
     {
         // While a bundle is recording, renderPassEncoder is swapped to the bundle encoder and no
         // longer matches the real pass. Equal references therefore mean no bundle is active.
@@ -133,7 +153,13 @@ export class GpuEncoderSystem implements System
 
         this._clearCache();
 
-        const descriptor = this._renderer.pipeline.getBundleDescriptor();
+        const pipeline = this._renderer.pipeline;
+        const descriptor = pipeline.getBundleDescriptor();
+
+        descriptor.label = label;
+
+        this._bundleStateKey = pipeline.bundleStateKey;
+        this._bundleLabel = label;
 
         // A bundle encoder exposes the same render/bind command API as the pass, so it stands in as
         // the write target while recording. The real pass stays in _passEncoder and is restored by
@@ -143,9 +169,10 @@ export class GpuEncoderSystem implements System
 
     /**
      * Finishes recording the current render bundle and restores the previous render pass encoder.
-     * @returns The recorded {@link GPURenderBundle} ready to be executed via {@link executeBundle}.
+     * @returns The recorded {@link RenderBundle}, ready to be executed via {@link executeBundle} and
+     * stamped with the pipeline state it baked so {@link isBundleValid} can vet it on later frames.
      */
-    public endBundle(): GPURenderBundle
+    public endBundle(): RenderBundle
     {
         const encoder = this.renderPassEncoder;
 
@@ -156,23 +183,89 @@ export class GpuEncoderSystem implements System
             throw new Error('endBundle called without an active render bundle.');
         }
 
-        const bundle = encoder.finish();
+        // the label goes on the bundle as well as on its encoder: WebGPU names the bundle, not the
+        // encoder, in the validation error executeBundles raises
+        const gpuBundle = encoder.finish({ label: this._bundleLabel });
 
         this.renderPassEncoder = this._passEncoder;
         this._clearCache();
 
-        return bundle;
+        return new RenderBundle(gpuBundle, this._bundleStateKey, this._gpu.device, this._bundleLabel);
     }
 
     /**
-     * Replays a previously recorded render bundle on the current render pass.
-     * The bound state cache is cleared since the bundle may set its own pipeline, bind groups, and buffers.
-     * @param bundle - The render bundle to execute.
+     * Checks whether a recorded bundle can still be replayed against the render target that is
+     * bound now.
+     *
+     * A bundle permanently bakes the attachment state it was recorded with — color format(s),
+     * color target count, depth/stencil format, sample count — and WebGPU rejects the entire
+     * command buffer if any of it differs at execute time. It also bakes the front-face winding of
+     * its pipelines, which WebGPU does *not* validate: once the target's {@link RenderTarget.flipY}
+     * parity changes, replaying silently renders geometry inside out.
+     *
+     * Ask before replaying rather than after: only the caller owns the draw commands, so only the
+     * caller can re-record. A missing bundle reports `false`, so `!isBundleValid(bundles[i])` reads
+     * correctly on the first frame, before anything has been recorded.
+     * @param bundle - The bundle to check, as returned by {@link endBundle}.
+     * @returns `true` if the bundle is safe to execute right now, `false` if it must be re-recorded.
      */
-    public executeBundle(bundle: GPURenderBundle): void
+    public isBundleValid(bundle: RenderBundle): boolean
     {
+        return bundle?.stateKey === this._renderer.pipeline.bundleStateKey && bundle.device === this._gpu.device;
+    }
+
+    /**
+     * Replays previously recorded render bundles on the current render pass.
+     * The bound state cache is cleared since a bundle may set its own pipeline, bind groups, and buffers.
+     *
+     * Pass a whole run of bundles rather than calling this once per bundle: WebGPU resets the pass
+     * state after every call, so N calls cost N cache clears and N trips through the binding layer
+     * for exactly the same result.
+     *
+     * Every bundle must have been recorded against a matching render target — check with
+     * {@link isBundleValid} first and re-record if it says no, as Pixi cannot rebuild your draw
+     * commands for you.
+     * @param bundle - The render bundle to execute, or a run of them to execute in one call.
+     */
+    public executeBundle(bundle: RenderBundle | RenderBundle[]): void
+    {
+        const gpuBundles: GPURenderBundle[] = [];
+
+        if (Array.isArray(bundle))
+        {
+            for (let i = 0; i < bundle.length; i++)
+            {
+                gpuBundles[i] = this._getGpuBundle(bundle[i]);
+            }
+        }
+        else
+        {
+            gpuBundles[0] = this._getGpuBundle(bundle);
+        }
+
         this._clearCache();
-        this._passEncoder.executeBundles([bundle]);
+        this._passEncoder.executeBundles(gpuBundles);
+    }
+
+    /**
+     * Unwraps a bundle for {@link executeBundle}, complaining first if it no longer matches the
+     * bound render target — the winding half of that mismatch is invisible otherwise, since WebGPU
+     * validates attachments but not front-face order.
+     * @param bundle - The bundle being executed.
+     * @returns The native bundle to hand to `executeBundles`.
+     */
+    private _getGpuBundle(bundle: RenderBundle): GPURenderBundle
+    {
+        // #if _DEBUG
+        if (!this.isBundleValid(bundle))
+        {
+            warn(`Render bundle ${bundle?.label ?? '(unlabeled)'} was recorded against a different render `
+                + 'target state or on a lost device. Re-record it — replaying it will either be rejected by WebGPU or draw '
+                + 'with the wrong winding. Check encoder.isBundleValid(bundle) before executing.');
+        }
+        // #endif
+
+        return bundle.gpuBundle;
     }
 
     public setViewport(viewport: Rectangle): void
@@ -262,7 +355,7 @@ export class GpuEncoderSystem implements System
         slot.program = program;
         slot.key = bindGroup._key;
 
-        bindGroup._touch(this._renderer.gc.now, this._renderer.tick);
+        bindGroup._touch(this._renderer.gc.now);
 
         const gpuBindGroup = this._renderer.bindGroup.getBindGroup(bindGroup, program, index);
 
@@ -279,9 +372,9 @@ export class GpuEncoderSystem implements System
         // essentially only binding a single time for any buffers that are interleaved.
         const buffersToBind = this._renderer.pipeline.getBufferNamesToBind(geometry, program);
 
-        for (const i in buffersToBind)
+        for (let i = 0; i < buffersToBind.length; i++)
         {
-            this._setVertexBuffer(parseInt(i, 10), geometry.attributes[buffersToBind[i]].buffer);
+            this._setVertexBuffer(i, geometry.attributes[buffersToBind[i]].buffer);
         }
 
         if (geometry.indexBuffer)
@@ -293,15 +386,16 @@ export class GpuEncoderSystem implements System
     private _setShaderBindGroups(shader: Shader, skipSync?: boolean)
     {
         const program = shader.gpuProgram;
+        const layout = program.layout;
 
-        for (const i in shader.groups)
+        // indexed over the layout so no key list is built per draw. Groups outside the layout
+        // (e.g. GL-fallback uniforms, parked in group 99 by Shader.from) have nothing to sync or bind
+        for (let i = 0; i < layout.length; i++)
         {
-            // resources that only exist for the other backend (e.g. GL-fallback uniforms,
-            // parked in group 99 by Shader.from) have no entry in this program's layout —
-            // there is nothing to sync or bind for them
-            if (!program.layout[i as unknown as number]) continue;
+            const bindGroup = shader.groups[i];
 
-            const bindGroup = shader.groups[i] as BindGroup;
+            // a gap in a sparse layout, or a group this shader never filled
+            if (!layout[i] || !bindGroup) continue;
 
             // update any uniforms?
             if (!skipSync)
@@ -309,15 +403,18 @@ export class GpuEncoderSystem implements System
                 this._syncBindGroup(bindGroup);
             }
 
-            this.setBindGroup(i as unknown as number, bindGroup, program);
+            this.setBindGroup(i, bindGroup, program);
         }
     }
 
     private _syncBindGroup(bindGroup: BindGroup)
     {
-        for (const j in bindGroup.resources)
+        const resources = bindGroup.resources;
+        const keys = bindGroup._resourceKeys;
+
+        for (let i = 0; i < keys.length; i++)
         {
-            const resource = bindGroup.resources[j];
+            const resource = resources[keys[i]];
 
             // a destroyed buffer-like resource leaves a null slot (see BindGroup.onResourceChange)
             if (!resource) continue;
@@ -352,7 +449,7 @@ export class GpuEncoderSystem implements System
         if (geometry.indexBuffer)
         {
             this.renderPassEncoder.drawIndexed(
-                size || geometry.indexBuffer.data.length,
+                size || geometry.indexCount || geometry.indexBuffer.data.length,
                 instanceCount ?? geometry.instanceCount,
                 start || 0,
                 baseVertex || 0,

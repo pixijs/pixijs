@@ -215,12 +215,12 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
                 bounds.ceil();
 
                 const colorTextureSource = renderer.renderTarget.renderTarget.colorTexture.source;
-                const filterTexture = TexturePool.getOptimalTexture(
-                    bounds.width,
-                    bounds.height,
-                    colorTextureSource._resolution,
-                    colorTextureSource.antialias
-                );
+                const filterTexture = TexturePool.getOptimalTexture({
+                    width: bounds.width,
+                    height: bounds.height,
+                    resolution: colorTextureSource._resolution,
+                    antialias: colorTextureSource.antialias,
+                });
 
                 renderer.renderTarget.push({ target: filterTexture, clear: true });
 

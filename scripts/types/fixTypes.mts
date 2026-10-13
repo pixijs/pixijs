@@ -59,5 +59,49 @@ function copyShaders()
     }
 }
 
+/**
+ * Ship the WebGPU declarations both TypeScript versions need.
+ *
+ * The library is built with TypeScript 6, which declares the WebGPU types in
+ * its own lib.dom, so `lib/index.d.ts` is the modern entry point and carries
+ * only the canvas overloads TypeScript 6 is missing (see WebGPUCanvas.d.ts).
+ *
+ * TypeScript 5 has no WebGPU types at all, so every entry point that ships
+ * declarations (the root, `gif` and `html-source`) gets a `.legacy.d.ts`
+ * wrapper beside it that pulls in `@webgpu/types` on top - the overloads it
+ * declares are identical to the ones in WebGPUCanvas.d.ts, so the two merge
+ * without conflict. The subpaths need their own wrapper because a program that
+ * imports only `pixi.js/gif` never loads the root entry.
+ *
+ * package.json points TypeScript 5 at the wrappers through the `types@<6.0`
+ * export conditions, and at `lib/index.legacy.d.ts` through `typesVersions`
+ * for node10 resolution, which ignores `exports`; TypeScript 6 and above get
+ * the plain declarations, the default.
+ */
+function writeVersionedEntries()
+{
+    const src = path.join(process.cwd(), './types');
+    const lib = path.join(process.cwd(), './lib');
+
+    fs.copyFileSync(`${src}/WebGPUCanvas.d.ts`, `${lib}/WebGPUCanvas.d.ts`);
+
+    const filePath = `${lib}/index.d.ts`;
+    const contents = fs.readFileSync(filePath, 'utf8');
+
+    if (!contents.includes('/// <reference path="./WebGPUCanvas.d.ts" />'))
+    {
+        fs.writeFileSync(filePath, `/// <reference path="./WebGPUCanvas.d.ts" />\n${contents}`);
+    }
+
+    for (const entry of ['index', 'gif/init', 'html-source/init'])
+    {
+        fs.writeFileSync(
+            `${lib}/${entry}.legacy.d.ts`,
+            `/// <reference types="@webgpu/types" />\nexport * from './${path.basename(entry)}';\n`
+        );
+    }
+}
+
 addMixinReferencePaths();
 copyShaders();
+writeVersionedEntries();

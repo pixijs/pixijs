@@ -1,6 +1,36 @@
 import { HTMLText } from '../HTMLText';
-import { getWebGLRenderer } from '@test-utils';
+import {
+    getWebGLRenderer,
+    getWebGPURenderer,
+    itLocalOnly,
+    loseAndRestoreContext,
+    loseAndRestoreDevice,
+    nextTick,
+    waitForPendingHTMLText,
+} from '@test-utils';
 import { TextureSource } from '~/rendering/renderers/shared/texture/sources/TextureSource';
+
+import type { BatchableHTMLText } from '../BatchableHTMLText';
+import type { Renderer } from '~/rendering/renderers/types';
+
+// generates the textures one after the other, so each text reuses the pooled render data of the previous one
+async function renderInSequence(renderer: Renderer, ...texts: HTMLText[]): Promise<void>
+{
+    for (const text of texts)
+    {
+        renderer.render(text);
+        await waitForPendingHTMLText(text, renderer);
+    }
+}
+
+function channelSum(pixels: Uint8ClampedArray, channel: number): number
+{
+    let sum = 0;
+
+    for (let i = channel; i < pixels.length; i += 4) sum += pixels[i];
+
+    return sum;
+}
 
 describe('HTMLText', () =>
 {
@@ -31,6 +61,18 @@ describe('HTMLText', () =>
         text.destroy();
     });
 
+    it('should destroy a text whose gpu data was initialised but never rendered', async () =>
+    {
+        const text = new HTMLText({ text: 'foo' });
+        const renderer = await getWebGLRenderer();
+
+        renderer.renderPipes.htmlText.initGpuText(text);
+
+        expect(() => text.destroy()).not.toThrow();
+
+        renderer.destroy();
+    });
+
     it('should handle resolution changes after html text destruction', async () =>
     {
         const text = new HTMLText({ text: 'foo' });
@@ -42,6 +84,55 @@ describe('HTMLText', () =>
         text.destroy();
 
         expect(() => { renderer.resolution = 3; }).not.toThrow();
+
+        renderer.destroy();
+    });
+
+    it('should clean up a texture whose pool bucket was pruned by a resize', async () =>
+    {
+        const renderer = await getWebGLRenderer({ width: 100, height: 100 });
+        // wide enough to take the 100px screen bucket rather than the 64px power of two below it
+        const text = new HTMLText({ text: 'WIDE', style: { fontSize: 36, fill: 'white' } });
+
+        renderer.render(text);
+
+        const pooled = await (text._gpuData[renderer.uid] as BatchableHTMLText).texturePromise;
+
+        expect(pooled.source.pixelWidth).toBe(100);
+
+        // the screen bucket no longer matches a live screen, so returning the texture destroys it
+        renderer.resize(200, 200);
+
+        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { /* capture */ });
+
+        text.destroy();
+        await nextTick();
+
+        const warnings = warnSpy.mock.calls.map((args) => args.join(' '));
+
+        warnSpy.mockRestore();
+
+        expect(warnings.some((warning) => warning.includes('Failed to clean texture'))).toBe(false);
+        expect(pooled.destroyed).toBe(true);
+
+        renderer.destroy();
+    });
+
+    it('should give the text a pooled texture with the requested scale mode', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const text = new HTMLText({ text: 'foo', textureStyle: { scaleMode: 'nearest' } });
+
+        renderer.render(text);
+
+        const pooled = await (text._gpuData[renderer.uid] as BatchableHTMLText).texturePromise;
+
+        expect(pooled.source.scaleMode).toBe('nearest');
+        // the pool keeps its own style on the texture, the text's style object is never attached
+        expect(pooled.source.style).not.toBe(text.textureStyle);
+
+        text.destroy();
+        await nextTick();
 
         renderer.destroy();
     });
@@ -226,6 +317,90 @@ describe('HTMLText', () =>
 
             center.destroy();
             left.destroy();
+        });
+    });
+
+    describe('texture generation', () =>
+    {
+        it('should upload its texture before the pooled render data is reused by another HTMLText', async () =>
+        {
+            const renderer = await getWebGLRenderer({ width: 64, height: 64 });
+            const red = new HTMLText({ text: 'A', style: { fontSize: 40, fill: 'red' } });
+            const blue = new HTMLText({ text: 'B', style: { fontSize: 40, fill: 'blue' } });
+
+            await renderInSequence(renderer, red, blue);
+
+            const { pixels } = renderer.extract.pixels(red);
+
+            expect(channelSum(pixels, 0)).toBeGreaterThan(0);
+            expect(channelSum(pixels, 2)).toBe(0);
+
+            red.destroy();
+            blue.destroy();
+            renderer.destroy();
+        });
+
+        it('should not error when destroyed while its texture is generating', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+            const text = new HTMLText({ text: 'foo' });
+            const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+
+            renderer.render(text);
+
+            const generating = waitForPendingHTMLText(text, renderer);
+
+            text.destroy();
+            await generating;
+            await nextTick();
+
+            expect(errorSpy).not.toHaveBeenCalled();
+
+            errorSpy.mockRestore();
+            renderer.destroy();
+        });
+    });
+
+    describe('context loss', () =>
+    {
+        it('should keep its own content after the WebGL context is lost and restored', async () =>
+        {
+            const renderer = await getWebGLRenderer({ width: 64, height: 64 });
+            const red = new HTMLText({ text: 'A', style: { fontSize: 40, fill: 'red' } });
+            const blue = new HTMLText({ text: 'B', style: { fontSize: 40, fill: 'blue' } });
+
+            await renderInSequence(renderer, red, blue);
+            await loseAndRestoreContext(renderer);
+            await renderInSequence(renderer, red);
+
+            const { pixels } = renderer.extract.pixels(red);
+
+            expect(channelSum(pixels, 0)).toBeGreaterThan(0);
+            expect(channelSum(pixels, 2)).toBe(0);
+
+            red.destroy();
+            blue.destroy();
+            renderer.destroy();
+        });
+
+        itLocalOnly('should keep its own content after the WebGPU device is lost', async () =>
+        {
+            const renderer = await getWebGPURenderer({ width: 64, height: 64 });
+            const red = new HTMLText({ text: 'A', style: { fontSize: 40, fill: 'red' } });
+            const blue = new HTMLText({ text: 'B', style: { fontSize: 40, fill: 'blue' } });
+
+            await renderInSequence(renderer, red, blue);
+            await loseAndRestoreDevice(renderer);
+            await renderInSequence(renderer, red);
+
+            const { pixels } = renderer.extract.pixels(red);
+
+            expect(channelSum(pixels, 0)).toBeGreaterThan(0);
+            expect(channelSum(pixels, 2)).toBe(0);
+
+            red.destroy();
+            blue.destroy();
+            renderer.destroy();
         });
     });
 });

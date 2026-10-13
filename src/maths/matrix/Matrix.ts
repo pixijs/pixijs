@@ -685,10 +685,19 @@ export class Matrix
 
         const delta = Math.abs(skewX + skewY);
 
+        let scaleX = Math.sqrt((a * a) + (b * b));
+
         if (delta < 0.00001 || Math.abs(PI_2 - delta) < 0.00001)
         {
             transform.rotation = skewY;
             transform.skew.x = transform.skew.y = 0;
+        }
+        else if (Math.abs(Math.PI - delta) < 0.00001)
+        {
+            // basis vectors are orthogonal but mirrored: decompose into rotation and negative scale
+            transform.rotation = skewY - Math.PI;
+            transform.skew.x = transform.skew.y = 0;
+            scaleX = -scaleX;
         }
         else
         {
@@ -698,7 +707,7 @@ export class Matrix
         }
 
         // next set scale
-        transform.scale.x = Math.sqrt((a * a) + (b * b));
+        transform.scale.x = scaleX;
         transform.scale.y = Math.sqrt((c * c) + (d * d));
 
         // next set position

@@ -61,7 +61,7 @@ These are the options accepted by `new Text({ ... })`. The concrete `Text` const
 | `anchor`              | `PointData \| number`                                       | `0`                                                | Draw origin in `[0, 1]`; `0.5` is center, `1` is bottom-right.                                                                                                            |
 | `resolution`          | `number`                                                    | `null` (auto)                                      | Pixel density of the rasterized texture; `null` follows the renderer's resolution (setting to `null` at runtime enables auto-resolution; the interface type is `number`). |
 | `roundPixels`         | `boolean`                                                   | `false`                                            | Snap rendered x/y to whole pixels to avoid sub-pixel anti-aliasing.                                                                                                       |
-| `textureStyle`        | `TextureStyle \| TextureStyleOptions`                       | `undefined`                                        | Override the generated texture's scale mode, wrap, etc. (@advanced)                                                                                                       |
+| `textureStyle`        | `TextureStyle \| TextureStyleOptions`                       | `undefined`                                        | Scale mode for the generated texture (`nearest` or `linear`); every other `TextureStyle` field is ignored. (@advanced)                                                    |
 | `autoGenerateMipmaps` | `boolean`                                                   | `TextureSource.defaultOptions.autoGenerateMipmaps` | Generate mipmaps for the text texture; improves quality when scaled down.                                                                                                 |
 
 All `Container` options (`position`, `scale`, `tint`, `label`, `filters`, `zIndex`, etc.) are also valid here — see `skills/pixijs-scene-core-concepts/references/constructor-options.md`.
@@ -185,6 +185,21 @@ app.ticker.add(() => {
 
 Guard text updates with an equality check when using `Text` for live values. Every assignment triggers a canvas re-render and GPU upload.
 
+### Sharing a TextStyle across instances
+
+```ts
+const style = new TextStyle({ fontSize: 24, fill: 0xffffff });
+
+const title = new Text({ text: "Title", style });
+const label = new BitmapText({ text: "Label", style });
+
+style.fill = 0xff0000; // both re-render
+
+title.destroy(); // detaches from `style`; `label` keeps using it
+```
+
+A `TextStyle` instance can be shared by any number of `Text`, `BitmapText`, and `HTMLText` objects; changing it re-renders all of them. `destroy()` detaches the text from the style without destroying it. Only pass `destroy({ style: true })` (or `destroy(true)`) when no other text object uses that style, since it destroys the shared instance.
+
 ### Gradient and pattern fills
 
 ```ts
@@ -220,7 +235,7 @@ const label = new Text({
 });
 ```
 
-`textureSpace` controls tiling and defaults to `'global'`: tiles repeat continuously so adjacent shapes share one grid. Pass `textureSpace: 'local'` to fit a single tile to each shape's bounds. A `FillPattern` works for `stroke` too, e.g. `style: { stroke: { fill: pattern, width: 10 } }`.
+Canvas-rendered text ignores the pattern's `textureSpace`; the texture tiles in the text's pixel space at its native size. Use `pattern.setTransform(matrix)` to scale, rotate, or offset the tiles. A `FillPattern` works for `stroke` too, e.g. `style: { stroke: { fill: pattern, width: 10 } }`.
 
 `fill` accepts any `FillInput` that `Graphics` accepts; gradients, patterns, solid colors, and arrays of stops.
 

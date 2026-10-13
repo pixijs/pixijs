@@ -32,7 +32,7 @@ describe('Transform', () =>
             expect(otherTransform.rotation).toBeCloseTo(-5 * Math.PI / 6, eps);
         });
 
-        it('should decompose mirror into skew', () =>
+        it('should decompose mirror into rotation and negative scale', () =>
         {
             const eps = 1e-3;
 
@@ -51,11 +51,11 @@ describe('Transform', () =>
 
             expect(position.x).toBeCloseTo(20, eps);
             expect(position.y).toBeCloseTo(10, eps);
-            expect(scale.x).toBeCloseTo(2, eps);
+            expect(scale.x).toBeCloseTo(-2, eps);
             expect(scale.y).toBeCloseTo(3, eps);
-            expect(skew.x).toBeCloseTo(5 * Math.PI / 6, eps);
-            expect(skew.y).toBeCloseTo(Math.PI / 6, eps);
-            expect(otherTransform.rotation).toEqual(0);
+            expect(skew.x).toEqual(0);
+            expect(skew.y).toEqual(0);
+            expect(otherTransform.rotation).toBeCloseTo(-5 * Math.PI / 6, eps);
         });
 
         it('should apply skew before scale, like in adobe animate and spine', () =>
