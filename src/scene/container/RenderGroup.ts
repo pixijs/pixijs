@@ -164,7 +164,7 @@ export class RenderGroup implements Instruction
         this.isCachedAsTexture = false;
         if (this.texture)
         {
-            TexturePool.returnTexture(this.texture, true);
+            TexturePool.returnTexture(this.texture);
             this.texture = null;
         }
     }
@@ -385,6 +385,7 @@ export class RenderGroup implements Instruction
         (this.childrenToUpdate as any) = null;
         (this.renderGroupChildren as any) = null;
         (this._onRenderContainers as any) = null;
+        this.instructionSet?.destroy();
         this.instructionSet = null;
     }
 

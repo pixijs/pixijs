@@ -94,7 +94,7 @@ export class GpuBatchAdaptor implements BatcherAdaptor
             this._shader._overrides,
         );
 
-        batch.bindGroup._touch(renderer.gc.now, renderer.tick);
+        batch.bindGroup._touch(renderer.gc.now);
 
         encoder.setPipeline(pipeline);
 

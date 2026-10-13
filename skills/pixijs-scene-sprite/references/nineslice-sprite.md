@@ -193,7 +193,7 @@ panel.height = 200;
 
 ### [MEDIUM] Borders larger than half the texture
 
-If `leftWidth + rightWidth > texture.width`, the corners overlap and the center strip disappears. Keep the sum of opposing borders less than the corresponding texture dimension.
+If `leftWidth + rightWidth >= texture.width` (or `topHeight + bottomHeight >= texture.height`), no texture pixels are left for the center strip, so it is filled by stretching the seam between the two borders instead of the texture's middle. Keep the sum of opposing borders less than the corresponding texture dimension.
 
 
 ## API Reference

@@ -1,6 +1,6 @@
 ---
 name: pixijs-events
-description: "Use this skill when handling pointer, mouse, touch, or wheel input in PixiJS v8. Covers eventMode (none, passive, auto, static, dynamic), FederatedEvent types, propagation and capture phase, hitArea, interactiveChildren, cursor and cursorStyles, global move events for drag, eventFeatures config. Triggers on: eventMode, FederatedPointerEvent, pointerdown, click, tap, globalpointermove, drag, hitArea, cursor, stopPropagation."
+description: "Use this skill when handling pointer, mouse, touch, or wheel input in PixiJS v8. Covers eventMode (none, passive, auto, static, dynamic), FederatedEvent types, propagation and capture phase, hitArea, interactiveChildren, cursor and cursorStyles, global move events for drag, eventFeatures config. Triggers on: eventMode, FederatedPointerEvent, pointerdown, click, tap, globalpointermove, drag, hitArea, cursor, stopPropagation, persistentDeviceId, contextmenu, rightclick."
 license: MIT
 ---
 
@@ -77,7 +77,7 @@ sprite.isInteractive(); // false
 
 Pointer events (recommended for cross-device compatibility): `pointerdown`, `pointerup`, `pointerupoutside`, `pointermove`, `pointerover`, `pointerout`, `pointerenter`, `pointerleave`, `pointertap`, `pointercancel`.
 
-Mouse events: `mousedown`, `mouseup`, `mouseupoutside`, `mousemove`, `mouseover`, `mouseout`, `mouseenter`, `mouseleave`, `click`, `rightdown`, `rightup`, `rightupoutside`, `rightclick`, `wheel`.
+Mouse events: `mousedown`, `mouseup`, `mouseupoutside`, `mousemove`, `mouseover`, `mouseout`, `mouseenter`, `mouseleave`, `click`, `rightdown`, `rightup`, `rightupoutside`, `rightclick`, `contextmenu`, `wheel`. PixiJS doesn't block the browser's context menu; call `event.preventDefault()` in a `contextmenu` listener to keep it closed. Canceling `rightdown`, `rightup`, or `rightclick` doesn't keep it closed. On macOS, ctrl + click also fires `contextmenu`, and the browser can report it as a left click.
 
 Touch events: `touchstart`, `touchend`, `touchendoutside`, `touchmove`, `touchcancel`, `tap`. Each touch carries `altKey`, `ctrlKey`, `metaKey`, and `shiftKey` copied from the native `TouchEvent`, so modifier keys work the same as with mouse or pointer events.
 
@@ -247,6 +247,7 @@ sprite.on("pointerdown", (event: FederatedPointerEvent) => {
   event.pointerType; // 'mouse' | 'pen' | 'touch'
   event.pointerId; // unique id for multi-touch tracking
   event.isPrimary; // first pointer in a multi-pointer gesture
+  event.persistentDeviceId; // always 0; present for DOM PointerEvent type compatibility
   event.pressure; // 0-1 pen/touch pressure
   event.button; // 0 left, 1 middle, 2 right
   event.buttons; // bitmask of held buttons
@@ -273,7 +274,7 @@ await app.init({
   eventFeatures: {
     move: true, // pointer/mouse/touch move events
     globalMove: true, // global move events (globalpointermove, etc.)
-    click: true, // click/tap/press events
+    click: true, // click/tap/press and contextmenu events
     wheel: true, // mouse wheel events
   },
 });

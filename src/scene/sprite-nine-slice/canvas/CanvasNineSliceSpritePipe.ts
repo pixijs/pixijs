@@ -9,6 +9,22 @@ import type { RenderPipe } from '../../../rendering/renderers/shared/instruction
 import type { Renderer } from '../../../rendering/renderers/types';
 import type { NineSliceSprite } from '../NineSliceSprite';
 
+/** [start, size] spans for the 3 source and destination columns and rows, reused across draws. */
+const colsSrc = [[0, 0], [0, 0], [0, 0]];
+const rowsSrc = [[0, 0], [0, 0], [0, 0]];
+const colsDst = [[0, 0], [0, 0], [0, 0]];
+const rowsDst = [[0, 0], [0, 0], [0, 0]];
+
+function setSpans(spans: number[][], s0: number, n0: number, s1: number, n1: number, s2: number, n2: number): void
+{
+    spans[0][0] = s0;
+    spans[0][1] = n0;
+    spans[1][0] = s1;
+    spans[1][1] = n1;
+    spans[2][0] = s2;
+    spans[2][1] = n2;
+}
+
 /**
  * The NineSliceSpritePipe is a render pipe for rendering NineSliceSprites with Canvas2D.
  * @internal
@@ -157,74 +173,57 @@ export class CanvasNineSliceSpritePipe implements RenderPipe<NineSliceSprite>
             sh = (finalSource as any).height;
         }
 
-        // Top-left
-        context.drawImage(finalSource, sx, sy, lw, tw, dx, dy, destLeftWidth, destTopHeight);
-        // Top-center
-        context.drawImage(
-            finalSource,
-            sx + lw, sy,
-            sw - lw - rw, tw,
-            dx + destLeftWidth, dy,
-            destCenterWidth, destTopHeight
+        // Center source spans within the frame. When the borders meet or overlap along an
+        // axis, the center span collapses to <= 0; a drawImage() call with a zero/negative
+        // source size draws nothing, which drops the stretched center (the WebGL/WebGPU path
+        // stretches the degenerate seam instead, filling it). Fall back to a 1px seam sampled
+        // at the border boundary so the center column/row is still rendered.
+        const centerSrcW = sw - lw - rw;
+        const centerSrcH = sh - tw - bw;
+
+        const centerSx = centerSrcW > 0 ? sx + lw : Math.max(sx, Math.min(sx + lw, sx + sw - 1));
+        const centerSw = centerSrcW > 0 ? centerSrcW : 1;
+        const centerSy = centerSrcH > 0 ? sy + tw : Math.max(sy, Math.min(sy + tw, sy + sh - 1));
+        const centerSh = centerSrcH > 0 ? centerSrcH : 1;
+
+        setSpans(colsSrc, sx, lw, centerSx, centerSw, sx + sw - rw, rw);
+        setSpans(rowsSrc, sy, tw, centerSy, centerSh, sy + sh - bw, bw);
+        setSpans(
+            colsDst,
+            dx, destLeftWidth,
+            dx + destLeftWidth, destCenterWidth,
+            dx + width - destRightWidth, destRightWidth,
         );
-        // Top-right
-        context.drawImage(
-            finalSource,
-            sx + sw - rw, sy,
-            rw, tw,
-            dx + width - destRightWidth, dy,
-            destRightWidth, destTopHeight
+        setSpans(
+            rowsDst,
+            dy, destTopHeight,
+            dy + destTopHeight, destCenterHeight,
+            dy + height - destBottomHeight, destBottomHeight,
         );
 
-        // Middle-left
-        context.drawImage(
-            finalSource,
-            sx, sy + tw,
-            lw, sh - tw - bw,
-            dx, dy + destTopHeight,
-            destLeftWidth, destCenterHeight
-        );
-        // Middle-center
-        context.drawImage(
-            finalSource,
-            sx + lw, sy + tw,
-            sw - lw - rw, sh - tw - bw,
-            dx + destLeftWidth, dy + destTopHeight,
-            destCenterWidth, destCenterHeight
-        );
-        // Middle-right
-        context.drawImage(
-            finalSource,
-            sx + sw - rw, sy + tw,
-            rw, sh - tw - bw,
-            dx + width - destRightWidth, dy + destTopHeight,
-            destRightWidth, destCenterHeight
-        );
+        for (let col = 0; col < 3; col++)
+        {
+            const dww = colsDst[col][1];
 
-        // Bottom-left
-        context.drawImage(
-            finalSource,
-            sx, sy + sh - bw,
-            lw, bw,
-            dx, dy + height - destBottomHeight,
-            destLeftWidth, destBottomHeight
-        );
-        // Bottom-center
-        context.drawImage(
-            finalSource,
-            sx + lw, sy + sh - bw,
-            sw - lw - rw, bw,
-            dx + destLeftWidth, dy + height - destBottomHeight,
-            destCenterWidth, destBottomHeight
-        );
-        // Bottom-right
-        context.drawImage(
-            finalSource,
-            sx + sw - rw, sy + sh - bw,
-            rw, bw,
-            dx + width - destRightWidth, dy + height - destBottomHeight,
-            destRightWidth, destBottomHeight
-        );
+            if (dww <= 0) continue;
+
+            const sxx = colsSrc[col][0];
+            const sww = colsSrc[col][1];
+            const dxx = colsDst[col][0];
+
+            for (let row = 0; row < 3; row++)
+            {
+                const dhh = rowsDst[row][1];
+
+                if (dhh <= 0) continue;
+
+                context.drawImage(
+                    finalSource,
+                    sxx, rowsSrc[row][0], sww, rowsSrc[row][1],
+                    dxx, rowsDst[row][0], dww, dhh,
+                );
+            }
+        }
 
         context.restore();
     }

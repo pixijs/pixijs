@@ -65,6 +65,7 @@ g.ellipse(100, 350, 60, 30).fill(0x1abc9c);
 
 - `'local'` (default): texture is scaled to fit each shape's bounding box (normalized 0-1 coordinates).
 - `'global'`: texture position/scale are relative to the Graphics object's coordinate system, shared across all shapes.
+- Atlas sub-textures: `'global'` honors the frame origin and rotation, so a shape drawn at the frame's size matches a `Sprite` of that frame. `'local'` maps the whole source image; pass a `matrix` that targets the frame's region of the source, or `renderer.generateTexture()` the frame first.
 
 `FillInput` also supports a nested `fill` subfield: a `FillStyle` options object can embed a `FillGradient` or `FillPattern` under its `fill` key, which applies the gradient or pattern alongside the `color`, `alpha`, `texture`, and `matrix` modifiers on the outer object.
 
@@ -199,19 +200,33 @@ const linear = new FillGradient({
 });
 g.rect(0, 0, 200, 100).fill(linear);
 
-// Radial gradient — inner circle at center, outer circle reaches edges
+// Radial gradient. Coordinates are normalized 0-1 in the default "local" space:
+// inner circle at the center, outer circle reaching the edges.
 const radial = new FillGradient({
   type: "radial",
-  center: { x: 100, y: 100 },
+  center: { x: 0.5, y: 0.5 },
   innerRadius: 0,
-  outerCenter: { x: 100, y: 100 },
-  outerRadius: 100,
+  outerCenter: { x: 0.5, y: 0.5 },
+  outerRadius: 0.5,
   colorStops: [
     { offset: 0, color: 0xffffff },
     { offset: 1, color: 0x000000 },
   ],
 });
 g.circle(100, 100, 100).fill(radial);
+
+// Pixel coordinates need textureSpace: "global"; the gradient then spans shapes.
+const shared = new FillGradient({
+  type: "radial",
+  center: { x: 100, y: 100 },
+  outerRadius: 100,
+  textureSpace: "global",
+  colorStops: [
+    { offset: 0, color: 0xffffff },
+    { offset: 1, color: 0x000000 },
+  ],
+});
+g.rect(0, 0, 200, 200).fill(shared);
 
 const brick = await Assets.load("brick.png");
 
@@ -228,7 +243,7 @@ const pattern2 = new FillPattern(brick, "repeat");
 g.rect(0, 120, 200, 100).fill(pattern);
 ```
 
-`FillGradient`'s default `type` is `'linear'` with `start {0,0}` to `end {0,1}`. Set `type: 'radial'` with `center`/`innerRadius` and `outerCenter`/`outerRadius` for radial gradients.
+`FillGradient`'s default `type` is `'linear'` with `start {0,0}` to `end {0,1}` (vertical). Set `type: 'radial'` with `center`/`innerRadius` and `outerCenter`/`outerRadius` for radial gradients; `rotation` (radians, default `0`) and `scale` (default `1`) make it elliptical and apply to Graphics only. `textureSpace` defaults to `'local'` (normalized 0-1 shape coordinates); use `'global'` for pixel coordinates shared across shapes.
 
 `FillPattern` takes an options object (`{ texture, repetition?, textureSpace? }`) or the legacy positional form (`new FillPattern(texture, repetition?)`). `repetition` selects the tiling mode. `textureSpace` controls how tiles map to shapes:
 
@@ -238,6 +253,8 @@ g.rect(0, 120, 200, 100).fill(pattern);
 Note `FillPattern` defaults `textureSpace` to `'global'`, unlike the `'local'` default for texture fills shown above.
 
 `setTransform(matrix)` copies the given matrix directly onto the pattern transform to scale, rotate, or offset the tiling; call `setTransform()` with no argument to reset to identity.
+
+Set `textureSpace` and the transform on the `FillPattern` itself. When a pattern is passed inside a style object (`fill({ fill: pattern, textureSpace: "local" })`), the pattern's own values replace the style's `textureSpace` and `matrix`.
 
 ### Drawing a texture directly
 
@@ -275,7 +292,7 @@ g.svg(`<svg viewBox="0 0 100 100">
 </svg>`);
 ```
 
-`svg()` supports paths, basic shapes, and inline styles; complex hole geometries may render inaccurately because Pixi's triangulation is performance-optimized.
+`svg()` parses `<path>` (with `fill-rule="evenodd"` holes), `<rect>`, `<circle>`, `<ellipse>`, `<line>`, `<polygon>`, `<polyline>`, and `<g>` grouping. Styling comes from `fill`, `stroke`, `stroke-width`, `fill-opacity`, `stroke-opacity`, and `opacity`, as attributes or inline `style`. `<linearGradient>` and `<radialGradient>` definitions in `<defs>` become `FillGradient`s applied through `url(#id)`; `gradientUnits` maps to `textureSpace` and percentage coordinates are accepted. Not supported: `transform` attributes, `<style>` blocks, `stroke-linecap`/`stroke-linejoin`/`stroke-dasharray`, `gradientTransform`, `spreadMethod`, `stop-opacity`, `<text>`, `<image>`, `<use>`, `<clipPath>`, `<mask>`, `<pattern>`. Unsupported elements log a warning and are skipped. Complex hole geometries may render inaccurately because Pixi's triangulation is performance-optimized.
 
 Serialize a `Graphics` or `GraphicsContext` back to a self-contained SVG document string with `graphicsContextToSvg`:
 
@@ -377,7 +394,7 @@ g.on("pointermove", (e) => {
 });
 ```
 
-`Graphics.containsPoint(pointInLocalSpace)` runs a topology-aware test against every filled and stroked shape in the context, including holes. Convert global pointer coordinates with `toLocal()` first.
+`Graphics.containsPoint(pointInLocalSpace)` runs a topology-aware test against every filled and stroked shape in the context, including holes. Convert global pointer coordinates with `toLocal()` first. Stroked shapes hit-test against the drawn stroke: the hit band follows the stroke's `width` and `alignment` (`1` inside, `0.5` centered, `0` outside), independent of the polygon's winding order.
 
 ### Cloning, clearing, and bounds
 
@@ -519,10 +536,10 @@ const ctx = new GraphicsContext().rect(0, 0, 50, 50).fill(0xff0000);
 const g1 = new Graphics(ctx);
 const g2 = new Graphics(ctx);
 
-g1.destroy({ context: true }); // also nullifies g2's context reference
+g1.destroy({ context: true }); // g2 is left holding a destroyed context
 ```
 
-Destroying a shared `GraphicsContext` does not destroy sharing instances but breaks them by nullifying their context reference. When passing a context via the constructor, `destroy()` with no args preserves the context; use `destroy({ context: false })` to be explicit. Only destroy the context when all sharing instances are done with it. A self-owned context (not passed via constructor) is still destroyed by `destroy()` with no args.
+Destroying a shared `GraphicsContext` does not destroy the other `Graphics` using it, but they keep a reference to the now-destroyed context and stop updating or rendering correctly. When passing a context via the constructor, `destroy()` with no args preserves the context and detaches the instance from it; use `destroy({ context: false })` to be explicit. Only destroy the context when all sharing instances are done with it. A self-owned context (not passed via constructor) is still destroyed by `destroy()` with no args.
 
 
 ### [HIGH] Clearing and redrawing Graphics every frame

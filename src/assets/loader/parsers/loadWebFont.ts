@@ -127,17 +127,21 @@ function encodeURIWhenNeeded(uri: string)
 
 /**
  * A loader plugin for handling web fonts
- * @example
- * import { Assets } from 'pixi.js';
  *
- * Assets.load({
+ * The asset alias identifies the font in {@link Assets}; it is not the CSS font
+ * family. Use the `data.family` value (or the loaded `FontFace.family`) as the
+ * `fontFamily` in a text style. Without `data.family`, the family is derived
+ * from the font file name.
+ * @example
+ * import { Assets, Text } from 'pixi.js';
+ *
+ * await Assets.load({
  *   alias: 'font',
  *   src: 'fonts/titan-one.woff',
- *   data: {
- *     family: 'Titan One',
- *     weights: ['normal', 'bold'],
- *   }
- * })
+ *   data: { family: 'Titan One' },
+ * });
+ *
+ * const text = new Text({ text: 'Hello', style: { fontFamily: 'Titan One' } });
  * @category assets
  * @advanced
  */

@@ -89,7 +89,7 @@ const text = new Text({
 });
 ```
 
-When enabled, the text texture is allocated from a separate mipmap-enabled pool, so it won't interfere with non-mipmapped textures used by filters or other systems.
+When enabled, the text texture is allocated from a mipmap-enabled bucket of the texture pool, so it won't interfere with non-mipmapped textures used by filters or other systems.
 
 > [!NOTE]
 > `HTMLText` also supports `autoGenerateMipmaps` with the same behavior.

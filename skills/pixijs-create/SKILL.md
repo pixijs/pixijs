@@ -1,6 +1,6 @@
 ---
 name: pixijs-create
-description: "Use this skill when scaffolding a new PixiJS v8 project with the create-pixi CLI or adding PixiJS to an existing project. Covers npm/yarn/pnpm/bun create commands, interactive vs non-interactive flows, bundler vs creation template categories, available template presets (bundler-vite, bundler-webpack, bundler-esbuild, bundler-import-map, creation-web, framework-react, extension-default), Node version requirements, `npm install pixi.js` for existing projects, post-scaffold dev flow, and the Vite top-level-await production-build gotcha. Triggers on: create pixi.js, npm create, npm install pixi.js, scaffold, template, bundler-vite, bundler-webpack, creation-web, framework-react, new project, existing project, getting started, quick start."
+description: "Use this skill when scaffolding a new PixiJS v8 project with the create-pixi CLI or adding PixiJS to an existing project. Covers npm/yarn/pnpm/bun create commands, interactive vs non-interactive flows, bundler vs creation template categories, available template presets (bundler-vite, bundler-webpack, bundler-esbuild, bundler-import-map, creation-web, framework-react, extension-default), Node version requirements, `npm install pixi.js` for existing projects, TypeScript 5/6/7 tsconfig setup (moduleResolution, @webgpu/types, @types/web), post-scaffold dev flow, and the Vite top-level-await production-build gotcha. Triggers on: create pixi.js, npm create, npm install pixi.js, scaffold, template, bundler-vite, bundler-webpack, creation-web, framework-react, new project, existing project, getting started, quick start, TypeScript, tsconfig, moduleResolution, @webgpu/types, @types/web, Cannot find name GPUTextureUsage."
 license: MIT
 ---
 
@@ -145,6 +145,26 @@ cd my-game
 npm create pixi.js@latest . -- --template bundler-vite
 ```
 
+### TypeScript setup
+
+PixiJS supports WebGPU, so its type declarations depend on the WebGPU types. Where those come from depends on your TypeScript version.
+
+- **TypeScript 5:** no WebGPU types are built in, so PixiJS adds `@webgpu/types` for you. No additional setup required.
+- **TypeScript 6 and 7:** the WebGPU types are built into the `"dom"` library, but some releases leave parts out, such as `GPUTextureUsage`. Use `@types/web`, which has the full set, in place of `"dom"`. Remove `@webgpu/types` from `types` if it's there, since it conflicts with the built-in types.
+
+```bash
+npm install --save-dev @types/web
+```
+
+```json
+{
+  "compilerOptions": {
+    "lib": ["esnext"],
+    "types": ["@types/web"]
+  }
+}
+```
+
 ## Next steps
 
 After `npm run dev` starts, the template opens on a blank or bunny-sprite scene. The usual progression is:
@@ -200,8 +220,57 @@ Wrap the init in an async IIFE instead:
 Upgrading Vite past 6.0.6 also resolves it, but the IIFE pattern is safe on every version and matches the PixiJS quick-start guide.
 
 
+### [HIGH] Keeping `@webgpu/types` in `types` on TypeScript 6 or 7
+
+Wrong:
+
+```json
+{
+  "compilerOptions": {
+    "types": ["@webgpu/types"]
+  }
+}
+```
+
+Correct: remove the `"@webgpu/types"` entry and keep any others.
+
+TypeScript 6 and 7 declare the WebGPU types in their built-in `"dom"` library, so `@webgpu/types` declares them a second time. With `skipLibCheck: false` that produces dozens of conflicting-declaration errors inside `lib.dom.d.ts` and `@webgpu/types`. Keep it on TypeScript 5 only, where PixiJS loads it for you anyway.
+
+
+### [MEDIUM] `Cannot find name 'GPUTextureUsage'` on TypeScript 6 or 7
+
+Up to TypeScript 6.0.3 and 7.0.2, the built-in `"dom"` library has no WebGPU flag constants (`GPUBufferUsage`, `GPUColorWrite`, `GPUMapMode`, `GPUShaderStage`, `GPUTextureUsage`), so raw WebGPU code that uses them fails with `TS2552`. Adding `@webgpu/types` back only compiles with `skipLibCheck: true`, because it conflicts with the built-in types. Install `@types/web` 0.0.352 or later, drop `"dom"` from `lib`, and add `"@types/web"` to `types` alongside any existing entries, as shown in [TypeScript setup](#typescript-setup).
+
+
+### [MEDIUM] `moduleResolution: "node"` breaks subpath imports
+
+Wrong:
+
+```json
+{
+  "compilerOptions": {
+    "moduleResolution": "node"
+  }
+}
+```
+
+Correct:
+
+```json
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler"
+  }
+}
+```
+
+`"node"` (also called `"node10"`) ignores the `exports` field in the PixiJS `package.json`, so `import 'pixi.js/advanced-blend-modes'` and other subpath imports don't resolve. TypeScript 6 reports `TS2882` for them and deprecates the setting (`TS5107`); TypeScript 7 removes it (`TS5108`). Use `"bundler"` if you use a bundler, or `"nodenext"` otherwise.
+
+
 ## API Reference
 
 - [create-pixi on GitHub](https://github.com/pixijs/create-pixi)
 - [create-pixi documentation site](https://pixijs.io/create-pixi/)
 - [Application](https://pixijs.download/release/docs/app.Application.html.md): the class the generated entry point instantiates.
+- [TypeScript guide](https://pixijs.download/release/docs/core-concepts-8.html.md): setup for TypeScript 5, 6, and 7.

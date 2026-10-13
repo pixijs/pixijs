@@ -3,7 +3,7 @@ import { GraphicsContext } from '../shared/GraphicsContext';
 import { GraphicsPath } from '../shared/path/GraphicsPath';
 import { toFillStyle } from '../shared/utils/convertFillInputToFillStyle';
 import { generateTextureMatrix as generateTextureFillMatrix } from '../shared/utils/generateTextureFillMatrix';
-import { getWebGLRenderer } from '@test-utils';
+import { getWebGLRenderer, getWebGPURenderer, itLocalOnly } from '@test-utils';
 import { Matrix, Rectangle } from '~/maths';
 import { Texture } from '~/rendering';
 
@@ -228,6 +228,22 @@ describe('Graphics', () =>
 
             // dont throw an error:
             expect(() => rect.destroy()).not.toThrow();
+        });
+
+        itLocalOnly('should render non-batched graphics with a WebGPU renderer after another one was destroyed', async () =>
+        {
+            const rendererA = await getWebGPURenderer();
+            const rendererB = await getWebGPURenderer();
+
+            rendererA.destroy();
+
+            const graphics = new Graphics().rect(0, 0, 10, 10).fill('red');
+
+            graphics.context.batchMode = 'no-batch';
+
+            expect(() => rendererB.render(graphics)).not.toThrow();
+
+            rendererB.destroy();
         });
 
         it('should  calculate the buffer sizes for large graphics correctly', async () =>

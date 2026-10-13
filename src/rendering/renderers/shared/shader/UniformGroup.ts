@@ -104,12 +104,6 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
         isStatic: false,
     };
 
-    /**
-     * used internally to know if a uniform group was used in the last render pass
-     * @internal
-     */
-    public _touched = 0;
-
     /** a unique id for this uniform group used through the renderer */
     public readonly uid: number = uid('uniform');
     /**

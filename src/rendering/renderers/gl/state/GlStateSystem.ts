@@ -84,9 +84,11 @@ export class GlStateSystem implements System
     private _cullFace: boolean;
     private _frontFaceDirty: boolean;
     private _frontFace: boolean;
+    private readonly _renderer: WebGLRenderer;
 
     constructor(renderer: WebGLRenderer)
     {
+        this._renderer = renderer;
         this.gl = null;
 
         this.stateId = 0;
@@ -115,10 +117,10 @@ export class GlStateSystem implements System
 
     protected onRenderTargetChange(renderTarget: RenderTarget)
     {
-        // Keep the winding inversion welded to the projection Y-flip: both resolve from the same toggle
-        // (see RenderTargetSystem.bind). `flipY` off → the historical `!isRoot`; `flipY` on inverts it,
-        // so the projection flip and the winding inversion flip together and back-face culling stays correct.
-        this._invertFrontFace = !renderTarget.isRoot !== !!renderTarget.flipY;
+        // the one spelling of the rule lives on the render target system; on WebGL it resolves to
+        // `!isRoot !== flipY`, keeping the winding inversion welded to the projection Y-flip so
+        // back-face culling stays correct
+        this._invertFrontFace = this._renderer.renderTarget.isFrontFaceInverted(renderTarget, renderTarget.flipY);
 
         // mini optimization to avoid setting the front face if culling is disabled
         if (this._cullFace)
@@ -406,5 +408,6 @@ export class GlStateSystem implements System
     {
         this.gl = null;
         this.checks.length = 0;
+        (this._renderer as null) = null;
     }
 }

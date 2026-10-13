@@ -149,6 +149,40 @@ function getGlobalStateKey(
          | multiSampleCount; // 1 bit for multiSampleCount at the least significant position
 }
 
+// The state a render bundle bakes into itself at record time, packed into one int. Deliberately
+// not getGlobalStateKey: colorMask and stencilMode are ambient draw state that a bundle captures
+// per-pipeline as it records, so folding them in here would invalidate cached bundles whenever
+// unrelated 2D state (a mask elsewhere in the scene) happened to differ at execute time.
+//
+// multiSampleCount   = 1;  // bit 0     // 2 states // value 0-1 (normalized from sampleCount 1|4)
+// colorTargetCount   = 9;  // bits 1-4  // supports 0-8 color targets (WebGPU maxColorAttachments)
+// depthStencilFormat = 7;  // bits 5-7  // 8 states // value 0-7 (0 = no depth/stencil attachment)
+// depthReadOnly      = 1;  // bit 8     // 2 states // value 0-1
+// stencilReadOnly    = 1;  // bit 9     // 2 states // value 0-1
+// invertFrontFace    = 1;  // bit 10    // 2 states // value 0-1 (flipY winding inversion)
+// colorFormatId      = n;  // bits 11+  // interned color attachment formats (see getColorFormatId)
+function getBundleStateKey(
+    multiSampleCount: number,
+    colorTargetCount: number,
+    depthStencilFormat: number,
+    depthReadOnly: number,
+    stencilReadOnly: number,
+    invertFrontFace: number,
+    colorFormatId: number,
+): number
+{
+    // colorFormatId takes the open top of the key: a format id is only minted per distinct
+    // attachment format ever seen (realistically 1-3), so it cannot approach the 32-bit
+    // boundary these bitwise ops work in
+    return (colorFormatId << 11)
+         | (invertFrontFace << 10)
+         | (stencilReadOnly << 9)
+         | (depthReadOnly << 8)
+         | (depthStencilFormat << 5)
+         | (colorTargetCount << 1)
+         | multiSampleCount;
+}
+
 // a Map, not a plain object: the combined graphics key exceeds 2^31, and big numeric
 // keys on objects get stringified per lookup (dictionary mode) — Map hashes numbers
 // natively, which benchmarks ~3x faster on this per-draw path
@@ -185,10 +219,10 @@ export class PipelineSystem implements System
 
     private _moduleCache: Record<string, GPUShaderModule> = Object.create(null);
     private _bufferLayoutsCache: Record<number, GPUVertexBufferLayout[]> = Object.create(null);
-    private readonly _bindingNamesCache: Record<string, Record<string, string>> = Object.create(null);
+    private readonly _bindingNamesCache: Record<string, string[]> = Object.create(null);
 
     private _pipeCache: PipeHash = new Map();
-    private readonly _pipeStateCaches: Record<number, PipeHash> = Object.create(null);
+    private _pipeStateCaches: Record<number, PipeHash> = Object.create(null);
 
     private _gpu: GPU;
     private _stencilState: StencilState;
@@ -202,6 +236,7 @@ export class PipelineSystem implements System
     private _depthStencilFormat: GPUTextureFormat = 'depth24plus-stencil8';
     private _depthStencilFormatData = emptyDepthStencilFormatData;
     private _depthReadOnly = false;
+    private _stencilReadOnly = false;
     private _invertFrontFace = false;
 
     constructor(renderer: WebGPURenderer)
@@ -212,6 +247,8 @@ export class PipelineSystem implements System
     protected contextChange(gpu: GPU): void
     {
         this._gpu = gpu;
+        this._moduleCache = Object.create(null);
+        this._pipeStateCaches = Object.create(null);
         this.setStencilMode(STENCIL_MODES.DISABLED);
 
         this._updatePipeHash();
@@ -242,11 +279,16 @@ export class PipelineSystem implements System
         this._depthStencilFormat = renderTarget.depthStencilAttachment?.texture.format;
         this._depthStencilFormatData = depthStencilFormatMap[this._depthStencilFormat] || emptyDepthStencilFormatData;
         this._depthReadOnly = renderTarget.depthStencilAttachment?.depthReadOnly ?? false;
-        // WebGPU bakes winding into the (cached) pipeline, not as live state. `flipY` is opt-in: off →
-        // the framebuffer's natural ccw (exactly today); on → invert to cw so the projection flip and the
-        // winding flip cancel and culling is preserved. This bit feeds the cache key (getGlobalStateKey),
-        // so a flipY pass gets its own pipeline rather than aliasing — and an off pass keeps today's key.
-        this._invertFrontFace = !!renderTarget.flipY;
+        // same derivation the pass descriptor uses (GpuRenderTargetAdaptor): a read-only depth
+        // attachment is usually about sampling the texture, which WebGPU only allows when the
+        // entire attachment — stencil included — is read-only
+        this._stencilReadOnly = renderTarget.depthStencilAttachment?.stencilReadOnly ?? this._depthReadOnly;
+        // WebGPU bakes winding into the (cached) pipeline, not as live state. The one spelling of the
+        // rule lives on the render target system; on WebGPU it resolves to plain `flipY`: off → the
+        // framebuffer's natural ccw; on → invert to cw so the projection flip and the winding flip
+        // cancel and culling is preserved. This bit feeds the cache key (getGlobalStateKey), so a
+        // flipY pass gets its own pipeline rather than aliasing — and an off pass keeps today's key.
+        this._invertFrontFace = this._renderer.renderTarget.isFrontFaceInverted(renderTarget, renderTarget.flipY);
         this._updatePipeHash();
     }
 
@@ -270,8 +312,41 @@ export class PipelineSystem implements System
     }
 
     /**
-     * Builds a {@link GPURenderBundleEncoderDescriptor} that matches the current render target
-     * configuration (color formats, sample count, and depth/stencil format).
+     * A packed key for everything a render bundle recorded right now would bake into itself: the
+     * attachment state WebGPU validates when the bundle is executed (color format(s), color target
+     * count, depth/stencil format, sample count, read-only aspects), plus the front-face winding
+     * its pipelines capture — which WebGPU does *not* validate.
+     *
+     * Equal keys mean a bundle recorded then is compatible with, and correct for, the pass now;
+     * different keys mean it has to be re-recorded before it is replayed. Comparing the two is
+     * what {@link GpuEncoderSystem.isBundleValid} does.
+     *
+     * `colorMask` and `stencilMode` are deliberately left out, unlike the pipeline cache key: they
+     * are ambient draw state a bundle bakes per-pipeline as it records, so their value at execute
+     * time says nothing about whether the bundle is still good.
+     */
+    public get bundleStateKey(): number
+    {
+        const formatData = this._depthStencilFormatData;
+
+        return getBundleStateKey(
+            // normalize the raw sample count (1 or 4 — WebGPU's only renderable counts) to a
+            // true single bit, so it cannot spill into the colorTargetCount field above it
+            this._multisampleCount === 1 ? 0 : 1,
+            this._colorTargetCount,
+            formatData.index,
+            // the same two flags getBundleDescriptor sets — keep them in step
+            formatData.depth && this._depthReadOnly ? 1 : 0,
+            formatData.stencil && this._stencilReadOnly ? 1 : 0,
+            this._invertFrontFace ? 1 : 0,
+            this._colorFormatId,
+        );
+    }
+
+    /**
+     * Builds a `GPURenderBundleEncoderDescriptor` that matches the current render target
+     * configuration (color formats, sample count, depth/stencil format, and which of its aspects
+     * are read-only).
      * Used by {@link GpuEncoderSystem.beginBundle} to create a compatible render bundle encoder.
      * @returns A descriptor for creating a GPURenderBundleEncoder.
      */
@@ -289,9 +364,19 @@ export class PipelineSystem implements System
             sampleCount: this._multisampleCount,
         };
 
-        if (this._depthStencilFormatData.depth || this._depthStencilFormatData.stencil)
+        const formatData = this._depthStencilFormatData;
+
+        if (formatData.depth || formatData.stencil)
         {
             descriptor.depthStencilFormat = this._depthStencilFormat;
+
+            // A read-only pass only accepts bundles that promise the same, so mirror the target's
+            // flags — gated by the aspects the format actually has, exactly how
+            // GpuRenderTargetAdaptor gates them on the pass. The promise holds: pipelines recorded
+            // against a read-only attachment already force depthWriteEnabled off (_createPipeline).
+            // bundleStateKey stamps these same two bits, so the two must move together.
+            if (formatData.depth && this._depthReadOnly) descriptor.depthReadOnly = true;
+            if (formatData.stencil && this._stencilReadOnly) descriptor.stencilReadOnly = true;
         }
 
         return descriptor;
@@ -545,13 +630,13 @@ export class PipelineSystem implements System
     }
 
     /**
-     * Returns a hash of buffer names mapped to bind locations.
+     * Returns the buffer names to bind, one per vertex buffer slot.
      * This is used to bind the correct buffer to the correct location in the shader.
      * @param geometry - The geometry where to get the buffer names
      * @param program - The program where to get the buffer names
-     * @returns An object of buffer names mapped to the bind location.
+     * @returns The buffer names, indexed by vertex buffer slot.
      */
-    public getBufferNamesToBind(geometry: Geometry, program: GpuProgram): Record<string, string>
+    public getBufferNamesToBind(geometry: Geometry, program: GpuProgram): string[]
     {
         const key = (geometry._layoutKey << 16) | program._attributeLocationsKey;
 
@@ -560,7 +645,7 @@ export class PipelineSystem implements System
         const data = this._createVertexBufferLayouts(geometry, program);
 
         // now map the data to the buffers..
-        const bufferNamesToBind: Record<string, string> = Object.create(null);
+        const bufferNamesToBind: string[] = [];
 
         const attributeData = program.attributeData;
 
@@ -669,7 +754,7 @@ export class PipelineSystem implements System
         this._gpu = null;
         (this._renderer as null) = null;
         (this._bindingNamesCache as null) = null;
-        (this._pipeStateCaches as null) = null;
+        this._pipeStateCaches = null;
         (this._moduleCache as null) = null;
     }
 }

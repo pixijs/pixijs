@@ -1,5 +1,13 @@
-export function nextTick(): Promise<void>
+/**
+ * Resolves after the given number of milliseconds.
+ * @param ms - The delay in milliseconds.
+ */
+export function wait(ms: number): Promise<void>
 {
-    return new Promise((resolve) => setTimeout(resolve, 0));
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export function nextTick(): Promise<void>
+{
+    return wait(0);
+}

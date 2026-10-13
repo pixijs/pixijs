@@ -86,3 +86,122 @@ describeLocalOnly('GpuTextureSystem texture view cache key', () =>
         expect(mip0Again).toBe(mip0);
     });
 });
+
+describeLocalOnly('GpuTextureSystem sRGB view format', () =>
+{
+    it('should let any texture with an sRGB version be viewed as sRGB', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const createTexture = jest.spyOn(renderer.gpu.device, 'createTexture');
+        const source = new TextureSource({ width: 4, height: 4, format: 'rgba8unorm' });
+
+        renderer.texture.initSource(source);
+
+        expect(createTexture.mock.calls[0][0].viewFormats).toEqual(['rgba8unorm-srgb']);
+
+        const plainView = renderer.texture.getTextureView(source);
+        const srgbView = renderer.texture.getTextureView(source, { format: 'rgba8unorm-srgb' });
+
+        expect(srgbView).not.toBe(plainView);
+        expect(renderer.texture.getTextureView(source, { format: 'rgba8unorm-srgb' })).toBe(srgbView);
+    });
+
+    it('should leave viewFormats unset for formats without an sRGB version and for MSAA', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const createTexture = jest.spyOn(renderer.gpu.device, 'createTexture');
+
+        renderer.texture.initSource(new TextureSource({ width: 4, height: 4, format: 'r8unorm' }));
+        renderer.texture.initSource(new TextureSource({ width: 4, height: 4, format: 'rgba16float' }));
+        // multisampled: never sampled, so no sRGB view either
+        renderer.texture.initSource(new TextureSource({ width: 4, height: 4, format: 'rgba8unorm', sampleCount: 4 }));
+
+        expect(createTexture.mock.calls[0][0].viewFormats).toBeUndefined();
+        expect(createTexture.mock.calls[1][0].viewFormats).toBeUndefined();
+        expect(createTexture.mock.calls[2][0].viewFormats).toBeUndefined();
+    });
+});
+
+describeLocalOnly('GpuTextureSystem 3D textures', () =>
+{
+    it('should drop the 3D mipmap generator when the device changes', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        renderer.texture.initSource(new TextureSource({
+            width: 2, height: 2, depth: 2, format: 'rgba8unorm', storage: true, autoGenerateMipmaps: true,
+        }));
+
+        expect(renderer.texture['_mipmap3dGenerator']).toBeTruthy();
+
+        // its pipeline and sampler belong to the old device
+        renderer.texture['contextChange'](renderer.gpu);
+
+        expect(renderer.texture['_mipmap3dGenerator']).toBeNull();
+    });
+
+    it('should refuse 3D mipmaps it cannot generate before creating the texture', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const notStorage = new TextureSource({
+            width: 2, height: 2, depth: 2, format: 'rgba8unorm', autoGenerateMipmaps: true,
+        });
+        const notFilterable = new TextureSource({
+            width: 2, height: 2, depth: 2, format: 'rgba32float', storage: true, autoGenerateMipmaps: true,
+        });
+
+        expect(() => renderer.texture.initSource(notStorage)).toThrow('needs storage: true');
+        expect(() => renderer.texture.initSource(notFilterable)).toThrow('\'rgba32float\' can\'t be downsampled');
+        expect(notStorage._gpuData[renderer.uid]).toBeUndefined();
+        expect(notFilterable._gpuData[renderer.uid]).toBeUndefined();
+    });
+
+    it('should generate 3D mipmaps for every format it accepts', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const device = renderer.gpu.device;
+
+        for (const format of ['rgba8unorm', 'rgba16float'] as const)
+        {
+            device.pushErrorScope('validation');
+
+            renderer.texture.initSource(new TextureSource({
+                width: 4, height: 4, depth: 4, format, storage: true, autoGenerateMipmaps: true,
+            }));
+
+            expect(await device.popErrorScope()).toBeNull();
+        }
+    });
+
+    it('should count the mip levels of a 3D texture along its depth', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const gpuTexture = renderer.texture.initSource(new TextureSource({
+            width: 2, height: 2, depth: 8, format: 'rgba8unorm', storage: true, autoGenerateMipmaps: true,
+        }));
+
+        expect(gpuTexture.mipLevelCount).toBe(4);
+    });
+
+    describe('storage', () =>
+    {
+        it('should add STORAGE_BINDING only to textures marked storage', async () =>
+        {
+            renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+            const storage = renderer.texture.initSource(new TextureSource({
+                width: 4, height: 4, depth: 4, format: 'rgba8unorm', storage: true,
+            }));
+            const plain = renderer.texture.initSource(new TextureSource({ width: 4, height: 4, format: 'rgba8unorm' }));
+
+            expect(storage.usage & GPUTextureUsage.STORAGE_BINDING).toBeTruthy();
+            expect(storage.dimension).toBe('3d');
+            expect(plain.usage & GPUTextureUsage.STORAGE_BINDING).toBe(0);
+        });
+    });
+});

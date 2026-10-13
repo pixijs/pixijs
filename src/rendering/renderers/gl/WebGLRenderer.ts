@@ -22,6 +22,7 @@ import { GlTextureSystem } from './texture/GlTextureSystem';
 
 import type { ICanvas } from '../../../environment/canvas/ICanvas';
 import type { PipeConstructor } from '../shared/instructions/RenderPipe';
+import type { RendererLoader } from '../shared/system/AbstractRenderer';
 import type { SharedRendererOptions } from '../shared/system/SharedSystems';
 import type { SystemConstructor } from '../shared/system/System';
 import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/system/utils/typeUtils';
@@ -51,10 +52,12 @@ const DefaultWebGLAdapters = [GlBatchAdaptor, GlMeshAdaptor, GlGraphicsAdaptor];
 const systems: { name: string; value: SystemConstructor }[] = [];
 const renderPipes: { name: string; value: PipeConstructor }[] = [];
 const renderPipeAdaptors: { name: string; value: any }[] = [];
+const loaders: { name: string; value: RendererLoader }[] = [];
 
 extensions.handleByNamedList(ExtensionType.WebGLSystem, systems);
 extensions.handleByNamedList(ExtensionType.WebGLPipes, renderPipes);
 extensions.handleByNamedList(ExtensionType.WebGLPipesAdaptor, renderPipeAdaptors);
+extensions.handleByNamedList(ExtensionType.WebGLLoader, loaders);
 
 // add all the default systems as well as any user defined ones from the extensions
 extensions.add(...DefaultWebGLSystems, ...DefaultWebGLPipes, ...DefaultWebGLAdapters);
@@ -171,6 +174,7 @@ export class WebGLRenderer<T extends ICanvas = HTMLCanvasElement>
             systems,
             renderPipes,
             renderPipeAdaptors,
+            loaders,
         };
 
         super(systemConfig);

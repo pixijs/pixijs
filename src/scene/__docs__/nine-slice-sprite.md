@@ -55,6 +55,8 @@ Areas:
 
 This ensures that decorative corners are preserved and the center content can scale as needed.
 
+Keep `leftWidth + rightWidth` below the texture width and `topHeight + bottomHeight` below the texture height. When the borders meet or overlap, no texture pixels remain for the center, so it is filled by stretching the seam between the borders.
+
 ## Width and height vs scale
 
 `width` and `height` resize the nine-slice correctly: corners stay fixed, edges and center stretch. `scale` uniformly scales the entire thing, including corners. For UI elements, always use `width`/`height` to resize.

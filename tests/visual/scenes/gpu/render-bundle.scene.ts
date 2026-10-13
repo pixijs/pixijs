@@ -54,11 +54,18 @@ export const scene: TestScene = {
                 const gpuRenderer = renderer as WebGPURenderer;
                 const encoder = gpuRenderer.encoder;
 
-                encoder.beginBundle();
+                encoder.beginBundle('triangle-a');
                 encoder.draw({ geometry, shader, state });
-                const bundle = encoder.endBundle();
+                const first = encoder.endBundle();
 
-                encoder.executeBundle(bundle);
+                encoder.beginBundle('triangle-b');
+                encoder.draw({ geometry, shader, state });
+                const second = encoder.endBundle();
+
+                // replayed as one run. Drawing the same opaque triangle twice is pixel-identical to
+                // drawing it once, so this covers the batched path against real WebGPU validation
+                // without changing what the scene looks like.
+                encoder.executeBundle([first, second]);
             },
             addBounds: (bounds) =>
             {

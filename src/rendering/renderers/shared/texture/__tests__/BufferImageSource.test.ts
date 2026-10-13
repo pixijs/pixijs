@@ -1,0 +1,215 @@
+import { BufferImageSource } from '../sources/BufferImageSource';
+import { Texture } from '../Texture';
+import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
+
+import type { TextureShapeOptions, TextureSourceOptions } from '../sources/TextureSource';
+
+const WIDTH = 4;
+const HEIGHT = 4;
+
+function createSource()
+{
+    const data = new Uint8Array(WIDTH * HEIGHT * 4);
+    const source = new BufferImageSource({ resource: data, width: WIDTH, height: HEIGHT, format: 'rgba8unorm' });
+
+    return { data, source };
+}
+
+function uploadedTexels(pixels: ArrayLike<number>, bytesPerRow = WIDTH * 4): number[]
+{
+    const out: number[] = [];
+
+    for (let i = 0; i < WIDTH * HEIGHT; i++)
+    {
+        const x = i % WIDTH;
+        const y = Math.floor(i / WIDTH);
+
+        if (pixels[(y * bytesPerRow) + (x * 4)] === 255) out.push(i);
+    }
+
+    return out;
+}
+
+function range(start: number, end: number): number[]
+{
+    return Array.from({ length: end - start }, (_, i) => start + i);
+}
+
+type Update = (source: BufferImageSource) => void;
+
+/**
+ * Registers the cases shared by every backend.
+ * @param readBackAfterUpdate - uploads zeros, fills the buffer with 255, runs `update` against the
+ * source and returns the texels that reached the GPU. With `bindFirst` false the helper binds the
+ * source only after `update`, so the first upload is the full one.
+ */
+function itUploadsRanges(readBackAfterUpdate: (update: Update, bindFirst?: boolean) => Promise<number[]>)
+{
+    it('should upload the whole buffer when no range is given', async () =>
+    {
+        expect(await readBackAfterUpdate((source) => source.update())).toEqual(range(0, 16));
+    });
+
+    it('should upload only the texels in the range', async () =>
+    {
+        expect(await readBackAfterUpdate((source) => source.update(5, 11))).toEqual(range(5, 11));
+    });
+
+    it('should upload a range spanning partial and whole rows', async () =>
+    {
+        expect(await readBackAfterUpdate((source) => source.update(3, 14))).toEqual(range(3, 14));
+    });
+
+    it('should not keep the range for an upload outside update', async () =>
+    {
+        // a bare 'update' emit is what cube faces and getPo2TextureFromSource send
+        expect(await readBackAfterUpdate((source) =>
+        {
+            source.update(5, 11);
+            source.emit('update', source);
+        })).toEqual(range(0, 16));
+    });
+
+    it('should upload the whole buffer when the source is first bound after a ranged update', async () =>
+    {
+        expect(await readBackAfterUpdate((source) => source.update(5, 11), false)).toEqual(range(0, 16));
+    });
+}
+
+describe('BufferImageSource', () =>
+{
+    describe.each([1, 2] as const)('WebGL%i', (preferWebGLVersion) =>
+    {
+        async function readBackAfterUpdate(update: Update, bindFirst = true): Promise<number[]>
+        {
+            const renderer = await getWebGLRenderer({ preferWebGLVersion });
+            const { data, source } = createSource();
+            const texture = new Texture({ source });
+
+            if (bindFirst) renderer.texture.initSource(source);
+
+            data.fill(255);
+            update(source);
+
+            renderer.texture.initSource(source);
+
+            const { pixels } = renderer.texture.getPixels(texture);
+
+            renderer.destroy();
+
+            return uploadedTexels(pixels);
+        }
+
+        itUploadsRanges(readBackAfterUpdate);
+    });
+
+    describeLocalOnly('WebGPU', () =>
+    {
+        async function readBackAfterUpdate(update: Update, bindFirst = true): Promise<number[]>
+        {
+            const renderer = await getWebGPURenderer();
+            const device = renderer.gpu.device;
+            const { data, source } = createSource();
+
+            if (bindFirst) renderer.texture.initSource(source);
+
+            data.fill(255);
+            update(source);
+
+            const gpuTexture = renderer.texture.initSource(source);
+
+            const readBuffer = device.createBuffer({
+                size: 256 * HEIGHT,
+                usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ,
+            });
+            const encoder = device.createCommandEncoder();
+
+            encoder.copyTextureToBuffer({ texture: gpuTexture }, { buffer: readBuffer, bytesPerRow: 256 }, [WIDTH, HEIGHT]);
+            device.queue.submit([encoder.finish()]);
+
+            await readBuffer.mapAsync(GPUMapMode.READ);
+            const pixels = new Uint8Array(readBuffer.getMappedRange().slice(0));
+
+            readBuffer.destroy();
+            renderer.destroy();
+
+            return uploadedTexels(pixels, 256);
+        }
+
+        itUploadsRanges(readBackAfterUpdate);
+    });
+});
+
+describe('BufferImageSource with depth', () =>
+{
+    function readSliceRed(gl: WebGL2RenderingContext, texture: WebGLTexture, layer: number): number
+    {
+        const framebuffer = gl.createFramebuffer();
+        const pixel = new Uint8Array(4);
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+        gl.framebufferTextureLayer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, texture, 0, layer);
+        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toBe(gl.FRAMEBUFFER_COMPLETE);
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+        gl.deleteFramebuffer(framebuffer);
+
+        return pixel[0];
+    }
+
+    it.each<TextureShapeOptions & TextureSourceOptions>([{ depth: 3 }, { arrayLayerCount: 3 }])(
+        'should upload and update the slices of %j on WebGL2',
+        async (shape) =>
+        {
+            const renderer = await getWebGLRenderer({ preferWebGLVersion: 2 });
+            const gl = renderer.gl;
+            const resource = new Uint8Array(2 * 2 * 3 * 4);
+
+            for (let z = 0; z < 3; z++) resource.fill((z * 50) + 10, z * 16, (z + 1) * 16);
+
+            const source = new BufferImageSource({ resource, width: 2, height: 2, ...shape, format: 'rgba8unorm' });
+
+            renderer.texture.initSource(source);
+
+            const glTexture = renderer.texture.getGlSource(source).texture;
+
+            expect(readSliceRed(gl, glTexture, 2)).toBe(110);
+            expect(gl.getError()).toBe(gl.NO_ERROR);
+
+            // same size, so this goes through texSubImage3D
+            resource.fill(200, 32, 48);
+            source.update();
+
+            expect(readSliceRed(gl, glTexture, 2)).toBe(200);
+            expect(gl.getError()).toBe(gl.NO_ERROR);
+
+            renderer.destroy();
+        },
+    );
+
+    it('should allocate a buffer for every slice or layer when none is given', () =>
+    {
+        expect((new BufferImageSource({ width: 2, height: 2, depth: 3 }).resource as Float32Array).length).toBe(48);
+        expect((new BufferImageSource({ width: 2, height: 2, arrayLayerCount: 3 }).resource as Float32Array).length)
+            .toBe(48);
+    });
+
+    it('should default 3D and array textures to no-premultiply-alpha', () =>
+    {
+        const data = new Uint8Array(2 * 2 * 2 * 4);
+
+        expect(new BufferImageSource({ resource: data, width: 2, height: 2, depth: 2 }).alphaMode)
+            .toBe('no-premultiply-alpha');
+        expect(new BufferImageSource({ resource: data, width: 2, height: 2, arrayLayerCount: 2 }).alphaMode)
+            .toBe('no-premultiply-alpha');
+        expect(new BufferImageSource({ resource: data, width: 2, height: 4 }).alphaMode)
+            .toBe('premultiply-alpha-on-upload');
+    });
+
+    it('should reject a partial update of a 3D texture', () =>
+    {
+        const source = new BufferImageSource({ resource: new Uint8Array(2 * 2 * 2 * 4), width: 2, height: 2, depth: 2 });
+
+        expect(() => source.update(0, 4)).toThrow('uploads whole');
+        expect(() => source.update()).not.toThrow();
+    });
+});

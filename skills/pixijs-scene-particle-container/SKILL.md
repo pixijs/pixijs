@@ -1,6 +1,6 @@
 ---
 name: pixijs-scene-particle-container
-description: "Use this skill when rendering thousands of lightweight sprites in PixiJS v8. Covers ParticleContainer with Particle instances, addParticle/removeParticle, particleChildren array, dynamicProperties (vertex, position, rotation, uvs, color), boundsArea, roundPixels, update. Triggers on: ParticleContainer, Particle, IParticle, addParticle, particleChildren, dynamicProperties, boundsArea, particle effects, constructor options, ParticleContainerOptions, ParticleOptions."
+description: "Use this skill when rendering thousands of lightweight sprites in PixiJS v8. Covers ParticleContainer with Particle instances, addParticle/removeParticle, particleChildren array, dynamicProperties (vertex, position, rotation, uvs, color), boundsArea, roundPixels, update, inherited alpha/tint/blendMode from ancestors. Triggers on: ParticleContainer, Particle, IParticle, addParticle, particleChildren, dynamicProperties, boundsArea, particle effects, particle alpha, particle tint, fade particles, constructor options, ParticleContainerOptions, ParticleOptions."
 license: MIT
 ---
 
@@ -201,11 +201,26 @@ const container = new ParticleContainer({ texture });
 const container = new ParticleContainer({ texture, shader: myCustomShader });
 ```
 
+### Fading or tinting a whole particle system
+
+```ts
+const burst = new ParticleContainer({ texture, particles });
+const layer = new Container();
+layer.addChild(burst);
+
+app.ticker.add(() => {
+  layer.alpha -= 0.01; // fades every particle
+});
+burst.tint = 0x66ccff; // tints every particle
+```
+
+Container `alpha`, `tint`, and `blendMode` cascade into particles the same way they cascade into sprites, so you can fade or recolor an entire system without touching `particleChildren`.
+
 ### Limitations
 
 `ParticleContainer` intentionally sacrifices features for speed:
 
-- No filters, masks, or per-particle blend modes. Blend modes apply at the container level: set `blendMode` on the `ParticleContainer` or let it inherit from a parent `Container` (the default `"inherit"` resolves to the ancestor's blend mode, like `Sprite` and `Mesh`). The whole particle batch shares one blend mode.
+- No filters, masks, or per-particle blend modes. Blend modes apply at the container level: set `blendMode` on the `ParticleContainer` or let it inherit from a parent `Container` (the default `"inherit"` resolves to the ancestor's blend mode, like `Sprite` and `Mesh`). The whole particle batch shares one blend mode. `alpha` and `tint` on the container or any ancestor multiply into every particle, on top of each particle's own `alpha`/`tint`.
 - No nested children on particles.
 - No automatic bounds calculation.
 - All particles must share the same base texture source (atlases work; multiple unrelated textures do not).

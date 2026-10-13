@@ -145,18 +145,25 @@ Since it's loaded via `Assets.load`, the result is cached and reused, similar to
 
 ### Supported features
 
-PixiJS supports most SVG features that can be rendered in a Canvas 2D context:
+Texture mode uses the browser's own SVG renderer, so anything the browser can draw works. Graphics mode parses the markup itself and supports:
 
-| Feature                                 | Supported |
-| --------------------------------------- | --------- |
-| Basic Shapes (rect, circle, path, etc.) | Yes       |
-| Gradients                               | Yes       |
-| Stroke and fill styles                  | Yes       |
-| Text elements                           | No        |
-| Filters (Blur, Drop Shadow, etc.)       | No        |
-| Clipping paths                          | Yes       |
-| Patterns                                | No        |
-| Complex paths and curves                | Yes       |
+| Feature                                                                          | Supported |
+| -------------------------------------------------------------------------------- | --------- |
+| Basic shapes (`rect`, `circle`, `ellipse`, `line`, `polygon`, `polyline`)        | Yes       |
+| `path` data, including `fill-rule="evenodd"` holes                               | Yes       |
+| `g` grouping with inherited fill and stroke                                      | Yes       |
+| `fill`, `stroke`, `stroke-width`, `fill-opacity`, `stroke-opacity`, `opacity`    | Yes       |
+| Inline `style="..."` declarations                                                | Yes       |
+| Linear gradients (`gradientUnits`, percentage coordinates)                       | Yes       |
+| Radial gradients (`cx`/`cy`/`r` outer circle, `fx`/`fy`/`fr` focal circle)       | Yes       |
+| `gradientTransform`, `spreadMethod`, `stop-opacity`, gradient `href` inheritance | No        |
+| `transform` attributes                                                           | No        |
+| `stroke-linecap`, `stroke-linejoin`, `stroke-dasharray`                          | No        |
+| `<style>` blocks and CSS classes                                                 | No        |
+| Text elements                                                                    | No        |
+| Filters (blur, drop shadow, etc.)                                                | No        |
+| Clipping paths and masks                                                         | No        |
+| Patterns and `<image>`                                                           | No        |
 
 ### Performance considerations
 

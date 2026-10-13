@@ -13,32 +13,32 @@ export function mapFormatToGlFormat(gl: GlRenderingContext): Record<string, numb
         // 8-bit formats
         r8unorm: gl.RED,
         r8snorm: gl.RED,
-        r8uint: gl.RED,
-        r8sint: gl.RED,
+        r8uint: gl.RED_INTEGER,
+        r8sint: gl.RED_INTEGER,
 
         // 16-bit formats
-        r16uint: gl.RED,
-        r16sint:    gl.RED,
+        r16uint: gl.RED_INTEGER,
+        r16sint:    gl.RED_INTEGER,
         r16float: gl.RED,
         rg8unorm:  gl.RG,
         rg8snorm:   gl.RG,
-        rg8uint:  gl.RG,
-        rg8sint:  gl.RG,
+        rg8uint:  gl.RG_INTEGER,
+        rg8sint:  gl.RG_INTEGER,
 
         // 32-bit formats
-        r32uint: gl.RED,
-        r32sint: gl.RED,
+        r32uint: gl.RED_INTEGER,
+        r32sint: gl.RED_INTEGER,
         r32float: gl.RED,
-        rg16uint:   gl.RG,
-        rg16sint:  gl.RG,
+        rg16uint:   gl.RG_INTEGER,
+        rg16sint:  gl.RG_INTEGER,
         rg16float:  gl.RG,
         rgba8unorm: gl.RGBA,
         'rgba8unorm-srgb': gl.RGBA,
 
         // Packed 32-bit formats
         rgba8snorm: gl.RGBA,
-        rgba8uint: gl.RGBA,
-        rgba8sint: gl.RGBA,
+        rgba8uint: gl.RGBA_INTEGER,
+        rgba8sint: gl.RGBA_INTEGER,
         bgra8unorm: gl.RGBA,
         'bgra8unorm-srgb': gl.RGBA,
         rgb9e5ufloat: gl.RGB,
@@ -46,16 +46,16 @@ export function mapFormatToGlFormat(gl: GlRenderingContext): Record<string, numb
         rg11b10ufloat: gl.RGB,
 
         // 64-bit formats
-        rg32uint: gl.RG,
-        rg32sint: gl.RG,
+        rg32uint: gl.RG_INTEGER,
+        rg32sint: gl.RG_INTEGER,
         rg32float:  gl.RG,
-        rgba16uint: gl.RGBA,
-        rgba16sint: gl.RGBA,
+        rgba16uint: gl.RGBA_INTEGER,
+        rgba16sint: gl.RGBA_INTEGER,
         rgba16float: gl.RGBA,
 
         // 128-bit formats
-        rgba32uint: gl.RGBA,
-        rgba32sint: gl.RGBA,
+        rgba32uint: gl.RGBA_INTEGER,
+        rgba32sint: gl.RGBA_INTEGER,
         rgba32float: gl.RGBA,
 
         // Depth/stencil formats

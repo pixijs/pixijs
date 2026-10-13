@@ -97,7 +97,15 @@ container.cacheAsTexture({
 ### Advanced details
 
 - **Memory tradeoff**: Each cached texture requires GPU memory. `cacheAsTexture` trades rendering speed for increased memory usage.
-- **GPU limitations**: Most GPUs cap texture size at 4096x4096 (some support 8192 or 16384). If your container exceeds the device's max texture size, caching will fail silently. Check `renderer.texture.maxTextureSize` if unsure.
+- **GPU limitations**: Most GPUs cap texture size at 4096x4096 (some support 8192 or 16384). If your container exceeds the device's max texture size, caching will fail silently. PixiJS does not expose the limit, so query the backend directly if unsure:
+
+```ts
+import type { WebGLRenderer, WebGPURenderer } from 'pixi.js';
+
+const maxTextureSize = renderer.name === 'webgpu'
+  ? (renderer as WebGPURenderer).gpu.device.limits.maxTextureDimension2D
+  : (renderer as WebGLRenderer).gl.getParameter(WebGL2RenderingContext.MAX_TEXTURE_SIZE);
+```
 
 ---
 

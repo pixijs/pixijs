@@ -140,12 +140,6 @@ export class Buffer extends EventEmitter<{
     public _resourceId = uid('resource');
 
     /**
-     * used internally to know if a uniform group was used in the last render pass
-     * @internal
-     */
-    public _touched = 0;
-
-    /**
      * a description of the buffer and how it should be set up on the GPU
      * @internal
      */

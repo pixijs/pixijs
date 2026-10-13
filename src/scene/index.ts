@@ -190,6 +190,7 @@ export * from './text/utils/canvasTextSplit';
 export * from './text/utils/generateTextStyleKey';
 export * from './text/utils/getPo2TextureFromSource';
 export * from './text/utils/updateTextBounds';
+export * from './text/utils/warnIgnoredTextureStyle';
 export * from './view/ViewContainer';
 /** @ignore */
 export { default as particlesFrag } from './particle-container/shared/shader/particles.frag';
