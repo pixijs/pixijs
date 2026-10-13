@@ -11,13 +11,13 @@ describe('GraphicsPipe', () =>
         const gpuContext = { isBatchable: false, batches: [] as unknown[] };
         const renderer = {
             uid: 1,
-            runners: { contextChange: { add: () => null } },
-            gc: { addResourceHash: () => null, now: 0 },
+            runners: { contextChange: { add: jest.fn() } },
+            gc: { addResourceHash: jest.fn(), now: 0 },
             graphicsContext: { updateGpuContext: () => gpuContext },
-            renderPipes: { batch: { break: () => null, addToBatch: () => null } },
+            renderPipes: { batch: { break: jest.fn(), addToBatch: jest.fn() } },
         } as unknown as Renderer;
-        const pipe = new GraphicsPipe(renderer, { contextChange: () => null, init: () => null } as any);
-        const instructionSet = { add: () => null } as unknown as InstructionSet;
+        const pipe = new GraphicsPipe(renderer, { contextChange: jest.fn(), init: jest.fn() } as any);
+        const instructionSet = { add: jest.fn() } as unknown as InstructionSet;
 
         return { gpuContext, pipe, instructionSet };
     }
