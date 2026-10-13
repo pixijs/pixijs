@@ -57,4 +57,21 @@ describe('getCanvasTexture', () =>
 
         texture.destroy();
     });
+
+    it('should keep the size of an existing canvas at a resolution with an inexact round trip', () =>
+    {
+        // 100 / 0.76 * 0.76 === 99.99999999999999; resizing the canvas would clear it
+        for (const resolution of [0.76, 1.14, 1.52, 1.75])
+        {
+            const canvas = DOMAdapter.get().createCanvas(100, 50);
+            const source = new CanvasSource({ resource: canvas, resolution });
+
+            expect(source.pixelWidth).toEqual(100);
+            expect(source.pixelHeight).toEqual(50);
+            expect(canvas.width).toEqual(100);
+            expect(canvas.height).toEqual(50);
+
+            source.destroy();
+        }
+    });
 });
