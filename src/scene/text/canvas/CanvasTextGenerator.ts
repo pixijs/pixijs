@@ -150,7 +150,7 @@ class CanvasTextGeneratorClass
         const maxLineWidth = measured.maxLineWidth;
         const fontProperties = measured.fontProperties;
 
-        const height = canvas.height;
+        const height = canvas.height / resolution;
 
         context.resetTransform();
         context.scale(resolution, resolution);
@@ -313,7 +313,7 @@ class CanvasTextGeneratorClass
         const { canvas, context } = canvasAndContext;
         const { runsByLine, lineWidths, maxLineWidth, lineAscents, lineHeights, hasDropShadow } = measured;
 
-        const height = canvas.height;
+        const height = canvas.height / resolution;
 
         context.resetTransform();
         context.scale(resolution, resolution);
