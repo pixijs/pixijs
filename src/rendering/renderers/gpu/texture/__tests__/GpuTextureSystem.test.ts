@@ -1,6 +1,8 @@
+import { RenderTexture } from '../../../shared/texture/RenderTexture';
 import { TextureSource } from '../../../shared/texture/sources/TextureSource';
 import { Texture } from '../../../shared/texture/Texture';
 import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
+import { Graphics } from '~/scene';
 
 import type { WebGPURenderer } from '../../WebGPURenderer';
 
@@ -14,6 +16,54 @@ afterEach(() =>
 
 describeLocalOnly('GpuTextureSystem', () =>
 {
+    it.each(['bgra8unorm', 'rgba8unorm', 'bgra8unorm-srgb', 'rgba8unorm-srgb', 'rgba16float'] as const)(
+        'should extract a %s render texture regardless of the preferred canvas format',
+        async (format) =>
+        {
+            renderer = (await getWebGPURenderer({ width: 2, height: 2 })) as WebGPURenderer;
+
+            const texture = RenderTexture.create({ width: 2, height: 2, format });
+            const square = new Graphics().rect(0, 0, 2, 2).fill(0xff0000);
+            const device = renderer.gpu.device;
+
+            renderer.render({ container: square, target: texture, clear: true });
+
+            device.pushErrorScope('validation');
+
+            const { pixels } = renderer.extract.pixels(texture);
+            const canvas = renderer.extract.canvas(texture);
+            const error = await device.popErrorScope();
+
+            expect(error).toBeNull();
+            expect(Array.from(pixels.slice(0, 4))).toEqual([255, 0, 0, 255]);
+
+            const sampleCanvas = document.createElement('canvas');
+
+            sampleCanvas.width = 2;
+            sampleCanvas.height = 2;
+
+            const context = sampleCanvas.getContext('2d');
+
+            context.drawImage(canvas as HTMLCanvasElement, 0, 0);
+
+            expect(Array.from(context.getImageData(0, 0, 1, 1).data)).toEqual([255, 0, 0, 255]);
+
+            square.destroy();
+            texture.destroy(true);
+        }
+    );
+
+    it('should reject a texture format that cannot be copied into a WebGPU canvas', async () =>
+    {
+        renderer = (await getWebGPURenderer({ width: 2, height: 2 })) as WebGPURenderer;
+
+        const texture = new Texture({ source: new TextureSource({ width: 2, height: 2, format: 'r8unorm' }) });
+
+        expect(() => renderer.extract.canvas(texture)).toThrow(/Cannot copy texture format 'r8unorm'/);
+
+        texture.destroy(true);
+    });
+
     it('should cache texture views correctly', async () =>
     {
         renderer = (await getWebGPURenderer()) as WebGPURenderer;
