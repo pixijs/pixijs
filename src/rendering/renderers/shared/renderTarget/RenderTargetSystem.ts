@@ -491,11 +491,12 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
 
         const source = renderTarget.colorAttachments[0]?.texture || renderTarget.depthStencilAttachment?.texture;
         const viewport = this.viewport;
-        const arrayLayerCount = source.arrayLayerCount || 1;
 
-        if (layer < 0 || layer >= arrayLayerCount)
+        const layerCount = source.dimension === '3d' ? Math.max(source.depth >> mipLevel, 1) : source.depthOrArrayLayers;
+
+        if (layer < 0 || layer >= layerCount)
         {
-            throw new Error(`[RenderTargetSystem] layer ${layer} is out of bounds (arrayLayerCount=${arrayLayerCount}).`);
+            throw new Error(`[RenderTargetSystem] layer ${layer} is out of bounds (layer count=${layerCount}).`);
         }
 
         // retain the as-passed bind state for the getters and getBindState; the frame is
@@ -940,6 +941,10 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      * **Important Note:** When using the copied depth buffer in a subsequent render pass,
      * you must ensure you do not clear the depth buffer again. If you need to clear the color
      * buffer of the destination render target, use `clear: CLEAR.COLOR` to preserve the copied depth data.
+     *
+     * Copying from an antialiased target resolves its multisampled depth, keeping sample 0 of each pixel,
+     * and copies depth only. So does copying part of a texture on WebGPU, which only copies depth/stencil
+     * textures whole.
      * @example
      * ```js
      * renderer.renderTarget.copyDepthTexture(

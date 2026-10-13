@@ -648,6 +648,82 @@ describe('TexturePool', () =>
         });
     });
 
+    describe('Evict Event', () =>
+    {
+        it('should emit evict before destroying the textures a screen change drops', () =>
+        {
+            pool.setScreenSize(1, 1280, 720);
+
+            const texture = pool.getOptimalTexture({ width: 1280, height: 720 });
+            const destroyedAtEvict: boolean[] = [];
+
+            pool.returnTexture(texture);
+            pool.on('evict', () => destroyedAtEvict.push(texture.destroyed));
+            pool.setScreenSize(1, 800, 600);
+
+            expect(destroyedAtEvict).toEqual([false]);
+            expect(texture.destroyed).toBe(true);
+        });
+
+        it('should emit evict before a clear destroys the idle textures', () =>
+        {
+            const texture = pool.getOptimalTexture({ width: 64, height: 64 });
+            const destroyedAtEvict: boolean[] = [];
+
+            pool.returnTexture(texture);
+            pool.on('evict', () => destroyedAtEvict.push(texture.destroyed));
+            pool.clear();
+
+            expect(destroyedAtEvict).toEqual([false]);
+            expect(texture.destroyed).toBe(true);
+        });
+
+        it('should emit evict before destroying a texture returned to a pruned bucket', () =>
+        {
+            pool.setScreenSize(1, 1280, 720);
+
+            const texture = pool.getOptimalTexture({ width: 1280, height: 720 });
+            const destroyedAtEvict: boolean[] = [];
+
+            pool.setScreenSize(1, 800, 600);
+            pool.on('evict', () => destroyedAtEvict.push(texture.destroyed));
+            pool.returnTexture(texture);
+
+            expect(destroyedAtEvict).toEqual([false]);
+            expect(texture.destroyed).toBe(true);
+        });
+
+        it('should not emit evict for a clear that keeps the textures alive', () =>
+        {
+            const texture = pool.getOptimalTexture({ width: 64, height: 64 });
+            const onEvict = jest.fn();
+
+            pool.returnTexture(texture);
+            pool.on('evict', onEvict);
+            pool.clear(false);
+
+            expect(onEvict).not.toHaveBeenCalled();
+
+            texture.destroy(true);
+        });
+
+        it('should not emit evict when the dropped bucket holds no idle textures', () =>
+        {
+            pool.setScreenSize(1, 1280, 720);
+
+            const inUse = pool.getOptimalTexture({ width: 1280, height: 720 });
+            const onEvict = jest.fn();
+
+            pool.on('evict', onEvict);
+            pool.setScreenSize(1, 800, 600);
+
+            expect(onEvict).not.toHaveBeenCalled();
+            expect(inUse.destroyed).toBe(false);
+
+            inUse.destroy(true);
+        });
+    });
+
     describe('Style Reset', () =>
     {
         it('should put the pool style back when a texture is returned with resetStyle', () =>

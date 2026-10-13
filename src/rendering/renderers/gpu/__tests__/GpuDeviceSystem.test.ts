@@ -66,4 +66,26 @@ describeLocalOnly('GpuDeviceSystem', () =>
             expect(lost).toBe(false);
         });
     });
+
+    describe('tileBased', () =>
+    {
+        it('should be true only for tile-based GPU vendors', async () =>
+        {
+            const { device } = renderer.gpu;
+            const cases: [string | undefined, boolean][] = [
+                ['apple', true], ['arm', true], ['qualcomm', true], ['img-tec', true],
+                ['intel', false], ['nvidia', false], ['amd', false], ['', false], [undefined, false],
+            ];
+
+            for (const [vendor, tileBased] of cases)
+            {
+                const adapter = { info: vendor === undefined ? undefined : { vendor } } as unknown as GPUAdapter;
+                const sharing = await getWebGPURenderer({ width: 64, height: 64, gpu: { adapter, device } });
+
+                expect(sharing.device.extensions.tileBased).toBe(tileBased);
+
+                sharing.destroy();
+            }
+        });
+    });
 });

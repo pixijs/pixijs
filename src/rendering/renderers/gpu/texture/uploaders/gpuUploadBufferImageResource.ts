@@ -19,7 +19,22 @@ export const gpuUploadBufferImageResource = {
         const width = source.pixelWidth | 0;
         const height = source.pixelHeight | 0;
 
-        const bytesPerPixel = resource.byteLength / (width * height);
+        // a 3D texture's slices or a 2D array's layers, copied as one box; partial ranges only reach 2D textures
+        const depth = source.depthOrArrayLayers;
+
+        const bytesPerPixel = resource.byteLength / (width * height * depth);
+
+        if (depth > 1)
+        {
+            gpu.device.queue.writeTexture(
+                { texture: gpuTexture, origin: { x: 0, y: 0, z: originZOverride } },
+                resource as ArrayBuffer,
+                { offset: 0, rowsPerImage: height, bytesPerRow: width * bytesPerPixel },
+                { width, height, depthOrArrayLayers: depth }
+            );
+
+            return;
+        }
 
         const count = getTexelRangeRects(source._updateStart, source._updateEnd, width, height, tempRects);
 

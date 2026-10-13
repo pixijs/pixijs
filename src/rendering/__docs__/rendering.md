@@ -120,6 +120,22 @@ renderer.render({
 
 If your `target` is a {@link Texture} with a `frame` (e.g. an atlas sub-texture), that frame is interpreted in **mip 0** pixel space and is scaled/clamped when rendering to `mipLevel > 0`.
 
+## Rendering to layers and slices (advanced)
+
+`layer` picks which part of a layered texture to render into: an array layer of a 2D array (`arrayLayerCount`), a face of a cube map, or a depth slice of a 3D texture (`depth`). Pass the `TextureSource` itself as `target`; `RenderTexture.create` doesn't take `depth`.
+
+```ts
+import { TextureSource } from 'pixi.js';
+
+const volume = new TextureSource({ width: 64, height: 64, depth: 4, format: 'rgba8unorm' });
+
+for (let z = 0; z < 4; z++) {
+    renderer.render({ container, target: volume, layer: z, clear: true });
+}
+```
+
+Custom render code can bind a layer the same way with `renderer.renderTarget.push({ target, layer })`.
+
 ## Flipping the output (advanced)
 
 By default a texture render is stored in PixiJS's Y-down orientation, which the 2D pipeline samples upright but 3D UV conventions read upside down. Pass `flipY: true` to invert the Y orientation of the render. Back-face culling stays correct because the winding order flips together with the projection.
@@ -200,11 +216,13 @@ renderer.render({ container, target: destTarget, clear: CLEAR.COLOR });
 
 `copyDepthTexture` warns and does nothing when the source has no depth attachment or the destination texture is not a depth or stencil format. Clear only the color buffer afterwards, or the copied depth is lost.
 
+Antialiased targets keep depth in a multisampled buffer, so shaders can't read their depth texture as a normal depth texture. Copy it out with `copyDepthTexture` instead, which resolves the samples into the destination. It keeps one sample per pixel, so depth along object edges is aliased, the same as without antialiasing. Only depth is resolved: the destination's stencil is left as it was. A `transient` target discards its depth after each pass, so there is nothing to copy from one.
+
 3D code that needs the resolved winding of the current target can call `renderer.renderTarget.isFrontFaceInverted()`, or `isFrontFaceInverted(target, flipY)` to ask about a target before binding it. The target is a `RenderTarget`; get one for a texture with `renderer.renderTarget.getRenderTarget(texture)`.
 
 ### Destroying targets
 
-A `RenderTarget` you construct is yours to destroy. Every renderer that drew into it frees the framebuffers and MSAA textures it built for it. Destroying the renderer frees those too, without destroying your target.
+A `RenderTarget` you construct is yours to destroy. Every renderer that drew into it frees the framebuffers and MSAA textures it built for it. Destroying the renderer frees those too, without destroying your target. Destroying a target destroys the color and depth-stencil textures it created, and leaves the ones you passed in alone.
 
 ```ts
 import { RenderTarget } from 'pixi.js';
@@ -236,6 +254,23 @@ const shader = Shader.from({
 
 Browsers without pipeline constant support (Safari) get the values substituted into the source instead. `renderer.limits.supportsOverrideConstants` reports which path is in use.
 
+### Storage textures
+
+Set `storage: true` on a `TextureSource` so your own compute pass can write to it. PixiJS adds `GPUTextureUsage.STORAGE_BINDING` to the texture and still samples it like any other texture.
+
+```ts
+import { TextureSource } from 'pixi.js';
+
+const volume = new TextureSource({ width: 64, height: 64, depth: 64, format: 'rgba8unorm', storage: true });
+
+// bind this view to a texture_storage_3d<rgba8unorm, write> in your compute pass
+const view = renderer.texture.getGpuSource(volume).createView();
+```
+
+Every device accepts `rgba8unorm`, `rgba16float`, `r32float`, `rg32float`, `rgba32float` and the matching integer formats as storage textures. `bgra8unorm` needs the `bgra8unorm-storage` feature, and formats such as `r8unorm` or `r16float` need `texture-formats-tier1`. PixiJS enables both features when the GPU has them. WebGPU rejects any other format when the texture is created.
+
+A 3D texture with `autoGenerateMipmaps` needs `storage: true` and the `rgba8unorm` or `rgba16float` format on WebGPU, because a compute shader writes its mips.
+
 ### Render bundles
 
 A render bundle records a sequence of draw calls once and replays them on later frames, cutting CPU cost for static content drawn through `renderer.encoder`. A bundle bakes the render target it was recorded against, so check it before replaying and re-record when the check fails.
@@ -254,14 +289,26 @@ renderer.encoder.executeBundle(bundle);
 
 Pass an array to `executeBundle` to replay several bundles in one call. A bundle is also invalid after a WebGPU device loss, because it was recorded on the device that was lost; `isBundleValid` reports that too.
 
-### Transient MSAA render textures
+### Antialiasing on WebGPU
 
-An antialiased render texture that is drawn in a single pass and never loaded back can mark its multisample buffer as scratch memory. Set `transient: true` when creating it; PixiJS then discards the MSAA buffer at the end of the pass, and tile-based GPUs skip allocating it entirely where the browser supports `GPUTextureUsage.TRANSIENT_ATTACHMENT`. Do not set it on a texture that is rendered into again with `clear: false`, or on one used with filters.
+On a tile-based GPU (every phone GPU and Apple silicon, reported by `renderer.device.extensions.tileBased`), antialiased targets never write their multisample colour buffer to memory. Only the resolved image is kept. When a pass reopens a target, for example a filter popping back onto its parent or a render with `clear: false`, PixiJS copies the resolved image back into the multisample buffer before drawing. This saves bandwidth on every frame, and the multisample buffer may not be allocated at all where the browser supports `GPUTextureUsage.TRANSIENT_ATTACHMENT`. You don't need to set anything.
+
+Restoring writes the resolved colour into every sample, so antialiased edges that meet exactly across a reopen, such as two shapes drawn by separate `clear: false` renders, can show a faint seam. On an antialiased canvas, a frame that starts without clearing (`clearBeforeRender: false`, or a first `render` with `clear: false`) starts from an empty canvas rather than the previous frame, as it already does without antialiasing.
+
+Other GPUs (Intel, NVIDIA, AMD) keep multisample buffers in video memory, where storing them and loading them back on a reopen is cheaper than restoring, so PixiJS does that there.
+
+The multisample depth/stencil buffer is kept by default, because masks need it across a reopen. A render texture that is drawn in a single pass and never reopened can discard it too, along with its colour buffer on GPUs that aren't tile-based:
 
 ```ts
 import { RenderTexture } from 'pixi.js';
 
 const rt = RenderTexture.create({ width: 1024, height: 1024, antialias: true, transient: true });
+```
+
+The same flag works for the canvas. Pass `transient: true` to the renderer when the app never reopens the screen pass while it still needs depth or stencil:
+
+```ts
+await app.init({ preference: 'webgpu', antialias: true, transient: true });
 ```
 
 `renderer.device.extensions.transientAttachment` reports whether the usage bit is available.

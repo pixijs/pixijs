@@ -7,30 +7,28 @@
  */
 export class GpuMipmapGenerator
 {
-    public device: GPUDevice;
-    public sampler: GPUSampler;
-    public pipelines: Record<string, GPURenderPipeline>;
-
-    public mipmapShaderModule: any;
+    private readonly _device: GPUDevice;
+    private readonly _sampler: GPUSampler;
+    // a pipeline for every texture format used
+    private readonly _pipelines: Record<string, GPURenderPipeline> = {};
+    private _mipmapShaderModule: GPUShaderModule;
 
     constructor(device: GPUDevice)
     {
-        this.device = device;
-        this.sampler = device.createSampler({ minFilter: 'linear' });
-        // We'll need a new pipeline for every texture format used.
-        this.pipelines = {};
+        this._device = device;
+        this._sampler = device.createSampler({ minFilter: 'linear' });
     }
 
     private _getMipmapPipeline(format: GPUTextureFormat)
     {
-        let pipeline = this.pipelines[format];
+        let pipeline = this._pipelines[format];
 
         if (!pipeline)
         {
             // Shader modules is shared between all pipelines, so only create once.
-            if (!this.mipmapShaderModule)
+            if (!this._mipmapShaderModule)
             {
-                this.mipmapShaderModule = this.device.createShaderModule({
+                this._mipmapShaderModule = this._device.createShaderModule({
                     code: /* wgsl */ `
                         var<private> pos : array<vec2<f32>, 3> = array<vec2<f32>, 3>(
                         vec2<f32>(-1.0, -1.0), vec2<f32>(-1.0, 3.0), vec2<f32>(3.0, -1.0));
@@ -59,20 +57,20 @@ export class GpuMipmapGenerator
                 });
             }
 
-            pipeline = this.device.createRenderPipeline({
+            pipeline = this._device.createRenderPipeline({
                 layout: 'auto',
                 vertex: {
-                    module: this.mipmapShaderModule,
+                    module: this._mipmapShaderModule,
                     entryPoint: 'vertexMain',
                 },
                 fragment: {
-                    module: this.mipmapShaderModule,
+                    module: this._mipmapShaderModule,
                     entryPoint: 'fragmentMain',
                     targets: [{ format }],
                 }
             });
 
-            this.pipelines[format] = pipeline;
+            this._pipelines[format] = pipeline;
         }
 
         return pipeline;
@@ -85,12 +83,17 @@ export class GpuMipmapGenerator
      */
     public generateMipmap(texture: GPUTexture)
     {
-        const pipeline = this._getMipmapPipeline(texture.format);
-
-        if (texture.dimension === '3d' || texture.dimension === '1d')
+        if (texture.dimension === '3d')
         {
-            throw new Error('Generating mipmaps for non-2d textures is currently unsupported!');
+            throw new Error('[GpuMipmapGenerator] a 3D texture uses Gpu3dMipmapGenerator.');
         }
+
+        if (texture.dimension === '1d')
+        {
+            throw new Error('Generating mipmaps for 1d textures is currently unsupported!');
+        }
+
+        const pipeline = this._getMipmapPipeline(texture.format);
 
         let mipTexture = texture;
         const arrayLayerCount = texture.depthOrArrayLayers || 1; // Only valid for 2D textures.
@@ -113,10 +116,10 @@ export class GpuMipmapGenerator
                 mipLevelCount: texture.mipLevelCount - 1,
             };
 
-            mipTexture = this.device.createTexture(mipTextureDescriptor);
+            mipTexture = this._device.createTexture(mipTextureDescriptor);
         }
 
-        const commandEncoder = this.device.createCommandEncoder({});
+        const commandEncoder = this._device.createCommandEncoder({});
         // TODO: Consider making this static.
         const bindGroupLayout = pipeline.getBindGroupLayout(0);
 
@@ -151,11 +154,11 @@ export class GpuMipmapGenerator
                     }],
                 });
 
-                const bindGroup = this.device.createBindGroup({
+                const bindGroup = this._device.createBindGroup({
                     layout: bindGroupLayout,
                     entries: [{
                         binding: 0,
-                        resource: this.sampler,
+                        resource: this._sampler,
                     }, {
                         binding: 1,
                         resource: srcView,
@@ -197,7 +200,7 @@ export class GpuMipmapGenerator
             }
         }
 
-        this.device.queue.submit([commandEncoder.finish()]);
+        this._device.queue.submit([commandEncoder.finish()]);
 
         if (!renderToSource)
         {

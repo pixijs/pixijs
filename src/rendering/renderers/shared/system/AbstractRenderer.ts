@@ -113,9 +113,11 @@ export interface ClearOptions
     mipLevel?: number;
 
     /**
-     * Array layer index to render/clear to when the target is an array-backed texture source (e.g. `arrayLayerCount > 1`).
+     * Layer to render/clear to when the target has layers: an array layer of a 2D array (`arrayLayerCount > 1`),
+     * a face of a cube map, or a depth slice of a 3D texture (`depth`).
      *
-     * This maps to WebGPU's `GPUTextureViewDescriptor.baseArrayLayer` when creating render-attachment views.
+     * This maps to WebGPU's `GPUTextureViewDescriptor.baseArrayLayer` for arrays and cube faces, and to
+     * `GPURenderPassColorAttachment.depthSlice` for 3D textures.
      * @default 0
      * @advanced
      */

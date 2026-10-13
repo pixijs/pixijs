@@ -106,7 +106,7 @@ renderer.render({
   transform: new Matrix(),
 });
 
-// render into a specific mip level or array layer of a RenderTexture
+// render into a mip level, array layer, cube face or 3D slice of a texture
 renderer.render({
   container: myContainer,
   target: renderTexture,
@@ -118,7 +118,7 @@ renderer.render({
 renderer.render({ container: scene3d, target: renderTexture, flipY: true });
 ```
 
-`container` is the scene root to draw. `target` is a separate destination (e.g. a `RenderTexture`). `mipLevel > 0` is useful for custom LOD systems or manual mipmap generation. `flipY` defaults to `false`; set it to store a texture render un-flipped, with winding adjusted so back-face culling still works.
+`container` is the scene root to draw. `target` is a separate destination (e.g. a `RenderTexture`). `mipLevel > 0` is useful for custom LOD systems or manual mipmap generation. `flipY` defaults to `false`; set it to store a texture render un-flipped, with winding adjusted so back-face culling still works. `layer` selects an array layer, a cube face, or a depth slice of a 3D `TextureSource` (`depth`); pass the source itself as `target`.
 
 ### Render targets
 
