@@ -44,6 +44,12 @@ export class GlLimitsSystem implements System
     /** The maximum number of uniform bindings */
     public maxUniformBindings: number;
 
+    /**
+     * The byte alignment a `BufferResource` offset into a uniform buffer must be a multiple of.
+     * 0 on WebGL1, which has no uniform buffers.
+     */
+    public minUniformBufferOffsetAlignment: number;
+
     private readonly _renderer: WebGLRenderer;
 
     constructor(renderer: WebGLRenderer)
@@ -67,6 +73,10 @@ export class GlLimitsSystem implements System
 
         this.maxUniformBindings = isWebGl2
             ? gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS)
+            : 0;
+
+        this.minUniformBufferOffsetAlignment = isWebGl2
+            ? gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT)
             : 0;
     }
 
