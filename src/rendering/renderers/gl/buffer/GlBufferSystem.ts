@@ -23,6 +23,12 @@ import type { WebGLRenderer } from '../WebGLRenderer';
  * This system will handle the binding of buffers to the GPU as well as uploading
  * them. With this system, you never need to work directly with GPU buffers, but instead work with
  * the Buffer class.
+ *
+ * A buffer is first uploaded whole when something binds it. From then on each `Buffer.update()` is
+ * applied as it is called, as on WebGPU, so every ranged update lands. Index buffers are the exception:
+ * they upload at the next bind, because uploading one binds it to `ELEMENT_ARRAY_BUFFER`, which is
+ * vertex array object state, and an upload while another geometry's vertex array is bound would
+ * rewrite that geometry's index binding.
  * @class
  * @category rendering
  * @advanced
@@ -148,6 +154,9 @@ export class GlBufferSystem implements System
 
     /**
      * Will ensure the data in the buffer is uploaded to the GPU.
+     *
+     * Runs on each `update` event of a non-index buffer that has been uploaded, and when a buffer is
+     * bound. The second call for one update is a no-op.
      * @param {Buffer} buffer - the buffer to update
      */
     public updateBuffer(buffer: Buffer): GlBuffer
@@ -209,6 +218,8 @@ export class GlBufferSystem implements System
 
     protected onBufferUnload(buffer: Buffer, contextLost: boolean = false): void
     {
+        buffer.off('update', this.updateBuffer, this);
+
         const glBuffer = buffer._gpuData[this._renderer.uid] as GlBuffer;
 
         if (!glBuffer) return;
@@ -238,7 +249,12 @@ export class GlBufferSystem implements System
         const glBuffer = new GlBuffer(gl.createBuffer(), type);
 
         buffer._gpuData[this._renderer.uid] = glBuffer;
-        this._managedBuffers.add(buffer);
+
+        // index buffers upload at bind time only, see the class doc
+        if (this._managedBuffers.add(buffer) && type !== BUFFER_TYPE.ELEMENT_ARRAY_BUFFER)
+        {
+            buffer.on('update', this.updateBuffer, this);
+        }
 
         return glBuffer;
     }
