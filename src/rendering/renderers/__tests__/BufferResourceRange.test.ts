@@ -12,19 +12,44 @@ import type { WebGPURenderer } from '../gpu/WebGPURenderer';
 // the canvas renderer has no uniform buffers
 type GpuRenderer = WebGLRenderer | WebGPURenderer;
 
+const CLEAR = [0, 0, 0, 0];
 const RED = [255, 0, 0, 255];
 const GREEN = [0, 255, 0, 255];
+const BLUE = [0, 0, 255, 255];
+const WHITE = [255, 255, 255, 255];
 const YELLOW = [255, 255, 0, 255];
 
-// one 512 byte uniform buffer holding a colour per 256 byte row, the alignment every device accepts
-function createSwatchBuffer(): Buffer
-{
-    const data = new Float32Array(128);
+// one colour per 256 byte row, the alignment every device accepts
+const ROW_BYTES = 256;
+const ROW_FLOATS = ROW_BYTES / Float32Array.BYTES_PER_ELEMENT;
 
-    data.set([1, 0, 0, 1], 0);
-    data.set([0, 1, 0, 1], 64);
+function createSwatchBuffer(rowColors: number[][] = [RED, GREEN]): Buffer
+{
+    const data = new Float32Array(rowColors.length * ROW_FLOATS);
+
+    rowColors.forEach((color, row) => data.set(color.map((c) => c / 255), row * ROW_FLOATS));
 
     return new Buffer({ data, usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST });
+}
+
+// writes one row into the buffer's data and uploads just that row
+function writeRow(buffer: Buffer, row: number, color: number[]): void
+{
+    buffer.data.set(color.map((c) => c / 255), row * ROW_FLOATS);
+    buffer.update(ROW_BYTES, row * ROW_BYTES);
+}
+
+function row(buffer: Buffer, index: number): BufferResource
+{
+    return new BufferResource({ buffer, offset: index * ROW_BYTES, size: ROW_BYTES });
+}
+
+function createQuadGeometry(): Geometry
+{
+    return new Geometry({
+        attributes: { aPosition: new Float32Array([-1, -1, 1, -1, 1, 1, -1, 1]) },
+        indexBuffer: new Uint16Array([0, 1, 2, 0, 2, 3]),
+    });
 }
 
 // fills the whole target with the sum of the colours read from each named swatch block, so any pixel will do
@@ -81,12 +106,13 @@ function createSwatchShader(swatches: Record<string, BufferResource>): Shader
     });
 }
 
-function readSwatch(renderer: GpuRenderer, swatches: Record<string, BufferResource>): number[]
+// draws the geometry (a full quad unless given one) into a 4x4 target and returns every pixel
+function renderSwatch(renderer: GpuRenderer, swatches: Record<string, BufferResource>, geometry?: Geometry): number[]
 {
-    const geometry = new Geometry({
-        attributes: { aPosition: [-1, -1, 1, -1, 1, 1, -1, 1] },
-        indexBuffer: [0, 1, 2, 0, 2, 3],
-    });
+    const ownGeometry = !geometry;
+
+    geometry ??= createQuadGeometry();
+
     const shader = createSwatchShader(swatches);
     const mesh = new Mesh({ geometry, shader });
     const target = RenderTexture.create({ width: 4, height: 4 });
@@ -95,15 +121,25 @@ function readSwatch(renderer: GpuRenderer, swatches: Record<string, BufferResour
     {
         renderer.render({ container: mesh, target, clear: true });
 
-        return Array.from(renderer.extract.pixels(target).pixels.subarray(0, 4));
+        return Array.from(renderer.extract.pixels(target).pixels);
     }
     finally
     {
         mesh.destroy();
         shader.destroy();
-        geometry.destroy();
+        if (ownGeometry) geometry.destroy();
         target.destroy(true);
     }
+}
+
+function readSwatch(renderer: GpuRenderer, swatches: Record<string, BufferResource>): number[]
+{
+    return renderSwatch(renderer, swatches).slice(0, 4);
+}
+
+function allPixels(color: number[]): number[]
+{
+    return Array.from({ length: 16 }, () => color).flat();
 }
 
 function describeBufferResourceRanges(createRenderer: () => Promise<GpuRenderer>): void
@@ -140,17 +176,17 @@ function describeBufferResourceRanges(createRenderer: () => Promise<GpuRenderer>
 
     it('should read the first row of a range at byte 0', () =>
     {
-        expect(readSwatch(renderer, { swatch: new BufferResource({ buffer, offset: 0, size: 256 }) })).toEqual(RED);
+        expect(readSwatch(renderer, { swatch: row(buffer, 0) })).toEqual(RED);
     });
 
     it('should read the second row of a range at byte 256', () =>
     {
-        expect(readSwatch(renderer, { swatch: new BufferResource({ buffer, offset: 256, size: 256 }) })).toEqual(GREEN);
+        expect(readSwatch(renderer, { swatch: row(buffer, 1) })).toEqual(GREEN);
     });
 
     it('should bind the rest of the buffer when a range has an offset and no size', () =>
     {
-        expect(readSwatch(renderer, { swatch: new BufferResource({ buffer, offset: 256 }) })).toEqual(GREEN);
+        expect(readSwatch(renderer, { swatch: new BufferResource({ buffer, offset: ROW_BYTES }) })).toEqual(GREEN);
     });
 
     it('should bind the whole buffer when a resource has no offset or size', () =>
@@ -171,16 +207,90 @@ function describeBufferResourceRanges(createRenderer: () => Promise<GpuRenderer>
     {
         expect(readSwatch(renderer, {
             whole: new BufferResource({ buffer }),
-            part: new BufferResource({ buffer, offset: 256, size: 256 }),
+            part: row(buffer, 1),
         })).toEqual(YELLOW);
     });
 
     it('should give two blocks on one buffer their own bindings, range first', () =>
     {
         expect(readSwatch(renderer, {
-            part: new BufferResource({ buffer, offset: 256, size: 256 }),
+            part: row(buffer, 1),
             whole: new BufferResource({ buffer }),
         })).toEqual(YELLOW);
+    });
+
+    describe('ranged updates', () =>
+    {
+        it('should land every ranged update made before the first draw', () =>
+        {
+            const fresh = createSwatchBuffer([CLEAR, CLEAR]);
+
+            writeRow(fresh, 0, BLUE);
+            writeRow(fresh, 1, WHITE);
+
+            expect(readSwatch(renderer, { swatch: row(fresh, 0) })).toEqual(BLUE);
+            expect(readSwatch(renderer, { swatch: row(fresh, 1) })).toEqual(WHITE);
+
+            fresh.destroy();
+        });
+
+        it('should land every ranged update made between two draws of an uploaded buffer', () =>
+        {
+            expect(readSwatch(renderer, { swatch: row(buffer, 0) })).toEqual(RED);
+
+            writeRow(buffer, 0, BLUE);
+            writeRow(buffer, 1, WHITE);
+
+            expect(readSwatch(renderer, { swatch: row(buffer, 0) })).toEqual(BLUE);
+            expect(readSwatch(renderer, { swatch: row(buffer, 1) })).toEqual(WHITE);
+        });
+
+        it('should keep a ranged update made while nothing drew the buffer', () =>
+        {
+            const other = createSwatchBuffer();
+
+            expect(readSwatch(renderer, { swatch: row(buffer, 0) })).toEqual(RED);
+
+            writeRow(buffer, 0, BLUE);
+            expect(readSwatch(renderer, { swatch: row(other, 0) })).toEqual(RED);
+            writeRow(buffer, 1, WHITE);
+
+            expect(readSwatch(renderer, { swatch: row(buffer, 0) })).toEqual(BLUE);
+            expect(readSwatch(renderer, { swatch: row(buffer, 1) })).toEqual(WHITE);
+
+            other.destroy();
+        });
+
+        it('should draw the new bytes after the data grows and a range past the old end is updated', () =>
+        {
+            const small = createSwatchBuffer([RED]);
+
+            expect(readSwatch(renderer, { swatch: row(small, 0) })).toEqual(RED);
+
+            const grown = new Float32Array(2 * ROW_FLOATS);
+
+            grown.set(small.data);
+            small.data = grown;
+            writeRow(small, 1, GREEN);
+
+            expect(readSwatch(renderer, { swatch: row(small, 1) })).toEqual(GREEN);
+            expect(readSwatch(renderer, { swatch: row(small, 0) })).toEqual(RED);
+
+            small.destroy();
+        });
+
+        it('should listen for updates only while the buffer lives on the GPU', () =>
+        {
+            expect(buffer.listenerCount('update')).toBe(0);
+
+            readSwatch(renderer, { swatch: row(buffer, 0) });
+
+            expect(buffer.listenerCount('update')).toBe(1);
+
+            buffer.unload();
+
+            expect(buffer.listenerCount('update')).toBe(0);
+        });
     });
 }
 
@@ -212,9 +322,69 @@ describe('BufferResource ranges on WebGL', () =>
             renderer.destroy();
         }
     });
+
+    // ELEMENT_ARRAY_BUFFER is vertex array object state, so an index upload while another geometry's
+    // vertex array is bound would rewrite that geometry's index binding; vertex buffers are not
+    it('should upload another geometry\'s buffers without disturbing the bound vertex array', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const buffer = createSwatchBuffer();
+        const quad = createQuadGeometry();
+        // starts degenerate, so it draws nothing
+        const other = new Geometry({
+            attributes: { aPosition: new Float32Array(8) },
+            indexBuffer: new Uint16Array([0, 1, 2, 0, 2, 3]),
+        });
+
+        try
+        {
+            expect(renderSwatch(renderer, { swatch: row(buffer, 0) }, other)).toEqual(allPixels(CLEAR));
+            expect(renderSwatch(renderer, { swatch: row(buffer, 0) }, quad)).toEqual(allPixels(RED));
+            expect(renderer.geometry._activeVao).not.toBeNull();
+
+            // a full quad drawn as one triangle, uploaded while the quad's vertex array is bound
+            other.getBuffer('aPosition').data.set([-1, -1, 1, -1, 1, 1, -1, 1]);
+            other.getBuffer('aPosition').update();
+            other.indexBuffer.data.set([0, 1, 2, 0, 1, 2]);
+            other.indexBuffer.update();
+
+            expect(renderSwatch(renderer, { swatch: row(buffer, 0) }, quad)).toEqual(allPixels(RED));
+
+            const triangle = renderSwatch(renderer, { swatch: row(buffer, 0) }, other);
+            const covered = triangle.filter((_, i) => i % 4 === 3 && triangle[i] === 255).length;
+
+            expect(covered).toBeGreaterThan(0);
+            expect(covered).toBeLessThan(16);
+        }
+        finally
+        {
+            quad.destroy();
+            other.destroy();
+            buffer.destroy();
+            renderer.destroy();
+        }
+    });
 });
 
 describeLocalOnly('BufferResource ranges on WebGPU', () =>
 {
     describeBufferResourceRanges(() => getWebGPURenderer());
+});
+
+describe('BufferResource', () =>
+{
+    it('should stop listening to its buffer when destroyed', () =>
+    {
+        const buffer = createSwatchBuffer();
+        const before = buffer.listenerCount('change');
+        const resource = new BufferResource({ buffer });
+
+        expect(buffer.listenerCount('change')).toBe(before + 1);
+
+        resource.destroy();
+
+        expect(buffer.listenerCount('change')).toBe(before);
+
+        buffer.destroy();
+    });
 });
