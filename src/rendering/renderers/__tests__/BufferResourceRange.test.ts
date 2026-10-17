@@ -32,10 +32,16 @@ function createSwatchBuffer(rowColors: number[][] = [RED, GREEN]): Buffer
     return new Buffer({ data, usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST });
 }
 
+// writes one row into the buffer's data without uploading it
+function setRow(buffer: Buffer, row: number, color: number[]): void
+{
+    buffer.data.set(color.map((c) => c / 255), row * ROW_FLOATS);
+}
+
 // writes one row into the buffer's data and uploads just that row
 function writeRow(buffer: Buffer, row: number, color: number[]): void
 {
-    buffer.data.set(color.map((c) => c / 255), row * ROW_FLOATS);
+    setRow(buffer, row, color);
     buffer.update(ROW_BYTES, row * ROW_BYTES);
 }
 
@@ -277,6 +283,20 @@ function describeBufferResourceRanges(createRenderer: () => Promise<GpuRenderer>
             expect(readSwatch(renderer, { swatch: row(small, 0) })).toEqual(RED);
 
             small.destroy();
+        });
+
+        it('should upload the whole buffer on a bare update() after a ranged one', () =>
+        {
+            expect(readSwatch(renderer, { swatch: row(buffer, 0) })).toEqual(RED);
+
+            writeRow(buffer, 1, WHITE);
+
+            setRow(buffer, 0, BLUE);
+            setRow(buffer, 1, GREEN);
+            buffer.update();
+
+            expect(readSwatch(renderer, { swatch: row(buffer, 0) })).toEqual(BLUE);
+            expect(readSwatch(renderer, { swatch: row(buffer, 1) })).toEqual(GREEN);
         });
 
         it('should listen for updates only while the buffer lives on the GPU', () =>
