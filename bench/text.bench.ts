@@ -7,6 +7,8 @@
  * canvas text rasterisations and texture uploads plus 3000 bitmap texts re-laid-out into glyph quads a frame, with
  * the rest of the 300 labels drawn from their existing textures; `t1000` is 100 and 10 000 of each. The per-frame
  * work scales with the variant (it used to be 30 and 3000 at every N, so the ladder only grew the static labels).
+ * `labels300` is the text-upload case: all 300 canvas labels get a new string every frame, so every one is
+ * re-rasterised and re-uploaded, and there are no bitmap counters.
  *
  * The strings are a function of the frame alone, and the labels start from what a whole pass leaves them showing,
  * so every pass draws the same frames.
