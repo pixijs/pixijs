@@ -23,6 +23,7 @@ export default tseslint.config(
             'src/*/**/index.ts',
             'src/**/__docs__/examples/**/*.js',
             'playground/dist',
+            'bench',
         ],
     },
     {

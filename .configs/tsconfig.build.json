@@ -12,6 +12,7 @@
         "../**/lib/**",
         "../**/out/**",
         "../examples",
-        "../playground"
+        "../playground",
+        "../bench"
     ]
 }
