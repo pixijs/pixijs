@@ -20,6 +20,10 @@ const PROPAGATION_LIMIT = 2048;
 const tempHitLocation = new Point();
 const tempLocalMapping = new Point();
 
+// `on${type}` and `${type}capture` keys, built once per event type rather than per notified target
+const handlerKeys: Record<string, string> = Object.create(null);
+const captureKeys: Record<string, string> = Object.create(null);
+
 /**
  * Event boundaries are "barriers" where events coming from an upstream scene are modified before downstream propagation.
  *
@@ -339,11 +343,11 @@ export class EventBoundary
         // loop through targets backwards
         for (let i = targets.length - 1; i >= 0; i--)
         {
-            events.forEach((event) =>
+            for (let j = 0; j < events.length; j++)
             {
                 e.currentTarget = targets[i];
-                this.notifyTarget(e, event);
-            });
+                this.notifyTarget(e, events[j]);
+            }
         }
     }
 
@@ -392,9 +396,10 @@ export class EventBoundary
             EventsTicker.pauseUpdate = false;
         }
 
-        if (currentTarget.interactiveChildren && currentTarget.children)
+        if (currentTarget.interactiveChildren && currentTarget.children && currentTarget.children.length > 0)
         {
             const children = currentTarget.children;
+            const ignoreChildren = ignore || pruneFn(currentTarget, location);
 
             for (let i = children.length - 1; i >= 0; i--)
             {
@@ -406,7 +411,7 @@ export class EventBoundary
                     location,
                     testFn,
                     pruneFn,
-                    ignore || pruneFn(currentTarget, location)
+                    ignoreChildren
                 );
 
                 if (nestedHit)
@@ -421,11 +426,9 @@ export class EventBoundary
                     // Only add the current hit-test target to the hit-test chain if the chain
                     // has already started (i.e. the event target has been found) or if the current
                     // target is interactive (i.e. it becomes the event target).
-                    const isInteractive = currentTarget.isInteractive();
-
-                    if (nestedHit.length > 0 || isInteractive)
+                    // It is added to _allInteractiveElements once, after the child loop.
+                    if (nestedHit.length > 0 || currentTarget.isInteractive())
                     {
-                        if (isInteractive) this._allInteractiveElements.push(currentTarget);
                         nestedHit.push(currentTarget);
                     }
 
@@ -440,7 +443,7 @@ export class EventBoundary
         const isInteractiveMode = this._isInteractive(eventMode);
         const isInteractiveTarget = currentTarget.isInteractive();
 
-        if (isInteractiveTarget && isInteractiveTarget) this._allInteractiveElements.push(currentTarget);
+        if (isInteractiveTarget) this._allInteractiveElements.push(currentTarget);
 
         // we don't carry on hit testing something once we have found a hit,
         // now only care about gathering the interactive elements
@@ -657,11 +660,13 @@ export class EventBoundary
         type ??= e.type;
 
         // call the `on${type}` for the current target if it exists
-        const handlerKey = `on${type}` as keyof Container;
+        const handlerKey = (handlerKeys[type] ??= `on${type}`) as keyof Container;
 
         (e.currentTarget[handlerKey] as FederatedEventHandler<FederatedEvent>)?.(e);
 
-        const key = e.eventPhase === e.CAPTURING_PHASE || e.eventPhase === e.AT_TARGET ? `${type}capture` : type;
+        const key = e.eventPhase === e.CAPTURING_PHASE || e.eventPhase === e.AT_TARGET
+            ? (captureKeys[type] ??= `${type}capture`)
+            : type;
 
         this._notifyListeners(e, key);
 
