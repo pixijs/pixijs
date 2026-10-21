@@ -527,9 +527,9 @@ export class FilterSystem implements System
     {
         const bindGroup = this._globalFilterBindGroup;
 
-        bindGroup.setResource(Texture.EMPTY.source, 1);
-        bindGroup.setResource(Texture.EMPTY.source.style, 2);
-        bindGroup.setResource(Texture.EMPTY.source, 3);
+        bindGroup.setResourceUnwatched(Texture.EMPTY.source, 1);
+        bindGroup.setResourceUnwatched(Texture.EMPTY.source.style, 2);
+        bindGroup.setResourceUnwatched(Texture.EMPTY.source, 3);
     }
 
     private _getPassthroughFilter(): Filter
@@ -553,18 +553,21 @@ export class FilterSystem implements System
             const batchUniforms = (renderer as WebGPURenderer).renderPipes.uniformBatch
                 .getUboResource(this._filterGlobalUniforms);
 
-            this._globalFilterBindGroup.setResource(batchUniforms, 0);
+            this._globalFilterBindGroup.setResourceUnwatched(batchUniforms, 0);
         }
         else
         {
-            this._globalFilterBindGroup.setResource(this._filterGlobalUniforms, 0);
+            this._globalFilterBindGroup.setResourceUnwatched(this._filterGlobalUniforms, 0);
         }
 
         // now lets update the output texture...
 
         // set bind group..
-        this._globalFilterBindGroup.setResource(input.source, 1);
-        this._globalFilterBindGroup.setResource(input.source.style, 2);
+        // Every slot of this group is set again before each pass draws with it (3, the back texture,
+        // in _applyFiltersToTexture), and the pass textures are swapped out before the pool destroys
+        // them, so no slot needs a change listener: adding and removing one on every pass is garbage.
+        this._globalFilterBindGroup.setResourceUnwatched(input.source, 1);
+        this._globalFilterBindGroup.setResourceUnwatched(input.source.style, 2);
 
         filter.groups[0] = this._globalFilterBindGroup;
 
@@ -808,8 +811,8 @@ export class FilterSystem implements System
         // this will batch the shader uniform data and give us a buffer resource we can
         // set on our globalUniform Bind Group
         // update the resources on the bind group...
-        this._globalFilterBindGroup.setResource(inputTexture.source.style, 2);
-        this._globalFilterBindGroup.setResource(filterData.backTexture.source, 3);
+        this._globalFilterBindGroup.setResourceUnwatched(inputTexture.source.style, 2);
+        this._globalFilterBindGroup.setResourceUnwatched(filterData.backTexture.source, 3);
 
         if (firstEnabled === lastEnabled)
         {
