@@ -8,6 +8,20 @@ import type { GradientType } from '../shared/fill/FillGradient';
 
 describe('Graphics Canvas rendering', () =>
 {
+    it('should destroy the renderer after a rendered graphics was destroyed', async () =>
+    {
+        const renderer = new CanvasRenderer();
+
+        await renderer.init({ width: 4, height: 4, backgroundAlpha: 0 });
+
+        const graphics = new Graphics().rect(0, 0, 4, 4).fill(0xff0000);
+
+        renderer.render({ container: graphics });
+        graphics.destroy();
+
+        expect(() => renderer.destroy()).not.toThrow();
+    });
+
     it.each<GradientType>(['linear', 'radial'])('should preserve translucent %s gradient colors', async (type) =>
     {
         const renderer = new CanvasRenderer();

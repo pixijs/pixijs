@@ -45,6 +45,9 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
         name: 'batch',
     } as const;
 
+    /** Canvas draws each element of a batch, so batchers keep them in `batch.elements`. */
+    public readonly collectElements = true;
+
     public start(batchPipe: BatcherPipe, geometry: Geometry, shader: Shader): void
     {
         void batchPipe;
