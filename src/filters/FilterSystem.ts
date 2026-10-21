@@ -521,7 +521,8 @@ export class FilterSystem implements System
 
     /**
      * Swaps the last pass's textures in the filter bind group for the empty texture before the texture pool
-     * destroys idle textures, as a bind group warns when a texture bound to it is destroyed.
+     * destroys idle textures. The group's slots are unwatched (see `_setupBindGroupsAndRender`), so nothing
+     * would clear a destroyed texture out of them until the next pass sets them again.
      */
     private _unbindPassTextures(): void
     {
