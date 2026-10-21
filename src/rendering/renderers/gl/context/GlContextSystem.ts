@@ -144,7 +144,8 @@ export class GlContextSystem implements System<ContextSystemOptions>
     };
 
     /**
-     * Extensions available.
+     * Extensions available. The compressed texture entries (`s3tc`, `s3tc_sRGB`, `etc`, `etc1`, `pvrtc`, `atc`,
+     * `astc`, `bptc`, `rgtc`) are enabled the first time they are read, not at init.
      * @type {object}
      * @readonly
      * @property {WEBGL_draw_buffers} drawBuffers - WebGL v1 extension
