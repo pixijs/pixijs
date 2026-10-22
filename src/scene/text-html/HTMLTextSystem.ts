@@ -23,11 +23,27 @@ import type { PoolItem } from '../../utils/pool/Pool';
 import type { HTMLText, HTMLTextOptions } from './HTMLText';
 
 /**
+ * Options for the {@link HTMLTextSystem}.
+ * @category rendering
+ * @advanced
+ */
+export interface HTMLTextSystemOptions
+{
+    /**
+     * How long to wait in milliseconds before drawing an HTMLText in Safari when it uses a font family.
+     * WebKit may not have embedded fonts ready when the SVG image loads, so this delay avoids text
+     * drawn with a fallback font. Set it to 0 if every font is already loaded in the document.
+     * @default 100
+     */
+    safariFontDelay: number;
+}
+
+/**
  * System plugin to the renderer to manage HTMLText
  * @category rendering
  * @advanced
  */
-export class HTMLTextSystem implements System
+export class HTMLTextSystem implements System<HTMLTextSystemOptions>
 {
     /** @ignore */
     public static extension = {
@@ -38,6 +54,18 @@ export class HTMLTextSystem implements System
         ],
         name: 'htmlText',
     } as const;
+
+    /** The default options for the system. */
+    public static defaultOptions: HTMLTextSystemOptions = {
+        /** {@link HTMLTextSystemOptions.safariFontDelay} */
+        safariFontDelay: 100,
+    };
+
+    /**
+     * How long to wait in milliseconds before drawing an HTMLText in Safari when it uses a font family.
+     * @see {@link HTMLTextSystemOptions.safariFontDelay}
+     */
+    public safariFontDelay: number = HTMLTextSystem.defaultOptions.safariFontDelay;
 
     /**
      * WebGPU has a cors issue when uploading an image that is an SVGImage
@@ -57,6 +85,15 @@ export class HTMLTextSystem implements System
     {
         this._renderer = renderer;
         this._createCanvas = renderer.type === RendererType.WEBGPU;
+    }
+
+    /**
+     * Initializes the system with the given options.
+     * @param options - The options for the system
+     */
+    public init(options?: Partial<HTMLTextSystemOptions>): void
+    {
+        this.safariFontDelay = options?.safariFontDelay ?? HTMLTextSystem.defaultOptions.safariFontDelay;
     }
 
     /**
@@ -192,7 +229,7 @@ export class HTMLTextSystem implements System
 
         const svgURL = getSVGUrl(text, style, resolution, fontCSS, htmlTextData);
 
-        await loadSVGImage(image, svgURL, isSafari() && fontFamilies.length > 0);
+        await loadSVGImage(image, svgURL, isSafari() && fontFamilies.length > 0 ? this.safariFontDelay : 0);
 
         const resource: ImageLike | HTMLCanvasElement = image;
         let canvasAndContext: CanvasAndContext;
