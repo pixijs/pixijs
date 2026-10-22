@@ -62,14 +62,28 @@ export function extractAttributesFromGlProgram(
     {
         keys.sort((a, b) => (a > b) ? 1 : -1); // eslint-disable-line no-confusing-arrow
 
+        // the locations may already be bound this way before the link, in which case it needn't link again
+        let bound = true;
+
         for (let i = 0; i < keys.length; i++)
         {
             attributes[keys[i]].location = i;
 
-            gl.bindAttribLocation(program, i, keys[i]);
+            if (bound && gl.getAttribLocation(program, keys[i]) !== i)
+            {
+                bound = false;
+            }
         }
 
-        gl.linkProgram(program);
+        if (!bound)
+        {
+            for (let i = 0; i < keys.length; i++)
+            {
+                gl.bindAttribLocation(program, i, keys[i]);
+            }
+
+            gl.linkProgram(program);
+        }
     }
     else
     {
