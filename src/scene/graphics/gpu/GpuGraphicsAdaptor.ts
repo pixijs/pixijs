@@ -115,9 +115,8 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
                 );
             }
 
-            shader.groups[1] = batch.bindGroup;
-
-            if (!batch.gpuBindGroup)
+            // a batch can still hold a group the cache has since released
+            if (!batch.gpuBindGroup || !batch.bindGroup.resources)
             {
                 const textureBatch = batch.textures;
 
@@ -131,6 +130,8 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
                     batch.bindGroup, shader.gpuProgram, 1
                 );
             }
+
+            shader.groups[1] = batch.bindGroup;
 
             encoder.setBindGroup(1, batch.bindGroup, shader.gpuProgram);
 
