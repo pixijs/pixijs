@@ -212,5 +212,10 @@ export class GlBackBufferSystem implements System<GlBackBufferOptions>
             this._backBufferTexture.destroy();
             this._backBufferTexture = null;
         }
+
+        // the shader's bind group listens to 'change' on its texture source (Texture.WHITE by default),
+        // so it must be destroyed to release that listener and the renderer resources it keeps alive
+        this._bigTriangleShader?.destroy();
+        this._bigTriangleShader = null;
     }
 }
