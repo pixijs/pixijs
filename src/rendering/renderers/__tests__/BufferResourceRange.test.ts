@@ -299,6 +299,28 @@ function describeBufferResourceRanges(createRenderer: () => Promise<GpuRenderer>
             expect(readSwatch(renderer, { swatch: row(buffer, 1) })).toEqual(GREEN);
         });
 
+        it('should land every ranged index update made between two draws', () =>
+        {
+            // starts degenerate, so it draws nothing
+            const indices = new Buffer({ data: new Uint32Array(6), usage: BufferUsage.INDEX | BufferUsage.COPY_DST });
+            const geometry = new Geometry({
+                attributes: { aPosition: new Float32Array([-1, -1, 1, -1, 1, 1, -1, 1]) },
+                indexBuffer: indices,
+            });
+
+            expect(renderSwatch(renderer, { swatch: row(buffer, 0) }, geometry)).toEqual(allPixels(CLEAR));
+
+            // one triangle per update, so the quad is only whole if both land
+            indices.data.set([0, 1, 2], 0);
+            indices.update(12, 0);
+            indices.data.set([0, 2, 3], 3);
+            indices.update(12, 12);
+
+            expect(renderSwatch(renderer, { swatch: row(buffer, 0) }, geometry)).toEqual(allPixels(RED));
+
+            geometry.destroy();
+        });
+
         it('should listen for updates only while the buffer lives on the GPU', () =>
         {
             expect(buffer.listenerCount('update')).toBe(0);
