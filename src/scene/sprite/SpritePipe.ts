@@ -68,7 +68,7 @@ export class SpritePipe implements RenderPipe<Sprite>
 
     private _initGPUSprite(sprite: Sprite): BatchableSprite
     {
-        const batchableSprite = new BatchableSprite();
+        const batchableSprite = BatchableSprite._get();
 
         batchableSprite.renderable = sprite;
 
