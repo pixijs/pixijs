@@ -145,10 +145,9 @@ function renderChildren(svg: SVGElement, session: Session, fillStyle: FillStyle,
             const fillRule = svg.getAttribute('fill-rule') as string;
 
             const subpaths = extractSubpaths(d);
-            const hasExplicitEvenodd = fillRule === 'evenodd';
             const hasMultipleSubpaths = subpaths.length > 1;
 
-            const shouldProcessHoles = hasExplicitEvenodd && hasMultipleSubpaths;
+            const shouldProcessHoles = hasMultipleSubpaths && fillRule !== 'nonzero';
 
             if (shouldProcessHoles)
             {
@@ -215,9 +214,9 @@ function renderChildren(svg: SVGElement, session: Session, fillStyle: FillStyle,
             }
             else
             {
-                const useEvenoddForGraphicsPath = fillRule ? (fillRule === 'evenodd') : true;
+                const checkForHoles = fillRule === 'evenodd';
 
-                graphicsPath = new GraphicsPath(d, useEvenoddForGraphicsPath);
+                graphicsPath = new GraphicsPath(d, checkForHoles);
                 session.context.path(graphicsPath);
                 if (fillStyle) session.context.fill(fillStyle);
                 if (strokeStyle) session.context.stroke(strokeStyle);
