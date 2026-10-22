@@ -24,6 +24,9 @@ export function validateRenderables(renderGroup: RenderGroup, renderPipes: Rende
         const renderable = container;
         const pipe = renderPipes[renderable.renderPipeId as keyof RenderPipes] as RenderPipe<any>;
 
+        // skip renderables the renderer has no pipe for, they are never added to the instructions
+        if (!pipe) continue;
+
         rebuildRequired = pipe.validateRenderable(container);
 
         if (rebuildRequired)

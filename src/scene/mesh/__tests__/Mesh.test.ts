@@ -3,6 +3,7 @@ import { Mesh } from '../shared/Mesh';
 import { MeshGeometry } from '../shared/MeshGeometry';
 import '../init';
 import { getTexture, getWebGLRenderer, getWebGPURenderer, itLocalOnly } from '@test-utils';
+import { CanvasRenderer } from '~/rendering';
 
 function getMesh(batched = true)
 {
@@ -121,5 +122,47 @@ describe('Mesh', () =>
         expect(mesh.state.blendMode).toBe('normal-npm');
 
         mesh.destroy();
+    });
+
+    it('should not throw on the canvas renderer when the mesh transform changes', async () =>
+    {
+        const renderer = new CanvasRenderer();
+
+        await renderer.init({ width: 10, height: 10 });
+
+        const container = new Container();
+        const mesh = getMesh();
+
+        container.addChild(mesh);
+
+        renderer.render({ container });
+
+        mesh.x = 5;
+
+        expect(() => renderer.render({ container })).not.toThrow();
+
+        mesh.destroy();
+        renderer.destroy();
+    });
+
+    it('should not throw on the canvas renderer when the mesh view changes', async () =>
+    {
+        const renderer = new CanvasRenderer();
+
+        await renderer.init({ width: 10, height: 10 });
+
+        const container = new Container();
+        const mesh = getMesh();
+
+        container.addChild(mesh);
+
+        renderer.render({ container });
+
+        mesh.texture = getTexture();
+
+        expect(() => renderer.render({ container })).not.toThrow();
+
+        mesh.destroy();
+        renderer.destroy();
     });
 });
