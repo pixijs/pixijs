@@ -122,10 +122,17 @@ export class RenderGroupPipe implements InstructionPipe<RenderGroup>
             this._renderer.globalUniforms.pop();
         }
 
-        const batcher = renderGroup._batchableRenderGroup._batcher;
+        const batchableRenderGroup = renderGroup._batchableRenderGroup;
+        const batcher = batchableRenderGroup._batcher;
 
-        batcher.updateElement(renderGroup._batchableRenderGroup);
-        batcher.geometry.buffers[0].update(batcher.attributeSize * 4);
+        batcher.updateElement(batchableRenderGroup);
+
+        // BatcherPipe.upload has already sent the rest of this buffer, so upload only this element's bytes
+        batcher.geometry.buffers[0].update(
+            // eslint-disable-next-line dot-notation
+            batchableRenderGroup.attributeSize * batcher['vertexSize'] * 4,
+            batchableRenderGroup._attributeStart * 4,
+        );
     }
 
     private _executeDirect(renderGroup: RenderGroup): void
