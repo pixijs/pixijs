@@ -40,7 +40,7 @@ export class GpuLimitsSystem implements System
     public maxTextures: number;
     /** The maximum number of batchable textures */
     public maxBatchableTextures: number;
-    /** The byte alignment a `BufferResource` offset into a uniform buffer must be a multiple of. */
+    /** Uniform buffer offsets, such as a `BufferResource` offset, must be a multiple of this many bytes */
     public minUniformBufferOffsetAlignment: number;
     /** Whether the GPU supports pipeline-level `constants` (WGSL `override`). Falls back to source baking when `false`. */
     public supportsOverrideConstants = false;

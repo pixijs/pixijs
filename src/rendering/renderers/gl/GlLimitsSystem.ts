@@ -45,7 +45,7 @@ export class GlLimitsSystem implements System
     public maxUniformBindings: number;
 
     /**
-     * The byte alignment a `BufferResource` offset into a uniform buffer must be a multiple of.
+     * Uniform buffer offsets, such as a `BufferResource` offset, must be a multiple of this many bytes.
      * 0 on WebGL1, which has no uniform buffers.
      */
     public minUniformBufferOffsetAlignment: number;

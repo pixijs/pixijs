@@ -158,6 +158,13 @@ function describeBufferResourceRanges(createRenderer: () => Promise<GpuRenderer>
         expect(readSwatch(renderer, { swatch: new BufferResource({ buffer }) })).toEqual(RED);
     });
 
+    it('should move one block between ranges of the same buffer', () =>
+    {
+        expect(readSwatch(renderer, { swatch: new BufferResource({ buffer }) })).toEqual(RED);
+        expect(readSwatch(renderer, { swatch: new BufferResource({ buffer, offset: 256 }) })).toEqual(GREEN);
+        expect(readSwatch(renderer, { swatch: new BufferResource({ buffer, offset: 0, size: 256 }) })).toEqual(RED);
+    });
+
     // the whole buffer reads red from byte 0 and the range reads green from byte 256, so only both
     // blocks reading their own bytes adds up to yellow
     it('should give two blocks on one buffer their own bindings, whole buffer first', () =>
