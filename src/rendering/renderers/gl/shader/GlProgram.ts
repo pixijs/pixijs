@@ -143,6 +143,7 @@ export class GlProgram
     constructor(options: GlProgramOptions)
     {
         options = { ...GlProgram.defaultOptions, ...options };
+        const key = createIdFromString(`${options.vertex}:${options.fragment}`, 'gl-program');
 
         // only need to check one as they both need to be the same or
         // errors ensue!
@@ -179,7 +180,7 @@ export class GlProgram
 
         this.transformFeedbackVaryings = options.transformFeedbackVaryings;
 
-        this._key = createIdFromString(`${this.vertex}:${this.fragment}`, 'gl-program');
+        this._key = key;
     }
 
     /** destroys the program */
