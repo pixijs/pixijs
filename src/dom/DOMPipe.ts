@@ -124,7 +124,7 @@ export class DOMPipe implements RenderPipe<DOMContainer>
 
             if (!domContainer.parent || domContainer.globalDisplayStatus < 0b111)
             {
-                element?.remove();
+                this._removeElement(domContainer);
                 attachedDomElements.splice(i, 1);
                 i--;
             }
@@ -136,6 +136,8 @@ export class DOMPipe implements RenderPipe<DOMContainer>
                     element.style.pointerEvents = 'auto';
                     this._domElement.appendChild(element);
                 }
+
+                domContainer._domElementParent = this._domElement;
 
                 const wt = domContainer.worldTransform;
                 const anchor = domContainer._anchor;
@@ -149,6 +151,21 @@ export class DOMPipe implements RenderPipe<DOMContainer>
         }
     }
 
+    private _removeElement(domContainer: DOMContainer): void
+    {
+        const element = domContainer.element;
+
+        if (this._domElement.contains(element))
+        {
+            element.remove();
+        }
+
+        if (domContainer._domElementParent === this._domElement)
+        {
+            domContainer._domElementParent = null;
+        }
+    }
+
     /** Destroys the DOMPipe, removing all attached DOM elements and cleaning up resources. */
     public destroy(): void
     {
@@ -158,7 +175,7 @@ export class DOMPipe implements RenderPipe<DOMContainer>
         {
             const domContainer = this._attachedDomElements[i];
 
-            domContainer.element?.remove();
+            this._removeElement(domContainer);
         }
 
         this._attachedDomElements.length = 0;
