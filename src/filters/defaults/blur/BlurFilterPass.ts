@@ -196,7 +196,8 @@ export class BlurFilterPass extends Filter
             {
                 if (uboBatcher)
                 {
-                    this.groups[1].setResource(uboBatcher.getUboResource(this._blurUniforms), 0);
+                    // set again before every pass, so it needs no change listener (see FilterSystem)
+                    this.groups[1].setResourceUnwatched(uboBatcher.getUboResource(this._blurUniforms), 0);
                 }
 
                 filterManager.applyFilter(this, flip, flop, isWebGPU);
@@ -211,7 +212,7 @@ export class BlurFilterPass extends Filter
 
             if (uboBatcher)
             {
-                this.groups[1].setResource(uboBatcher.getUboResource(this._blurUniforms), 0);
+                this.groups[1].setResourceUnwatched(uboBatcher.getUboResource(this._blurUniforms), 0);
             }
 
             this._state.blend = true;
