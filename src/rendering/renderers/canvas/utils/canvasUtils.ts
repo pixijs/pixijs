@@ -1,3 +1,4 @@
+import { type LRU, lru } from 'tiny-lru';
 import { Color } from '../../../../color/Color';
 import { DOMAdapter } from '../../../../environment/adapter';
 import { groupD8 } from '../../../../maths/matrix/groupD8';
@@ -9,7 +10,7 @@ import type { ImageLike } from '../../../../environment/ImageLike';
 import type { TextureSource } from '../../shared/texture/sources/TextureSource';
 import type { Texture } from '../../shared/texture/Texture';
 
-type TintCache = Record<string, (ICanvas & { tintId?: number }) | (ImageLike & { tintId?: number })>;
+type TintCache = LRU<(ICanvas & { tintId?: number }) | (ImageLike & { tintId?: number })>;
 type CanvasSourceCache = {
     canvas: ICanvas;
     resourceId: number;
@@ -23,6 +24,12 @@ export const canvasUtils = {
     canvas: null as ICanvas | null,
     convertTintToImage: false,
     cacheStepsPerColorChannel: 8,
+    /**
+     * Maximum number of tinted copies kept per texture. Tinting a texture with another colour
+     * drops the least recently used copy. 0 keeps every copy. Applies to textures tinted after it changes.
+     * @default 32
+     */
+    tintCacheSize: 32,
     canUseMultiply: canUseNewCanvasBlendModes(),
     tintMethod: null as (texture: Texture, color: number, canvas: ICanvas) => void,
     _canvasSourceCache: new WeakMap<TextureSource, CanvasSourceCache>(),
@@ -174,9 +181,10 @@ export const canvasUtils = {
     {
         const texture = sprite.texture;
         const stringColor = Color.shared.setValue(color).toHex();
-        const cache = (texture as any).tintCache as TintCache || ((texture as any).tintCache = {});
+        const cache = (texture as any).tintCache as TintCache
+            || ((texture as any).tintCache = lru(canvasUtils.tintCacheSize));
 
-        const cachedCanvas = cache[stringColor];
+        const cachedCanvas = cache.get(stringColor);
         const resourceId = texture.source._resourceId;
 
         if (cachedCanvas?.tintId === resourceId)
@@ -199,14 +207,14 @@ export const canvasUtils = {
             tintImage.src = canvas.toDataURL();
             (tintImage as any).tintId = resourceId;
 
-            cache[stringColor] = tintImage as any;
+            cache.set(stringColor, tintImage as any);
         }
         else
         {
-            cache[stringColor] = canvas;
+            cache.set(stringColor, canvas);
         }
 
-        return cache[stringColor];
+        return cache.get(stringColor);
     },
 
     getTintedPattern: (texture: Texture, color: number): CanvasPattern =>
