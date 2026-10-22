@@ -28,6 +28,13 @@ export interface BindResource
     destroyed: boolean;
 
     /**
+     * True when the renderer that owns the resource destroyed it during its own teardown,
+     * rather than a user destroying a resource that a shader still uses
+     * @ignore
+     */
+    _destroyedByRenderer?: boolean;
+
+    /**
      * event dispatch whenever the underlying resource needs to change
      * this could be a texture or buffer that has been resized.
      * This is important as it allows the renderer to know that it needs to rebind the resource

@@ -69,6 +69,15 @@ export class BufferResource extends EventEmitter<{
     public destroyed = false;
 
     /**
+     * Whether the renderer that created this resource destroyed it as part of its own teardown
+     *
+     * The renderer sets this right before the destroy, so bind groups still holding the resource
+     * release it without the misuse warning. Nothing their owner did caused the destroy.
+     * @internal
+     */
+    public _destroyedByRenderer = false;
+
+    /**
      * Create a new Buffer Resource.
      * @param options - The options for the buffer resource
      * @param options.buffer - The underlying buffer that this resource is using
