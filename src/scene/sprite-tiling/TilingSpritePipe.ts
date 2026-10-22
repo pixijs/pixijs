@@ -116,7 +116,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
             const batchableMesh = tilingSpriteData.batchableMesh;
 
-            if (tilingSprite.didViewUpdate)
+            if (tilingSprite.didViewUpdate || !batchableMesh.renderable)
             {
                 this._updateBatchableMesh(tilingSprite);
 
@@ -134,9 +134,11 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
         {
             batcher.break(instructionSet);
 
-            tilingSpriteData.shader ||= new TilingSpriteShader();
-
-            this.updateRenderable(tilingSprite);
+            if (tilingSprite.didViewUpdate || !tilingSpriteData.shader)
+            {
+                tilingSpriteData.shader ||= new TilingSpriteShader();
+                this._updateShader(tilingSprite);
+            }
 
             instructionSet.add(tilingSprite);
         }
@@ -186,17 +188,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
         }
         else if (tilingSprite.didViewUpdate)
         {
-            const { shader } = tilingSpriteData;
-            // now update uniforms...
-
-            shader.updateUniforms(
-                tilingSprite.width,
-                tilingSprite.height,
-                tilingSprite._tileTransform.matrix,
-                tilingSprite.anchor.x,
-                tilingSprite.anchor.y,
-                tilingSprite.texture,
-            );
+            this._updateShader(tilingSprite);
         }
     }
 
@@ -233,6 +225,20 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
         setUvs(tilingSprite, geometry.uvs);
         setPositions(tilingSprite, geometry.positions);
+    }
+
+    private _updateShader(tilingSprite: TilingSprite)
+    {
+        const { shader } = this._getTilingSpriteData(tilingSprite);
+
+        shader.updateUniforms(
+            tilingSprite.width,
+            tilingSprite.height,
+            tilingSprite._tileTransform.matrix,
+            tilingSprite.anchor.x,
+            tilingSprite.anchor.y,
+            tilingSprite.texture,
+        );
     }
 
     public destroy()

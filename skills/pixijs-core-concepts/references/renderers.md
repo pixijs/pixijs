@@ -176,7 +176,7 @@ Call `resetState()` before each library renders. Both libraries leave GPU state 
 renderer.destroy();
 ```
 
-Releases GPU resources, systems, pipes, and event listeners. A destroyed renderer cannot be used for further rendering.
+Releases GPU resources, systems, pipes, and event listeners. A destroyed renderer cannot be used for further rendering. The containers it drew are not destroyed with it. A new renderer rebuilds the GPU data it needs the first time it renders them.
 
 ### Manual rendering
 
