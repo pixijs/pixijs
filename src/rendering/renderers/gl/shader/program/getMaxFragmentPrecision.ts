@@ -18,7 +18,8 @@ export function getMaxFragmentPrecision(): PRECISION
             {
                 const shaderFragment = gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT);
 
-                maxFragmentPrecision = shaderFragment.precision ? 'highp' : 'mediump';
+                // getShaderPrecisionFormat returns null when the context is lost
+                maxFragmentPrecision = shaderFragment?.precision ? 'highp' : 'mediump';
             }
         }
     }
