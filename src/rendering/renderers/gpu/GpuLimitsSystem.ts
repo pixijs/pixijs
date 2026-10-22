@@ -40,6 +40,8 @@ export class GpuLimitsSystem implements System
     public maxTextures: number;
     /** The maximum number of batchable textures */
     public maxBatchableTextures: number;
+    /** Uniform buffer offsets, such as a `BufferResource` offset, must be a multiple of this many bytes */
+    public minUniformBufferOffsetAlignment: number;
     /** Whether the GPU supports pipeline-level `constants` (WGSL `override`). Falls back to source baking when `false`. */
     public supportsOverrideConstants = false;
 
@@ -59,6 +61,7 @@ export class GpuLimitsSystem implements System
             device.limits.maxSamplersPerShaderStage,
         );
         this.maxBatchableTextures = this.maxTextures;
+        this.minUniformBufferOffsetAlignment = device.limits.minUniformBufferOffsetAlignment;
 
         this._detectOverrideConstantsSupport(device);
     }
