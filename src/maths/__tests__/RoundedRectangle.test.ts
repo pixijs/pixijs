@@ -108,5 +108,21 @@ describe('RoundedRectangle', () =>
             expect(rectangle.strokeContains(12, 12, 20, 1)).toBe(true);
             expect(rectangle.strokeContains(25, 25, 20, 1)).toBe(false);
         });
+
+        it('should clamp the radius to half of the shortest side, as it is drawn', () =>
+        {
+            // a radius past half the height is drawn as 20, so each of these is the same pill
+            for (const radius of [20, 50, 1000])
+            {
+                const pill = new RoundedRectangle(0, 0, 100, 40, radius);
+
+                expect(pill.strokeContains(30, 0, 4)).toBe(true); // top edge
+                expect(pill.strokeContains(70, 40, 4)).toBe(true); // bottom edge
+                expect(pill.strokeContains(0, 20, 4)).toBe(true); // left end
+                expect(pill.strokeContains(100, 20, 4)).toBe(true); // right end
+                expect(pill.strokeContains(20, 10, 4)).toBe(false); // inside the fill
+                expect(pill.strokeContains(50, 20, 4)).toBe(false); // center
+            }
+        });
     });
 });
