@@ -1,7 +1,7 @@
 // what we are building is a platform and a framework.
 // import { Matrix } from '../../shared/maths/Matrix';
-import EventEmitter from 'eventemitter3';
 import { uid } from '../../../../utils/data/uid';
+import { EventEmitter } from '../../../../utils/EventEmitter';
 import { TextureSource } from '../texture/sources/TextureSource';
 import { Texture } from '../texture/Texture';
 

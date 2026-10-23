@@ -1,7 +1,7 @@
-import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../color/Color';
 import { type Filter } from '../../filters/Filter';
 import { uid } from '../../utils/data/uid';
+import { EventEmitter } from '../../utils/EventEmitter';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { warn } from '../../utils/logging/warn';
 import { FillGradient } from '../graphics/shared/fill/FillGradient';

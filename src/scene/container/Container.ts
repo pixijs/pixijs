@@ -1,4 +1,3 @@
-import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../color/Color';
 import { cullingMixin } from '../../culling/cullingMixin';
 import { extensions } from '../../extensions/Extensions';
@@ -6,6 +5,7 @@ import { Matrix } from '../../maths/matrix/Matrix';
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/misc/const';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { uid } from '../../utils/data/uid';
+import { EventEmitter } from '../../utils/EventEmitter';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { warn } from '../../utils/logging/warn';
 import { BigPool } from '../../utils/pool/PoolGroup';

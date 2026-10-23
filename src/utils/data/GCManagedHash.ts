@@ -1,7 +1,7 @@
 import { type GCable, type GCData } from '../../rendering/renderers/shared/GCSystem';
 import { type Renderer } from '../../rendering/renderers/types';
 
-import type EventEmitter from 'eventemitter3';
+import type { EventEmitter } from '../EventEmitter';
 
 /**
  * Options for the {@link GCManagedHash}.

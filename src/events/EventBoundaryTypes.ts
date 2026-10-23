@@ -39,18 +39,6 @@ export type TrackingData = {
 };
 
 /**
- * Internal storage of an event listener in EventEmitter.
- * @ignore
- */
-type EmitterListener = { fn(...args: any[]): any, context: any, once: boolean };
-
-/**
- * Internal storage of event listeners in EventEmitter.
- * @ignore
- */
-export type EmitterListeners = Record<string, EmitterListener | EmitterListener[]>;
-
-/**
  * Fired when a mouse button (usually a mouse left-button) is pressed on the container.
  * Container's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
