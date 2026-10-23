@@ -315,5 +315,15 @@ describe('Graphics Bounds', () =>
             expect(g.containsPoint(new Point(104, 50))).toBe(true);
             expect(g.containsPoint(new Point(106, 50))).toBe(false);
         });
+
+        it('should hit the stroke of a rounded rectangle whose radius is clamped', () =>
+        {
+            // drawn with a radius of 20: a pill whose top edge runs straight from x = 20 to x = 80
+            const g = new Graphics().roundRect(0, 0, 100, 40, 50).stroke({ width: 4 });
+
+            expect(g.containsPoint(new Point(30, 0))).toBe(true);
+            expect(g.containsPoint(new Point(0, 20))).toBe(true);
+            expect(g.containsPoint(new Point(20, 10))).toBe(false);
+        });
     });
 });
