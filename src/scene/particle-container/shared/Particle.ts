@@ -391,7 +391,10 @@ export class Particle implements IParticle
 
     set tint(value: ColorSource)
     {
-        this._tint = Color.shared.setValue(value ?? 0xFFFFFF).toBgrNumber();
+        // Same fast path as Container.tint: a plain 0xRRGGBB number skips Color normalisation.
+        this._tint = typeof value === 'number'
+            ? bgr2rgb(value)
+            : Color.shared.setValue(value ?? 0xFFFFFF).toBgrNumber();
 
         this._updateColor();
     }
