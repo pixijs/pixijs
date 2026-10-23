@@ -121,6 +121,7 @@ export class CanvasObserver
         else if (!this._tickerAttached)
         {
             Ticker.shared.add(this.updateTranslation, this, UPDATE_PRIORITY.HIGH);
+            this._tickerAttached = true;
         }
     }
 
@@ -134,7 +135,7 @@ export class CanvasObserver
         }
         else if (this._tickerAttached)
         {
-            Ticker.shared.remove(this.updateTranslation);
+            Ticker.shared.remove(this.updateTranslation, this);
         }
 
         (this._domElement as null) = null;
