@@ -23,7 +23,7 @@ jobs:
       uses: ./.github/actions/setup
 
     - name: Lint, Types, Index, Prune and DTS
-      run: npm run test -- lint types index prune dts
+      run: npm test -- lint types index prune dts
 
   unit:
     runs-on: namespace-profile-linux-8-16
@@ -36,7 +36,7 @@ jobs:
       uses: ./.github/actions/setup
 
     - name: Unit Tests
-      run: xvfb-run --auto-servernum npm run test -- unit --maxWorkers=50%
+      run: xvfb-run --auto-servernum npm run test:unit -- --maxWorkers=50%
       env:
         NODE_ENV: production
 
@@ -59,12 +59,6 @@ jobs:
     # someone edits it.
     runs-on: namespace-profile-pixijs
     timeout-minutes: 10
-    # The scenes run one after another in a single Electron window, so the only
-    # way to go faster is more Macs. Each shard takes every 4th scene.
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1, 2, 3, 4]
     steps:
     - name: Checkout
       uses: actions/checkout@v6
@@ -73,16 +67,15 @@ jobs:
       uses: ./.github/actions/setup
 
     - name: Visual Tests
-      run: npm run test -- visual
+      run: npm run test:visual
       env:
         NODE_ENV: production
-        VISUAL_SHARD: ${{ matrix.shard }}/${{ strategy.job-total }}
 
     - name: Upload Visual Test Images
       if: failure()
       uses: actions/upload-artifact@v7
       with:
-        name: pr_uploads-${{ matrix.shard }}
+        name: pr_uploads
         path: .pr_uploads/
         include-hidden-files: true
         if-no-files-found: ignore
