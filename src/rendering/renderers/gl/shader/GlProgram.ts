@@ -24,6 +24,8 @@ export interface GlUniformData
 export interface GlUniformBlockData
 {
     index: number;
+    /** the uniform buffer binding slot this block reads from, fixed when the program links */
+    binding: number;
     name: string;
     size: number;
     value?: TypedArray;
