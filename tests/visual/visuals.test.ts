@@ -9,6 +9,9 @@ import { TexturePool } from '~/rendering';
 import type { RenderType, RenderTypeFlags, TestScene } from './types';
 
 const sceneFilter = process.env.SCENE_FILTER;
+// `<index>/<count>`, e.g. `2/4`: CI splits the scenes across machines
+const visualShard = process.env.VISUAL_SHARD ?? '1/1';
+const [shardIndex, shardCount] = visualShard.split('/').map(Number);
 const globPattern = sceneFilter ? `**/${sceneFilter}` : '**/*.scene.ts';
 const paths = glob.sync(globPattern, { cwd: path.join(process.cwd(), './tests') });
 const scenes = paths.map((p) =>
@@ -35,6 +38,8 @@ if (isCI)
 {
     scenesToTest = scenesToTest.filter((s) => !s.data.skipCI);
 }
+
+scenesToTest = scenesToTest.filter((_, i) => i % shardCount === shardIndex - 1);
 
 function setAssetBasePath(): void
 {
