@@ -171,22 +171,22 @@ export class GlBufferSystem implements System
 
         if (data)
         {
-            if (glBuffer.byteLength >= data.byteLength)
+            const bytesPerElement = data.BYTES_PER_ELEMENT;
+            const offset = buffer._updateOffset;
+            const size = buffer._updateSize || data.byteLength;
+            const end = offset + size;
+
+            if (end <= glBuffer.byteLength)
             {
-                // assuming our buffers are aligned to 4 bits...
-                gl.bufferSubData(
-                    glBuffer.type,
-                    buffer._updateOffset,
-                    data,
-                    buffer._updateOffset / data.BYTES_PER_ELEMENT,
-                    (buffer._updateSize || data.byteLength) / data.BYTES_PER_ELEMENT
-                );
+                gl.bufferSubData(glBuffer.type, offset, data, offset / bytesPerElement, size / bytesPerElement);
             }
             else
             {
-                glBuffer.byteLength = data.byteLength;
-                // assuming our buffers are aligned to 4 bits...
-                gl.bufferData(glBuffer.type, data, drawType);
+                // The GL buffer is sized to the bytes in use (its high-water mark), not to the typed array's
+                // capacity, and only ever grows. On ANGLE Metal and Mali, writing into a buffer the GPU is still
+                // reading copies the whole allocation first, so unused capacity is paid for on every frame.
+                glBuffer.byteLength = end;
+                gl.bufferData(glBuffer.type, data, drawType, 0, end / bytesPerElement);
             }
         }
         else
