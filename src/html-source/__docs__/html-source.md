@@ -9,11 +9,11 @@ description: Learn how to render live HTML elements and DOM snapshots as PixiJS 
 The HTML source module renders DOM elements into textures. {@link HTMLSource} mirrors a live element into the GPU every time the browser repaints it, so forms stay editable, links stay clickable, and CSS animations keep running. {@link ElementImageSource} wraps a frozen snapshot that never changes. HTML source support is not included in the base `pixi.js` import; you must import from `pixi.js/html-source`.
 
 > [!WARNING]
-> This module is **experimental**. It relies on the HTML-in-Canvas browser proposal, which must be enabled in the browser. Without it, the texture uploader throws on the first render. The API may change between minor releases.
+> This module is **experimental**. It relies on the HTML-in-Canvas browser proposal, which must be enabled in the browser (Chrome runs it as an origin trial through Chrome 160). Without it, the texture uploader throws on the first render. The API may change between minor releases.
 
 ## Rendering a live element
 
-The element must be a direct child of the renderer's `<canvas>`. `HTMLSource` infers the owning canvas from the element's parent, sets the `layoutsubtree` attribute on it, listens for the canvas `paint` event, and requests one initial paint.
+The element must be inside the renderer's `<canvas>`. `HTMLSource` infers the owning canvas from the element's nearest `<canvas>` ancestor, sets `content="drawable"` on it (plus `layoutsubtree` for Chrome before 155), sets `drawable` on the element, listens for the canvas `paint` event, and requests one initial paint.
 
 ```ts
 import { Application, Sprite } from 'pixi.js';
@@ -25,7 +25,7 @@ document.body.appendChild(app.canvas);
 
 const form = document.createElement('form');
 form.innerHTML = '<input value="still editable" />';
-app.canvas.appendChild(form); // must be a direct child of the canvas
+app.canvas.appendChild(form); // must be inside the canvas
 
 const source = new HTMLSource({ resource: form });
 const sprite = Sprite.from(source);
@@ -35,7 +35,7 @@ sprite.position.set(app.screen.width / 2, app.screen.height / 2);
 app.stage.addChild(sprite);
 ```
 
-The constructor throws if the element has no canvas parent. Append the element to the canvas first, or pass the `canvas` option explicitly:
+The constructor throws if the element has no canvas ancestor. Append the element to the canvas first, or pass the `canvas` option explicitly:
 
 ```ts
 import type { HTMLSourceCanvas } from 'pixi.js/html-source';
@@ -45,6 +45,45 @@ const source = new HTMLSource({
   canvas: app.canvas as HTMLSourceCanvas,
 });
 ```
+
+### Nested elements
+
+In Chrome 155+, the element can sit anywhere inside the canvas. Each `drawable` element captures its subtree, minus any nested `drawable` descendants, so a parent and a child can be separate sources:
+
+```ts
+const panel = document.createElement('div');
+const button = document.createElement('button');
+
+panel.appendChild(button);
+app.canvas.appendChild(panel);
+
+const panelSource = new HTMLSource({ resource: panel }); // panel without the button
+const buttonSource = new HTMLSource({ resource: button }); // the button on its own
+```
+
+Chrome before 155 only draws direct children of the canvas. WebGPU in Chrome 156 still only accepts direct children and throws for a nested element; WebGL accepts both.
+
+## Hit testing and accessibility
+
+WebGL and WebGPU don't tell the browser where the element ended up on screen. In Chrome 155+, the element isn't hit-testable and has no bounds for assistive technology until you report its drawn position with `canvas.updateElementGeometry()`. The `canvasTransform` maps the element's border box to canvas CSS pixels. Call it whenever the sprite moves:
+
+```ts
+import type { HTMLSourceCanvas } from 'pixi.js/html-source';
+
+const canvas = app.canvas as HTMLSourceCanvas;
+
+app.ticker.add(() => {
+  const { a, b, c, d, tx, ty } = sprite.getGlobalTransform();
+  const transform = new DOMMatrix([a, b, c, d, tx, ty]).translate(
+    -sprite.anchor.x * sprite.texture.width,
+    -sprite.anchor.y * sprite.texture.height,
+  );
+
+  canvas.updateElementGeometry?.(form, { canvasTransform: transform });
+});
+```
+
+This assumes one Pixi world unit per CSS pixel (`resolution: 1`, or `autoDensity: true`). Chrome before 155 has no `updateElementGeometry`; set the same matrix as the element's CSS `transform` instead, with the element at the canvas origin and `transform-origin: 0 0`. The interactive form example does both.
 
 ## Feature detection
 
@@ -63,9 +102,11 @@ if (!canvas.requestPaint) {
 When the API is missing, `source.requestPaint()` returns `false` and the first render throws one of these errors:
 
 ```
-[HTMLSource] WebGLRenderingContext.texElementImage2D is not available. Enable the browser HTML-in-Canvas API before using HTMLSource.
-[HTMLSource] GPUQueue.copyElementImageToTexture is not available. Enable the browser HTML-in-Canvas API before using HTMLSource.
+[HTMLSource] WebGLRenderingContext.texElementSubImage2D is not available. Enable the browser HTML-in-Canvas API before using HTMLSource.
+[HTMLSource] GPUQueue.drawElementImageToTexture is not available. Enable the browser HTML-in-Canvas API before using HTMLSource.
 ```
+
+PixiJS picks the upload call the browser has: `texElementSubImage2D` and `drawElementImageToTexture` in Chrome 155+, and the older `texElementImage2D` and `copyElementImageToTexture` signatures in Chrome 150-154 and earlier.
 
 ## Repainting
 
@@ -90,8 +131,8 @@ All {@link TextureSourceOptions} apply. `resource` is required.
 ```ts
 const source = new HTMLSource({
   resource: element,
-  canvas: undefined, // owning canvas; inferred from element.parentElement (default)
-  autoLayout: true, // set `layoutsubtree` on the canvas (default: true)
+  canvas: undefined, // owning canvas; inferred from the nearest <canvas> ancestor (default)
+  autoLayout: true, // set `content="drawable"` and `layoutsubtree` on the canvas (default: true)
   autoUpdate: true, // re-upload on canvas `paint` events (default: true)
   autoRequestPaint: true, // request one initial paint (default: true)
 });
@@ -156,5 +197,5 @@ source.destroy();
 - {@link HTMLSourceOptions} - constructor options for HTMLSource
 - {@link ElementImageSource} - immutable snapshot texture source
 - {@link ElementImageSourceOptions} - constructor options for ElementImageSource
-- {@link HTMLSourceCanvas} - canvas type with the experimental `requestPaint` and `captureElementImage` members
+- {@link HTMLSourceCanvas} - canvas type with the experimental `requestPaint`, `captureElementImage`, and `updateElementGeometry` members
 - {@link ElementImage} - snapshot returned by `captureElementImage()`

@@ -39,10 +39,31 @@ export type HTMLSourceResource = Element | ElementImage;
  */
 export interface HTMLSourceCanvas extends HTMLCanvasElement
 {
-    /** Requests a `paint` event so the canvas re-snapshots its `layoutsubtree` children. */
+    /** Requests a `paint` event so the canvas re-snapshots its `drawable` descendants. */
     requestPaint?: () => void;
     /** Captures the current rendered pixels of `element` into an immutable {@link ElementImage}. */
     captureElementImage?: (element: Element) => ElementImage;
+    /**
+     * Chrome 155+. Tells the browser where `element` was drawn so it can hit test the element
+     * and report its bounds to assistive technology. WebGL and WebGPU drawing never does this
+     * for you. `canvasTransform` maps the element's border box, before CSS transforms, to canvas
+     * CSS pixels. Older builds read the element's CSS `transform` instead.
+     * @example
+     * ```ts
+     * const canvas = app.canvas as HTMLSourceCanvas;
+     * const { a, b, c, d, tx, ty } = sprite.getGlobalTransform();
+     *
+     * canvas.updateElementGeometry?.(element, {
+     *     canvasTransform: new DOMMatrix([a, b, c, d, tx, ty]),
+     * });
+     * ```
+     */
+    updateElementGeometry?: (
+        element: HTMLSourceResource,
+        options?: { canvasTransform?: DOMMatrixInit; canvasClip?: DOMRectInit; preserveHitTestOrder?: boolean },
+    ) => void;
+    /** Chrome 155+. Clears the geometry set by {@link HTMLSourceCanvas.updateElementGeometry}. */
+    clearElementGeometry?: (element: HTMLSourceResource) => void;
 }
 
 /**

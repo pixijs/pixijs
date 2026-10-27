@@ -1,6 +1,6 @@
 ---
 name: pixijs-html-source
-description: "Use this skill when rendering live HTML/DOM elements (or frozen snapshots of them) as PixiJS v8 textures via the EXPERIMENTAL HTML-in-Canvas browser APIs. Covers the pixi.js/html-source import, feature detection with canvas.requestPaint, HTMLSource for a live, repainting, still-interactive element (autoLayout/autoUpdate/autoRequestPaint, requestPaint, isReady, HTMLSource.defaultOptions, the direct-child-of-canvas + layoutsubtree requirement), ElementImageSource for an immutable captureElementImage() snapshot (autoClose, ready immediately), using the source on a Sprite/Texture/Mesh, fallback-only auto-detection via Texture.from at priority -10, uploader error messages, and destroy/cleanup. Triggers on: HTMLSource, ElementImageSource, ElementImage, HTML in canvas, render DOM to texture, render HTML to texture, texElementImage2D, copyElementImageToTexture, HTMLSourceOptions, ElementImageSourceOptions, HTMLSourceCanvas."
+description: "Use this skill when rendering live HTML/DOM elements (or frozen snapshots of them) as PixiJS v8 textures via the EXPERIMENTAL HTML-in-Canvas browser APIs. Covers the pixi.js/html-source import, feature detection with canvas.requestPaint, HTMLSource for a live, repainting element (autoLayout/autoUpdate/autoRequestPaint, requestPaint, isReady, defaultOptions, the inside-the-canvas + content=\"drawable\" rule, nested drawable elements), hit testing with canvas.updateElementGeometry, ElementImageSource for an immutable captureElementImage() snapshot (autoClose), using the source on a Sprite/Texture/Mesh, fallback-only auto-detection via Texture.from, uploader errors, and cleanup. Triggers on: HTMLSource, ElementImageSource, ElementImage, HTML in canvas, render DOM to texture, render HTML to texture, texElementSubImage2D, drawElementImageToTexture, texElementImage2D, copyElementImageToTexture, updateElementGeometry, content=drawable, layoutsubtree, HTMLSourceOptions, ElementImageSourceOptions, HTMLSourceCanvas."
 license: MIT
 ---
 
@@ -44,9 +44,9 @@ Both sources extend `TextureSource`, so all `TextureSourceOptions` (`resolution`
 
 | Option             | Type               | Default | Description                                                                                                                                              |
 | ------------------ | ------------------ | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `resource`         | `Element`          | —       | Required. The live DOM element to render. Must be a direct child of the owning canvas, or the constructor throws.                                         |
-| `canvas`           | `HTMLSourceCanvas` | —       | The canvas that owns the element's layout subtree. Inferred from `resource.parentElement` when the element is a direct canvas child; pass it when inference is not possible. |
-| `autoLayout`       | `boolean`          | `true`  | Set the `layoutsubtree` attribute on the owning canvas. The browser only lays out and paints canvas children when it is present. Set `false` if you write `<canvas layoutsubtree>` yourself. |
+| `resource`         | `Element`          | —       | Required. The live DOM element to render. Must be inside the owning canvas (its nearest `<canvas>` ancestor), or the constructor throws. The source sets `drawable` on it. |
+| `canvas`           | `HTMLSourceCanvas` | —       | The canvas that owns the element. Inferred from the element's nearest `<canvas>` ancestor; pass it when inference is not possible. |
+| `autoLayout`       | `boolean`          | `true`  | Set `content="drawable"` (plus the pre-Chrome-155 `layoutsubtree`) on the owning canvas. The browser only lays out and paints canvas descendants when it is present. Set `false` if you write `<canvas content="drawable">` yourself. |
 | `autoUpdate`       | `boolean`          | `true`  | Listen for the canvas `paint` event and re-upload when the element repaints. Set `false` for a static, captured-once texture.                             |
 | `autoRequestPaint` | `boolean`          | `true`  | Request one initial paint after construction. Set `false` and call `source.requestPaint()` yourself each frame for continuous animation.                  |
 
@@ -88,19 +88,41 @@ if (canvas.requestPaint) {
 
 Cast `app.canvas` to `HTMLSourceCanvas` for the typed `requestPaint` and `captureElementImage` members. `source.requestPaint()` returns `false` when the browser lacks the API; the texture uploader throws on first render when it is disabled.
 
-When the API is missing the first upload throws `[HTMLSource] WebGLRenderingContext.texElementImage2D is not available...` on WebGL or `[HTMLSource] GPUQueue.copyElementImageToTexture is not available...` on WebGPU.
+When the API is missing the first upload throws `[HTMLSource] WebGLRenderingContext.texElementSubImage2D is not available...` on WebGL or `[HTMLSource] GPUQueue.drawElementImageToTexture is not available...` on WebGPU. The uploaders use `texElementSubImage2D`/`drawElementImageToTexture` in Chrome 155+ and fall back to the older `texElementImage2D`/`copyElementImageToTexture` signatures in Chrome 150-154 and earlier.
 
 ### Live element with HTMLSource
 
 ```ts
 const form = document.createElement("form");
-app.canvas.appendChild(form); // direct child of the canvas
+app.canvas.appendChild(form); // inside the canvas
 
 const source = new HTMLSource({ resource: form });
 const sprite = Sprite.from(source);
 ```
 
-The element must be a direct child of the renderer's `<canvas>`; the source infers the owning canvas from `resource.parentElement` (or pass `canvas`). With the defaults, it sets `layoutsubtree` on the canvas, listens for the canvas `paint` event, and requests one initial paint. `source.isReady` is `false` until that first paint lands, then `true`. It is `true` immediately when `autoUpdate` is `false`. `resourceWidth`/`resourceHeight` report the element's real-pixel size (`offsetWidth`/`offsetHeight`).
+The element must be inside the renderer's `<canvas>`; the source infers the owning canvas from the element's nearest `<canvas>` ancestor (or pass `canvas`). It always sets `drawable` on the element. With the defaults, it sets `content="drawable"` and `layoutsubtree` on the canvas, listens for the canvas `paint` event, and requests one initial paint. In Chrome 155+ the element can be nested: each `drawable` element captures its subtree minus nested `drawable` descendants, so a panel and a button inside it can be separate sources. Chrome before 155 only draws direct canvas children, and WebGPU in Chrome 156 still throws for nested ones (WebGL accepts them). `source.isReady` is `false` until that first paint lands, then `true`. It is `true` immediately when `autoUpdate` is `false`. `resourceWidth`/`resourceHeight` report the element's real-pixel size (`offsetWidth`/`offsetHeight`).
+
+### Hit testing with updateElementGeometry
+
+```ts
+const canvas = app.canvas as HTMLSourceCanvas;
+
+app.ticker.add(() => {
+  const { a, b, c, d, tx, ty } = sprite.getGlobalTransform();
+  const transform = new DOMMatrix([a, b, c, d, tx, ty]).translate(
+    -sprite.anchor.x * sprite.texture.width,
+    -sprite.anchor.y * sprite.texture.height,
+  );
+
+  if (canvas.updateElementGeometry) {
+    canvas.updateElementGeometry(form, { canvasTransform: transform }); // Chrome 155+
+  } else {
+    form.style.transform = transform.toString(); // older builds; needs transform-origin: 0 0
+  }
+});
+```
+
+WebGL and WebGPU never tell the browser where the element was drawn. In Chrome 155+, the element is not hit-testable and has no accessibility bounds until you call `canvas.updateElementGeometry(element, { canvasTransform })`, where `canvasTransform` maps the element's border box to canvas CSS pixels. Older builds use the element's CSS `transform` instead (element at the canvas origin, `transform-origin: 0 0`). Don't set both on Chrome 155+. The snippet assumes one world unit per CSS pixel (`resolution: 1` or `autoDensity: true`).
 
 ### Continuous animation with requestPaint
 
@@ -186,14 +208,18 @@ if (!canvas.requestPaint) {
 }
 ```
 
-### [MEDIUM] Element not a direct child of the canvas
+### [HIGH] Expecting clicks to reach the element without updateElementGeometry
+
+In Chrome 155+, canvas descendants aren't hit-testable until `canvas.updateElementGeometry()` reports where they were drawn. Setting `element.style.transform` no longer aligns hit testing. Call `updateElementGeometry` whenever the sprite moves (see "Hit testing with updateElementGeometry").
+
+### [MEDIUM] Element outside the canvas
 
 ```ts
 document.body.appendChild(form); // wrong parent
 const source = new HTMLSource({ resource: form }); // throws
 ```
 
-`HTMLSource` requires the element to be a direct child of the owning canvas (`app.canvas.appendChild(form)`) and throws otherwise. Append the element to the canvas before constructing the source, or pass the `canvas` option.
+`HTMLSource` requires the element to be inside the owning canvas (`app.canvas.appendChild(form)`) and throws otherwise. Append the element to the canvas before constructing the source, or pass the `canvas` option. Chrome before 155 also requires it to be a direct child.
 
 ### [MEDIUM] Expecting a live element to update without requestPaint
 
