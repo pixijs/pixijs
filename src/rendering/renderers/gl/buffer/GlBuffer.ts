@@ -9,8 +9,6 @@ export class GlBuffer implements GPUData
     public updateID: number;
     public byteLength: number;
     public type: number;
-    public _lastBindBaseLocation: number = -1;
-    public _lastBindCallId: number = -1;
 
     constructor(buffer: WebGLBuffer, type: BUFFER_TYPE)
     {
@@ -26,7 +24,5 @@ export class GlBuffer implements GPUData
         this.updateID = -1;
         this.byteLength = -1;
         this.type = -1;
-        this._lastBindBaseLocation = -1;
-        this._lastBindCallId = -1;
     }
 }
