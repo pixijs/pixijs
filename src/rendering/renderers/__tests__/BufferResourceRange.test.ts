@@ -3,8 +3,8 @@ import { Buffer } from '../shared/buffer/Buffer';
 import { BufferResource } from '../shared/buffer/BufferResource';
 import { BufferUsage } from '../shared/buffer/const';
 import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
-import { Geometry, GlProgram, GpuProgram, RenderTexture, Shader } from '~/rendering';
-import { Mesh } from '~/scene';
+import { Geometry, GlProgram, GpuProgram, RenderTexture, Shader, Texture } from '~/rendering';
+import { Mesh, MeshGeometry } from '~/scene';
 
 import type { WebGLRenderer } from '../gl/WebGLRenderer';
 import type { WebGPURenderer } from '../gpu/WebGPURenderer';
@@ -382,13 +382,20 @@ describe('BufferResource ranges on WebGL', () =>
         {
             expect(renderSwatch(renderer, { swatch: row(buffer, 0) }, other)).toEqual(allPixels(CLEAR));
             expect(renderSwatch(renderer, { swatch: row(buffer, 0) }, quad)).toEqual(allPixels(RED));
+
             expect(renderer.geometry._activeVao).not.toBeNull();
+
+            const bindVertexArray = jest.spyOn(renderer.gl, 'bindVertexArray');
 
             // a full quad drawn as one triangle, uploaded while the quad's vertex array is bound
             other.getBuffer('aPosition').data.set([-1, -1, 1, -1, 1, 1, -1, 1]);
             other.getBuffer('aPosition').update();
             other.indexBuffer.data.set([0, 1, 2, 0, 1, 2]);
             other.indexBuffer.update();
+
+            // the index upload went through COPY_WRITE_BUFFER, so no vertex array was unbound or rebound
+            expect(bindVertexArray).not.toHaveBeenCalled();
+            bindVertexArray.mockRestore();
 
             expect(renderSwatch(renderer, { swatch: row(buffer, 0) }, quad)).toEqual(allPixels(RED));
 
@@ -405,6 +412,106 @@ describe('BufferResource ranges on WebGL', () =>
             buffer.destroy();
             renderer.destroy();
         }
+    });
+});
+
+// WebGL1 has no uniform blocks, so these draw a white mesh with the default shader instead of a swatch
+function createMeshGeometry(positions: number[], indices: number[]): MeshGeometry
+{
+    const geometry = new MeshGeometry({
+        positions: new Float32Array(positions),
+        uvs: new Float32Array(positions.length),
+        indices: new Uint32Array(indices),
+    });
+
+    // a batched mesh copies its indices into the batch, so would never upload its own index buffer
+    geometry.batchMode = 'no-batch';
+
+    return geometry;
+}
+
+// draws the geometry, in pixels, into a 4x4 target and returns how many pixels it covered
+function renderCoverage(renderer: WebGLRenderer, geometry: MeshGeometry): number
+{
+    const mesh = new Mesh({ geometry, texture: Texture.WHITE });
+    const target = RenderTexture.create({ width: 4, height: 4 });
+
+    try
+    {
+        renderer.render({ container: mesh, target, clear: true });
+
+        const pixels = renderer.extract.pixels(target).pixels;
+
+        return pixels.filter((value, i) => i % 4 === 3 && value === 255).length;
+    }
+    finally
+    {
+        mesh.destroy();
+        target.destroy(true);
+    }
+}
+
+describe('Index buffer updates on WebGL1', () =>
+{
+    const QUAD = [0, 0, 4, 0, 4, 4, 0, 4];
+    let renderer: WebGLRenderer;
+
+    beforeAll(async () =>
+    {
+        renderer = await getWebGLRenderer({ preferWebGLVersion: 1 });
+    });
+
+    afterAll(() =>
+    {
+        renderer.destroy();
+        renderer = null;
+    });
+
+    it('should run on a WebGL1 context', () =>
+    {
+        expect(renderer.context.webGLVersion).toBe(1);
+    });
+
+    it('should land every ranged index update made between two draws', () =>
+    {
+        // starts degenerate, so it draws nothing
+        const geometry = createMeshGeometry(QUAD, [0, 0, 0, 0, 0, 0]);
+
+        expect(renderCoverage(renderer, geometry)).toBe(0);
+
+        // one triangle per update, so the quad is only whole if both land
+        geometry.indexBuffer.data.set([0, 1, 2], 0);
+        geometry.indexBuffer.update(12, 0);
+        geometry.indexBuffer.data.set([0, 2, 3], 3);
+        geometry.indexBuffer.update(12, 12);
+
+        expect(renderCoverage(renderer, geometry)).toBe(16);
+
+        geometry.destroy();
+    });
+
+    it('should upload another geometry\'s indices without changing the bound vertex array\'s', () =>
+    {
+        const quad = createMeshGeometry(QUAD, [0, 1, 2, 0, 2, 3]);
+        const other = createMeshGeometry(QUAD, [0, 0, 0, 0, 0, 0]);
+
+        expect(renderCoverage(renderer, other)).toBe(0);
+        expect(renderCoverage(renderer, quad)).toBe(16);
+        expect(renderer.geometry._activeVao).not.toBeNull();
+
+        // one triangle, uploaded while the quad's vertex array is bound
+        other.indexBuffer.data.set([0, 1, 2, 0, 1, 2]);
+        other.indexBuffer.update();
+
+        expect(renderCoverage(renderer, quad)).toBe(16);
+
+        const covered = renderCoverage(renderer, other);
+
+        expect(covered).toBeGreaterThan(0);
+        expect(covered).toBeLessThan(16);
+
+        quad.destroy();
+        other.destroy();
     });
 });
 

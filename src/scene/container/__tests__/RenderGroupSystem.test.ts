@@ -129,6 +129,12 @@ describe('RenderGroupSystem cacheAsTexture on WebGL', () =>
     describeCachedContainerMove(() => getWebGLRenderer());
 });
 
+// the cached container's vertices are a ranged update past offset 0, which WebGL1 uploads differently
+describe('RenderGroupSystem cacheAsTexture on WebGL1', () =>
+{
+    describeCachedContainerMove(() => getWebGLRenderer({ preferWebGLVersion: 1 }));
+});
+
 describeLocalOnly('RenderGroupSystem cacheAsTexture on WebGPU', () =>
 {
     describeCachedContainerMove(() => getWebGPURenderer());
