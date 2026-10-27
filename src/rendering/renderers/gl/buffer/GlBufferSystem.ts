@@ -25,7 +25,8 @@ import type { WebGLRenderer } from '../WebGLRenderer';
  * the Buffer class.
  *
  * A buffer is first uploaded whole when a geometry or uniform block that uses it is bound. From then on
- * each `Buffer.update()` is applied as it is called, as on WebGPU, so every ranged update lands.
+ * each `Buffer.update()` is applied as it is called, as on WebGPU, so every ranged update lands. On WebGL2
+ * an index buffer's update goes through `COPY_WRITE_BUFFER`, so it changes no vertex array's index buffer.
  * @class
  * @category rendering
  * @advanced
@@ -152,24 +153,34 @@ export class GlBufferSystem implements System
     /**
      * Will ensure the data in the buffer is uploaded to the GPU.
      *
-     * Runs on each `update` event of a buffer once it has a `GlBuffer`, and when a geometry or uniform
-     * block that uses the buffer is bound. The second call for one update is a no-op.
+     * Runs on each `update` event of a vertex or uniform buffer once it has a `GlBuffer`, and when a geometry
+     * or uniform block that uses the buffer is bound. The second call for one update is a no-op.
      * @param {Buffer} buffer - the buffer to update
      */
     public updateBuffer(buffer: Buffer): GlBuffer
     {
-        const { _gl: gl } = this;
-
         const glBuffer = this.getGlBuffer(buffer);
 
-        if (buffer._updateID === glBuffer.updateID)
-        {
-            return glBuffer;
-        }
+        this._upload(buffer, glBuffer, glBuffer.type);
+
+        return glBuffer;
+    }
+
+    /**
+     * Uploads the buffer's latest update through `target`, if it has not been uploaded yet.
+     * @param buffer - the buffer to upload
+     * @param glBuffer - its `GlBuffer`
+     * @param target - the binding point to upload through
+     */
+    private _upload(buffer: Buffer, glBuffer: GlBuffer, target: number): void
+    {
+        const { _gl: gl } = this;
+
+        if (buffer._updateID === glBuffer.updateID) return;
 
         glBuffer.updateID = buffer._updateID;
 
-        gl.bindBuffer(glBuffer.type, glBuffer.buffer);
+        gl.bindBuffer(target, glBuffer.buffer);
 
         const data = buffer.data;
 
@@ -181,7 +192,7 @@ export class GlBufferSystem implements System
             {
                 // assuming our buffers are aligned to 4 bits...
                 gl.bufferSubData(
-                    glBuffer.type,
+                    target,
                     buffer._updateOffset,
                     data,
                     buffer._updateOffset / data.BYTES_PER_ELEMENT,
@@ -192,16 +203,14 @@ export class GlBufferSystem implements System
             {
                 glBuffer.byteLength = data.byteLength;
                 // assuming our buffers are aligned to 4 bits...
-                gl.bufferData(glBuffer.type, data, drawType);
+                gl.bufferData(target, data, drawType);
             }
         }
         else
         {
             glBuffer.byteLength = buffer.descriptor.size;
-            gl.bufferData(glBuffer.type, glBuffer.byteLength, drawType);
+            gl.bufferData(target, glBuffer.byteLength, drawType);
         }
-
-        return glBuffer;
     }
 
     /**
@@ -263,16 +272,33 @@ export class GlBufferSystem implements System
         return glBuffer;
     }
 
+    /**
+     * Uploads an index buffer's update without changing any vertex array's index buffer.
+     *
+     * ELEMENT_ARRAY_BUFFER is vertex array state, so binding an index buffer there to upload it would make it
+     * the index buffer of whichever vertex array is bound. WebGL2 uploads through COPY_WRITE_BUFFER instead,
+     * which no vertex array reads. WebGL1 has no copy target, so it unbinds the vertex array first, and the
+     * next `geometry.bind()` binds its own again.
+     * @param buffer - the index buffer that was updated
+     */
     private _updateIndexBuffer(buffer: Buffer): void
     {
-        const gl = this._gl;
-        const vao = this._renderer.geometry._activeVao;
+        const glBuffer = this.getGlBuffer(buffer);
 
-        // ELEMENT_ARRAY_BUFFER is vertex array state, so binding the buffer while a vertex array is bound
-        // would replace that vertex array's index buffer
-        if (vao) gl.bindVertexArray(null);
-        this.updateBuffer(buffer);
-        if (vao) gl.bindVertexArray(vao);
+        // the first upload binds the buffer to ELEMENT_ARRAY_BUFFER, which is what makes WebGL2 accept it
+        // as an index buffer, so leave a buffer that has never been uploaded to its first bind
+        if (glBuffer.byteLength < 0) return;
+
+        if (this._renderer.context.webGLVersion === 2)
+        {
+            this._upload(buffer, glBuffer, this._gl.COPY_WRITE_BUFFER);
+
+            return;
+        }
+
+        if (this._renderer.geometry._activeVao) this._renderer.geometry.resetState();
+
+        this._upload(buffer, glBuffer, glBuffer.type);
     }
 
     public resetState(): void
