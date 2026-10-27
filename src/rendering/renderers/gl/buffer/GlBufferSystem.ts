@@ -191,13 +191,19 @@ export class GlBufferSystem implements System
             if (glBuffer.byteLength >= data.byteLength)
             {
                 // assuming our buffers are aligned to 4 bits...
-                gl.bufferSubData(
-                    target,
-                    buffer._updateOffset,
-                    data,
-                    buffer._updateOffset / data.BYTES_PER_ELEMENT,
-                    (buffer._updateSize || data.byteLength) / data.BYTES_PER_ELEMENT
-                );
+                const start = buffer._updateOffset / data.BYTES_PER_ELEMENT;
+                const length = (buffer._updateSize || data.byteLength) / data.BYTES_PER_ELEMENT;
+
+                if (this._renderer.context.webGLVersion === 2)
+                {
+                    gl.bufferSubData(target, buffer._updateOffset, data, start, length);
+                }
+                else
+                {
+                    // WebGL1's bufferSubData takes no source range, so it is given a view of just the updated elements
+                    gl.bufferSubData(target, buffer._updateOffset,
+                        length === data.length ? data : data.subarray(start, start + length));
+                }
             }
             else
             {

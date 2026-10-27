@@ -472,6 +472,24 @@ describe('Index buffer updates on WebGL1', () =>
         expect(renderer.context.webGLVersion).toBe(1);
     });
 
+    it('should land every ranged index update made between two draws', () =>
+    {
+        // starts degenerate, so it draws nothing
+        const geometry = createMeshGeometry(QUAD, [0, 0, 0, 0, 0, 0]);
+
+        expect(renderCoverage(renderer, geometry)).toBe(0);
+
+        // one triangle per update, so the quad is only whole if both land
+        geometry.indexBuffer.data.set([0, 1, 2], 0);
+        geometry.indexBuffer.update(12, 0);
+        geometry.indexBuffer.data.set([0, 2, 3], 3);
+        geometry.indexBuffer.update(12, 12);
+
+        expect(renderCoverage(renderer, geometry)).toBe(16);
+
+        geometry.destroy();
+    });
+
     it('should upload another geometry\'s indices without changing the bound vertex array\'s', () =>
     {
         const quad = createMeshGeometry(QUAD, [0, 1, 2, 0, 2, 3]);
