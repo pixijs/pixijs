@@ -42,13 +42,9 @@ export class GpuUniformBatchPipe
 
         for (let i = 0; i < totalBuffers; i++)
         {
-            let usage = BufferUsage.UNIFORM | BufferUsage.COPY_DST;
-
-            if (i === 0) usage |= BufferUsage.COPY_SRC;
-
             this._buffers.push(new Buffer({
                 data: this._batchBuffer.data,
-                usage
+                usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
             }));
         }
     }
@@ -154,23 +150,22 @@ export class GpuUniformBatchPipe
 
         bufferSystem.updateBuffer(firstBuffer);
 
-        const commandEncoder = this._renderer.gpu.device.createCommandEncoder();
+        // the other buffers hold the same data shifted by minUniformOffsetAlignment, so slots that are not on a
+        // 256-byte boundary in the first buffer are in these. Written from the CPU copy rather than copied on the
+        // GPU, which would need a command buffer of its own submitted ahead of the frame's.
+        const data = this._batchBuffer.data;
+        const size = Math.min(this._batchBuffer.byteIndex, data.byteLength - minUniformOffsetAlignment);
 
         for (let i = 1; i < this._buffers.length; i++)
         {
-            const buffer = this._buffers[i];
-
-            commandEncoder.copyBufferToBuffer(
-                bufferSystem.getGPUBuffer(firstBuffer),
-                minUniformOffsetAlignment,
-                bufferSystem.getGPUBuffer(buffer),
+            this._renderer.gpu.device.queue.writeBuffer(
+                bufferSystem.getGPUBuffer(this._buffers[i]),
                 0,
-                this._batchBuffer.byteIndex
+                data.buffer,
+                data.byteOffset + minUniformOffsetAlignment,
+                size
             );
         }
-
-        // TODO make a system that will que up all commands in to one array?
-        this._renderer.gpu.device.queue.submit([commandEncoder.finish()]);
     }
 
     public destroy()

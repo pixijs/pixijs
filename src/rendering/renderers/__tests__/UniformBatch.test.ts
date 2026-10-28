@@ -36,4 +36,48 @@ describe('UniformBatch', () =>
 
         scheduler.destroy();
     });
+
+    it('should write the shifted buffer with writeBuffer and submit no command buffer of its own', () =>
+    {
+        const scheduler = new SchedulerSystem();
+        const writeBuffer = jest.fn();
+        const submit = jest.fn();
+        const createCommandEncoder = jest.fn();
+        const gpuBuffers = new Map<unknown, object>();
+
+        const uniformBatchPipe = new GpuUniformBatchPipe({
+            scheduler,
+            renderableGC: new RenderableGCSystem({} as WebGPURenderer),
+            runners: {
+                destroy: new SystemRunner('destroy'),
+            },
+            gpu: { device: { queue: { writeBuffer, submit }, createCommandEncoder } },
+            buffer: {
+                updateBuffer: jest.fn(),
+                getGPUBuffer: (buffer: unknown) =>
+                {
+                    if (!gpuBuffers.has(buffer)) gpuBuffers.set(buffer, {});
+
+                    return gpuBuffers.get(buffer);
+                },
+            },
+        } as unknown as WebGPURenderer);
+
+        uniformBatchPipe.getArrayBufferResource(new Float32Array(32));
+        uniformBatchPipe.getArrayBufferResource(new Float32Array(32));
+
+        uniformBatchPipe.renderEnd();
+
+        const data = uniformBatchPipe['_batchBuffer'].data;
+
+        // the second buffer holds the batch shifted by 128 bytes, written from the CPU copy
+        expect(writeBuffer).toHaveBeenCalledTimes(1);
+        expect(writeBuffer).toHaveBeenCalledWith(
+            gpuBuffers.get(uniformBatchPipe['_buffers'][1]), 0, data.buffer, data.byteOffset + 128, 256
+        );
+        expect(createCommandEncoder).not.toHaveBeenCalled();
+        expect(submit).not.toHaveBeenCalled();
+
+        scheduler.destroy();
+    });
 });
