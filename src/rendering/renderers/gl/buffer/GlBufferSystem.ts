@@ -23,6 +23,10 @@ import type { WebGLRenderer } from '../WebGLRenderer';
  * This system will handle the binding of buffers to the GPU as well as uploading
  * them. With this system, you never need to work directly with GPU buffers, but instead work with
  * the Buffer class.
+ *
+ * A buffer is first uploaded whole when a geometry or uniform block that uses it is bound. From then on
+ * each `Buffer.update()` is applied as it is called, as on WebGPU, so every ranged update lands. On WebGL2
+ * an index buffer's update goes through `COPY_WRITE_BUFFER`, so it changes no vertex array's index buffer.
  * @class
  * @category rendering
  * @advanced
@@ -148,22 +152,35 @@ export class GlBufferSystem implements System
 
     /**
      * Will ensure the data in the buffer is uploaded to the GPU.
+     *
+     * Runs on each `update` event of a vertex or uniform buffer once it has a `GlBuffer`, and when a geometry
+     * or uniform block that uses the buffer is bound. The second call for one update is a no-op.
      * @param {Buffer} buffer - the buffer to update
      */
     public updateBuffer(buffer: Buffer): GlBuffer
     {
-        const { _gl: gl } = this;
-
         const glBuffer = this.getGlBuffer(buffer);
 
-        if (buffer._updateID === glBuffer.updateID)
-        {
-            return glBuffer;
-        }
+        this._upload(buffer, glBuffer, glBuffer.type);
+
+        return glBuffer;
+    }
+
+    /**
+     * Uploads the buffer's latest update through `target`, if it has not been uploaded yet.
+     * @param buffer - the buffer to upload
+     * @param glBuffer - its `GlBuffer`
+     * @param target - the binding point to upload through
+     */
+    private _upload(buffer: Buffer, glBuffer: GlBuffer, target: number): void
+    {
+        const { _gl: gl } = this;
+
+        if (buffer._updateID === glBuffer.updateID) return;
 
         glBuffer.updateID = buffer._updateID;
 
-        gl.bindBuffer(glBuffer.type, glBuffer.buffer);
+        gl.bindBuffer(target, glBuffer.buffer);
 
         const data = buffer.data;
 
@@ -174,28 +191,32 @@ export class GlBufferSystem implements System
             if (glBuffer.byteLength >= data.byteLength)
             {
                 // assuming our buffers are aligned to 4 bits...
-                gl.bufferSubData(
-                    glBuffer.type,
-                    buffer._updateOffset,
-                    data,
-                    buffer._updateOffset / data.BYTES_PER_ELEMENT,
-                    (buffer._updateSize || data.byteLength) / data.BYTES_PER_ELEMENT
-                );
+                const start = buffer._updateOffset / data.BYTES_PER_ELEMENT;
+                const length = (buffer._updateSize || data.byteLength) / data.BYTES_PER_ELEMENT;
+
+                if (this._renderer.context.webGLVersion === 2)
+                {
+                    gl.bufferSubData(target, buffer._updateOffset, data, start, length);
+                }
+                else
+                {
+                    // WebGL1's bufferSubData takes no source range, so it is given a view of just the updated elements
+                    gl.bufferSubData(target, buffer._updateOffset,
+                        length === data.length ? data : data.subarray(start, start + length));
+                }
             }
             else
             {
                 glBuffer.byteLength = data.byteLength;
                 // assuming our buffers are aligned to 4 bits...
-                gl.bufferData(glBuffer.type, data, drawType);
+                gl.bufferData(target, data, drawType);
             }
         }
         else
         {
             glBuffer.byteLength = buffer.descriptor.size;
-            gl.bufferData(glBuffer.type, glBuffer.byteLength, drawType);
+            gl.bufferData(target, glBuffer.byteLength, drawType);
         }
-
-        return glBuffer;
     }
 
     /**
@@ -209,6 +230,9 @@ export class GlBufferSystem implements System
 
     protected onBufferUnload(buffer: Buffer, contextLost: boolean = false): void
     {
+        buffer.off('update', this.updateBuffer, this);
+        buffer.off('update', this._updateIndexBuffer, this);
+
         const glBuffer = buffer._gpuData[this._renderer.uid] as GlBuffer;
 
         if (!glBuffer) return;
@@ -238,9 +262,49 @@ export class GlBufferSystem implements System
         const glBuffer = new GlBuffer(gl.createBuffer(), type);
 
         buffer._gpuData[this._renderer.uid] = glBuffer;
-        this._managedBuffers.add(buffer);
+
+        if (this._managedBuffers.add(buffer))
+        {
+            if (type === BUFFER_TYPE.ELEMENT_ARRAY_BUFFER)
+            {
+                buffer.on('update', this._updateIndexBuffer, this);
+            }
+            else
+            {
+                buffer.on('update', this.updateBuffer, this);
+            }
+        }
 
         return glBuffer;
+    }
+
+    /**
+     * Uploads an index buffer's update without changing any vertex array's index buffer.
+     *
+     * ELEMENT_ARRAY_BUFFER is vertex array state, so binding an index buffer there to upload it would make it
+     * the index buffer of whichever vertex array is bound. WebGL2 uploads through COPY_WRITE_BUFFER instead,
+     * which no vertex array reads. WebGL1 has no copy target, so it unbinds the vertex array first, and the
+     * next `geometry.bind()` binds its own again.
+     * @param buffer - the index buffer that was updated
+     */
+    private _updateIndexBuffer(buffer: Buffer): void
+    {
+        const glBuffer = this.getGlBuffer(buffer);
+
+        // the first upload binds the buffer to ELEMENT_ARRAY_BUFFER, which is what makes WebGL2 accept it
+        // as an index buffer, so leave a buffer that has never been uploaded to its first bind
+        if (glBuffer.byteLength < 0) return;
+
+        if (this._renderer.context.webGLVersion === 2)
+        {
+            this._upload(buffer, glBuffer, this._gl.COPY_WRITE_BUFFER);
+
+            return;
+        }
+
+        if (this._renderer.geometry._activeVao) this._renderer.geometry.resetState();
+
+        this._upload(buffer, glBuffer, glBuffer.type);
     }
 
     public resetState(): void
