@@ -199,6 +199,8 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
             requiredLimits: {
                 maxSampledTexturesPerShaderStage: adapter.limits.maxSampledTexturesPerShaderStage,
                 maxSamplersPerShaderStage: adapter.limits.maxSamplersPerShaderStage,
+                // the spec default is 256; the adapter's own value is always supported and often smaller
+                minUniformBufferOffsetAlignment: adapter.limits.minUniformBufferOffsetAlignment,
             },
         });
 

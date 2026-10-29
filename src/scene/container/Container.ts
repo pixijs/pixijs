@@ -1878,8 +1878,11 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     set tint(value: ColorSource)
     {
-        const tempColor = Color.shared.setValue(value ?? 0xFFFFFF);
-        const bgr = tempColor.toBgrNumber();
+        // A plain 0xRRGGBB number is the common (and hot) case: swap the channels directly instead of
+        // normalising through Color.shared, which costs ~40ns per set and shows up at particle counts.
+        const bgr = typeof value === 'number'
+            ? bgr2rgb(value)
+            : Color.shared.setValue(value ?? 0xFFFFFF).toBgrNumber();
 
         if (bgr === this.localColor) return;
 

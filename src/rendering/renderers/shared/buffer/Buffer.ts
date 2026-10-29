@@ -148,7 +148,10 @@ export class Buffer extends EventEmitter<{
     /** @internal */
     public _updateID = 1;
 
-    /** @internal */
+    /**
+     * the number of bytes the next upload covers, the whole buffer when unset
+     * @internal
+     */
     public _updateSize: number;
 
     /** @internal */
@@ -249,7 +252,7 @@ export class Buffer extends EventEmitter<{
      * Sets the data in the buffer to the given value. This will immediately update the buffer on the GPU.
      * If you only want to update a subset of the buffer, you can pass in the size of the data.
      * @param value - the data to set
-     * @param size - the size of the data in bytes
+     * @param size - the number of elements of `value` to upload
      * @param syncGPU - should the buffer be updated on the GPU immediately?
      */
     public setDataWithSize(value: TypedArray, size: number, syncGPU: boolean)
@@ -298,12 +301,12 @@ export class Buffer extends EventEmitter<{
      * updates the buffer on the GPU to reflect the data in the buffer.
      * By default it will update the entire buffer. If you only want to update a subset of the buffer,
      * you can pass in the size of the buffer to update.
-     * @param sizeInBytes - the new size of the buffer in bytes
-     * @param offsetInBytes - the offset to start updating from
+     * @param sizeInBytes - the number of bytes to upload, the whole buffer when omitted
+     * @param offsetInBytes - the byte offset to start uploading from, defaults to 0
      */
     public update(sizeInBytes?: number, offsetInBytes?: number): void
     {
-        this._updateSize = sizeInBytes ?? this._updateSize;
+        this._updateSize = sizeInBytes;
         this._updateOffset = offsetInBytes || 0;
 
         this._updateID++;
