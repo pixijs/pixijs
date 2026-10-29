@@ -290,9 +290,11 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
                 {
                     const uniformName = groupMap[i][j];
 
+                    // `for...in` hands the indices over as strings, and a bind group reads a
+                    // string as a binding name
                     nameHash[uniformName] = {
-                        group: i as unknown as number,
-                        binding: j as unknown as number,
+                        group: Number(i),
+                        binding: Number(j),
                         name: uniformName
                     };
                 }
@@ -437,15 +439,20 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
         {
             const data = nameHash[i];
 
-            // add getter setter for uniforms
+            // add getter setter for uniforms. A group with a layout keeps the resource at the
+            // binding number its layout gives the name, which need not be this shader's
             Object.defineProperty(uniformsOut, data.name, {
                 get()
                 {
-                    return groups[data.group].getResource(data.binding);
+                    const group = groups[data.group];
+
+                    return group.getResource(group.layout ? group.layout[data.name] : data.binding);
                 },
                 set(value)
                 {
-                    groups[data.group].setResource(value, data.binding);
+                    const group = groups[data.group];
+
+                    group.setResource(value, group.layout ? group.layout[data.name] : data.binding);
                 }
             });
         }

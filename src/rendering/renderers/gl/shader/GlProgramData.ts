@@ -29,9 +29,6 @@ export class GlProgramData
      */
     public uniformGroups: Record<string, any>;
 
-    /** A hash that stores where UBOs are bound to on the program. */
-    public uniformBlockBindings: Record<string, any>;
-
     /** A hash for lazily-generated uniform uploading functions. */
     public uniformSync: Record<string, any>;
 
@@ -55,7 +52,6 @@ export class GlProgramData
         this.uniformData = uniformData;
         this.uniformGroups = {};
         this.uniformDirtyGroups = {};
-        this.uniformBlockBindings = {};
     }
 
     /** Destroys this program. */
@@ -70,7 +66,6 @@ export class GlProgramData
         this.uniformData = null;
         this.uniformGroups = null;
         this.uniformDirtyGroups = null;
-        this.uniformBlockBindings = null;
         this._gl = null;
     }
 }

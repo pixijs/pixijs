@@ -941,6 +941,10 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      * **Important Note:** When using the copied depth buffer in a subsequent render pass,
      * you must ensure you do not clear the depth buffer again. If you need to clear the color
      * buffer of the destination render target, use `clear: CLEAR.COLOR` to preserve the copied depth data.
+     *
+     * Copying from an antialiased target resolves its multisampled depth, keeping sample 0 of each pixel,
+     * and copies depth only. So does copying part of a texture on WebGPU, which only copies depth/stencil
+     * textures whole.
      * @example
      * ```js
      * renderer.renderTarget.copyDepthTexture(

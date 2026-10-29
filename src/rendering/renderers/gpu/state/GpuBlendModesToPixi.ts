@@ -18,8 +18,8 @@ GpuBlendModesToPixi.normal = {
 
 GpuBlendModesToPixi.add = {
     alpha: {
-        srcFactor: 'src-alpha',
-        dstFactor: 'one-minus-src-alpha',
+        srcFactor: 'one',
+        dstFactor: 'one',
         operation: 'add',
     },
     color: {
@@ -129,7 +129,7 @@ GpuBlendModesToPixi.erase = {
     },
     color: {
         srcFactor: 'zero',
-        dstFactor: 'one-minus-src',
+        dstFactor: 'one-minus-src-alpha',
         operation: 'add',
     },
 };

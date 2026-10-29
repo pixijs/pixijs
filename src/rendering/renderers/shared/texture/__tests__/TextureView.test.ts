@@ -46,14 +46,14 @@ describe('TextureView', () =>
 
         expect(bindGroup.resources[0]).toBe(textureView);
 
-        // BindGroup should not be dirty after initial key generation
-        bindGroup['_key'];
-        expect(bindGroup['_dirty']).toBe(false);
+        const entry = {} as BindGroup['_gpuEntry'];
 
-        // Triggering a change on the source should propagate and dirty the bind group
+        bindGroup._gpuEntry = entry;
+
+        // Triggering a change on the source should propagate and make the bind group resolve again
         source.emit('change', source);
 
-        expect(bindGroup['_dirty']).toBe(true);
+        expect(bindGroup._gpuEntry).toBeNull();
 
         bindGroup.destroy();
         textureView.destroy();

@@ -30,7 +30,16 @@ export function updateProgramReflection(gl: GlRenderingContext, webGLProgram: We
     );
 
     program._uniformData = getUniformData(webGLProgram, gl);
-    program._uniformBlockData = getUboData(webGLProgram, gl);
+    // each block reads from its own binding slot for the program's whole life, so two blocks can never
+    // share one; transform feedback programs leave slot 0 free, as they always have
+    program._uniformBlockData = getUboData(webGLProgram, gl, program.transformFeedbackVaryings ? 1 : 0);
+
+    for (const name in program._uniformBlockData)
+    {
+        const { index, binding } = program._uniformBlockData[name];
+
+        gl.uniformBlockBinding(webGLProgram, index, binding);
+    }
 }
 
 /**

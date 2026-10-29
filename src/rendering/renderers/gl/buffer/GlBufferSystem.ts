@@ -23,6 +23,10 @@ import type { WebGLRenderer } from '../WebGLRenderer';
  * This system will handle the binding of buffers to the GPU as well as uploading
  * them. With this system, you never need to work directly with GPU buffers, but instead work with
  * the Buffer class.
+ *
+ * A buffer is first uploaded whole when a geometry or uniform block that uses it is bound. From then on
+ * each `Buffer.update()` is applied as it is called, as on WebGPU, so every ranged update lands. On WebGL2
+ * an index buffer's update goes through `COPY_WRITE_BUFFER`, so it changes no vertex array's index buffer.
  * @class
  * @category rendering
  * @advanced
@@ -41,15 +45,15 @@ export class GlBufferSystem implements System
     public _gl: GlRenderingContext;
     protected _managedBuffers: GCManagedHash<Buffer>;
 
-    /** Cache keeping track of the base bound buffer bases */
-    private _boundBufferBases: {[key: number]: GlBuffer} = Object.create(null);
+    /**
+     * What each uniform buffer binding slot holds, so an unchanged binding is not sent again.
+     * A whole-buffer binding records a size of -1.
+     */
+    private _boundBuffers: GlBuffer[] = [];
+    private _boundOffsets: number[] = [];
+    private _boundSizes: number[] = [];
 
     private _renderer: WebGLRenderer;
-
-    private _minBaseLocation = 0;
-    private _maxBindings: number;
-    private _nextBindBaseIndex = this._minBaseLocation;
-    private _bindCallId = 0;
 
     /**
      * @param {Renderer} renderer - The renderer this System works for.
@@ -71,7 +75,7 @@ export class GlBufferSystem implements System
         this._managedBuffers.destroy();
         this._renderer = null;
         this._gl = null;
-        this._boundBufferBases = {};
+        this._boundBuffers.length = 0;
     }
 
     /** Sets up the renderer context and necessary buffers. */
@@ -80,7 +84,7 @@ export class GlBufferSystem implements System
         this._gl = this._renderer.gl;
 
         this.destroyAll(true);
-        this._maxBindings = this._renderer.limits.maxUniformBindings;
+        this._boundBuffers.length = 0;
     }
 
     public getGlBuffer(buffer: Buffer): GlBuffer
@@ -104,138 +108,79 @@ export class GlBufferSystem implements System
     }
 
     /**
-     * Binds an uniform buffer to at the given index.
+     * Binds a whole uniform buffer to a binding slot.
      *
      * A cache is used so a buffer will not be bound again if already bound.
      * @param glBuffer - the buffer to bind
-     * @param index - the base index to bind it to.
+     * @param index - the binding slot to bind it to.
      */
     public bindBufferBase(glBuffer: GlBuffer, index: number): void
     {
-        const { _gl: gl } = this;
+        if (this._boundBuffers[index] === glBuffer && this._boundSizes[index] === -1) return;
 
-        if (this._boundBufferBases[index] !== glBuffer)
-        {
-            this._boundBufferBases[index] = glBuffer;
-            glBuffer._lastBindBaseLocation = index;
+        this._boundBuffers[index] = glBuffer;
+        this._boundOffsets[index] = 0;
+        this._boundSizes[index] = -1;
 
-            gl.bindBufferBase(gl.UNIFORM_BUFFER, index, glBuffer.buffer);
-        }
-    }
-
-    public nextBindBase(hasTransformFeedback: boolean)
-    {
-        this._bindCallId++;
-        this._minBaseLocation = 0;
-        if (hasTransformFeedback)
-        {
-            this._boundBufferBases[0] = null;
-            this._minBaseLocation = 1;
-            if (this._nextBindBaseIndex < 1)
-            {
-                this._nextBindBaseIndex = 1;
-            }
-        }
-    }
-
-    public freeLocationForBufferBase(glBuffer: GlBuffer): number
-    {
-        let freeIndex = this.getLastBindBaseLocation(glBuffer);
-
-        // check if it is already bound..
-        if (freeIndex >= this._minBaseLocation)
-        {
-            glBuffer._lastBindCallId = this._bindCallId;
-
-            return freeIndex;
-        }
-
-        let loop = 0;
-        let nextIndex = this._nextBindBaseIndex;
-
-        while (loop < 2)
-        {
-            if (nextIndex >= this._maxBindings)
-            {
-                nextIndex = this._minBaseLocation;
-                loop++;
-            }
-
-            const curBuf = this._boundBufferBases[nextIndex];
-
-            if (curBuf && curBuf._lastBindCallId === this._bindCallId)
-            {
-                nextIndex++;
-                continue;
-            }
-            break;
-        }
-
-        freeIndex = nextIndex;
-        this._nextBindBaseIndex = nextIndex + 1;
-
-        if (loop >= 2)
-        {
-            // TODO: error
-            return -1;
-        }
-
-        glBuffer._lastBindCallId = this._bindCallId;
-        this._boundBufferBases[freeIndex] = null;
-
-        return freeIndex;
-    }
-
-    public getLastBindBaseLocation(glBuffer: GlBuffer): number
-    {
-        const index = glBuffer._lastBindBaseLocation;
-
-        if (this._boundBufferBases[index] === glBuffer)
-        {
-            return index;
-        }
-
-        return -1;
+        this._gl.bindBufferBase(this._gl.UNIFORM_BUFFER, index, glBuffer.buffer);
     }
 
     /**
-     * Binds a buffer whilst also binding its range.
-     * This will make the buffer start from the offset supplied rather than 0 when it is read.
-     * @param glBuffer - the buffer to bind
-     * @param index - the base index to bind at, defaults to 0
-     * @param offset - the offset to bind at (this is blocks of 256). 0 = 0, 1 = 256, 2 = 512 etc
-     * @param size - the size to bind at (this is blocks of 256).
+     * Binds part of a uniform buffer to a binding slot, so it is read from the offset supplied rather than 0.
+     *
+     * A cache is used so a range will not be bound again if already bound.
+     * @param glBuffer - the buffer to bind, which must have been uploaded
+     * @param index - the binding slot to bind it to, defaults to 0
+     * @param offset - the byte offset to bind at, defaults to 0. Must be a multiple of
+     * `renderer.limits.minUniformBufferOffsetAlignment`.
+     * @param size - the number of bytes to bind, defaults to the rest of the buffer after `offset`
      */
-    public bindBufferRange(glBuffer: GlBuffer, index?: number, offset?: number, size?: number): void
+    public bindBufferRange(glBuffer: GlBuffer, index = 0, offset = 0, size?: number): void
     {
-        const { _gl: gl } = this;
+        size ??= glBuffer.byteLength - offset;
 
-        offset ||= 0;
-        index ||= 0;
+        if (this._boundBuffers[index] === glBuffer
+            && this._boundOffsets[index] === offset
+            && this._boundSizes[index] === size) return;
 
-        this._boundBufferBases[index] = null;
+        this._boundBuffers[index] = glBuffer;
+        this._boundOffsets[index] = offset;
+        this._boundSizes[index] = size;
 
-        gl.bindBufferRange(gl.UNIFORM_BUFFER, index || 0, glBuffer.buffer, offset * 256, size || 256);
+        this._gl.bindBufferRange(this._gl.UNIFORM_BUFFER, index, glBuffer.buffer, offset, size);
     }
 
     /**
      * Will ensure the data in the buffer is uploaded to the GPU.
+     *
+     * Runs on each `update` event of a vertex or uniform buffer once it has a `GlBuffer`, and when a geometry
+     * or uniform block that uses the buffer is bound. The second call for one update is a no-op.
      * @param {Buffer} buffer - the buffer to update
      */
     public updateBuffer(buffer: Buffer): GlBuffer
     {
-        const { _gl: gl } = this;
-
         const glBuffer = this.getGlBuffer(buffer);
 
-        if (buffer._updateID === glBuffer.updateID)
-        {
-            return glBuffer;
-        }
+        this._upload(buffer, glBuffer, glBuffer.type);
+
+        return glBuffer;
+    }
+
+    /**
+     * Uploads the buffer's latest update through `target`, if it has not been uploaded yet.
+     * @param buffer - the buffer to upload
+     * @param glBuffer - its `GlBuffer`
+     * @param target - the binding point to upload through
+     */
+    private _upload(buffer: Buffer, glBuffer: GlBuffer, target: number): void
+    {
+        const { _gl: gl } = this;
+
+        if (buffer._updateID === glBuffer.updateID) return;
 
         glBuffer.updateID = buffer._updateID;
 
-        gl.bindBuffer(glBuffer.type, glBuffer.buffer);
+        gl.bindBuffer(target, glBuffer.buffer);
 
         const data = buffer.data;
 
@@ -246,28 +191,32 @@ export class GlBufferSystem implements System
             if (glBuffer.byteLength >= data.byteLength)
             {
                 // assuming our buffers are aligned to 4 bits...
-                gl.bufferSubData(
-                    glBuffer.type,
-                    buffer._updateOffset,
-                    data,
-                    buffer._updateOffset / data.BYTES_PER_ELEMENT,
-                    (buffer._updateSize || data.byteLength) / data.BYTES_PER_ELEMENT
-                );
+                const start = buffer._updateOffset / data.BYTES_PER_ELEMENT;
+                const length = (buffer._updateSize || data.byteLength) / data.BYTES_PER_ELEMENT;
+
+                if (this._renderer.context.webGLVersion === 2)
+                {
+                    gl.bufferSubData(target, buffer._updateOffset, data, start, length);
+                }
+                else
+                {
+                    // WebGL1's bufferSubData takes no source range, so it is given a view of just the updated elements
+                    gl.bufferSubData(target, buffer._updateOffset,
+                        length === data.length ? data : data.subarray(start, start + length));
+                }
             }
             else
             {
                 glBuffer.byteLength = data.byteLength;
                 // assuming our buffers are aligned to 4 bits...
-                gl.bufferData(glBuffer.type, data, drawType);
+                gl.bufferData(target, data, drawType);
             }
         }
         else
         {
             glBuffer.byteLength = buffer.descriptor.size;
-            gl.bufferData(glBuffer.type, glBuffer.byteLength, drawType);
+            gl.bufferData(target, glBuffer.byteLength, drawType);
         }
-
-        return glBuffer;
     }
 
     /**
@@ -281,6 +230,9 @@ export class GlBufferSystem implements System
 
     protected onBufferUnload(buffer: Buffer, contextLost: boolean = false): void
     {
+        buffer.off('update', this.updateBuffer, this);
+        buffer.off('update', this._updateIndexBuffer, this);
+
         const glBuffer = buffer._gpuData[this._renderer.uid] as GlBuffer;
 
         if (!glBuffer) return;
@@ -310,13 +262,53 @@ export class GlBufferSystem implements System
         const glBuffer = new GlBuffer(gl.createBuffer(), type);
 
         buffer._gpuData[this._renderer.uid] = glBuffer;
-        this._managedBuffers.add(buffer);
+
+        if (this._managedBuffers.add(buffer))
+        {
+            if (type === BUFFER_TYPE.ELEMENT_ARRAY_BUFFER)
+            {
+                buffer.on('update', this._updateIndexBuffer, this);
+            }
+            else
+            {
+                buffer.on('update', this.updateBuffer, this);
+            }
+        }
 
         return glBuffer;
     }
 
+    /**
+     * Uploads an index buffer's update without changing any vertex array's index buffer.
+     *
+     * ELEMENT_ARRAY_BUFFER is vertex array state, so binding an index buffer there to upload it would make it
+     * the index buffer of whichever vertex array is bound. WebGL2 uploads through COPY_WRITE_BUFFER instead,
+     * which no vertex array reads. WebGL1 has no copy target, so it unbinds the vertex array first, and the
+     * next `geometry.bind()` binds its own again.
+     * @param buffer - the index buffer that was updated
+     */
+    private _updateIndexBuffer(buffer: Buffer): void
+    {
+        const glBuffer = this.getGlBuffer(buffer);
+
+        // the first upload binds the buffer to ELEMENT_ARRAY_BUFFER, which is what makes WebGL2 accept it
+        // as an index buffer, so leave a buffer that has never been uploaded to its first bind
+        if (glBuffer.byteLength < 0) return;
+
+        if (this._renderer.context.webGLVersion === 2)
+        {
+            this._upload(buffer, glBuffer, this._gl.COPY_WRITE_BUFFER);
+
+            return;
+        }
+
+        if (this._renderer.geometry._activeVao) this._renderer.geometry.resetState();
+
+        this._upload(buffer, glBuffer, glBuffer.type);
+    }
+
     public resetState(): void
     {
-        this._boundBufferBases = Object.create(null);
+        this._boundBuffers.length = 0;
     }
 }

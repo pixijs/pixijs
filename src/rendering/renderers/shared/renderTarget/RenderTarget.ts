@@ -26,7 +26,11 @@ export interface RenderTargetOptions
     stencil?: boolean;
     /** should this render target have a depth buffer? */
     depth?: boolean;
-    /** a depth stencil texture that the depth and stencil outputs will be written to */
+    /**
+     * a depth stencil texture that the depth and stencil outputs will be written to.
+     * With `antialias`, shaders can't read it as a normal depth texture: copy depth out with
+     * `renderer.renderTarget.copyDepthTexture`, which resolves the samples.
+     */
     depthStencilTexture?: BindableTexture | boolean;
     /** a label for debugging — shows up on the render pass in GPU debuggers (WebGPU) */
     label?: string;
@@ -187,6 +191,8 @@ export class RenderTarget extends EventEmitter<{
     private readonly _size = new Float32Array(2);
     /** if true, then when the render target is destroyed, it will destroy all the textures that were created for it. */
     private _managedColorTextures: boolean = false;
+    /** if true, the target created its depth-stencil texture, so destroying the target destroys it too */
+    private _managedDepthStencilTexture = false;
 
     /** depth capability requested for this target — via options, attachment format, or the mask system @internal */
     public _depth = false;
@@ -358,7 +364,10 @@ export class RenderTarget extends EventEmitter<{
         return this._colorTextures;
     }
 
-    /** The stencil and depth buffer will write to this texture in WebGPU. */
+    /**
+     * The texture the depth and stencil buffers write to. On an antialiased target shaders can't
+     * read it as a normal depth texture, see {@link RenderTargetOptions.depthStencilTexture}.
+     */
     get depthStencilTexture(): TextureSource | null
     {
         return this.depthStencilAttachment?.texture ?? null;
@@ -449,7 +458,8 @@ export class RenderTarget extends EventEmitter<{
 
         if (this.depthStencilAttachment)
         {
-            this.depthStencilAttachment.texture.destroy();
+            // a depth-stencil texture the caller passed in is theirs, as color textures are
+            if (this._managedDepthStencilTexture) this.depthStencilAttachment.texture.destroy();
             delete this.depthStencilAttachment;
         }
 
@@ -466,7 +476,10 @@ export class RenderTarget extends EventEmitter<{
      */
     private _createDepthStencilTexture(width: number, height: number, resolution: number): PixiDepthStencilAttachment
     {
-        this.depthStencilAttachment ??= {
+        if (this.depthStencilAttachment) return this.depthStencilAttachment;
+
+        this._managedDepthStencilTexture = true;
+        this.depthStencilAttachment = {
             texture: new TextureSource({
                 width,
                 height,

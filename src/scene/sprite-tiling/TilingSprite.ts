@@ -105,7 +105,7 @@ export interface TilingSpriteOptions extends PixiMixins.TilingSpriteOptions, Vie
      * // Use a texture from the asset cache
      * tilingSprite.texture = Texture.from('assets/pattern.png');
      * ```
-     * @default Texture.WHITE
+     * @default Texture.EMPTY
      */
     texture?: Texture
     /**
@@ -116,7 +116,7 @@ export interface TilingSpriteOptions extends PixiMixins.TilingSpriteOptions, Vie
      * // Set the width of the tiling sprite to 800 pixels
      * tilingSprite.width = 800;
      * ```
-     * @default 256
+     * @default texture.width
      */
     width?: number
     /**
@@ -127,7 +127,7 @@ export interface TilingSpriteOptions extends PixiMixins.TilingSpriteOptions, Vie
      * // Set the height of the tiling sprite to 600 pixels
      * tilingSprite.height = 600;
      * ```
-     * @default 256
+     * @default texture.height
      */
     height?: number
     /**
@@ -586,7 +586,7 @@ export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements 
      * // Use a texture from the asset cache
      * tilingSprite.texture = Texture.from('assets/pattern.png');
      * ```
-     * @default Texture.WHITE
+     * @default Texture.EMPTY
      */
     get texture()
     {
