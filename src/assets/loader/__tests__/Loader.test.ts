@@ -183,6 +183,94 @@ describe('Loader', () =>
         expect(baseTexture.destroyed).toBe(true);
     });
 
+    describe('unloading an asset that is still loading', () =>
+    {
+        type FakeAsset = { id: number, destroyed: boolean };
+
+        // A parser whose loads only finish when the test says so
+        function createDeferredParser()
+        {
+            const pending: ((asset: FakeAsset) => void)[] = [];
+
+            const parser: LoaderParser<FakeAsset> = {
+                id: 'deferred',
+                name: 'deferred',
+                test: (url) => url.endsWith('.deferred'),
+                load: () => new Promise<FakeAsset>((resolve) => pending.push(resolve)),
+                unload: (asset) =>
+                {
+                    asset.destroyed = true;
+                },
+            };
+
+            const finishLoad = (index: number, asset: FakeAsset) => pending[index](asset);
+
+            return { parser, pending, finishLoad };
+        }
+
+        it('should give a load that starts during the unload its own asset', async () =>
+        {
+            const loader = new Loader();
+            const { parser, pending, finishLoad } = createDeferredParser();
+            const url = `${basePath}thing.deferred`;
+
+            loader['_parsers'].push(parser);
+
+            const first = loader.load<FakeAsset>(url);
+            const unload = loader.unload(url);
+            const second = loader.load<FakeAsset>(url);
+
+            // the second load must not join the load that is being unloaded
+            expect(pending).toHaveLength(2);
+
+            finishLoad(0, { id: 1, destroyed: false });
+            finishLoad(1, { id: 2, destroyed: false });
+
+            const [firstAsset, , secondAsset] = await Promise.all([first, unload, second]);
+
+            expect(firstAsset.id).toBe(1);
+            expect(firstAsset.destroyed).toBe(true);
+            expect(secondAsset.id).toBe(2);
+            expect(secondAsset.destroyed).toBe(false);
+            expect(loader['_unloadedAssets'].has(firstAsset)).toBe(true);
+            expect(loader['_unloadedAssets'].has(secondAsset)).toBe(false);
+
+            // the second load is still the active one, so it can be unloaded too
+            await loader.unload(url);
+
+            expect(secondAsset.destroyed).toBe(true);
+        });
+
+        it('should not let the unloaded load remove a newer load from the cache', async () =>
+        {
+            const loader = new Loader();
+            const { parser, pending, finishLoad } = createDeferredParser();
+            const url = `${basePath}thing.deferred`;
+
+            loader['_parsers'].push(parser);
+
+            const first = loader.load<FakeAsset>(url);
+            const unload = loader.unload(url);
+            const second = loader.load<FakeAsset>(url);
+
+            // the newer load finishes first
+            finishLoad(1, { id: 2, destroyed: false });
+
+            const secondAsset = await second;
+
+            finishLoad(0, { id: 1, destroyed: false });
+
+            await Promise.all([first, unload]);
+
+            expect(loader.promiseCache[url]).toBeDefined();
+            expect(await loader.promiseCache[url].promise).toBe(secondAsset);
+
+            // loading again reuses the newer asset instead of loading a third one
+            expect(await loader.load<FakeAsset>(url)).toBe(secondAsset);
+            expect(pending).toHaveLength(2);
+        });
+    });
+
     it('should unload a web font', async () =>
     {
         const loader = new Loader();
