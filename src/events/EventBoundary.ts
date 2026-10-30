@@ -425,7 +425,6 @@ export class EventBoundary
 
                     if (nestedHit.length > 0 || isInteractive)
                     {
-                        if (isInteractive) this._allInteractiveElements.push(currentTarget);
                         nestedHit.push(currentTarget);
                     }
 
