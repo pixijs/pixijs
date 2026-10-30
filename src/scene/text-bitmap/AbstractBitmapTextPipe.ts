@@ -41,6 +41,10 @@ export abstract class AbstractBitmapTextPipe implements RenderPipe<BitmapText>
 
     public validateRenderable(bitmapText: BitmapText): boolean
     {
+        // the glyph geometry is rebuilt in addRenderable, so a text change needs a rebuild
+        // even when the proxy graphics stays batched or non-batched
+        if (bitmapText._didTextUpdate) return true;
+
         const graphicsRenderable = this._getGpuBitmapText(bitmapText);
 
         return this._renderer.renderPipes.graphics.validateRenderable(graphicsRenderable);
