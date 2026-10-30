@@ -71,6 +71,8 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     private _gl: GlRenderingContext;
     private _mapFormatToInternalFormat: Record<string, number>;
+    /** Whether the compressed formats are in `_mapFormatToInternalFormat` yet. */
+    private _compressedFormatsMapped = false;
     private _mapFormatToType: Record<string, number>;
     private _mapFormatToFormat: Record<string, number>;
     private _mapViewDimensionToGlTarget: Record<TextureSource['viewDimension'], number | null>;
@@ -110,11 +112,14 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         this._gl = gl;
 
-        if (!this._mapFormatToInternalFormat)
+        // Compressed formats are mapped when a texture first uses one, because reading their extensions enables
+        // them. Rebuilt on every context change, so a restored context enables them again.
+        this._mapFormatToInternalFormat = mapFormatToGlInternalFormat(gl, { srgb: this._renderer.context.extensions.srgb });
+        this._compressedFormatsMapped = false;
+
+        if (!this._mapFormatToType)
         {
             // rebuild all our maps if they don't exist yet
-            this._mapFormatToInternalFormat = mapFormatToGlInternalFormat(gl, this._renderer.context.extensions);
-
             this._mapFormatToType = mapFormatToGlType(gl);
             this._mapFormatToFormat = mapFormatToGlFormat(gl);
             this._mapViewDimensionToGlTarget = mapViewDimensionToGlTarget(gl);
@@ -301,6 +306,14 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         glTexture.type = this._mapFormatToType[source.format];
         glTexture.internalFormat = this._mapFormatToInternalFormat[source.format];
+
+        if (glTexture.internalFormat === undefined && !this._compressedFormatsMapped)
+        {
+            this._compressedFormatsMapped = true;
+            this._mapFormatToInternalFormat = mapFormatToGlInternalFormat(gl, this._renderer.context.extensions);
+            glTexture.internalFormat = this._mapFormatToInternalFormat[source.format];
+        }
+
         glTexture.format = this._mapFormatToFormat[source.format];
         glTexture.target = this._mapViewDimensionToGlTarget[source.viewDimension];
 

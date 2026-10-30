@@ -532,6 +532,29 @@ describe('CanvasTextMetrics', () =>
 
             expect(spacedMetrics.width).toBeGreaterThan(plainMetrics.width);
         });
+
+        it('should not split the text into graphemes when letterSpacing is 0', () =>
+        {
+            const segmenter = CanvasTextMetrics.graphemeSegmenter;
+            const spy = jest.fn(segmenter);
+
+            CanvasTextMetrics.graphemeSegmenter = spy;
+
+            try
+            {
+                const style = new TextStyle({ fontSize: 24, fontFamily: 'Arial', letterSpacing: 0 });
+                const spaced = new TextStyle({ fontSize: 24, fontFamily: 'Arial', letterSpacing: 3 });
+                const plainWidth = CanvasTextMetrics.measureText('Graphemes', style).width;
+
+                expect(spy).not.toHaveBeenCalled();
+                expect(CanvasTextMetrics.measureText('Graphemes', spaced).width).toBeCloseTo(plainWidth + (8 * 3));
+                expect(spy).toHaveBeenCalled();
+            }
+            finally
+            {
+                CanvasTextMetrics.graphemeSegmenter = segmenter;
+            }
+        });
     });
 
     describe('measureFont', () =>
@@ -709,6 +732,42 @@ describe('CanvasTextMetrics', () =>
             const result = CanvasTextMetrics.graphemeSegmenter('x');
 
             expect(result).toEqual(['x']);
+        });
+
+        it('should split like Intl.Segmenter for ASCII and non-ASCII text', () =>
+        {
+            const segmenter = new Intl.Segmenter();
+            const reference = (s: string) => Array.from(segmenter.segment(s), (segment) => segment.segment);
+            const samples = [
+                'Hello startup 123',
+                'tab\there\nnew line',
+                'a\r\nb',
+                '\r',
+                'é',
+                'café',
+                '👩‍💻x',
+                '🇬🇧',
+                'a‍b',
+            ];
+
+            // every pair of ASCII characters
+            for (let i = 0; i < 128; i++)
+            {
+                for (let j = 0; j < 128; j++)
+                {
+                    samples.push(String.fromCharCode(i) + String.fromCharCode(j));
+                }
+            }
+
+            for (const sample of samples)
+            {
+                expect(CanvasTextMetrics.graphemeSegmenter(sample)).toEqual(reference(sample));
+            }
+        });
+
+        it('should keep \\r\\n as one grapheme', () =>
+        {
+            expect(CanvasTextMetrics.graphemeSegmenter('a\r\nb')).toEqual(['a', '\r\n', 'b']);
         });
     });
 
