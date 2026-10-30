@@ -99,26 +99,37 @@ describeLocalOnly('GpuDeviceSystem', () =>
         const wkWebView = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 '
             + '(KHTML, like Gecko) Mobile/15E148';
 
-        it('should follow the browser exposing the bit, except on WebKit from Safari 27.1 until 28', async () =>
+        it('should use the bit when the browser exposes it, except on WebKit from Safari 27.1 until 28', async () =>
         {
             const { adapter, device } = renderer.gpu;
-            const exposed = typeof (GPUTextureUsage as { TRANSIENT_ATTACHMENT?: number }).TRANSIENT_ATTACHMENT === 'number';
             const navigator = DOMAdapter.get().getNavigator();
+            const usage = GPUTextureUsage as { TRANSIENT_ATTACHMENT?: number };
+            const stubbed = usage.TRANSIENT_ATTACHMENT === undefined;
             const cases: [string, boolean][] = [
-                [chrome, exposed], [safari('27.0.1'), exposed], [safari('27.2'), false], [wkWebView, false],
-                [safari('28.0'), exposed],
+                [chrome, true], [safari('27.0.1'), true], [safari('27.2'), false], [wkWebView, false],
+                [safari('28.0'), true],
             ];
+            let spy: jest.SpyInstance | undefined;
 
-            for (const [userAgent, transient] of cases)
+            if (stubbed) Object.defineProperty(usage, 'TRANSIENT_ATTACHMENT', { value: 0x40, configurable: true });
+
+            try
             {
-                const spy = jest.spyOn(DOMAdapter.get(), 'getNavigator')
-                    .mockReturnValue({ ...navigator, gpu: navigator.gpu, userAgent });
-                const sharing = await getWebGPURenderer({ width: 64, height: 64, gpu: { adapter, device } });
+                for (const [userAgent, transient] of cases)
+                {
+                    spy = jest.spyOn(DOMAdapter.get(), 'getNavigator').mockReturnValue({ userAgent, gpu: navigator.gpu });
+                    const sharing = await getWebGPURenderer({ width: 64, height: 64, gpu: { adapter, device } });
 
-                expect(sharing.device.extensions.transientAttachment).toBe(transient);
+                    expect(sharing.device.extensions.transientAttachment).toBe(transient);
 
-                sharing.destroy();
-                spy.mockRestore();
+                    sharing.destroy();
+                    spy.mockRestore();
+                }
+            }
+            finally
+            {
+                spy?.mockRestore();
+                if (stubbed) delete usage.TRANSIENT_ATTACHMENT;
             }
         });
     });

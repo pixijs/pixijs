@@ -18,7 +18,7 @@ export interface SafariVersionRange
  * Unlike {@link isSafari}, this also covers WebKit that doesn't call itself Safari.
  *
  * With a range, only Safari versions in it count. WebKit that doesn't report its Safari version (Chrome or
- * Firefox on iOS, a WKWebView) can't be placed, so it counts as in range: a range here guards against a WebKit
+ * Firefox on iPhone, a WKWebView) can't be placed, so it counts as in range: a range here guards against a WebKit
  * bug, and assuming such a browser is affected is the safe side.
  * @example
  * ```ts
