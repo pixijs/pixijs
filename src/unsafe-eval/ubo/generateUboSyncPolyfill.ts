@@ -21,16 +21,18 @@ export function generateUboSyncPolyfillSTD40(uboElements: UboElement[]): Uniform
             const rowSize = Math.max(WGSL_TO_STD40_SIZE[uboElement.data.type] / 16, 1);
             const elementSize = (uboElement.data.value as Array<number>).length / uboElement.data.size;// size / rowSize;
             const remainder = (4 - (elementSize % 4)) % 4;
+            const isInt = uboElement.data.type.indexOf('i32') >= 0;
 
-            return (_name: string, data: Float32Array, offset: number, _uv: any, v: any) =>
+            return (_name: string, data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array) =>
             {
+                const view = isInt ? dataInt32 : data;
                 let t = 0;
 
                 for (let i = 0; i < (uboElement.data.size * rowSize); i++)
                 {
                     for (let j = 0; j < elementSize; j++)
                     {
-                        data[offset++] = v[t++];
+                        view[offset++] = v[t++];
                     }
 
                     offset += remainder;
@@ -55,16 +57,18 @@ export function generateUboSyncPolyfillWGSL(uboElements: UboElement[]): Uniforms
             const { size, align } = WGSL_ALIGN_SIZE_DATA[uboElement.data.type];
 
             const remainder = (Math.max(size, align) - size) / 4;
+            const isInt = uboElement.data.type.indexOf('i32') >= 0;
 
-            return (_name: string, data: Float32Array, offset: number, _uv: any, v: any) =>
+            return (_name: string, data: Float32Array, offset: number, _uv: any, v: any, dataInt32: Int32Array) =>
             {
+                const view = isInt ? dataInt32 : data;
                 let t = 0;
 
                 for (let i = 0; i < uboElement.data.size; i++)
                 {
                     for (let j = 0; j < (size / 4); j++)
                     {
-                        data[offset++] = v[t++];
+                        view[offset++] = v[t++];
                     }
                     offset += remainder;
                 }
@@ -126,13 +130,15 @@ function generateUboSyncPolyfill(
     return (
         uniforms: UniformGroup,
         data: Float32Array,
-        _dataInt32: Int32Array | null,
+        dataInt32: Int32Array | null,
         offset: number
     ) =>
     {
         for (const i in functionMap)
         {
-            functionMap[i].func(i, data, offset + functionMap[i].offset, uniforms, uniforms[i as keyof typeof uniforms]);
+            const uniform = uniforms[i as keyof typeof uniforms];
+
+            functionMap[i].func(i, data, offset + functionMap[i].offset, uniforms, uniform, dataInt32);
         }
     };
 }
