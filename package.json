@@ -70,7 +70,7 @@
     "tiny-lru": "^11.4.7"
   },
   "devDependencies": {
-    "@babel/core": "7.28.6",
+    "@babel/core": "^7.29.6",
     "@babel/plugin-transform-modules-commonjs": "^7.28.6",
     "@pixi/eslint-config": "^6.0.0",
     "@pixi/jest-electron": "^26.1.0",
@@ -100,7 +100,7 @@
     "http-server": "^14.1.1",
     "husky": "^8.0.3",
     "inquirer": "^13.2.0",
-    "jest": "^26.0.0",
+    "jest": "^27.0.0",
     "jest-extended": "^1.2.1",
     "jest-raw-loader": "^1.0.1",
     "knip": "^5.81.0",
@@ -441,6 +441,27 @@
       "require": {
         "default": "./lib/scene/particle-container/init.js"
       }
+    }
+  },
+  "overrides": {
+    "http-proxy-agent": {
+      "@tootallnate/once": "2.0.1"
+    },
+    "source-map-resolve": {
+      "decode-uri-component": "0.5.0"
+    },
+    "@pixi/jest-electron": {
+      ".": "^26.1.0",
+      "electron": "41.10.6"
+    },
+    "sane": {
+      "micromatch": "4.0.8"
+    },
+    "anymatch": {
+      "micromatch": "4.0.8"
+    },
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "9.0.7"
     }
   }
 }
