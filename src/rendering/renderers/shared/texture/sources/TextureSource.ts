@@ -1,7 +1,7 @@
-import EventEmitter from 'eventemitter3';
 import { isPow2 } from '../../../../../maths/misc/pow2';
 import { definedProps } from '../../../../../scene/container/utils/definedProps';
 import { uid } from '../../../../../utils/data/uid';
+import { EventEmitter } from '../../../../../utils/EventEmitter';
 import { deprecation, v8_22_0 } from '../../../../../utils/logging/deprecation';
 import { type GPUDataOwner } from '../../../../renderers/types';
 import { type GlTexture } from '../../../gl/texture/GlTexture';

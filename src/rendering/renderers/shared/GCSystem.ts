@@ -5,7 +5,7 @@ import { type GPUDataOwner, type Renderer } from '../types';
 import { type Renderable } from './Renderable';
 import { type RenderOptions } from './system/AbstractRenderer';
 
-import type EventEmitter from 'eventemitter3';
+import type { EventEmitter } from '../../../utils/EventEmitter';
 import type { System } from './system/System';
 
 /**
