@@ -1,5 +1,6 @@
 import { Texture } from '../../shared/texture/Texture';
 import { describeLocalOnly, getWebGPURenderer, loseAndRestoreDevice, nextTick, wait } from '@test-utils';
+import { DOMAdapter } from '~/environment';
 import { Sprite } from '~/scene';
 
 import type { WebGPURenderer } from '../WebGPURenderer';
@@ -85,6 +86,39 @@ describeLocalOnly('GpuDeviceSystem', () =>
                 expect(sharing.device.extensions.tileBased).toBe(tileBased);
 
                 sharing.destroy();
+            }
+        });
+    });
+
+    describe('transientAttachment', () =>
+    {
+        const safari = (version: string) => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 '
+            + `(KHTML, like Gecko) Version/${version} Safari/605.1.15`;
+        const chrome = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) '
+            + 'Chrome/156.0.0.0 Safari/537.36';
+        const wkWebView = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 '
+            + '(KHTML, like Gecko) Mobile/15E148';
+
+        it('should follow the browser exposing the bit, except on WebKit from Safari 27.1 until 28', async () =>
+        {
+            const { adapter, device } = renderer.gpu;
+            const exposed = typeof (GPUTextureUsage as { TRANSIENT_ATTACHMENT?: number }).TRANSIENT_ATTACHMENT === 'number';
+            const navigator = DOMAdapter.get().getNavigator();
+            const cases: [string, boolean][] = [
+                [chrome, exposed], [safari('27.0.1'), exposed], [safari('27.2'), false], [wkWebView, false],
+                [safari('28.0'), exposed],
+            ];
+
+            for (const [userAgent, transient] of cases)
+            {
+                const spy = jest.spyOn(DOMAdapter.get(), 'getNavigator')
+                    .mockReturnValue({ ...navigator, gpu: navigator.gpu, userAgent });
+                const sharing = await getWebGPURenderer({ width: 64, height: 64, gpu: { adapter, device } });
+
+                expect(sharing.device.extensions.transientAttachment).toBe(transient);
+
+                sharing.destroy();
+                spy.mockRestore();
             }
         });
     });
