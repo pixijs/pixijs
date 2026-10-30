@@ -150,11 +150,14 @@ export class GpuUniformBatchPipe
 
         bufferSystem.updateBuffer(firstBuffer);
 
-        // the other buffers hold the same data shifted by minUniformOffsetAlignment, so slots that are not on a
-        // 256-byte boundary in the first buffer are in these. Written from the CPU copy rather than copied on the
-        // GPU, which would need a command buffer of its own submitted ahead of the frame's.
+        // the other buffers hold the data from byte 128 on, so slots that start between 256-byte boundaries can
+        // be bound. The loop writes them from the CPU copy, because a GPU copy needs its own command buffer
+        // submitted ahead of the frame's.
         const data = this._batchBuffer.data;
-        const size = Math.min(this._batchBuffer.byteIndex, data.byteLength - minUniformOffsetAlignment);
+        const size = this._batchBuffer.byteIndex - minUniformOffsetAlignment;
+
+        // a render that draws only batched sprites fills slot 0 alone, so the other buffers need nothing
+        if (size <= 0) return;
 
         for (let i = 1; i < this._buffers.length; i++)
         {

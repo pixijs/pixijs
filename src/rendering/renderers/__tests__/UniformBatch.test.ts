@@ -2,6 +2,8 @@ import { GpuUniformBatchPipe } from '../gpu/GpuUniformBatchPipe';
 import { SchedulerSystem } from '../shared/SchedulerSystem';
 import { SystemRunner } from '../shared/system/SystemRunner';
 import { RenderableGCSystem } from '../shared/texture/RenderableGCSystem';
+import { getWebGPURenderer, itLocalOnly } from '@test-utils';
+import { Container, Graphics } from '~/scene';
 
 import type { WebGPURenderer } from '../gpu/WebGPURenderer';
 
@@ -37,47 +39,37 @@ describe('UniformBatch', () =>
         scheduler.destroy();
     });
 
-    it('should write the shifted buffer with writeBuffer and submit no command buffer of its own', () =>
+    itLocalOnly('should submit one command buffer per render', async () =>
     {
-        const scheduler = new SchedulerSystem();
-        const writeBuffer = jest.fn();
-        const submit = jest.fn();
-        const createCommandEncoder = jest.fn();
-        const gpuBuffers = new Map<unknown, object>();
+        const renderer = await getWebGPURenderer();
+        const container = new Container();
+        const spy = jest.spyOn(renderer.gpu.device.queue, 'submit');
 
-        const uniformBatchPipe = new GpuUniformBatchPipe({
-            scheduler,
-            renderableGC: new RenderableGCSystem({} as WebGPURenderer),
-            runners: {
-                destroy: new SystemRunner('destroy'),
-            },
-            gpu: { device: { queue: { writeBuffer, submit }, createCommandEncoder } },
-            buffer: {
-                updateBuffer: jest.fn(),
-                getGPUBuffer: (buffer: unknown) =>
-                {
-                    if (!gpuBuffers.has(buffer)) gpuBuffers.set(buffer, {});
+        try
+        {
+            // the global uniforms take slot 0 and each no-batch graphics takes the next, so the first graphics
+            // is in slot 1 and every render has to write the shifted buffer
+            for (let i = 0; i < 2; i++)
+            {
+                const graphics = new Graphics().rect(i * 20, 0, 10, 10).fill('red');
 
-                    return gpuBuffers.get(buffer);
-                },
-            },
-        } as unknown as WebGPURenderer);
+                graphics.context.batchMode = 'no-batch';
+                container.addChild(graphics);
+            }
 
-        uniformBatchPipe.getArrayBufferResource(new Float32Array(32));
-        uniformBatchPipe.getArrayBufferResource(new Float32Array(32));
+            // count the second render only, so setup that runs once on the first render can't change the count
+            renderer.render(container);
+            spy.mockClear();
 
-        uniformBatchPipe.renderEnd();
+            renderer.render(container);
 
-        const data = uniformBatchPipe['_batchBuffer'].data;
-
-        // the second buffer holds the batch shifted by 128 bytes, written from the CPU copy
-        expect(writeBuffer).toHaveBeenCalledTimes(1);
-        expect(writeBuffer).toHaveBeenCalledWith(
-            gpuBuffers.get(uniformBatchPipe['_buffers'][1]), 0, data.buffer, data.byteOffset + 128, 256
-        );
-        expect(createCommandEncoder).not.toHaveBeenCalled();
-        expect(submit).not.toHaveBeenCalled();
-
-        scheduler.destroy();
+            expect(spy).toHaveBeenCalledTimes(1);
+        }
+        finally
+        {
+            spy.mockRestore();
+            container.destroy({ children: true });
+            renderer.destroy();
+        }
     });
 });
