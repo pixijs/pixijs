@@ -133,6 +133,21 @@ Canceling `rightdown`, `rightup`, or `rightclick` doesn't keep the menu closed. 
 
 Firefox opens its menu on shift + right click without firing `contextmenu`, so a page can't block that.
 
+### Wheel and page scrolling
+
+PixiJS registers its `wheel` listener as passive, so calling `event.preventDefault()` in a `wheel` listener doesn't stop the page from scrolling. Set `eventFeatures.wheelPassive` to `false` to allow it:
+
+```ts
+await app.init({ eventFeatures: { wheelPassive: false } });
+
+sprite.eventMode = 'static';
+sprite.on('wheel', (event) => {
+    event.preventDefault(); // the page doesn't scroll
+});
+```
+
+A non-passive listener can delay scrolling over the canvas, so leave `wheelPassive` at `true` unless you need to block scrolling.
+
 ### Capture phase events
 
 All events support capture phase listeners by appending `capture` to the event name (e.g., `pointerdowncapture`, `clickcapture`). Capture listeners fire during the capturing phase, before the event reaches its target.
@@ -233,6 +248,7 @@ await app.init({
         globalMove: true,     // global move events (globalpointermove, etc.)
         click: true,          // click/tap/press and contextmenu events
         wheel: true,          // mouse wheel events
+        wheelPassive: true,   // set false so wheel listeners can stop page scrolling
     }
 });
 

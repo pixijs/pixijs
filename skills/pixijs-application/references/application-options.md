@@ -179,13 +179,14 @@ await app.init({
 
 ## Events
 
-| Option                     | Type                                                     | Default     | Description                                                                                                                      |
-| -------------------------- | -------------------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `eventMode`                | `'none' \| 'passive' \| 'auto' \| 'static' \| 'dynamic'` | `'passive'` | Default interaction mode for every container. See `pixijs-events`.                                                               |
-| `eventFeatures.move`       | `boolean`                                                | `true`      | Fire `pointermove`/`mousemove`/`touchmove` + `pointerover`/`pointerout`.                                                         |
-| `eventFeatures.globalMove` | `boolean`                                                | `true`      | Fire `globalpointermove`/`globalmousemove`/`globaltouchmove` regardless of hit target. Expensive; turn off if you don't need it. |
-| `eventFeatures.click`      | `boolean`                                                | `true`      | Fire `pointerdown`/`pointerup`/`click`/`tap`.                                                                                    |
-| `eventFeatures.wheel`      | `boolean`                                                | `true`      | Fire `wheel`.                                                                                                                    |
+| Option                       | Type                                                     | Default     | Description                                                                                                                      |
+| ---------------------------- | -------------------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `eventMode`                  | `'none' \| 'passive' \| 'auto' \| 'static' \| 'dynamic'` | `'passive'` | Default interaction mode for every container. See `pixijs-events`.                                                               |
+| `eventFeatures.move`         | `boolean`                                                | `true`      | Fire `pointermove`/`mousemove`/`touchmove` + `pointerover`/`pointerout`.                                                         |
+| `eventFeatures.globalMove`   | `boolean`                                                | `true`      | Fire `globalpointermove`/`globalmousemove`/`globaltouchmove` regardless of hit target. Expensive; turn off if you don't need it. |
+| `eventFeatures.click`        | `boolean`                                                | `true`      | Fire `pointerdown`/`pointerup`/`click`/`tap`.                                                                                    |
+| `eventFeatures.wheel`        | `boolean`                                                | `true`      | Fire `wheel`.                                                                                                                    |
+| `eventFeatures.wheelPassive` | `boolean`                                                | `true`      | Register the wheel listener as passive. Set `false` so `preventDefault()` in a `wheel` listener stops page scrolling.            |
 
 ```ts
 await app.init({
