@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs-extra';
 import path from 'path';
+import { DDS } from '../dds/const';
 import { parseDDS } from '../dds/parseDDS';
 
 describe('Parse DDS', () =>
@@ -196,7 +197,71 @@ describe('Parse DDS', () =>
         expect(result.resource.length).toBe(7);
         expect(result.alphaMode).toBe('no-premultiply-alpha');
     });
+
+    it.each([
+        ['r8unorm', DDS.DXGI_FORMAT.DXGI_FORMAT_R8_UNORM, 1],
+        ['rg8unorm', DDS.DXGI_FORMAT.DXGI_FORMAT_R8G8_UNORM, 2],
+        ['r16uint', DDS.DXGI_FORMAT.DXGI_FORMAT_R16_UNORM, 2],
+        ['rgba8unorm', DDS.DXGI_FORMAT.DXGI_FORMAT_R8G8B8A8_UNORM, 4],
+        ['rgba32float', DDS.DXGI_FORMAT.DXGI_FORMAT_R32G32B32A32_FLOAT, 16],
+    ] as const)('should size each mip level of an uncompressed %s mipmap texture', (format, dxgiFormat, bytesPerPixel) =>
+    {
+        const arrayBuffer = createUncompressedDDS(dxgiFormat, 4, 4, 3, bytesPerPixel);
+
+        const result = parseDDS(arrayBuffer, [format]);
+
+        expect(result.format).toBe(format);
+        expect(result.resource.map((level) => level.byteLength))
+            .toEqual([16 * bytesPerPixel, 4 * bytesPerPixel, bytesPerPixel]);
+        result.resource.forEach((level, i) => expect(level.every((value) => value === i + 1)).toBe(true));
+    });
 });
+
+/**
+ * Builds a DDS file with a DX10 header holding an uncompressed texture.
+ * Every byte of mip level `i` is set to `i + 1`.
+ * @param dxgiFormat - DXGI format of the texture
+ * @param width - width of the base level
+ * @param height - height of the base level
+ * @param levels - number of mip levels
+ * @param bytesPerPixel - bytes per pixel of the format
+ */
+function createUncompressedDDS(dxgiFormat: number, width: number, height: number, levels: number,
+    bytesPerPixel: number): ArrayBuffer
+{
+    const levelSizes: number[] = [];
+
+    for (let i = 0, w = width, h = height; i < levels; i++, w = Math.max(w >> 1, 1), h = Math.max(h >> 1, 1))
+    {
+        levelSizes.push(w * h * bytesPerPixel);
+    }
+
+    const dataOffset = DDS.MAGIC_SIZE + DDS.HEADER_SIZE + DDS.HEADER_DX10_SIZE;
+    const buffer = new ArrayBuffer(dataOffset + levelSizes.reduce((sum, size) => sum + size, 0));
+    const header = new Uint32Array(buffer, 0, dataOffset / 4);
+    const dx10Header = header.subarray((DDS.MAGIC_SIZE + DDS.HEADER_SIZE) / 4);
+
+    header[DDS.HEADER_FIELDS.MAGIC] = DDS.MAGIC_VALUE;
+    header[DDS.HEADER_FIELDS.SIZE] = DDS.HEADER_SIZE;
+    header[DDS.HEADER_FIELDS.HEIGHT] = height;
+    header[DDS.HEADER_FIELDS.WIDTH] = width;
+    header[DDS.HEADER_FIELDS.MIPMAP_COUNT] = levels;
+    header[DDS.HEADER_FIELDS.PF_FLAGS] = DDS.PIXEL_FORMAT_FLAGS.FOURCC;
+    header[DDS.HEADER_FIELDS.FOURCC] = DDS.D3DFMT.DX10;
+    dx10Header[DDS.HEADER_DX10_FIELDS.DXGI_FORMAT] = dxgiFormat;
+    dx10Header[DDS.HEADER_DX10_FIELDS.RESOURCE_DIMENSION] = DDS.D3D10_RESOURCE_DIMENSION.DDS_DIMENSION_TEXTURE2D;
+    dx10Header[DDS.HEADER_DX10_FIELDS.ARRAY_SIZE] = 1;
+
+    let offset = dataOffset;
+
+    levelSizes.forEach((size, i) =>
+    {
+        new Uint8Array(buffer, offset, size).fill(i + 1);
+        offset += size;
+    });
+
+    return buffer;
+}
 
 function toArrayBuffer(buf: Buffer): ArrayBuffer
 {
