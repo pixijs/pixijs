@@ -1,5 +1,6 @@
 import { DOMAdapter } from '../../../environment/adapter';
 import { ExtensionType } from '../../../extensions/Extensions';
+import { isWebKit } from '../../../utils/browser/isWebKit';
 import { warn } from '../../../utils/logging/warn';
 
 import type { System } from '../shared/system/System';
@@ -121,8 +122,12 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
         this.gpu = gpu;
 
         this.extensions = {
+            // Safari 27.1+ loses the device when a command buffer is submitted while another holds an unsubmitted pass
+            // on a transient (memoryless) texture: its lazy clear blits into it. WebKit main has the fix, so Safari 28
+            // is clean. https://github.com/pixijs/pixijs/issues/12344
             transientAttachment:
-                typeof (GPUTextureUsage as { TRANSIENT_ATTACHMENT?: number }).TRANSIENT_ATTACHMENT === 'number',
+                typeof (GPUTextureUsage as { TRANSIENT_ATTACHMENT?: number }).TRANSIENT_ATTACHMENT === 'number'
+                && !isWebKit({ from: '27.1', before: '28' }),
             tileBased: tileBasedVendors.has(gpu.adapter?.info?.vendor),
         };
 

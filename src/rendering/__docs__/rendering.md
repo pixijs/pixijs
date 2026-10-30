@@ -311,7 +311,7 @@ The same flag works for the canvas. Pass `transient: true` to the renderer when 
 await app.init({ preference: 'webgpu', antialias: true, transient: true });
 ```
 
-`renderer.device.extensions.transientAttachment` reports whether the usage bit is available.
+`renderer.device.extensions.transientAttachment` reports whether PixiJS uses the usage bit. It's `false` where the browser doesn't expose the bit, on Safari 27.1 and later 27.x releases, and on iOS browsers and web views that don't report a Safari version. A WebKit bug in those Safari releases can lose the device when the bit is used.
 
 ### Device loss
 
