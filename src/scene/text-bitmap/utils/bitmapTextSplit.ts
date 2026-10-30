@@ -35,10 +35,13 @@ export function bitmapTextSplit(
 
     let yOffset = 0;
 
-    for (const line of layout.lines)
+    for (let lineIndex = 0; lineIndex < layout.lines.length; lineIndex++)
     {
-        // if the line is empty, skip it
-        if (line.chars.length === 0) continue;
+        const line = layout.lines[lineIndex];
+
+        // The layout always ends with a trailing empty line; skip it. Intermediate empty lines
+        // are kept so that blank lines are preserved, matching Text / SplitText / BitmapText.
+        if (line.chars.length === 0 && lineIndex === layout.lines.length - 1) continue;
 
         const lineContainer = new Container({ label: 'line' });
 
