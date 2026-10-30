@@ -175,21 +175,31 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
     /** Unloads the GPU data from the view. */
     public unload(): void
     {
-        this.emit('unload', this);
-        for (const key in this._gpuData)
-        {
-            this._gpuData[key]?.destroy();
-        }
+        this._destroyGpuData();
         this._gpuData = Object.create(null);
         this.onViewUpdate();
     }
 
     public override destroy(options?: DestroyOptions): void
     {
-        this.unload();
+        // the view is going away: no fresh record for its GPU data and no view update
+        this._destroyGpuData();
+        this._gpuData = null;
         super.destroy(options);
 
         this._bounds = null;
+    }
+
+    private _destroyGpuData(): void
+    {
+        this.emit('unload', this);
+
+        const gpuData = this._gpuData;
+
+        for (const key in gpuData)
+        {
+            gpuData[key]?.destroy();
+        }
     }
 
     /**
