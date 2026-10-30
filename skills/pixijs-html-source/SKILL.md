@@ -6,7 +6,7 @@ license: MIT
 
 `HTMLSource` and `ElementImageSource` turn a DOM element into a `TextureSource` you can use anywhere a normal texture works: on a `Sprite`, as a `Texture` frame, or mapped onto a `Mesh`. `HTMLSource` mirrors a live element's pixels into the GPU (the element stays editable and clickable in the browser); `ElementImageSource` wraps an immutable snapshot that never repaints. Both live in `pixi.js/html-source`; importing from that path registers their extensions.
 
-> These sources rely on the experimental HTML-in-Canvas browser proposal and are marked EXPERIMENTAL in PixiJS v8. The browser API must be enabled or the texture uploader throws on first render; feature-detect with `canvas.requestPaint` before relying on it. The API may change between minor releases.
+> These sources rely on the experimental HTML-in-Canvas browser proposal and are marked EXPERIMENTAL in PixiJS v8. Chrome turns the browser API on by default from Chrome 157; earlier Chrome needs the origin trial or a flag, and other browsers lack it. Without it the texture uploader throws on first render, so feature-detect with `canvas.requestPaint` before relying on it. The API may change between minor releases.
 
 Assumes familiarity with `pixijs-scene-sprite` and textures. These are texture *sources*, not display objects: wrap them in a `Sprite` (or `Texture`/`Mesh`) to put them on screen. Not available in Web Workers; a worker has no DOM to capture.
 
@@ -20,7 +20,7 @@ const app = new Application();
 await app.init({ resizeTo: window });
 document.body.appendChild(app.canvas);
 
-// The element must be a direct child of the Pixi canvas.
+// The element must be inside the Pixi canvas.
 const form = document.createElement("form");
 form.innerHTML = '<input value="still editable" />';
 app.canvas.appendChild(form);
@@ -45,7 +45,7 @@ Both sources extend `TextureSource`, so all `TextureSourceOptions` (`resolution`
 | Option             | Type               | Default | Description                                                                                                                                              |
 | ------------------ | ------------------ | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `resource`         | `Element`          | —       | Required. The live DOM element to render. Must be inside the owning canvas (its nearest `<canvas>` ancestor), or the constructor throws. The source sets `drawable` on it. |
-| `canvas`           | `HTMLSourceCanvas` | —       | The canvas that owns the element. Inferred from the element's nearest `<canvas>` ancestor; pass it when inference is not possible. |
+| `canvas`           | `HTMLSourceCanvas` | —       | The canvas that owns the element. Must be the element's nearest `<canvas>` ancestor, or the constructor throws. Leave it out and it's inferred. |
 | `autoLayout`       | `boolean`          | `true`  | Set `content="drawable"` (plus the pre-Chrome-155 `layoutsubtree`) on the owning canvas. The browser only lays out and paints canvas descendants when it is present. Set `false` if you write `<canvas content="drawable">` yourself. |
 | `autoUpdate`       | `boolean`          | `true`  | Listen for the canvas `paint` event and re-upload when the element repaints. Set `false` for a static, captured-once texture.                             |
 | `autoRequestPaint` | `boolean`          | `true`  | Request one initial paint after construction. Set `false` and call `source.requestPaint()` yourself each frame for continuous animation.                  |
@@ -74,7 +74,7 @@ Importing a named export from `pixi.js/html-source` also triggers the side effec
 
 ### Feature detection and browser support
 
-The HTML-in-Canvas API is gated behind a browser flag. Feature-detect before relying on it:
+The HTML-in-Canvas API is on by default from Chrome 157 but missing in other browsers and older Chrome. Feature-detect before relying on it:
 
 ```ts
 import type { HTMLSourceCanvas } from "pixi.js/html-source";
@@ -86,7 +86,7 @@ if (canvas.requestPaint) {
 }
 ```
 
-Cast `app.canvas` to `HTMLSourceCanvas` for the typed `requestPaint` and `captureElementImage` members. `source.requestPaint()` returns `false` when the browser lacks the API; the texture uploader throws on first render when it is disabled.
+Cast `app.canvas` to `HTMLSourceCanvas` for the typed `requestPaint`, `captureElementImage`, `updateElementGeometry`, and `clearElementGeometry` members. `source.requestPaint()` returns `false` when the browser lacks the API; the texture uploader throws on first render when it is missing.
 
 When the API is missing the first upload throws `[HTMLSource] WebGLRenderingContext.texElementSubImage2D is not available...` on WebGL or `[HTMLSource] GPUQueue.drawElementImageToTexture is not available...` on WebGPU. The uploaders use `texElementSubImage2D`/`drawElementImageToTexture` in Chrome 155+ and fall back to the older `texElementImage2D`/`copyElementImageToTexture` signatures in Chrome 150-154 and earlier.
 
@@ -100,7 +100,7 @@ const source = new HTMLSource({ resource: form });
 const sprite = Sprite.from(source);
 ```
 
-The element must be inside the renderer's `<canvas>`; the source infers the owning canvas from the element's nearest `<canvas>` ancestor (or pass `canvas`). It always sets `drawable` on the element. With the defaults, it sets `content="drawable"` and `layoutsubtree` on the canvas, listens for the canvas `paint` event, and requests one initial paint. In Chrome 155+ the element can be nested: each `drawable` element captures its subtree minus nested `drawable` descendants, so a panel and a button inside it can be separate sources. Chrome before 155 only draws direct canvas children, and WebGPU in Chrome 156 still throws for nested ones (WebGL accepts them). `source.isReady` is `false` until that first paint lands, then `true`. It is `true` immediately when `autoUpdate` is `false`. `resourceWidth`/`resourceHeight` report the element's real-pixel size (`offsetWidth`/`offsetHeight`).
+The element must be inside the renderer's `<canvas>`; the source infers the owning canvas from the element's nearest `<canvas>` ancestor. It always sets `drawable` on the element. With the defaults, it sets `content="drawable"` and `layoutsubtree` on the canvas, listens for the canvas `paint` event, and requests one initial paint. In Chrome 155+ the element can be nested: each `drawable` element captures its subtree minus nested `drawable` descendants, so a panel and a button inside it can be separate sources. Chrome before 155 only draws direct canvas children, and WebGPU in Chrome 156 still throws for nested ones (WebGL accepts them). `source.isReady` is `false` until that first paint lands, then `true`. It is `true` immediately when `autoUpdate` is `false`. `resourceWidth`/`resourceHeight` report the element's real-pixel size (`offsetWidth`/`offsetHeight`).
 
 ### Hit testing with updateElementGeometry
 
@@ -199,7 +199,7 @@ import { HTMLSource } from "pixi.js/html-source";
 
 ### [HIGH] Assuming the browser API is enabled
 
-The HTML-in-Canvas proposal is not shipped by default. If the API is disabled, the uploader throws on first render. Feature-detect first:
+The HTML-in-Canvas API only exists in Chrome 157+, or in earlier Chrome with the origin trial or a flag. Where it's missing, the uploader throws on first render. Feature-detect first:
 
 ```ts
 const canvas = app.canvas as HTMLSourceCanvas;
@@ -219,7 +219,7 @@ document.body.appendChild(form); // wrong parent
 const source = new HTMLSource({ resource: form }); // throws
 ```
 
-`HTMLSource` requires the element to be inside the owning canvas (`app.canvas.appendChild(form)`) and throws otherwise. Append the element to the canvas before constructing the source, or pass the `canvas` option. Chrome before 155 also requires it to be a direct child.
+`HTMLSource` requires the element to be inside the owning canvas (`app.canvas.appendChild(form)`) and throws otherwise. Append the element to the canvas before constructing the source. Chrome before 155 also requires it to be a direct child.
 
 ### [MEDIUM] Expecting a live element to update without requestPaint
 

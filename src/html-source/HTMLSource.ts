@@ -37,15 +37,15 @@ import type { HTMLSourceCanvas } from './HTMLSourceTypes';
 export interface HTMLSourceOptions extends TextureSourceOptions<Element>
 {
     /**
-     * The canvas that owns this element. When omitted, this is inferred from the resource's
-     * nearest `<canvas>` ancestor.
+     * The canvas that owns this element. It must be the resource's nearest `<canvas>` ancestor,
+     * or the constructor throws. Leave it out and it's inferred.
      * @example
      * ```ts
      * // Inferred automatically — domElement is appended to the Pixi canvas.
      * app.canvas.appendChild(domElement);
      * const source = new HTMLSource({ resource: domElement });
      *
-     * // Passed explicitly when inference is not possible.
+     * // Equivalent: the same canvas, passed explicitly.
      * const explicit = new HTMLSource({
      *     resource: domElement,
      *     canvas: app.canvas as HTMLSourceCanvas,
@@ -262,7 +262,7 @@ export class HTMLSource extends TextureSource<Element>
         {
             throw new Error(
                 // eslint-disable-next-line max-len
-                '[HTMLSource] Could not determine the owning canvas. Append the element to the canvas before constructing this source, or pass the `canvas` option.',
+                '[HTMLSource] Could not determine the owning canvas. Append the element to the canvas before constructing this source.',
             );
         }
 

@@ -52,10 +52,12 @@ export interface HTMLSourceCanvas extends HTMLCanvasElement
      * ```ts
      * const canvas = app.canvas as HTMLSourceCanvas;
      * const { a, b, c, d, tx, ty } = sprite.getGlobalTransform();
+     * const canvasTransform = new DOMMatrix([a, b, c, d, tx, ty]).translate(
+     *     -sprite.anchor.x * sprite.texture.width,
+     *     -sprite.anchor.y * sprite.texture.height,
+     * );
      *
-     * canvas.updateElementGeometry?.(element, {
-     *     canvasTransform: new DOMMatrix([a, b, c, d, tx, ty]),
-     * });
+     * canvas.updateElementGeometry?.(element, { canvasTransform });
      * ```
      */
     updateElementGeometry?: (

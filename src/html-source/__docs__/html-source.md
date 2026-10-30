@@ -9,7 +9,7 @@ description: Learn how to render live HTML elements and DOM snapshots as PixiJS 
 The HTML source module renders DOM elements into textures. {@link HTMLSource} mirrors a live element into the GPU every time the browser repaints it, so forms stay editable, links stay clickable, and CSS animations keep running. {@link ElementImageSource} wraps a frozen snapshot that never changes. HTML source support is not included in the base `pixi.js` import; you must import from `pixi.js/html-source`.
 
 > [!WARNING]
-> This module is **experimental**. It relies on the HTML-in-Canvas browser proposal, which must be enabled in the browser (Chrome runs it as an origin trial through Chrome 160). Without it, the texture uploader throws on the first render. The API may change between minor releases.
+> This module is **experimental**. It relies on the HTML-in-Canvas API, which Chrome turns on by default from Chrome 157. Earlier Chrome versions need the origin trial or a browser flag, and other browsers don't support it yet. Without it, the texture uploader throws on the first render. The API may change between minor releases.
 
 ## Rendering a live element
 
@@ -35,16 +35,7 @@ sprite.position.set(app.screen.width / 2, app.screen.height / 2);
 app.stage.addChild(sprite);
 ```
 
-The constructor throws if the element has no canvas ancestor. Append the element to the canvas first, or pass the `canvas` option explicitly:
-
-```ts
-import type { HTMLSourceCanvas } from 'pixi.js/html-source';
-
-const source = new HTMLSource({
-  resource: form,
-  canvas: app.canvas as HTMLSourceCanvas,
-});
-```
+The constructor throws if the element has no canvas ancestor, so append the element to the canvas first.
 
 ### Nested elements
 
