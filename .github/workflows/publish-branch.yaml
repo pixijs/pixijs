@@ -5,6 +5,8 @@ on:
 
 jobs:
     release_candidate:
+        # npm's trusted publishing only accepts GitHub-hosted runners, so this
+        # job can't move to Namespace.
         runs-on: ubuntu-22.04
         permissions:
           id-token: write
@@ -16,9 +18,6 @@ jobs:
               with:
                   ref: ${{ github.head_ref }}
 
-            # No node-version/npm-version overrides: the setup action pins Node 24.15
-            # because Node >=24.16 silently skips Electron's binary install, and this
-            # job's cache post-step would then poison Linux-node-modules-* for unit tests.
             - name: Setup Project
               uses: ./.github/actions/setup
 
