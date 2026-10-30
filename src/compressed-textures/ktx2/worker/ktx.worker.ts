@@ -81,6 +81,8 @@ async function load(url: string): Promise<TextureSourceOptions>
     const ktx = await getKTX();
 
     const ktxTexture = await fetchKTXTexture(url, ktx);
+    // Reading isPremultiplied here because for some reason it becomes false after transcoding
+    const isPremultiplied = ktxTexture.isPremultiplied;
 
     let format: COMPRESSED_TEXTURE_FORMATS;
 
@@ -109,7 +111,7 @@ async function load(url: string): Promise<TextureSourceOptions>
         format: format as TEXTURE_FORMATS,
         mipLevelCount: ktxTexture.numLevels,
         resource: levelBuffers,
-        alphaMode: 'no-premultiply-alpha'
+        alphaMode: isPremultiplied ? 'premultiplied-alpha' : 'no-premultiply-alpha'
     } as TextureSourceOptions;
 
     convertFormatIfRequired(textureOptions);
