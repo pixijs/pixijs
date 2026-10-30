@@ -379,9 +379,10 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.autoGarbageCollect = options.autoGarbageCollect;
         this._resolution = options.resolution;
 
+        // make sure we work with rounded pixels, as resize() does
         if (options.width)
         {
-            this.pixelWidth = options.width * this._resolution;
+            this.pixelWidth = Math.round(options.width * this._resolution);
         }
         else
         {
@@ -390,7 +391,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         if (options.height)
         {
-            this.pixelHeight = options.height * this._resolution;
+            this.pixelHeight = Math.round(options.height * this._resolution);
         }
         else
         {
