@@ -1159,6 +1159,11 @@ export class Color
      */
     public static isColorLike(value: unknown): value is ColorSource
     {
+        if (value === null || value === undefined)
+        {
+            return false;
+        }
+
         return (
             typeof value === 'number'
             || typeof value === 'string'
