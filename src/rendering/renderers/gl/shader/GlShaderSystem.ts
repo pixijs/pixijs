@@ -158,6 +158,9 @@ export class GlShaderSystem
         const programData = this._getProgramData(program);
 
         this._gl.useProgram(programData.program);
+
+        // on a target with several color attachments, enable only those this program writes
+        this._renderer.renderTarget.adaptor.setFragmentOutputs(program);
     }
 
     /**
