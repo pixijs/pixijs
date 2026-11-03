@@ -284,3 +284,42 @@ describeLocalOnly('PipelineSystem bundle descriptor', () =>
         expect(colorOnlyDescriptor.stencilReadOnly).toBeFalsy();
     });
 });
+
+describeLocalOnly('PipelineSystem winding cache', () =>
+{
+    it('keeps flipped and unflipped winding apart however many color formats have been seen', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const pipeline = renderer.pipeline as unknown as {
+            setRenderTarget(rt: RenderTarget): void;
+            _pipeCache: unknown;
+        };
+
+        // more than 16 distinct formats: with a 4-bit format field, id n + 16 spilled into the winding
+        // bit, so a flipped target shared its cache bucket with an unflipped one
+        const formats: TEXTURE_FORMATS[] = [
+            'r8unorm', 'r8snorm', 'r8uint', 'r8sint', 'r16uint', 'r16sint', 'r16float', 'rg8unorm', 'rg8snorm',
+            'rg8uint', 'rg8sint', 'r32uint', 'r32sint', 'r32float', 'rg16uint', 'rg16sint', 'rg16float',
+            'rgba8unorm', 'bgra8unorm', 'rgba16float',
+        ];
+        const caches = new Set<unknown>();
+
+        for (const format of formats)
+        {
+            const target = new RenderTarget({
+                colorTextures: [new TextureSource({ width: 16, height: 16, format })],
+            });
+
+            target.flipY = false;
+            pipeline.setRenderTarget(target);
+            caches.add(pipeline._pipeCache);
+
+            target.flipY = true;
+            pipeline.setRenderTarget(target);
+            caches.add(pipeline._pipeCache);
+        }
+
+        expect(caches.size).toBe(formats.length * 2);
+    });
+});
