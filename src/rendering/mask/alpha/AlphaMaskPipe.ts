@@ -17,6 +17,7 @@ import type { Instruction } from '../../renderers/shared/instructions/Instructio
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { RenderTarget } from '../../renderers/shared/renderTarget/RenderTarget';
+import type { RenderSurface } from '../../renderers/shared/renderTarget/RenderTargetSystem';
 import type { Renderer } from '../../renderers/types';
 import type { AlphaMask } from './AlphaMask';
 
@@ -105,6 +106,7 @@ export interface AlphaMaskData
     filterEffect: AlphaMaskEffect,
     maskedContainer: Container,
     previousRenderTarget?: RenderTarget,
+    previousRenderSurface?: RenderSurface,
     filterTexture?: Texture,
 }
 
@@ -222,6 +224,10 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
                     antialias: colorTextureSource.antialias,
                 });
 
+                // inside a filter the current surface is the filter's input texture, which the
+                // filter system bound without pushing it, so pop() below would not return to it
+                const previousRenderSurface = renderer.renderTarget.renderSurface;
+
                 renderer.renderTarget.push({ target: filterTexture, clear: true });
 
                 renderer.globalUniforms.push({
@@ -240,6 +246,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
                     filterEffect,
                     maskedContainer: instruction.maskedContainer,
                     filterTexture,
+                    previousRenderSurface,
                 });
             }
             else
@@ -265,6 +272,12 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
                 }
 
                 renderer.renderTarget.pop();
+
+                if (renderer.renderTarget.renderSurface !== maskData.previousRenderSurface)
+                {
+                    renderer.renderTarget.bind({ target: maskData.previousRenderSurface, clear: false });
+                }
+
                 renderer.globalUniforms.pop();
             }
 
