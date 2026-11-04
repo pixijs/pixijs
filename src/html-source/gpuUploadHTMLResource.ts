@@ -4,14 +4,26 @@ import type { GPU } from '../rendering/renderers/gpu/GpuDeviceSystem';
 import type { GpuTextureUploader } from '../rendering/renderers/gpu/texture/uploaders/GpuTextureUploader';
 import type { HTMLSourceResource, HTMLUploadableSource } from './HTMLSourceTypes';
 
-// Chromium 150+ collapsed the upload signature into source/destination dictionaries.
-// See https://github.com/WICG/html-in-canvas/pull/128/changes and
-// https://github.com/gpuweb/gpuweb/pull/6250.
 interface GPUCopyElementImageSource
 {
     source: HTMLSourceResource;
 }
 
+// Chromium 155+ renamed the upload and folded the size into the destination.
+// See https://developer.chrome.com/blog/html-in-canvas-ot-changes.
+interface GPUDrawElementImageDestination extends GPUCopyExternalImageDestInfo
+{
+    size: GPUExtent3D;
+}
+
+type DrawElementImageToTexture = (
+    source: GPUCopyElementImageSource,
+    destination: GPUDrawElementImageDestination,
+) => void;
+
+// Chromium 150-154 collapsed the upload signature into source/destination dictionaries.
+// See https://github.com/WICG/html-in-canvas/pull/128/changes and
+// https://github.com/gpuweb/gpuweb/pull/6250.
 interface GPUCopyElementImageDestination
 {
     destination: GPUCopyExternalImageDestInfo;
@@ -34,6 +46,7 @@ type CopyElementImageLegacy = (
 
 interface GpuCopyElementImageQueue extends GPUQueue
 {
+    drawElementImageToTexture?: DrawElementImageToTexture;
     copyElementImageToTexture?: CopyElementImageModern | CopyElementImageLegacy;
 }
 
@@ -52,13 +65,13 @@ export const gpuUploadHTMLResource: GpuTextureUploader<HTMLUploadableSource> & {
     upload(source: HTMLUploadableSource, gpuTexture: GPUTexture, gpu: GPU, originZOverride = 0)
     {
         const queue = gpu.device.queue as GpuCopyElementImageQueue;
-        const copyElementImageToTexture = queue.copyElementImageToTexture;
+        const { drawElementImageToTexture, copyElementImageToTexture } = queue;
 
-        if (!copyElementImageToTexture)
+        if (!drawElementImageToTexture && !copyElementImageToTexture)
         {
             throw new Error(
                 // eslint-disable-next-line max-len
-                '[HTMLSource] GPUQueue.copyElementImageToTexture is not available. Enable the browser HTML-in-Canvas API before using HTMLSource.',
+                '[HTMLSource] GPUQueue.drawElementImageToTexture is not available. Enable the browser HTML-in-Canvas API before using HTMLSource.',
             );
         }
 
@@ -82,9 +95,17 @@ export const gpuUploadHTMLResource: GpuTextureUploader<HTMLUploadableSource> & {
         const width = Math.min(gpuTexture.width, source.pixelWidth);
         const height = Math.min(gpuTexture.height, source.pixelHeight);
 
-        // Detect the Chromium 150+ two-argument form by its arity; older builds still expect
+        if (drawElementImageToTexture)
+        {
+            drawElementImageToTexture.call(
+                queue,
+                { source: source.resource },
+                { ...destination, size: { width, height } },
+            );
+        }
+        // Detect the Chromium 150-154 two-argument form by its arity; older builds still expect
         // the (source, width, height, destination) signature.
-        if (copyElementImageToTexture.length === 2)
+        else if (copyElementImageToTexture.length === 2)
         {
             (copyElementImageToTexture as CopyElementImageModern).call(
                 queue,

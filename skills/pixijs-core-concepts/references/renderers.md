@@ -213,7 +213,7 @@ if (isWebGLSupported()) {
 
 // after init, WebGPU-only capability flags
 if (renderer.name === "webgpu") {
-  renderer.device.extensions.transientAttachment; // GPUTextureUsage.TRANSIENT_ATTACHMENT available
+  renderer.device.extensions.transientAttachment; // PixiJS uses GPUTextureUsage.TRANSIENT_ATTACHMENT
   renderer.limits.supportsOverrideConstants; // pipeline constants vs. source-baked overrides
 }
 ```

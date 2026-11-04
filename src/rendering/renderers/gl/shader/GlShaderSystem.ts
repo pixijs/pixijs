@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { warn } from '../../../../utils/logging/warn';
 import { generateShaderSyncCode } from './GenerateShaderSyncCode';
 import { generateProgram } from './program/generateProgram';
 
@@ -14,7 +15,6 @@ import type { GlProgramData } from './GlProgramData';
 export interface ShaderSyncData
 {
     textureCount: number;
-    blockIndex: number;
 }
 
 /** @internal */
@@ -23,7 +23,6 @@ export type ShaderSyncFunction = (renderer: WebGLRenderer, shader: Shader, syncD
 // default sync data so we don't create a new one each time!
 const defaultSyncData: ShaderSyncData = {
     textureCount: 0,
-    blockIndex: 0,
 };
 
 /**
@@ -81,7 +80,6 @@ export class GlShaderSystem
         if (skipSync) return;
 
         defaultSyncData.textureCount = 0;
-        defaultSyncData.blockIndex = 0;
 
         let syncFunction = this._shaderSyncFunctions[shader.glProgram._key];
 
@@ -90,8 +88,6 @@ export class GlShaderSystem
             syncFunction = this._shaderSyncFunctions[shader.glProgram._key] = this._generateShaderSync(shader, this);
         }
 
-        // TODO: take into account number of TF buffers. Currently works only with interleaved
-        this._renderer.buffer.nextBindBase(!!shader.glProgram.transformFeedbackVaryings);
         syncFunction(this._renderer, shader, defaultSyncData);
     }
 
@@ -108,12 +104,11 @@ export class GlShaderSystem
      * Binds a uniform block to the shader.
      * @param uniformGroup - the uniform group to bind
      * @param name - the name of the uniform block
-     * @param index - the index of the uniform block
      */
-    public bindUniformBlock(uniformGroup: UniformGroup | BufferResource, name: string, index = 0): void
+    public bindUniformBlock(uniformGroup: UniformGroup | BufferResource, name: string): void
     {
         const bufferSystem = this._renderer.buffer;
-        const programData = this._getProgramData(this._activeProgram);
+        const { binding } = this._activeProgram._uniformBlockData[name];
 
         const isBufferResource = (uniformGroup as BufferResource)._bufferResource;
 
@@ -122,38 +117,36 @@ export class GlShaderSystem
             this._renderer.ubo.updateUniformGroup(uniformGroup as UniformGroup);
         }
 
-        const buffer = uniformGroup.buffer;
+        const glBuffer = bufferSystem.updateBuffer(uniformGroup.buffer);
 
-        const glBuffer = bufferSystem.updateBuffer(buffer);
-
-        const boundLocation = bufferSystem.freeLocationForBufferBase(glBuffer);
-
-        if (isBufferResource)
+        if (!isBufferResource)
         {
-            const { offset, size } = (uniformGroup as BufferResource);
+            bufferSystem.bindBufferBase(glBuffer, binding);
 
-            // trivial case of buffer resource, can be cached
-            if (offset === 0 && size === buffer.data.byteLength)
-            {
-                bufferSystem.bindBufferBase(glBuffer, boundLocation);
-            }
-            else
-            {
-                bufferSystem.bindBufferRange(glBuffer, boundLocation, offset);
-            }
-        }
-        else if (bufferSystem.getLastBindBaseLocation(glBuffer) !== boundLocation)
-        {
-            // confirmation that buffer isn't there yet
-            bufferSystem.bindBufferBase(glBuffer, boundLocation);
+            return;
         }
 
-        const uniformBlockIndex = this._activeProgram._uniformBlockData[name].index;
+        const { offset, size } = uniformGroup as BufferResource;
 
-        if (programData.uniformBlockBindings[index] === boundLocation) return;
-        programData.uniformBlockBindings[index] = boundLocation;
+        if (offset === 0 && (size === undefined || size === glBuffer.byteLength))
+        {
+            bufferSystem.bindBufferBase(glBuffer, binding);
 
-        this._renderer.gl.uniformBlockBinding(programData.program, uniformBlockIndex, boundLocation);
+            return;
+        }
+
+        // #if _DEBUG
+        const alignment = this._renderer.limits.minUniformBufferOffsetAlignment;
+
+        if (offset % alignment !== 0)
+        {
+            warn(`[GlShaderSystem] uniform block "${name}" has a BufferResource offset of ${offset}, `
+                + `which is not a multiple of renderer.limits.minUniformBufferOffsetAlignment (${alignment}). `
+                + 'WebGL will not bind it.');
+        }
+        // #endif
+
+        bufferSystem.bindBufferRange(glBuffer, binding, offset, size);
     }
 
     private _setProgram(program: GlProgram)
