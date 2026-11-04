@@ -34,7 +34,7 @@ function assertReadable(texture: Texture, generated = false): void
 
     throw new Error(
         `[ExtractSystem] can't read ${format} textures: extract reads 8-bit color only. `
-        + 'Sample the texture in a shader, or draw it into an rgba8unorm texture first.'
+        + 'Extract a Mesh whose shader reads the texture and outputs color instead.'
     );
 }
 
@@ -640,7 +640,6 @@ export class ExtractSystem implements System
     /**
      * Creates a Canvas element, renders the target to it and returns it.
      * This method is useful for creating static images or when you need direct canvas access.
-     * Float, integer and depth textures can't be read this way, and throw.
      * @param options - The options for creating the canvas, or the target to extract
      * @returns A Canvas element with the texture rendered on
      * @example
@@ -673,6 +672,7 @@ export class ExtractSystem implements System
      *     antialias: true
      * });
      * ```
+     * @throws If the target is a float, integer or depth texture
      * @see {@link ExtractOptions} For detailed options
      * @see {@link ExtractSystem.image} For HTMLImage output
      * @see {@link ExtractSystem.pixels} For raw pixel data
@@ -707,29 +707,29 @@ export class ExtractSystem implements System
     /**
      * Returns a one-dimensional array containing the pixel data of the entire texture in RGBA order,
      * with integer values between 0 and 255 (inclusive).
-     * > [!NOTE] The returned array is a flat Uint8Array where every 4 values represent RGBA. Float, integer and
-     * > depth textures can't be read this way, and throw.
+     * > [!NOTE] `pixels` is a flat Uint8ClampedArray where every 4 values represent RGBA
      * @param options - The options for extracting the image, or the target to extract
-     * @returns One-dimensional Uint8Array containing the pixel data in RGBA format
+     * @returns The RGBA `pixels` as a flat Uint8ClampedArray, with their `width` and `height`
      * @example
      * ```ts
      * // Basic pixel extraction
      * const sprite = new Sprite(texture);
-     * const pixels = renderer.extract.pixels(sprite);
+     * const { pixels } = renderer.extract.pixels(sprite);
      * console.log(pixels[0], pixels[1], pixels[2], pixels[3]); // R,G,B,A values
      *
      * // Extract with custom region
-     * const pixels = renderer.extract.pixels({
+     * const { pixels } = renderer.extract.pixels({
      *     target: sprite,
      *     frame: new Rectangle(0, 0, 100, 100)
      * });
      *
      * // Extract with high resolution
-     * const pixels = renderer.extract.pixels({
+     * const { pixels } = renderer.extract.pixels({
      *     target: sprite,
      *     resolution: 2
      * });
      * ```
+     * @throws If the target is a float, integer or depth texture
      * @see {@link ExtractOptions} For detailed options
      * @see {@link ExtractSystem.canvas} For canvas output
      * @see {@link ExtractSystem.image} For image output

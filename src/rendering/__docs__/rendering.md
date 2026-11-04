@@ -233,7 +233,7 @@ const velocityTexture = new Texture({ source: velocity });
 - **Blending.** Every attachment a draw writes blends with the draw's blend mode, except integer formats, which never blend. A blended draw needs a `vec4` output for each attachment it writes, because the blend reads its alpha: WebGPU reports a validation error and skips the draw, and WebGL blends with an undefined alpha.
 - **Clearing.** Each attachment clears to its own `clearValue`, or to the bind's clear color. An integer attachment takes the numbers as integers, so give it a `clearValue` for anything other than 0 or 1. WebGL1 clears all attachments or none.
 - **Antialiasing.** An antialiased target can't have an integer attachment, because integer formats can't be resolved; creating one throws.
-- **Reading pixels back.** `renderer.extract` reads 8-bit color only, and throws when asked to read a float, integer or depth texture. Sample those in a shader, or draw them into an `rgba8unorm` texture first.
+- **Reading pixels back.** `renderer.extract` reads 8-bit color only, and throws when asked to read a float, integer or depth texture. For a 16-bit float texture, extract `new Sprite(texture)` instead. For 32-bit float, integer and depth textures, extract a `Mesh` whose shader reads the texture and outputs color.
 
 ### Depth-only targets
 
