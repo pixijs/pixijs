@@ -33,7 +33,7 @@ export interface ChildrenHelperMixin<C = ContainerChild>
      * const middle = container.removeChildren(1, 4);
      * ```
      * @param {number} beginIndex - The beginning position
-     * @param {number} endIndex - The ending position. Default is container size
+     * @param {number} endIndex - The exclusive ending position. Default is container size
      * @returns List of removed children
      * @throws {RangeError} If begin/end indexes are invalid
      * @see {@link Container#addChild} For adding children
@@ -276,7 +276,7 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
                 child.parent = null;
             }
 
-            removeItems(this.children, beginIndex, end);
+            removeItems(this.children, beginIndex, range);
 
             const renderGroup = this.renderGroup || this.parentRenderGroup;
 
