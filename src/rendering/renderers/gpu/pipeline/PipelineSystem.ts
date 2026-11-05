@@ -126,8 +126,8 @@ function getColorFormatId(format: GPUTextureFormat): number
 // stencilState = 8;         // bits 6-8   // 8 states // value 0-7;
 // colorMask = 16;           // bits 9-12  // 16 states // value 0-15;
 // depthStencilFormat = 7;   // bits 13-15 // 8 states // value 0-7;
-// colorFormatId = 16;       // bits 16-19 // 16 interned color attachment formats
-// invertFrontFace = 1;      // bit 20     // 2 states // value 0-1 (flipY winding inversion)
+// invertFrontFace = 1;      // bit 16     // 2 states // value 0-1 (flipY winding inversion)
+// colorFormatId = n;        // bits 17+   // interned color attachment formats (see getColorFormatId)
 function getGlobalStateKey(
     stencilStateId: number,
     multiSampleCount: number,
@@ -139,8 +139,10 @@ function getGlobalStateKey(
     invertFrontFace: number,
 ): number
 {
-    return (invertFrontFace << 20) // 1 bit for invertFrontFace (flipY winding inversion)
-         | (colorFormatId << 16) // 4 bits for colorFormatId
+    // colorFormatId takes the open top of the key, as in getBundleStateKey: an id is minted per
+    // distinct format, so a bounded field would eventually spill into its neighbour
+    return (colorFormatId << 17)
+         | (invertFrontFace << 16) // 1 bit for invertFrontFace (flipY winding inversion)
          | (depthStencilFormat << 13) // 3 bits for depthStencilFormat
          | (colorMask << 9) // 4 bits for colorMask
          | (stencilStateId << 6) // 3 bits for stencilStateId
