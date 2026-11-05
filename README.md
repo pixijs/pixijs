@@ -132,4 +132,7 @@ We're passionate about making PixiJS the best graphics library possible. Our ded
   <a href="https://opencollective.com/pixijs" target="_blank">
     <img src="https://opencollective.com/pixijs/donate/button@2x.png?color=blue" width=200 />
   </a>
+    <a href="https://namespace.so/github-actions/?utm_source=oss&utm_campaign=pixijs" target="_blank">
+  <img alt="CI powered by Namespace" src="https://namespace.so/oss/badge.svg" height="32" />
+</a>
 </div>
