@@ -34,8 +34,16 @@ describe('loadSVGImage', () =>
 {
     it('should not wait without a delay', async () =>
     {
-        expect(await getLoadTime(false)).toBeLessThan(50);
-        expect(await getLoadTime(0)).toBeLessThan(50);
+        for (const delay of [false, 0])
+        {
+            const image = createImage();
+            const loaded = loadSVGImage(image, '<svg></svg>', delay);
+
+            // the load starts before loadSVGImage returns, so nothing was waited for
+            expect(image.src).not.toBe('');
+
+            await loaded;
+        }
     });
 
     it('should wait 100ms when delay is true', async () =>
