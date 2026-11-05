@@ -100,39 +100,36 @@ function getGraphicsStateKey(
     + topology;
 }
 
-// Module-local interner for color attachment formats. Realistic apps will populate
-// 1-3 entries ever (default render-target format + maybe rgba16float for HDR), so the
-// id stays small and fits comfortably in a few bits of the global cache key.
-//
-// Trade-off: only the first attachment's format is encoded. Mixed-format MRT (where
-// different attachments use different formats) would alias the same cache slot. The
-// failure mode is a clean WebGPU validation error at setPipeline time, not silent
-// corruption, so it surfaces immediately if anyone hits it.
+// Module-local interner for the formats of a render target's color attachments, joined with '|'
+// ('rgba16float|rg16float|r32uint'). A single attachment joins to its bare format, so it gets the
+// same id whether or not it has siblings. Realistic apps mint a handful of ids ever, and the id
+// sits in the open top bits of both cache keys, so there is room for about a thousand.
 const colorFormatIds: Record<string, number> = Object.create(null);
 let nextColorFormatId = 0;
 
-function getColorFormatId(format: GPUTextureFormat): number
+function getColorFormatId(formats: string): number
 {
-    let id = colorFormatIds[format];
+    let id = colorFormatIds[formats];
 
-    if (id === undefined) id = colorFormatIds[format] = nextColorFormatId++;
+    if (id === undefined) id = colorFormatIds[formats] = nextColorFormatId++;
 
     return id;
 }
 
 // multiSampleCount = 1;     // bit 0      // 2 states // value 0-1 (normalized from sampleCount 1|4)
-// colorTargetCount = 9;     // bits 1-4   // supports 0-8 color targets (WebGPU maxColorAttachments)
-// depthReadOnly = 1;        // bit 5      // 2 states // value 0-1;
-// stencilState = 8;         // bits 6-8   // 8 states // value 0-7;
-// colorMask = 16;           // bits 9-12  // 16 states // value 0-15;
-// depthStencilFormat = 7;   // bits 13-15 // 8 states // value 0-7;
-// invertFrontFace = 1;      // bit 16     // 2 states // value 0-1 (flipY winding inversion)
-// colorFormatId = n;        // bits 17+   // interned color attachment formats (see getColorFormatId)
+// depthReadOnly = 1;        // bit 1      // 2 states // value 0-1;
+// stencilState = 8;         // bits 2-4   // 8 states // value 0-7;
+// colorMask = 16;           // bits 5-8   // 16 states // value 0-15;
+// depthStencilFormat = 7;   // bits 9-11  // 8 states // value 0-7;
+// invertFrontFace = 1;      // bit 12     // 2 states // value 0-1 (flipY winding inversion)
+// colorFormatId = n;        // bits 13+   // interned color attachment format lists (see getColorFormatId)
+//
+// The number of color targets has no field: each format list has its own id, so the id already says
+// how many attachments there are (a depth-only target's list is empty).
 function getGlobalStateKey(
     stencilStateId: number,
     multiSampleCount: number,
     colorMask: number,
-    colorTargetCount: number,
     depthStencilFormat: number,
     colorFormatId: number,
     depthReadOnly: number,
@@ -140,14 +137,13 @@ function getGlobalStateKey(
 ): number
 {
     // colorFormatId takes the open top of the key, as in getBundleStateKey: an id is minted per
-    // distinct format, so a bounded field would eventually spill into its neighbour
-    return (colorFormatId << 17)
-         | (invertFrontFace << 16) // 1 bit for invertFrontFace (flipY winding inversion)
-         | (depthStencilFormat << 13) // 3 bits for depthStencilFormat
-         | (colorMask << 9) // 4 bits for colorMask
-         | (stencilStateId << 6) // 3 bits for stencilStateId
-         | (depthReadOnly << 5) // 1 bit for depthReadOnly (read-only depth passes can't emit depth writes)
-         | (colorTargetCount << 1) // 4 bits for colorTargetCount (0-8, WebGPU's maxColorAttachments)
+    // distinct format list, so a bounded field would eventually spill into its neighbour
+    return (colorFormatId << 13)
+         | (invertFrontFace << 12) // 1 bit for invertFrontFace (flipY winding inversion)
+         | (depthStencilFormat << 9) // 3 bits for depthStencilFormat
+         | (colorMask << 5) // 4 bits for colorMask
+         | (stencilStateId << 2) // 3 bits for stencilStateId
+         | (depthReadOnly << 1) // 1 bit for depthReadOnly (read-only depth passes can't emit depth writes)
          | multiSampleCount; // 1 bit for multiSampleCount at the least significant position
 }
 
@@ -157,15 +153,15 @@ function getGlobalStateKey(
 // unrelated 2D state (a mask elsewhere in the scene) happened to differ at execute time.
 //
 // multiSampleCount   = 1;  // bit 0     // 2 states // value 0-1 (normalized from sampleCount 1|4)
-// colorTargetCount   = 9;  // bits 1-4  // supports 0-8 color targets (WebGPU maxColorAttachments)
-// depthStencilFormat = 7;  // bits 5-7  // 8 states // value 0-7 (0 = no depth/stencil attachment)
-// depthReadOnly      = 1;  // bit 8     // 2 states // value 0-1
-// stencilReadOnly    = 1;  // bit 9     // 2 states // value 0-1
-// invertFrontFace    = 1;  // bit 10    // 2 states // value 0-1 (flipY winding inversion)
-// colorFormatId      = n;  // bits 11+  // interned color attachment formats (see getColorFormatId)
+// depthStencilFormat = 7;  // bits 1-3  // 8 states // value 0-7 (0 = no depth/stencil attachment)
+// depthReadOnly      = 1;  // bit 4     // 2 states // value 0-1
+// stencilReadOnly    = 1;  // bit 5     // 2 states // value 0-1
+// invertFrontFace    = 1;  // bit 6     // 2 states // value 0-1 (flipY winding inversion)
+// colorFormatId      = n;  // bits 7+   // interned color attachment format lists (see getColorFormatId)
+//
+// As in getGlobalStateKey, the format list's id also covers how many color targets there are.
 function getBundleStateKey(
     multiSampleCount: number,
-    colorTargetCount: number,
     depthStencilFormat: number,
     depthReadOnly: number,
     stencilReadOnly: number,
@@ -173,15 +169,13 @@ function getBundleStateKey(
     colorFormatId: number,
 ): number
 {
-    // colorFormatId takes the open top of the key: a format id is only minted per distinct
-    // attachment format ever seen (realistically 1-3), so it cannot approach the 32-bit
-    // boundary these bitwise ops work in
-    return (colorFormatId << 11)
-         | (invertFrontFace << 10)
-         | (stencilReadOnly << 9)
-         | (depthReadOnly << 8)
-         | (depthStencilFormat << 5)
-         | (colorTargetCount << 1)
+    // colorFormatId takes the open top of the key: an id is only minted per distinct format list
+    // ever seen, so it can't approach the 32-bit boundary these bitwise ops work in
+    return (colorFormatId << 7)
+         | (invertFrontFace << 6)
+         | (stencilReadOnly << 5)
+         | (depthReadOnly << 4)
+         | (depthStencilFormat << 1)
          | multiSampleCount;
 }
 
@@ -232,8 +226,7 @@ export class PipelineSystem implements System
     private _stencilMode: STENCIL_MODES;
     private _colorMask = 0b1111;
     private _multisampleCount = 1;
-    private _colorTargetCount = 1;
-    private _colorFormat: GPUTextureFormat = 'bgra8unorm';
+    private readonly _colorFormats: GPUTextureFormat[] = ['bgra8unorm'];
     private _colorFormatId = getColorFormatId('bgra8unorm');
     private _depthStencilFormat: GPUTextureFormat = 'depth24plus-stencil8';
     private _depthStencilFormatData = emptyDepthStencilFormatData;
@@ -273,9 +266,7 @@ export class PipelineSystem implements System
         const colorTexture = renderTarget.colorAttachments[0]?.texture;
 
         this._multisampleCount = colorTexture?.source.antialias ? 4 : 1;
-        this._colorTargetCount = renderTarget.colorAttachments.length;
-        this._colorFormat = colorTexture?.format ?? 'bgra8unorm';
-        this._colorFormatId = getColorFormatId(this._colorFormat);
+        this._setColorFormats(renderTarget);
         // the adaptor ensures a depth/stencil request has materialised its texture before
         // calling this (GpuRenderTargetAdaptor.startRenderPass), so the attachment is the truth
         this._depthStencilFormat = renderTarget.depthStencilAttachment?.texture.format;
@@ -333,9 +324,8 @@ export class PipelineSystem implements System
 
         return getBundleStateKey(
             // normalize the raw sample count (1 or 4 — WebGPU's only renderable counts) to a
-            // true single bit, so it cannot spill into the colorTargetCount field above it
+            // true single bit, so it cannot spill into the field above it
             this._multisampleCount === 1 ? 0 : 1,
-            this._colorTargetCount,
             formatData.index,
             // the same two flags getBundleDescriptor sets — keep them in step
             formatData.depth && this._depthReadOnly ? 1 : 0,
@@ -354,15 +344,8 @@ export class PipelineSystem implements System
      */
     public getBundleDescriptor(): GPURenderBundleEncoderDescriptor
     {
-        const colorFormats: GPUTextureFormat[] = [];
-
-        for (let i = 0; i < this._colorTargetCount; i++)
-        {
-            colorFormats.push(this._colorFormat);
-        }
-
         const descriptor: GPURenderBundleEncoderDescriptor = {
-            colorFormats,
+            colorFormats: this._colorFormats.slice(),
             sampleCount: this._multisampleCount,
         };
 
@@ -478,15 +461,11 @@ export class PipelineSystem implements System
 
         const buffers = this._createVertexBufferLayouts(geometry, program);
 
-        const blendModes = this._renderer.state.getColorTargets(state, this._colorTargetCount, this._colorFormat);
+        const blendModes = this._renderer.state.getColorTargets(state, this._colorFormats);
 
-        // Apply write mask to all color targets
         const writeMask = this._stencilMode === STENCIL_MODES.RENDERING_MASK_ADD ? 0 : this._colorMask;
 
-        for (let i = 0; i < blendModes.length; i++)
-        {
-            blendModes[i].writeMask = writeMask;
-        }
+        this._applyFragmentOutputs(blendModes, program, writeMask);
 
         const layout = this._renderer.shader.getProgramData(program).pipeline;
 
@@ -731,15 +710,58 @@ export class PipelineSystem implements System
         return vertexBuffersLayout;
     }
 
+    /**
+     * Reads the color attachment formats off a render target and interns the list. A one-attachment
+     * list joins to its bare format, so that target keeps the id it has always had; a depth-only
+     * target has an empty list.
+     * @param renderTarget - the render target being bound
+     */
+    private _setColorFormats(renderTarget: RenderTarget): void
+    {
+        const attachments = renderTarget.colorAttachments;
+        const formats = this._colorFormats;
+
+        formats.length = attachments.length;
+
+        for (let i = 0; i < attachments.length; i++)
+        {
+            formats[i] = attachments[i].texture.format;
+        }
+
+        this._colorFormatId = getColorFormatId(formats.join('|'));
+    }
+
+    /**
+     * Writes only the attachments the fragment shader has an output for: WebGPU rejects a non-zero
+     * write mask on a target the shader doesn't write, and leaving it alone is what a draw that
+     * doesn't output to it means. The program is part of the per-draw key, so this needs no key
+     * bits of its own.
+     * @param targets - the color targets, one per attachment
+     * @param program - the program whose fragment outputs decide which targets are written
+     * @param writeMask - the mask for every written target
+     */
+    private _applyFragmentOutputs(targets: GPUColorTargetState[], program: GpuProgram, writeMask: number): void
+    {
+        // null when the fragment entry point couldn't be read: write every target, as before
+        const outputs = program.fragmentOutputMask ?? -1;
+
+        for (let i = 0; i < targets.length; i++)
+        {
+            const written = (outputs & (1 << i)) !== 0;
+
+            targets[i].writeMask = written ? writeMask : 0;
+            if (!written) targets[i].blend = undefined;
+        }
+    }
+
     private _updatePipeHash(): void
     {
         const key = getGlobalStateKey(
             this._stencilMode,
             // normalize the raw sample count (1 or 4 — WebGPU's only renderable counts) to a
-            // true single bit, so it cannot spill into the colorTargetCount field above it
+            // true single bit, so it cannot spill into the field above it
             this._multisampleCount === 1 ? 0 : 1,
             this._colorMask,
-            this._colorTargetCount,
             this._depthStencilFormatData.index,
             this._colorFormatId,
             this._depthReadOnly ? 1 : 0,

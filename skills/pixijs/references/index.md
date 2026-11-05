@@ -121,9 +121,9 @@ Composite display objects with blend modes. Covers standard modes (`normal`, `ad
 **Triggers:** blendMode, additive, multiply, screen, overlay, color-burn, color-dodge, advanced-blend-modes, glow, erase.
 
 ### pixijs-custom-rendering
-Write custom shaders, uniforms, or batchers. Covers `Shader.from({gl, gpu, resources})`, `GlProgram`/`GpuProgram`, `UniformGroup` with typed uniforms (`f32`, `vec2`, `mat4x4`), UBO mode, textures as resources, 3D and array textures, WebGPU storage textures, custom `Filter`, custom `Batcher` via extensions.
+Write custom shaders, uniforms, or batchers. Covers `Shader.from({gl, gpu, resources})`, `GlProgram`/`GpuProgram`, `UniformGroup` with typed uniforms (`f32`, `vec2`, `mat4x4`), UBO mode, textures as resources, 3D and array textures, WebGPU storage textures, several color attachments with mixed formats, custom `Filter`, custom `Batcher` via extensions.
 
-**Triggers:** Shader, GlProgram, GpuProgram, UniformGroup, Batcher, Filter, GLSL, WGSL, UBO, uniform, custom shader, ShaderOverrides, gpuLayout, bind group layout, TextureView, depth texture, 3D texture, sampler3D, texture_3d, storage texture, Buffer.update, vertexCount, indexCount, getSize, clockwiseFrontFace, cullMode, render bundle, beginBundle, executeBundle, RenderBundle, TexturePool, getOptimalTexture, InstructionPipe, destroyInstructionSet.
+**Triggers:** Shader, GlProgram, GpuProgram, UniformGroup, Batcher, Filter, GLSL, WGSL, UBO, uniform, custom shader, ShaderOverrides, gpuLayout, bind group layout, TextureView, depth texture, 3D texture, sampler3D, texture_3d, storage texture, Buffer.update, vertexCount, indexCount, getSize, clockwiseFrontFace, cullMode, render bundle, beginBundle, executeBundle, RenderBundle, colorAttachments, multiple render targets, MRT, fragment outputs, clearValue, loadOp, TexturePool, getOptimalTexture, InstructionPipe, destroyInstructionSet.
 
 ### pixijs-filters
 Apply visual effects to containers via the filter pipeline. Covers built-in filters (`AlphaFilter`, `BlurFilter`, `ColorMatrixFilter`, `DisplacementFilter`, `NoiseFilter`), custom `Filter.from()` with GLSL/WGSL, options (`resolution`, `padding`, `antialias`, `blendRequired`), `filterArea` optimization, `pixi-filters` community package.

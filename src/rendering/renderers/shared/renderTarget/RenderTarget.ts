@@ -5,6 +5,7 @@ import { uid } from '../../../../utils/data/uid';
 import { TextureSource } from '../texture/sources/TextureSource';
 import { Texture } from '../texture/Texture';
 
+import type { RgbaArray } from '../../../../color/Color';
 import type { BindableTexture } from '../texture/Texture';
 
 /**
@@ -65,17 +66,19 @@ export interface RenderTargetDescriptor
  * import { RenderTarget, TextureSource } from 'pixi.js';
  *
  * const renderTarget = new RenderTarget({
- *     colorAttachments: [{
- *         texture: new TextureSource({ width: 100, height: 100 }),
- *         loadOp: 'clear', // Clears the texture before rendering
- *         clearValue: [1, 0, 0, 1], // Clears to red
- *     }]
+ *     colorAttachments: [
+ *         // follows the bind: cleared when the bind clears, to red rather than the bind's clear colour
+ *         { texture: new TextureSource({ width: 100, height: 100 }), clearValue: [1, 0, 0, 1] },
+ *         // keeps what an earlier pass drew, even when the bind clears
+ *         { texture: new TextureSource({ width: 100, height: 100 }), loadOp: 'load' },
+ *     ],
  * });
  * ```
  * @category rendering
  * @advanced
  */
-export interface PixiColorAttachment extends Omit<GPURenderPassColorAttachment, 'view' | 'resolveTarget'>
+export interface PixiColorAttachment
+    extends Omit<GPURenderPassColorAttachment, 'view' | 'resolveTarget' | 'loadOp' | 'storeOp' | 'clearValue'>
 {
     /** The Pixi texture to render to. */
     texture: TextureSource;
@@ -84,6 +87,21 @@ export interface PixiColorAttachment extends Omit<GPURenderPassColorAttachment, 
      * Rarely needed for 2D, but incredibly powerful for 3D and advanced compute pipelines.
      */
     viewDescriptor?: GPUTextureViewDescriptor;
+    /**
+     * Set to `'load'` to keep this attachment's contents when a pass opens on the target, even when the
+     * bind clears, or on `renderer.clear()`; set it back to clear the attachment again. Anything else
+     * follows the bind's `clear`, and a bind with `clear: false` never clears an attachment, so restoring
+     * a target (`pop()`, a filter handing back) can't wipe it. WebGL1 clears all attachments or none.
+     */
+    loadOp?: GPULoadOp;
+    /** Whether the pass keeps what it drew into this attachment (`'store'`, the default) or drops it (`'discard'`). */
+    storeOp?: GPUStoreOp;
+    /**
+     * What this attachment is cleared to when a pass clears it. Left out, the attachment takes the
+     * clear colour given with the bind, and the renderer's default colour when there is none.
+     * An integer-format attachment takes the numbers as integers.
+     */
+    clearValue?: RgbaArray;
 }
 
 /**
@@ -123,6 +141,17 @@ export interface PixiDepthStencilAttachment extends Omit<GPURenderPassDepthStenc
  *
  * If you need something more complex than a Texture to render to, you should use this class.
  * Under the hood, all textures you render to have a RenderTarget created on their behalf.
+ *
+ * A render target can have several color attachments, each with its own format (for example
+ * `rgba16float` color, `rg16float` velocity and `r32uint` ids). A draw writes only the attachments
+ * its fragment shader has an output for and leaves the rest alone, so a 2D sprite drawn into such a
+ * target changes attachment 0 only. Every attachment a draw writes blends with the draw's blend mode,
+ * except integer formats, which never blend, and a blended draw needs a `vec4` output for each attachment it
+ * writes, as the blend reads its alpha. A clear sets each attachment to its own `clearValue`, or to the clear
+ * color given with the bind where it has none; integer attachments take the numbers as integers, so a normal
+ * clear color (0 to 1) clears them to 0 or 1. The bind's `clear` decides whether anything clears; an
+ * attachment with `loadOp: 'load'` keeps its contents even when the bind clears. An antialiased target can't
+ * have an integer attachment.
  * @category rendering
  * @advanced
  */
@@ -263,7 +292,6 @@ export class RenderTarget extends EventEmitter<{
                             resolution: opts.resolution,
                             antialias: opts.antialias,
                         }),
-                        loadOp: 'clear',
                         storeOp: 'store',
                     });
                 }
@@ -275,7 +303,6 @@ export class RenderTarget extends EventEmitter<{
             {
                 colorAttachments.push({
                     texture: texture.source,
-                    loadOp: 'clear',
                     storeOp: 'store',
                 });
             });
