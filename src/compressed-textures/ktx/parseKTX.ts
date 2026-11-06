@@ -94,8 +94,10 @@ function getImageBuffers(dataView: DataView, glType: number, imagePixelByteSize:
         alignedMipWidth = (mipWidth + 4 - 1) & ~(4 - 1);
         alignedMipHeight = (mipHeight + 4 - 1) & ~(4 - 1);
 
-        // Each mipmap level is 4-times smaller?
-        mipByteSize = alignedMipWidth * alignedMipHeight * imagePixelByteSize;
+        // Compressed levels are stored in 4x4 blocks, uncompressed levels are not padded
+        mipByteSize = glType === 0
+            ? alignedMipWidth * alignedMipHeight * imagePixelByteSize
+            : mipWidth * mipHeight * imagePixelByteSize;
     }
 
     return imageBuffers;
