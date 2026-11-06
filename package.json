@@ -55,7 +55,7 @@
     "release": "node ./scripts/release.mts"
   },
   "lint-staged": {
-    "!(src/**/index).{ts,js,mjs}": "eslint --cache --max-warnings 0 --fix"
+    "!(src/**/index).{ts,js,mjs}": "eslint --cache --max-warnings 0 --no-warn-ignored --fix"
   },
   "dependencies": {
     "@pixi/colord": "^2.9.6",
