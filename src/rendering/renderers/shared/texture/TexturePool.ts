@@ -418,8 +418,9 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
 
         if (!textures)
         {
-            // the bucket this texture belongs to was pruned (its size no longer matches a screen),
-            // so there is nothing to return it to - destroy it rather than resurrect a dead bucket
+            // the bucket this texture belongs to was pruned (its size is not a power of two and no longer
+            // matches a screen), so there is nothing to return it to - destroy it rather than resurrect a
+            // dead bucket
             this._dropTextures([renderTexture], true);
 
             return;

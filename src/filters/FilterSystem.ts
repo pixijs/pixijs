@@ -390,27 +390,33 @@ export class FilterSystem implements System
      * @param lastRenderSurface - The last render surface to copy from.
      * @param bounds - The bounds of the area to copy.
      * @param previousBounds - The previous bounds to use for offsetting the copy.
-     * @param inputTexture - The input texture of the filter the copy is for. The copy is at the resolution of
-     * the surface, not the filter, so its pooled texture is sized to cover the same area as this one. A
-     * shader can then sample both with the same coordinates. Without it the copy is sized on its own, and
-     * only lines up with a filter input at the same resolution.
      */
-    public getBackTexture(
-        lastRenderSurface: RenderTarget,
-        bounds: Bounds,
-        previousBounds?: Bounds,
-        inputTexture?: Texture
-    )
+    public getBackTexture(lastRenderSurface: RenderTarget, bounds: Bounds, previousBounds?: Bounds)
     {
-        const backgroundResolution = lastRenderSurface.colorTexture.source._resolution;
+        const backTexture = TexturePool.getOptimalTexture({
+            width: bounds.width,
+            height: bounds.height,
+            resolution: lastRenderSurface.colorTexture.source._resolution,
+        });
 
-        const backTexture = inputTexture
-            ? TexturePool.getAlignedTexture(inputTexture, backgroundResolution)
-            : TexturePool.getOptimalTexture({
-                width: bounds.width,
-                height: bounds.height,
-                resolution: backgroundResolution,
-            });
+        return this._copyBackTexture(lastRenderSurface, backTexture, bounds, previousBounds);
+    }
+
+    /**
+     * Copies an area of a render surface into a texture at the resolution of the surface.
+     * @param lastRenderSurface - The render surface to copy from.
+     * @param backTexture - The texture to copy to.
+     * @param bounds - The bounds of the area to copy.
+     * @param previousBounds - The previous bounds to use for offsetting the copy.
+     */
+    private _copyBackTexture(
+        lastRenderSurface: RenderTarget,
+        backTexture: Texture,
+        bounds: Bounds,
+        previousBounds?: Bounds
+    ): Texture
+    {
+        const backgroundResolution = backTexture.source._resolution;
 
         let x = bounds.minX;
         let y = bounds.minY;
@@ -636,11 +642,18 @@ export class FilterSystem implements System
             // if we don't do this, we won't be able to copy pixels for the background
             const renderTarget = renderer.renderTarget.getRenderTarget(filterData.outputRenderSurface);
 
-            filterData.backTexture = this.getBackTexture(
+            // the copy is at the resolution of the surface, not the filter, so its texture is sized to cover
+            // the same area as the input, and a shader can sample both with the same coordinates
+            const backTexture = TexturePool.getAlignedTexture(
+                filterData.inputTexture,
+                renderTarget.colorTexture.source._resolution
+            );
+
+            filterData.backTexture = this._copyBackTexture(
                 renderTarget,
+                backTexture,
                 bounds,
-                previousFilterData?.bounds,
-                filterData.inputTexture
+                previousFilterData?.bounds
             );
         }
 

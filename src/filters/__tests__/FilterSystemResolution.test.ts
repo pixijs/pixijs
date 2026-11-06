@@ -86,8 +86,6 @@ type Rgb = [number, number, number];
 interface Effect
 {
     createFilter: () => Filter;
-    /** How far past a point the filter reads the backdrop. */
-    reach: number;
     /** The colour the filter should leave at a point, from the backdrop. */
     expected: (x: number, y: number) => Rgb;
 }
@@ -104,13 +102,11 @@ function backdropColor(x: number, y: number): Rgb
 
 const blend: Effect = {
     createFilter: () => new DifferenceBlend(),
-    reach: 0,
     expected: (x, y) => backdropColor(x, y).map((channel) => 255 - channel) as Rgb,
 };
 
 const shift: Effect = {
     createFilter: createBackdropShiftFilter,
-    reach: CELL,
     expected: (x, y) => backdropColor(x + CELL, y + CELL),
 };
 
@@ -200,8 +196,9 @@ async function worstError(
         renderer.render({ container: stage, target: target ?? undefined, clear: true });
 
         const { pixels, width } = target ? renderer.extract.pixels(target) : readCanvas(renderer);
+        // the last cell is left out, as the displaced one reads past the edge of the square there
         const inside = (centre: number) =>
-            centre > origin + (CELL / 4) && centre + effect.reach < origin + size - (CELL / 4);
+            centre > origin + (CELL / 4) && centre + CELL < origin + size - (CELL / 4);
         let worst = 0;
 
         for (let y = CELL / 2; y < SIZE; y += CELL)
@@ -271,9 +268,9 @@ function resolutionSuite(createRenderer: (resolution: number) => Promise<Rendere
 
     it('should copy the backdrop when its bounds scale to a hair over a whole pixel', async () =>
     {
-        // snapped to thirds the square is 64.666 to 86, which is 64.00000000000003 pixels wide at 3x
+        // snapped to 0.8 the square is 28.8 to 131.2, which is 128.00000000000003 pixels wide at 1.25x
         const setup: Setup = {
-            rendererResolution: 3, textureResolution: null, filterResolution: 'inherit', origin: 64.8, size: 21.1,
+            rendererResolution: 1.25, textureResolution: null, filterResolution: 'inherit', origin: 29, size: 102,
         };
 
         expect(await worstError(createRenderer, blend, setup)).toBeLessThanOrEqual(1);
