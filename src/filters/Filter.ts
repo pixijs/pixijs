@@ -51,7 +51,8 @@ export interface FilterOptions
      * (default false)
      *
      * If given, the shader should have a uniform named `uBackTexture`, which is where the pixels of the
-     * area being rendered to can be sampled from.
+     * area being rendered to can be sampled from. It covers the same area as the input texture, so the
+     * same texture coordinates address both, whatever resolution the filter runs at.
      */
     blendRequired?: boolean;
     /**

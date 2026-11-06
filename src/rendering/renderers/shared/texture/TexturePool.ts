@@ -233,6 +233,42 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
             };
         }
 
+        const { width, height } = this.getOptimalSize(options.width, options.height, options.resolution ?? 1);
+
+        return this._getTexture(width, height, options);
+    }
+
+    /**
+     * Gets a pooled texture that covers the same area as another texture at a resolution of its own, so
+     * texture coordinates for one address the same point in the other. Use it for a texture a shader
+     * samples with the coordinates of the other, such as the backdrop a filter reads alongside its input.
+     *
+     * The backing size is the other texture's scaled by the two resolutions, so it is not rounded to a
+     * power of two or a screen. A size that does not scale to whole pixels is rounded up.
+     * @param texture - The texture to line up with.
+     * @param resolution - The resolution of the new texture.
+     * @returns A pooled texture with the same frame as the given texture.
+     */
+    public getAlignedTexture(texture: Texture, resolution: number): Texture
+    {
+        const source = texture.source;
+        const scale = resolution / source._resolution;
+
+        return this._getTexture(
+            Math.ceil((source.pixelWidth * scale) - 1e-6),
+            Math.ceil((source.pixelHeight * scale) - 1e-6),
+            { width: texture.frame.width, height: texture.frame.height, resolution },
+        );
+    }
+
+    /**
+     * Takes a texture of a backing size from its bucket, creating one if the bucket is empty.
+     * @param textureWidth - The backing width in physical pixels.
+     * @param textureHeight - The backing height in physical pixels.
+     * @param options - The request the texture is for; its width and height become the frame.
+     */
+    private _getTexture(textureWidth: number, textureHeight: number, options: TexturePoolRequest): Texture
+    {
         const frameWidth = options.width;
         const frameHeight = options.height;
         const resolution = options.resolution ?? 1;
@@ -240,12 +276,6 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
         const autoGenerateMipmaps = options.autoGenerateMipmaps ?? false;
         const format = options.format ?? this.textureOptions.format ?? TextureSource.defaultOptions.format;
         const scaleMode = options.scaleMode ?? this.textureOptions.scaleMode ?? TextureStyle.defaultOptions.scaleMode;
-
-        const { width: textureWidth, height: textureHeight } = this.getOptimalSize(
-            frameWidth,
-            frameHeight,
-            resolution,
-        );
 
         // #if _DEBUG
         if (textureWidth > maxKeyDimension || textureHeight > maxKeyDimension)
