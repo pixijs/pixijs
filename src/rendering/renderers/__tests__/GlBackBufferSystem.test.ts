@@ -1,4 +1,6 @@
+import { GlBackBufferSystem } from '../gl/GlBackBufferSystem';
 import { RenderTexture } from '../shared/texture/RenderTexture';
+import { Texture } from '../shared/texture/Texture';
 import { getWebGLRenderer } from '@test-utils';
 import { Container } from '~/scene';
 
@@ -60,5 +62,34 @@ describe('GlBackBufferSystem', () =>
 
         expect(renderer.gl.getContextAttributes().antialias).toEqual(false);
         expect(options.target.source.antialias).toEqual(true);
+    });
+
+    it('should destroy the big triangle shader on destroy so it stops listening to Texture.WHITE', async () =>
+    {
+        const before = Texture.WHITE.source.listenerCount('change');
+
+        for (let i = 0; i < 3; i++)
+        {
+            const renderer = await getWebGLRenderer({ useBackBuffer: true }) as WebGLRenderer;
+
+            renderer.render({ container: new Container() });
+
+            const shader = renderer.backBuffer['_bigTriangleShader'];
+            const destroySpy = jest.spyOn(shader, 'destroy');
+
+            renderer.destroy();
+
+            expect(destroySpy).toHaveBeenCalled();
+            expect(renderer.backBuffer['_bigTriangleShader']).toBeNull();
+        }
+
+        expect(Texture.WHITE.source.listenerCount('change')).toEqual(before);
+    });
+
+    it('should not throw when destroyed before being initialized', () =>
+    {
+        const system = new GlBackBufferSystem({} as WebGLRenderer);
+
+        expect(() => system.destroy()).not.toThrow();
     });
 });
