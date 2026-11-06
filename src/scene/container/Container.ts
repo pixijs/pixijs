@@ -1231,6 +1231,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         this.renderGroup = null;
         this.groupTransform = this.relativeGroupTransform;
+        // the subtree's color, blend and visibility were computed relative to the removed render group,
+        // so mark them for a full update, as addChild() does for a newly added child
+        this._updateFlags = 0b1111;
 
         parentRenderGroup?.addChild(this);
 
