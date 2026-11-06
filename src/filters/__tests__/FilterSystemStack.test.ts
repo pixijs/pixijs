@@ -74,6 +74,51 @@ describe('FilterSystem stack', () =>
 {
     beforeEach(() => TexturePool.clear());
 
+    it.each([[1, 2], [2, 1]])(
+        'should clip nested filters using the root viewport at renderer resolution %i and parent resolution %i',
+        async (rendererResolution, parentResolution) =>
+        {
+            const renderer = await getWebGLRenderer({ width: 640, height: 360, resolution: rendererResolution });
+            const stage = new Container();
+            const parent = new Container();
+            const child = new Graphics().rect(0, 0, 60, 60).fill('white');
+
+            parent.filters = [new AlphaFilter({ alpha: 0.8, resolution: parentResolution })];
+            child.filters = [new AlphaFilter({ alpha: 0.25, resolution: 1 })];
+            parent.addChild(child);
+            stage.addChild(parent);
+
+            try
+            {
+                for (const [x, y] of [[80, 60], [300, 60], [420, 220]])
+                {
+                    child.position.set(x, y);
+                    const { pixels, width } = renderer.extract.pixels({
+                        target: stage,
+                        frame: new Rectangle(0, 0, 640, 360),
+                        resolution: rendererResolution,
+                        clearColor: '#000000',
+                    });
+
+                    for (const dx of [10, 30, 50])
+                    {
+                        const pixelX = (x + dx) * rendererResolution;
+                        const pixelY = (y + 30) * rendererResolution;
+                        const pixel = pixels.subarray(((pixelY * width) + pixelX) * 4);
+
+                        [51, 51, 51, 255].forEach((value, channel) =>
+                            expect(Math.abs(pixel[channel] - value)).toBeLessThanOrEqual(2));
+                    }
+                }
+            }
+            finally
+            {
+                stage.destroy({ children: true });
+                renderer.destroy();
+            }
+        }
+    );
+
     it('should render nested filters after the renderer is resized', async () =>
     {
         const renderer = await getWebGLRenderer(screenOptions);

@@ -233,7 +233,11 @@ export class FilterSystem implements System
 
         this._calculateFilterArea(instruction, bounds);
 
-        this._calculateFilterBounds(filterData, renderer.renderTarget.rootViewPort, rootAntialias, rootResolution, 1);
+        const viewportResolution = renderer.renderTarget.rootRenderTarget.colorTexture.source.resolution;
+
+        this._calculateFilterBounds(
+            filterData, renderer.renderTarget.rootViewPort, rootAntialias, rootResolution, 1, viewportResolution
+        );
 
         if (filterData.skip)
         {
@@ -892,7 +896,8 @@ export class FilterSystem implements System
         // this prop is used when applying filters to textures
         // as the should have padding applied to them already (until we fix padding when applying them to textures)
         // set to 0 to remove padding from the bounds calculation
-        paddingMultiplier: number
+        paddingMultiplier: number,
+        viewportResolution = rootResolution
     )
     {
         const renderer = this.renderer;
@@ -982,7 +987,7 @@ export class FilterSystem implements System
         // handled by the viewport on the gpu.
         if (clipToViewport)
         {
-            bounds.fitBounds(0, viewPort.width / rootResolution, 0, viewPort.height / rootResolution);
+            bounds.fitBounds(0, viewPort.width / viewportResolution, 0, viewPort.height / viewportResolution);
         }
 
         // round the bounds to the nearest pixel
