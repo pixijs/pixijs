@@ -215,6 +215,7 @@
     "./lib/scene/text-bitmap/init.*",
     "./lib/scene/text-html/init.*",
     "./lib/scene/graphics/init.*",
+    "./lib/scene/graphics-smooth/init.*",
     "./lib/scene/mesh/init.*",
     "./lib/prepare/init.*",
     "./lib/unsafe-eval/init.*",
@@ -400,6 +401,14 @@
       },
       "require": {
         "default": "./lib/scene/graphics/init.js"
+      }
+    },
+    "./graphics-smooth": {
+      "import": {
+        "default": "./lib/scene/graphics-smooth/init.mjs"
+      },
+      "require": {
+        "default": "./lib/scene/graphics-smooth/init.js"
       }
     },
     "./mesh": {

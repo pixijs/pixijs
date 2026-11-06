@@ -57,9 +57,9 @@ Render live HTML/DOM elements or frozen snapshots as PixiJS v8 textures via the 
 **Triggers:** HTMLSource, ElementImageSource, pixi.js/html-source, requestPaint, captureElementImage, ElementImage, layoutsubtree, content=drawable, drawable, updateElementGeometry, autoRequestPaint, autoClose, HTML in canvas, HTML-in-Canvas, render DOM to texture, render HTML to texture, HTMLSourceCanvas, texElementSubImage2D, drawElementImageToTexture, texElementImage2D, copyElementImageToTexture, experimental.
 
 ### pixijs-scene-graphics
-Draw vector shapes and paths. Covers the `Graphics` shape-then-fill API (`rect`/`circle`/`ellipse`/`poly`/`roundRect`/`star`), path methods (`moveTo`/`lineTo`/`bezierCurveTo`/`arc`), `fill`/`stroke`/`cut`, `FillGradient`, `FillPattern`, `GraphicsContext` sharing, SVG markup.
+Draw vector shapes and paths. Covers the `Graphics` shape-then-fill API (`rect`/`circle`/`ellipse`/`poly`/`roundRect`/`star`), path methods (`moveTo`/`lineTo`/`bezierCurveTo`/`arc`), `fill`/`stroke`/`cut`, `FillGradient`, `FillPattern`, `GraphicsContext` sharing, SVG markup, `SmoothGraphics` for anti-aliased edges without MSAA, and `DashLineShader` dashed strokes.
 
-**Triggers:** Graphics, GraphicsContext, rect, circle, poly, roundRect, fill, stroke, cut, FillGradient, FillPattern, FillPatternOptions, textureSpace, pattern fill, texture fill, spritesheet fill, radialGradient, linearGradient, svg gradient, moveTo, bezierCurveTo, svg.
+**Triggers:** Graphics, SmoothGraphics, DashLineShader, dashed line, anti-aliasing, GraphicsContext, rect, circle, poly, roundRect, fill, stroke, cut, FillGradient, FillPattern, FillPatternOptions, textureSpace, pattern fill, texture fill, spritesheet fill, radialGradient, linearGradient, svg gradient, moveTo, bezierCurveTo, svg.
 
 ### pixijs-scene-mesh
 Render custom geometry. Covers `Mesh` with `MeshGeometry` (positions, uvs, indices, topology), `MeshSimple` for per-frame vertex animation, `MeshPlane` for subdivided deformation, `MeshRope` for path-following textures, `PerspectiveMesh` for 2.5D corners.

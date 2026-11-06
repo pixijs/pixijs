@@ -619,6 +619,15 @@ export class PipelineSystem implements System
      */
     public getBufferNamesToBind(geometry: Geometry, program: GpuProgram): string[]
     {
+        // the keys must exist before the cache is read, or every new geometry and program pair would share key 0
+        if (!geometry._layoutKey)
+        {
+            ensureAttributes(geometry, program.attributeData);
+            this._generateBufferKey(geometry);
+        }
+
+        if (!program._attributeLocationsKey) this._generateAttributeLocationsKey(program);
+
         const key = (geometry._layoutKey << 16) | program._attributeLocationsKey;
 
         if (this._bindingNamesCache[key]) return this._bindingNamesCache[key];
