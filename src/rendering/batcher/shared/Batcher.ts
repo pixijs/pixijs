@@ -178,6 +178,13 @@ export interface BatchableElement
     _indexStart: number;
 
     /**
+     * The index of the element in the batcher.
+     * @type {number}
+     * @private
+     */
+    _elementIndex?: number;
+
+    /**
      * Reference to the batcher.
      * @type {Batcher}
      * @private
@@ -409,6 +416,7 @@ export abstract class Batcher
 
     public begin()
     {
+        this._elements.length = 0;
         this.elementSize = 0;
         this.elementStart = 0;
         this.indexSize = 0;
@@ -429,6 +437,7 @@ export abstract class Batcher
 
     public add(batchableObject: BatchableElement)
     {
+        batchableObject._elementIndex = this.elementSize;
         this._elements[this.elementSize++] = batchableObject;
 
         batchableObject._indexStart = this.indexSize;
@@ -455,6 +464,9 @@ export abstract class Batcher
 
     public updateElement(batchableObject: BatchableElement)
     {
+        if (batchableObject._elementIndex >= this.elementSize
+            || this._elements[batchableObject._elementIndex] !== batchableObject) return;
+
         this.dirty = true;
 
         const attributeBuffer = this.attributeBuffer;
@@ -523,8 +535,6 @@ export abstract class Batcher
         for (let i = this.elementStart; i < this.elementSize; ++i)
         {
             const element = elements[i];
-
-            elements[i] = null;
 
             const texture = element.texture;
             const source = texture._source;
