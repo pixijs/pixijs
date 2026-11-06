@@ -1,4 +1,4 @@
-import { ColorMatrixFilter } from '~/filters';
+import { ColorTransformFilter } from '~/filters';
 import { Rectangle } from '~/maths';
 import { Graphics } from '~/scene';
 
@@ -14,7 +14,7 @@ export const scene: TestScene = {
 
         rect.filterArea = new Rectangle(50, 50, 50, 50);
 
-        const filter = new ColorMatrixFilter();
+        const filter = new ColorTransformFilter();
 
         filter.hue(90, true);
 

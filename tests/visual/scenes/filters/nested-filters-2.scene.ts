@@ -1,5 +1,5 @@
 import { Assets } from '~/assets';
-import { ColorMatrixFilter } from '~/filters';
+import { ColorTransformFilter } from '~/filters';
 import { Container, Sprite } from '~/scene';
 
 import type { TestScene } from '../../types';
@@ -31,7 +31,7 @@ export const scene: TestScene = {
             // Half of the bunnies get a nested filter
             if (i % 2 === 0)
             {
-                const nestedFilter = new ColorMatrixFilter();
+                const nestedFilter = new ColorTransformFilter();
 
                 nestedFilter.hue(90, true);
                 subcont.filters = [nestedFilter];
@@ -45,6 +45,6 @@ export const scene: TestScene = {
         container.pivot.y = container.height / 2;
 
         // Apply the main filter that was causing positioning issues
-        container.filters = [new ColorMatrixFilter({})];
+        container.filters = [new ColorTransformFilter({})];
     },
 };
