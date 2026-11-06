@@ -59,7 +59,7 @@ describe('ParticleContainer', () =>
 
             particleContainer.destroy();
 
-            expect(particleContainer._gpuData).toBeEmptyObject();
+            expect(particleContainer._gpuData).toBeNull();
         });
     });
 

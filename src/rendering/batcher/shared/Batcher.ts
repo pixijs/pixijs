@@ -62,7 +62,10 @@ export class Batch implements Instruction
     public bindGroup: BindGroup;
 
     public batcher: Batcher;
-    /** Elements contained in this batch. Used by the Canvas renderer. */
+    /**
+     * Elements contained in this batch. Used by the Canvas renderer.
+     * Only filled when the batcher's `_collectElements` is set; null otherwise.
+     */
     public elements: BatchableElement[];
 
     public destroy()
@@ -334,6 +337,28 @@ export abstract class Batcher
 
     private _elements: BatchableElement[] = [];
 
+    /**
+     * Whether each batch keeps the list of its elements in `batch.elements`.
+     * Only the Canvas renderer reads it, so the GPU renderers leave it off and save an array per batch.
+     * @internal
+     */
+    public _collectElements = false;
+
+    /**
+     * How many leading entries of `indexBuffer` hold what `packQuadIndex` writes for a run of quads that
+     * starts at the buffer's beginning (quad n's indices at n * 6, its vertices at n * 4). Those entries
+     * are the same on every rebuild, so `break` skips rewriting them.
+     * @internal
+     */
+    public _quadIndexWatermark = 0;
+
+    /**
+     * How many leading entries of the index data last uploaded to `geometry.indexBuffer` were inside
+     * the quad watermark, so the GPU copy is known to match them.
+     * @internal
+     */
+    public _uploadedQuadIndexSize = 0;
+
     private _batchIndexStart: number;
     private _batchIndexSize: number;
 
@@ -516,7 +541,8 @@ export abstract class Batcher
         let start = this._batchIndexStart;
 
         let action: BatchAction = 'startBatch';
-        let batchElements: BatchableElement[] = [];
+        const collectElements = this._collectElements;
+        let batchElements: BatchableElement[] = collectElements ? [] : null;
 
         const maxTextures = this.maxTextures;
 
@@ -546,7 +572,7 @@ export abstract class Batcher
                         f32, u32,
                         element._attributeStart, element._textureId
                     );
-                    this.packQuadIndex(
+                    this._packQuadIndexIfStale(
                         indexBuffer,
                         element._indexStart,
                         element._attributeStart / this.vertexSize
@@ -560,6 +586,8 @@ export abstract class Batcher
                         element._attributeStart,
                         element._textureId
                     );
+                    if (element._indexStart < this._quadIndexWatermark) this._quadIndexWatermark = element._indexStart;
+
                     this.packIndex(
                         element as BatchableMeshElement,
                         indexBuffer,
@@ -569,7 +597,7 @@ export abstract class Batcher
                 }
 
                 element._batch = batch;
-                batchElements.push(element);
+                if (collectElements) batchElements.push(element);
 
                 continue;
             }
@@ -599,7 +627,7 @@ export abstract class Batcher
                 batch = getBatchFromPool();
                 textureBatch = batch.textures;
                 textureBatch.clear();
-                batchElements = [];
+                if (collectElements) batchElements = [];
 
                 ++BATCH_TICK;
             }
@@ -608,7 +636,7 @@ export abstract class Batcher
             textureBatch.ids[source.uid] = textureBatch.count;
             textureBatch.textures[textureBatch.count++] = source;
             element._batch = batch;
-            batchElements.push(element);
+            if (collectElements) batchElements.push(element);
 
             size += element.indexSize;
 
@@ -619,7 +647,7 @@ export abstract class Batcher
                     f32, u32,
                     element._attributeStart, element._textureId
                 );
-                this.packQuadIndex(
+                this._packQuadIndexIfStale(
                     indexBuffer,
                     element._indexStart,
                     element._attributeStart / this.vertexSize
@@ -631,6 +659,8 @@ export abstract class Batcher
                     f32, u32,
                     element._attributeStart, element._textureId
                 );
+
+                if (element._indexStart < this._quadIndexWatermark) this._quadIndexWatermark = element._indexStart;
 
                 this.packIndex(
                     element as BatchableMeshElement,
@@ -772,6 +802,32 @@ export abstract class Batcher
         indexBuffer[index + 3] = indicesOffset + 0;
         indexBuffer[index + 4] = indicesOffset + 2;
         indexBuffer[index + 5] = indicesOffset + 3;
+    }
+
+    /**
+     * Packs a quad's indices unless the buffer already holds them: a quad in its own slot of an all-quad
+     * run below the watermark would be written with the same values again. Keeps the watermark current.
+     * @param indexBuffer - The index buffer to pack into.
+     * @param index - The quad's first entry in the index buffer.
+     * @param indicesOffset - The quad's first vertex.
+     */
+    private _packQuadIndexIfStale(indexBuffer: IndexBufferArray, index: number, indicesOffset: number)
+    {
+        const watermark = this._quadIndexWatermark;
+        const inQuadRun = index % 6 === 0 && indicesOffset * 3 === index * 2;
+
+        if (inQuadRun && index + 6 <= watermark) return;
+
+        this.packQuadIndex(indexBuffer, index, indicesOffset);
+
+        if (inQuadRun)
+        {
+            if (index <= watermark) this._quadIndexWatermark = index + 6;
+        }
+        else if (index < watermark)
+        {
+            this._quadIndexWatermark = index;
+        }
     }
 
     public packIndex(element: BatchableMeshElement, indexBuffer: IndexBufferArray, index: number, indicesOffset: number)

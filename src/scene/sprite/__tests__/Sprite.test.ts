@@ -74,7 +74,79 @@ describe('Sprite', () =>
 
             sprite.destroy();
 
+            expect(sprite._gpuData).toBeNull();
+        });
+
+        it('should release its GPU data without queueing a view update when destroyed', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+            const container = new Container({ isRenderGroup: true });
+            const sprite = new Sprite(getTexture());
+
+            container.addChild(sprite);
+            renderer.render({ container });
+
+            const gpuSprite = sprite._gpuData[renderer.uid];
+            const destroySpy = jest.spyOn(gpuSprite, 'destroy');
+            const unloadSpy = jest.fn();
+            const updateSpy = jest.spyOn(container.renderGroup, 'onChildViewUpdate');
+
+            sprite.on('unload', unloadSpy);
+            sprite.destroy();
+
+            expect(unloadSpy).toHaveBeenCalledTimes(1);
+            expect(destroySpy).toHaveBeenCalledTimes(1);
+            expect(updateSpy).not.toHaveBeenCalled();
+            expect(sprite._gpuData).toBeNull();
+            expect(() => sprite.destroy()).not.toThrow();
+        });
+
+        it('should still reset its GPU data and update when unloaded', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+            const container = new Container({ isRenderGroup: true });
+            const sprite = new Sprite(getTexture());
+
+            container.addChild(sprite);
+            renderer.render({ container });
+
+            const updateSpy = jest.spyOn(container.renderGroup, 'onChildViewUpdate');
+
+            sprite.unload();
+
             expect(sprite._gpuData).toBeEmptyObject();
+            expect(updateSpy).toHaveBeenCalledWith(sprite);
+        });
+
+        it('should hand a destroyed sprite\'s batchable record to the next new sprite', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+            const container = new Container();
+            const first = new Sprite(getTexture());
+
+            container.addChild(first);
+            renderer.render({ container });
+
+            const gpuSprite = first._gpuData[renderer.uid];
+
+            first.destroy();
+
+            // destroying it again must not pool it twice
+            gpuSprite.destroy();
+
+            const second = new Sprite(getTexture());
+            const third = new Sprite(getTexture());
+
+            container.addChild(second, third);
+            renderer.render({ container });
+
+            expect(second._gpuData[renderer.uid]).toBe(gpuSprite);
+            expect(gpuSprite.renderable).toBe(second);
+            expect(gpuSprite.texture).toBe(second.texture);
+            expect(third._gpuData[renderer.uid]).not.toBe(gpuSprite);
+
+            second.destroy();
+            third.destroy();
         });
     });
 

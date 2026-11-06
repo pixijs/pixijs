@@ -16,6 +16,8 @@ export interface BatcherAdaptor
     init?(batchPipe: BatcherPipe): void;
     execute(batchPipe: BatcherPipe, batch: Batch): void
     contextChange?(): void;
+    /** Set when `execute` reads `batch.elements`, so batchers fill it (the Canvas renderer). */
+    readonly collectElements?: boolean;
 }
 
 /**
@@ -76,6 +78,7 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
             batchers.default ||= new DefaultBatcher({
                 maxTextures: this.renderer.limits.maxBatchableTextures,
             });
+            batchers.default._collectElements = !!this._adaptor.collectElements;
         }
 
         this._activeBatches = batchers;
@@ -100,6 +103,7 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
             {
                 batch = this._activeBatches[batchableObject.batcherName]
                     = BatcherPipe.getBatcher(batchableObject.batcherName, this.renderer.limits.maxBatchableTextures);
+                batch._collectElements = !!this._adaptor.collectElements;
                 batch.begin();
             }
 
@@ -124,8 +128,16 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         {
             const batch = batches[i as keyof typeof batches];
             const geometry = batch.geometry;
+            const indexSize = batch.indexSize;
 
-            geometry.indexBuffer.setDataWithSize(batch.indexBuffer, batch.indexSize, true);
+            // an all-quad rebuild repacks the same indices: skip the upload when the GPU copy already holds them
+            if (indexSize > batch._quadIndexWatermark
+                || indexSize > batch._uploadedQuadIndexSize
+                || geometry.indexBuffer.data !== batch.indexBuffer)
+            {
+                geometry.indexBuffer.setDataWithSize(batch.indexBuffer, indexSize, true);
+                batch._uploadedQuadIndexSize = Math.min(indexSize, batch._quadIndexWatermark);
+            }
 
             geometry.buffers[0].setDataWithSize(batch.attributeBuffer.float32View, batch.attributeSize, false);
         }
