@@ -336,7 +336,8 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
      * would allocate for a request, without taking a texture from the pool.
      *
      * Each axis is the next power of two, or the smallest registered screen the request fits inside
-     * (see {@link TexturePoolClass#setScreenSize|setScreenSize}). Use it when a consumer needs to know
+     * (see {@link TexturePoolClass#setScreenSize|setScreenSize}), counting a screen at the resolution of
+     * the request as well as at its physical size. Use it when a consumer needs to know
      * where a request's content will sit inside its pooled texture before it has one, such as a uniform
      * that maps content space onto texture space.
      * @param frameWidth - The minimum width of the texture.
@@ -350,9 +351,9 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
         const pixelHeight = Math.ceil((frameHeight * resolution) - 1e-6);
 
         const po2Width = nextPow2(pixelWidth);
-        const screenWidth = this._screens.getFittingWidth(pixelWidth);
+        const screenWidth = this._screens.getFittingWidth(pixelWidth, resolution);
         const po2Height = nextPow2(pixelHeight);
-        const screenHeight = this._screens.getFittingHeight(pixelHeight);
+        const screenHeight = this._screens.getFittingHeight(pixelHeight, resolution);
 
         return {
             width: screenWidth !== undefined ? Math.min(screenWidth, po2Width) : po2Width,
@@ -436,13 +437,18 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
      * that axis instead of the next power of two, which stops a full screen filter from allocating a texture
      * far larger than the screen. Requests larger than every registered screen on an axis keep the power of
      * two size - the pool never rounds a request up to a screen it does not fit in.
+     *
+     * The resolution says how large the screen is in the scene. A request at another resolution is fitted
+     * to the screen at that resolution too, so a resolution 1 filter over a 1179x2556 screen at 3x gets a
+     * 393x852 texture, where the physical size alone would leave it at 512x1024.
      * @param rendererUid - The uid of the renderer, used to update or remove this screen later.
      * @param pixelWidth - The width of the screen in physical pixels.
      * @param pixelHeight - The height of the screen in physical pixels.
+     * @param resolution - The resolution of the screen. Defaults to 1.
      */
-    public setScreenSize(rendererUid: number, pixelWidth: number, pixelHeight: number): void
+    public setScreenSize(rendererUid: number, pixelWidth: number, pixelHeight: number, resolution = 1): void
     {
-        if (!this._screens.set(rendererUid, pixelWidth, pixelHeight)) return;
+        if (!this._screens.set(rendererUid, pixelWidth, pixelHeight, resolution)) return;
 
         this._pruneScreenTextures();
     }

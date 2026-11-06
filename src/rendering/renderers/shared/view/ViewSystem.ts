@@ -226,6 +226,9 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
     {
         this.texture.source.resize(desiredScreenWidth, desiredScreenHeight, resolution);
 
+        // a new resolution that leaves the pixel size as it was raises no resize event
+        this._updateScreenSize();
+
         this.screen.width = this.texture.frame.width;
         this.screen.height = this.texture.frame.height;
     }
@@ -260,14 +263,15 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
 
     /**
      * Tells the texture and canvas pools how big this renderer's screen is, in physical pixels, so they
-     * can hand out screen sized resources instead of rounding every request up to a power of two.
+     * can hand out screen sized resources instead of rounding every request up to a power of two. The
+     * texture pool is told the resolution as well, to fit textures of other resolutions to the screen.
      */
     private _updateScreenSize(): void
     {
-        const { pixelWidth, pixelHeight } = this.texture.source;
+        const { pixelWidth, pixelHeight, _resolution } = this.texture.source;
         const uid = this._renderer.uid;
 
-        TexturePool.setScreenSize(uid, pixelWidth, pixelHeight);
+        TexturePool.setScreenSize(uid, pixelWidth, pixelHeight, _resolution);
         CanvasPool.setScreenSize(uid, pixelWidth, pixelHeight);
     }
 }

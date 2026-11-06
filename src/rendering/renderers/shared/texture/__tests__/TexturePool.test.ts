@@ -484,6 +484,19 @@ describe('TexturePool', () =>
             expect(texture.source.height).toBe(360);
         });
 
+        it('should fit a request at another resolution to the screen at that resolution', () =>
+        {
+            pool.setScreenSize(1, 1179, 2556, 3);
+
+            const fullScreen = pool.getOptimalTexture({ width: 393, height: 852 });
+            const partial = pool.getOptimalTexture({ width: 200, height: 852 });
+            const physical = pool.getOptimalTexture({ width: 393, height: 852, resolution: 3 });
+
+            expect([fullScreen.source.pixelWidth, fullScreen.source.pixelHeight]).toEqual([393, 852]);
+            expect([partial.source.pixelWidth, partial.source.pixelHeight]).toEqual([256, 852]);
+            expect([physical.source.pixelWidth, physical.source.pixelHeight]).toEqual([1179, 2556]);
+        });
+
         it('should keep capped and power-of-two requests in separate buckets', () =>
         {
             pool.setScreenSize(1, 1280, 720);
