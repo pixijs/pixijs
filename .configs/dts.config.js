@@ -2,7 +2,6 @@ const libraries = {
     inlinedLibraries: [
         '@pixi/colord',
         'earcut',
-        'eventemitter3',
     ],
 };
 

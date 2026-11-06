@@ -1,8 +1,8 @@
 import { EventSystem } from './EventSystem';
 import { FederatedEvent } from './FederatedEvent';
 
-import type EventEmitter from 'eventemitter3';
 import type { Container } from '../scene/container/Container';
+import type { EventEmitter } from '../utils/EventEmitter';
 import type { AllFederatedEventMap } from './FederatedEventMap';
 import type { FederatedPointerEvent } from './FederatedPointerEvent';
 import type { FederatedWheelEvent } from './FederatedWheelEvent';

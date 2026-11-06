@@ -1,4 +1,4 @@
-import EventEmitter from 'eventemitter3';
+import { EventEmitter } from '../../utils/EventEmitter';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';

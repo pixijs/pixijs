@@ -1,5 +1,3 @@
-import EventEmitter from 'eventemitter3';
-
 /**
  * Regexp for data URI.
  * Based on: {@link https://github.com/ragingwind/data-uri-regex}
@@ -13,9 +11,6 @@ import EventEmitter from 'eventemitter3';
  * @advanced
  */
 export const DATA_URI = /^\s*data:(?:([\w-]+)\/([\w+.-]+))?(?:;charset=([\w-]+))?(?:;(base64))?,(.*)/i;
-
-// export the event emitter so we can use it in external modules
-export { EventEmitter };
 
 /**
  * The current version of PixiJS. This is automatically replaced by the build process.

@@ -1,5 +1,5 @@
-import EventEmitter from 'eventemitter3';
 import { Point } from '../maths/point/Point';
+import { EventEmitter } from '../utils/EventEmitter';
 import { warn } from '../utils/logging/warn';
 import { EventsTicker } from './EventTicker';
 import { FederatedMouseEvent } from './FederatedMouseEvent';
@@ -8,7 +8,7 @@ import { FederatedWheelEvent } from './FederatedWheelEvent';
 
 import type { Renderable } from '../rendering/renderers/shared/Renderable';
 import type { Container } from '../scene/container/Container';
-import type { EmitterListeners, TrackingData } from './EventBoundaryTypes';
+import type { TrackingData } from './EventBoundaryTypes';
 import type { FederatedEvent } from './FederatedEvent';
 import type {
     Cursor, EventMode, FederatedEventHandler,
@@ -19,6 +19,8 @@ const PROPAGATION_LIMIT = 2048;
 
 const tempHitLocation = new Point();
 const tempLocalMapping = new Point();
+
+const isPropagationImmediatelyStopped = (e: FederatedEvent): boolean => e.propagationImmediatelyStopped;
 
 /**
  * Event boundaries are "barriers" where events coming from an upstream scene are modified before downstream propagation.
@@ -1487,25 +1489,6 @@ export class EventBoundary
      */
     private _notifyListeners(e: FederatedEvent, type: string): void
     {
-        const listeners = ((e.currentTarget as any)._events as EmitterListeners)[type];
-
-        if (!listeners) return;
-
-        if ('fn' in listeners)
-        {
-            if (listeners.once) e.currentTarget.removeListener(type, listeners.fn, undefined, true);
-            listeners.fn.call(listeners.context, e);
-        }
-        else
-        {
-            for (
-                let i = 0, j = listeners.length;
-                i < j && !e.propagationImmediatelyStopped;
-                i++)
-            {
-                if (listeners[i].once) e.currentTarget.removeListener(type, listeners[i].fn, undefined, true);
-                listeners[i].fn.call(listeners[i].context, e);
-            }
-        }
+        (e.currentTarget as unknown as EventEmitter)._emitUntil(type, e, isPropagationImmediatelyStopped);
     }
 }

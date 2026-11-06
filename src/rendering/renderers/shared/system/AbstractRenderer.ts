@@ -3,9 +3,9 @@ import { loadEnvironmentExtensions } from '../../../../environment/autoDetectEnv
 import { Container } from '../../../../scene/container/Container';
 import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
 import { uid } from '../../../../utils/data/uid';
+import { EventEmitter } from '../../../../utils/EventEmitter';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { GlobalResourceRegistry } from '../../../../utils/pool/GlobalResourceRegistry';
-import { EventEmitter } from '../../../../utils/utils';
 import { CLEAR } from '../../gl/const';
 import { SystemRunner } from './SystemRunner';
 

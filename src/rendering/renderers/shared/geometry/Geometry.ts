@@ -1,6 +1,6 @@
-import EventEmitter from 'eventemitter3';
 import { Bounds } from '../../../../scene/container/bounds/Bounds';
 import { uid } from '../../../../utils/data/uid';
+import { EventEmitter } from '../../../../utils/EventEmitter';
 import { deprecation } from '../../../../utils/logging/deprecation';
 import { type GlGeometryGpuData } from '../../gl/geometry/GlGeometrySystem';
 import { type GPUDataOwner } from '../../types';

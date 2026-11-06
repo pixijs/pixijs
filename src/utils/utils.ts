@@ -1,14 +1,6 @@
 import earcutModule from 'earcut';
 
 /**
- * A high performance event emitter
- * @see {@link https://github.com/primus/eventemitter3}
- * @class EventEmitter
- * @category utils
- */
-export { default as EventEmitter } from 'eventemitter3';
-
-/**
  * A polygon triangulation library
  * @see {@link https://github.com/mapbox/earcut}
  * @param {number[]} vertices - A flat array of vertex coordinates

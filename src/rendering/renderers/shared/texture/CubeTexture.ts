@@ -1,6 +1,6 @@
-import EventEmitter from 'eventemitter3';
 import { Cache } from '../../../../assets/cache/Cache';
 import { uid } from '../../../../utils/data/uid';
+import { EventEmitter } from '../../../../utils/EventEmitter';
 import { CubeTextureSource } from './sources/CubeTextureSource';
 import { type TextureSource } from './sources/TextureSource';
 import { Texture } from './Texture';

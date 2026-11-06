@@ -1,5 +1,5 @@
-import EventEmitter from 'eventemitter3';
 import { uid } from '../../../../utils/data/uid';
+import { EventEmitter } from '../../../../utils/EventEmitter';
 import { warn } from '../../../../utils/logging/warn';
 import { GlProgram } from '../../gl/shader/GlProgram';
 import { BindGroup } from '../../gpu/shader/BindGroup';

@@ -1,5 +1,5 @@
-import EventEmitter from 'eventemitter3';
 import { uid } from '../../../../utils/data/uid';
+import { EventEmitter } from '../../../../utils/EventEmitter';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
 import type { TextureSource } from './sources/TextureSource';
@@ -39,12 +39,9 @@ export class TextureView extends EventEmitter<{
         this.source = source;
         this.viewDescriptor = viewDescriptor;
 
-        this._onChange = this._onChange.bind(this);
-        this._onDestroy = this._onDestroy.bind(this);
-
         // Proxy the source's change event so BindGroups know when to update
-        this.source.on('change', this._onChange);
-        this.source.on('destroy', this._onDestroy);
+        this.source.on('change', this._onChange, this);
+        this.source.on('destroy', this._onDestroy, this);
     }
 
     private _onChange(): void
@@ -68,8 +65,8 @@ export class TextureView extends EventEmitter<{
     {
         if (this.source)
         {
-            this.source.off('change', this._onChange);
-            this.source.off('destroy', this._onDestroy);
+            this.source.off('change', this._onChange, this);
+            this.source.off('destroy', this._onDestroy, this);
         }
 
         this.emit('destroy', this);

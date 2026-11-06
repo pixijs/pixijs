@@ -1,5 +1,5 @@
-import EventEmitter from 'eventemitter3';
 import { uid } from '../../../../utils/data/uid';
+import { EventEmitter } from '../../../../utils/EventEmitter';
 import { type GlBuffer } from '../../gl/buffer/GlBuffer';
 import { type GpuBufferData } from '../../gpu/buffer/GpuBufferSystem';
 import { type GPUDataOwner } from '../../types';

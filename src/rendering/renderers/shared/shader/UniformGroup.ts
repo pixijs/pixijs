@@ -1,5 +1,5 @@
-import EventEmitter from 'eventemitter3';
 import { uid } from '../../../../utils/data/uid';
+import { EventEmitter } from '../../../../utils/EventEmitter';
 import { createIdFromString } from '../utils/createIdFromString';
 import { UNIFORM_TYPES_MAP, UNIFORM_TYPES_VALUES, type UniformData } from './types';
 import { getDefaultUniformValue } from './utils/getDefaultUniformValue';
