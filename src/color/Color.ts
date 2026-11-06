@@ -212,6 +212,10 @@ export class Color
     // eslint-disable-next-line @typescript-eslint/naming-convention
     private static readonly HEX_PATTERN = /^(#|0x)?(([a-f0-9]{3}){1,2}([a-f0-9]{2})?)$/i;
 
+    /** Pattern for the alpha digits of `#rgba` and `#rrggbbaa` strings */
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    private static readonly HEX_ALPHA_PATTERN = /^#(?:[a-f0-9]{3}([a-f0-9])|[a-f0-9]{6}([a-f0-9]{2}))$/i;
+
     /** Internal color source, from constructor or set value */
     private _value: Exclude<ColorSource, Color> | null;
 
@@ -1053,6 +1057,21 @@ export class Color
                 r /= 255;
                 g /= 255;
                 b /= 255;
+
+                // colord rounds a hex alpha to two decimals, so #ff000001 would be fully
+                // transparent. Use the exact byte when the rounded value, stored as a 32-bit
+                // float, maps to another byte.
+                const alphaMatch = typeof value === 'string' ? Color.HEX_ALPHA_PATTERN.exec(value) : null;
+
+                if (alphaMatch)
+                {
+                    const alphaByte = parseInt(alphaMatch[1] ? alphaMatch[1] + alphaMatch[1] : alphaMatch[2], 16);
+
+                    if (Math.round(Math.fround(a) * 255) !== alphaByte)
+                    {
+                        a = alphaByte / 255;
+                    }
+                }
             }
         }
 

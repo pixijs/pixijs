@@ -227,6 +227,21 @@ describe('Color', () =>
         });
     });
 
+    it('should keep the alpha of hex strings with an alpha channel', () =>
+    {
+        expect(new Color('#ff000001').alpha).toBeCloseTo(1 / 255, 6);
+        expect(new Color('#ff000088').alpha).toBeCloseTo(0x88 / 255, 6);
+        expect(new Color('#f008').alpha).toBeCloseTo(0x88 / 255, 6);
+        expect(new Color('#ff000080').alpha).toBe(0.5);
+
+        for (let i = 0; i <= 0xff; i++)
+        {
+            const hexa = `#ff0000${i.toString(16).padStart(2, '0')}`;
+
+            expect(new Color(hexa).toHexa()).toEqual(hexa);
+        }
+    });
+
     it('should clamp the color results with inputs over 1', () =>
     {
         const color = new Color('rgba(150% 150% 150% / 150%)');
