@@ -843,6 +843,9 @@ export class GraphicsPath
                 out.y = lastInstruction.data[5];
                 break;
             case 'arc':
+                out.x = lastInstruction.data[0] + (Math.cos(lastInstruction.data[4]) * lastInstruction.data[2]);
+                out.y = lastInstruction.data[1] + (Math.sin(lastInstruction.data[4]) * lastInstruction.data[2]);
+                break;
             case 'arcToSvg':
                 out.x = lastInstruction.data[5];
                 out.y = lastInstruction.data[6];
