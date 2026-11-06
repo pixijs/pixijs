@@ -312,6 +312,23 @@ describe('Container Hierarchy', () =>
             expect(removed.length).toEqual(0);
         });
 
+        it('should remove only children in a nonzero range', () =>
+        {
+            const container = new Container();
+            const children = Array.from({ length: 5 }, () => new Container());
+
+            container.addChild(...children);
+
+            const removed = container.removeChildren(1, 3);
+
+            expect(container.children).toEqual([children[0], children[3], children[4]]);
+            expect(removed).toEqual([children[2], children[1]]);
+            expect(children[1].parent).toBeNull();
+            expect(children[2].parent).toBeNull();
+            expect(children[3].parent).toBe(container);
+            expect(children[4].parent).toBe(container);
+        });
+
         it('should handle a range greater than length', () =>
         {
             const container = new Container();
