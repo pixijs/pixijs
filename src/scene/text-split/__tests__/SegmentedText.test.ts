@@ -123,6 +123,18 @@ describe('SegmentedText', () =>
             expect(text.chars.length).toBe(12); // 'Right' + 'Aligned'
         });
 
+        it('should split SplitBitmapText on CRLF', () =>
+        {
+            const text = new SplitBitmapText({
+                text: 'ab\r\ncd',
+                style: { fontSize: 24 },
+            });
+
+            expect(text.lines.length).toBe(2);
+            expect(text.words.length).toBe(2);
+            expect(text.chars.map((char) => char.text)).toEqual(['a', 'b', 'c', 'd']);
+        });
+
         it('should handle text beginning with whitespace', () =>
         {
             const text = new SplitText({

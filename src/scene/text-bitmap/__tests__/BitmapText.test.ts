@@ -1,7 +1,8 @@
 import { Text } from '../../text/Text';
-import { TextStyle } from '../../text/TextStyle';
+import { TextStyle, type TextStyleWhiteSpace } from '../../text/TextStyle';
 import { loadBitmapFont } from '../asset/loadBitmapFont';
 import { type BitmapFont } from '../BitmapFont';
+import { BitmapFontManager } from '../BitmapFontManager';
 import { BitmapText } from '../BitmapText';
 import { getBitmapTextLayout } from '../utils/getBitmapTextLayout';
 import '../../text/init';
@@ -346,5 +347,48 @@ describe('BitmapText', () =>
 
         // trailing 'D' must sit beyond 'C', not snap back to x=0
         expect(positions[3]).toBeGreaterThan(positions[2]);
+    });
+
+    it('should treat CRLF as a single line break', () =>
+    {
+        const mockFont = {
+            chars: {
+                A: { id: 65, xOffset: 0, yOffset: 0, xAdvance: 20, kerning: {} },
+                B: { id: 66, xOffset: 0, yOffset: 0, xAdvance: 20, kerning: {} },
+                ' ': { id: 32, xOffset: 0, yOffset: 0, xAdvance: 10, kerning: {} },
+            },
+            baseMeasurementFontSize: 32,
+            baseLineOffset: 0,
+            lineHeight: 40,
+        };
+        const layoutLines = (chars: string[], whiteSpace: TextStyleWhiteSpace) =>
+            getBitmapTextLayout(chars, new TextStyle({ fontSize: 32, whiteSpace }), mockFont as any, false)
+                .lines.map((line) => line.chars.join(''));
+
+        // Intl.Segmenter returns CRLF as one grapheme, the code point fallback as two
+        for (const crlf of [['\r\n'], ['\r', '\n']])
+        {
+            expect(layoutLines(['A', ...crlf, 'B'], 'pre')).toEqual(['A', 'B', '']);
+            expect(layoutLines(['A', ...crlf, 'B'], 'pre-line')).toEqual(['A', 'B', '']);
+            expect(layoutLines(['A', ...crlf, 'B'], 'normal')).toEqual(['A B', '']);
+        }
+    });
+
+    it('should lay out CRLF text the same as LF text', () =>
+    {
+        const style = { fontFamily: 'arial' };
+        const crlf = new BitmapText({ text: 'A\r\nB', style });
+        const lf = new BitmapText({ text: 'A\nB', style });
+
+        expect(crlf.height).toBe(lf.height);
+        expect(crlf.width).toBe(lf.width);
+    });
+
+    it('should not draw a glyph for CRLF in a dynamic font', () =>
+    {
+        const font = BitmapFontManager.getFont('A\r\nB', new TextStyle({ fontFamily: 'arial' }));
+
+        expect(font.chars.A.texture).toBeDefined();
+        expect(font.chars['\r\n'].texture).toBeUndefined();
     });
 });
