@@ -1,5 +1,5 @@
 const idCounts: Record<string, number> = Object.create(null);
-const idHash: Record<string, number> = Object.create(null);
+const idHash: Record<string, Record<string, number>> = Object.create(null);
 
 /**
  * @param value
@@ -8,7 +8,8 @@ const idHash: Record<string, number> = Object.create(null);
  */
 export function createIdFromString(value: string, groupId: string): number
 {
-    let id = idHash[value];
+    const groupHash = idHash[groupId] ?? (idHash[groupId] = Object.create(null));
+    let id = groupHash[value];
 
     if (id === undefined)
     {
@@ -17,7 +18,7 @@ export function createIdFromString(value: string, groupId: string): number
             idCounts[groupId] = 1;
         }
 
-        idHash[value] = id = idCounts[groupId]++;
+        groupHash[value] = id = idCounts[groupId]++;
     }
 
     return id;
