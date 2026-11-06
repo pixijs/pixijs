@@ -82,7 +82,7 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         // assume context is dirty..
         const context = graphics.context;
 
-        const wasBatched = !!graphics._gpuData;
+        const wasBatched = !!graphics._gpuData[this.renderer.uid]?.batched;
 
         const contextSystem = this.renderer.graphicsContext as GraphicsContextSystem;
         const gpuContext = contextSystem.updateGpuContext(context);
@@ -108,6 +108,9 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         {
             this._rebuild(graphics);
         }
+
+        // remembered so validateRenderable() can tell when the graphics switches between batched and not
+        this._getGpuDataForRenderable(graphics).batched = gpuContext.isBatchable;
 
         if (gpuContext.isBatchable)
         {
