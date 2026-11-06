@@ -1,5 +1,4 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { getTextureBatchBindGroup } from '../../../rendering/batcher/gpu/getTextureBatchBindGroup';
 import { type BatcherOptions } from '../../../rendering/batcher/shared/Batcher';
 import { DefaultBatcher } from '../../../rendering/batcher/shared/DefaultBatcher';
 import { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
@@ -276,19 +275,6 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
         // this mean we don't have to creating new Batchers for each graphics items
         geometry.indexBuffer.setDataWithSize(batcher.indexBuffer, batcher.indexSize, true);
         geometry.buffers[0].setDataWithSize(batcher.attributeBuffer.float32View, batcher.attributeSize, true);
-
-        const drawBatches = batcher.batches;
-
-        for (let i = 0; i < batcher.batchIndex; i++)
-        {
-            const batch = drawBatches[i];
-
-            batch.bindGroup = getTextureBatchBindGroup(
-                batch.textures.textures,
-                batch.textures.count,
-                this._renderer.limits.maxBatchableTextures
-            );
-        }
 
         return graphicsData;
     }

@@ -2,7 +2,7 @@ import { Sprite } from '../../../sprite/Sprite';
 import { Graphics } from '../Graphics';
 import { GraphicsContext } from '../GraphicsContext';
 import { GraphicsContextSystem } from '../GraphicsContextSystem';
-import { getWebGLRenderer } from '@test-utils';
+import { getTexture, getWebGLRenderer } from '@test-utils';
 import { Texture } from '~/rendering';
 
 describe('GraphicsContextSystem', () =>
@@ -58,6 +58,36 @@ describe('GraphicsContextSystem', () =>
         {
             if (!texture.destroyed) texture.destroy(true);
         });
+    });
+
+    it('should leave the textures of a no-batch graphics unbound on WebGL', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const texture = getTexture({ width: 8, height: 8 });
+        const graphics = new Graphics();
+
+        graphics.context.batchMode = 'no-batch';
+        graphics.texture(texture, 0xffffff, 0, 0, 8, 8);
+
+        const listeners = () => [
+            texture.source.listenerCount('change'),
+            Texture.EMPTY.source.listenerCount('change'),
+        ];
+        const before = listeners();
+
+        renderer.render(graphics);
+
+        expect(listeners()).toEqual(before);
+
+        const warn = jest.spyOn(console, 'warn').mockImplementation(() => { /* silenced */ });
+
+        graphics.destroy();
+        texture.destroy(true);
+
+        expect(warn).not.toHaveBeenCalled();
+        warn.mockRestore();
+
+        renderer.destroy();
     });
 
     describe('ShapeBuildCommand', () =>
