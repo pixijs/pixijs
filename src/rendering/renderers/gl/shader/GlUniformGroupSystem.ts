@@ -62,7 +62,11 @@ export class GlUniformGroupSystem implements System
 
         if (!group.isStatic || group._dirtyId !== programData.uniformDirtyGroups[group.uid])
         {
-            programData.uniformDirtyGroups[group.uid] = group._dirtyId;
+            // Dynamic groups always synchronize, so only static groups need dirty tracking.
+            if (group.isStatic)
+            {
+                programData.uniformDirtyGroups[group.uid] = group._dirtyId;
+            }
 
             const syncFunc = this._getUniformSyncFunction(group, program);
 
