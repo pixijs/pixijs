@@ -19,6 +19,7 @@ export interface KTXTexture
     baseWidth: number;
     transcodeBasis(transcodeFormat: any, arg1: number): unknown;
     needsTranscoding: boolean;
+    isPremultiplied: boolean;
 }
 
 /** @internal */
