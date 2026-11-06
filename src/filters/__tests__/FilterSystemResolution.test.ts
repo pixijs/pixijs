@@ -164,16 +164,18 @@ interface Setup
 }
 
 /**
- * Renders a filtered white square over the backdrop and returns the worst channel error over the centre of
- * every cell the filter writes backdrop to and reads it from inside the square.
+ * Renders a filtered white square over the backdrop and returns the worst channel error over every point
+ * the filter writes backdrop to and reads it from inside the square.
  * @param createRenderer - makes the renderer for a resolution
  * @param effect - the filter on the square, and what it should leave behind
  * @param setup - the resolutions involved
+ * @param points - the positions to check on both axes, the centre of every cell by default
  */
 async function worstError(
     createRenderer: (resolution: number) => Promise<Renderer>,
     effect: Effect,
     setup: Setup,
+    points = Array.from({ length: SIZE / CELL }, (_, i) => (i + 0.5) * CELL),
 ): Promise<number>
 {
     const { rendererResolution, textureResolution, filterResolution, origin, size } = setup;
@@ -201,9 +203,9 @@ async function worstError(
             centre > origin + (CELL / 4) && centre + CELL < origin + size - (CELL / 4);
         let worst = 0;
 
-        for (let y = CELL / 2; y < SIZE; y += CELL)
+        for (const y of points)
         {
-            for (let x = CELL / 2; x < SIZE; x += CELL)
+            for (const x of points)
             {
                 if (!inside(x) || !inside(y)) continue;
 
@@ -274,6 +276,17 @@ function resolutionSuite(createRenderer: (resolution: number) => Promise<Rendere
         };
 
         expect(await worstError(createRenderer, blend, setup)).toBeLessThanOrEqual(1);
+    });
+
+    it('should line the backdrop up when its bounds scale to a hair under a whole pixel', async () =>
+    {
+        // snapped to 2.625x the square starts at 5.7142857142857135, which scales to 14.999999999999998 pixels
+        const setup: Setup = {
+            rendererResolution: 2.625, textureResolution: null, filterResolution: 'inherit', origin: 6, size: 100,
+        };
+
+        // either side of the cell edges at 40 and 80, which land on whole pixels at 2.625x
+        expect(await worstError(createRenderer, blend, setup, [39.9, 40, 79.9, 80])).toBeLessThanOrEqual(1);
     });
 }
 

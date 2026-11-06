@@ -427,8 +427,10 @@ export class FilterSystem implements System
             y -= previousBounds.minY;
         }
 
-        x = Math.floor(x * backgroundResolution);
-        y = Math.floor(y * backgroundResolution);
+        // bounds snapped to a fractional resolution can scale to a hair under a whole pixel,
+        // which must not start the copy a pixel early
+        x = Math.floor((x * backgroundResolution) + 1e-6);
+        y = Math.floor((y * backgroundResolution) + 1e-6);
 
         // bounds snapped to a fractional resolution can scale to a hair over a whole pixel,
         // which must not ask for more than the texture holds
