@@ -66,8 +66,8 @@ export class ScreenSizeRegistry
 
     /**
      * The smallest registered screen width the request fits in. A screen counts at its physical size and at
-     * its size at the resolution of the request, so a low resolution request that covers a high resolution
-     * screen is given the screen at its own resolution, not a physical size several times larger.
+     * its size at the resolution of the request, so a resolution 1 request that covers a screen at 3x gets a
+     * third of the screen's physical width, not all of it.
      * @param pixelWidth - The requested width in physical pixels.
      * @param resolution - The resolution of the request.
      * @returns The smallest live screen width that is at least `pixelWidth`, or `undefined` if none.

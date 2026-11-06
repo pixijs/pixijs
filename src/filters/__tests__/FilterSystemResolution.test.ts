@@ -293,7 +293,7 @@ function resolutionSuite(createRenderer: CreateRenderer): void
 
     it('should keep the backdrop of a filter that covers the screen the size of the canvas', async () =>
     {
-        // at resolution 1 the input was once 4096 wide, for a 10240 pixel backdrop past the 8192 a device takes
+        // a 4096 power of two input would need a 10240 pixel backdrop at 2.5x, past the 8192 a device takes
         const renderer = await createRenderer({ width: 3000, height: 10, resolution: 2.5 });
         const getAlignedTexture = jest.spyOn(TexturePool, 'getAlignedTexture');
         const stage = new Container();

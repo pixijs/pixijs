@@ -207,8 +207,7 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
 
         this.texture.source.transparent = (options as RendererOptions).backgroundAlpha < 1;
 
-        // every change of screen size - the resolution set below, the resolution setter and
-        // renderer.resize - ends in the source resizing, so this is the one place to hook the pools
+        // the pools follow every change of pixel size, the resolution setter's included
         this.texture.source.on('resize', this._updateScreenSize, this);
 
         this.resolution = options.resolution;
@@ -268,10 +267,10 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
      */
     private _updateScreenSize(): void
     {
-        const { pixelWidth, pixelHeight, _resolution } = this.texture.source;
+        const { pixelWidth, pixelHeight } = this.texture.source;
         const uid = this._renderer.uid;
 
-        TexturePool.setScreenSize(uid, pixelWidth, pixelHeight, _resolution);
+        TexturePool.setScreenSize(uid, pixelWidth, pixelHeight, this.resolution);
         CanvasPool.setScreenSize(uid, pixelWidth, pixelHeight);
     }
 }

@@ -336,10 +336,10 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
      * would allocate for a request, without taking a texture from the pool.
      *
      * Each axis is the next power of two, or the smallest registered screen the request fits inside
-     * (see {@link TexturePoolClass#setScreenSize|setScreenSize}), counting a screen at the resolution of
-     * the request as well as at its physical size. Use it when a consumer needs to know
-     * where a request's content will sit inside its pooled texture before it has one, such as a uniform
-     * that maps content space onto texture space.
+     * (see {@link TexturePoolClass#setScreenSize|setScreenSize}). A screen counts at its physical size and
+     * at its size at the resolution of the request. Use it when a consumer needs to know where a request's
+     * content will sit inside its pooled texture before it has one, such as a uniform that maps content
+     * space onto texture space.
      * @param frameWidth - The minimum width of the texture.
      * @param frameHeight - The minimum height of the texture.
      * @param resolution - The resolution of the texture.
@@ -469,7 +469,8 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
     /**
      * Destroys the idle textures in every bucket that has a non power of two dimension matching no live
      * screen. Power of two buckets are always kept, as any request can fall back to them. Aligned textures
-     * of other sizes go too, and are made again the next time they are asked for.
+     * of other sizes and textures fitted to a screen at another resolution go too, and are made again the
+     * next time they are asked for.
      */
     private _pruneScreenTextures(): void
     {
