@@ -116,13 +116,14 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
         }
 
         const renderer = this.renderer;
+        const uploadStatic = container._childrenDirty || !container._gpuData[renderer.uid];
         const buffer = this.getBuffers(container);
 
         container.texture ||= children[0].texture;
 
         const state = this.state;
 
-        buffer.update(children, container._childrenDirty);
+        buffer.update(children, uploadStatic);
         container._childrenDirty = false;
 
         state.blendMode = getAdjustedBlendModeBlend(container.groupBlendMode, container.texture._source);
