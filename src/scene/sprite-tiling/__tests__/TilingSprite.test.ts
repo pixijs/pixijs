@@ -303,6 +303,10 @@ describe('TilingSprite', () =>
             { alpha: 128, tint: 0xFFFFFF, expected: [32, 64, 96, 128] },
             { alpha: 255, tint: 0xFFFFFF, expected: [32, 64, 96, 255] },
             { alpha: 255, tint: 0x808080, expected: [16, 32, 48, 255] },
+            // Translucent pixels must be tinted by multiplying rgb only, leaving alpha
+            // untouched — matching the WebGL renderer (issue #12272)
+            { alpha: 128, tint: 0x808080, expected: [16, 32, 48, 128] },
+            { alpha: 128, tint: 0xFF0000, expected: [32, 0, 0, 128] },
         ])('should render texture colors with alpha $alpha and tint $tint', async ({ alpha, tint, expected }) =>
         {
             const texCanvas = document.createElement('canvas');
