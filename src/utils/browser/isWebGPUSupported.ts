@@ -31,12 +31,11 @@ export async function isWebGPUSupported(options: GPURequestAdapterOptions = {}):
 
         try
         {
-            const adapter = await gpu.requestAdapter(options) as GPUAdapter;
+            // An adapter is enough: requestDevice() without required features or limits doesn't reject, it returns
+            // a lost device when it fails. So a probe device only cost a round trip and stayed alive until GC.
+            const adapter = await gpu.requestAdapter(options);
 
-            // TODO and one of these!
-            await adapter.requestDevice();
-
-            return true;
+            return !!adapter;
         }
         catch (_e)
         {

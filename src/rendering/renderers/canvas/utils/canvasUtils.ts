@@ -10,6 +10,7 @@ import type { TextureSource } from '../../shared/texture/sources/TextureSource';
 import type { Texture } from '../../shared/texture/Texture';
 
 type TintCache = Record<string, (ICanvas & { tintId?: number }) | (ImageLike & { tintId?: number })>;
+type TintMethod = (texture: Texture, color: number, canvas: ICanvas) => void;
 type CanvasSourceCache = {
     canvas: ICanvas;
     resourceId: number;
@@ -23,8 +24,33 @@ export const canvasUtils = {
     canvas: null as ICanvas | null,
     convertTintToImage: false,
     cacheStepsPerColorChannel: 8,
-    canUseMultiply: canUseNewCanvasBlendModes(),
-    tintMethod: null as (texture: Texture, color: number, canvas: ICanvas) => void,
+    /** @internal */
+    _canUseMultiply: undefined as boolean | undefined,
+    /** @internal */
+    _tintMethod: undefined as TintMethod | undefined,
+    /**
+     * Whether the canvas supports the `multiply` blend mode. Resolved on first read, because the check draws to a
+     * canvas and reads it back, which only the canvas renderer needs.
+     */
+    get canUseMultiply(): boolean
+    {
+        return (canvasUtils._canUseMultiply ??= canUseNewCanvasBlendModes());
+    },
+    set canUseMultiply(value: boolean)
+    {
+        canvasUtils._canUseMultiply = value;
+    },
+    /** The tint function used by the canvas renderer. Defaults to multiply when supported, per-pixel otherwise. */
+    get tintMethod(): TintMethod
+    {
+        return (canvasUtils._tintMethod ??= canvasUtils.canUseMultiply
+            ? canvasUtils.tintWithMultiply
+            : canvasUtils.tintWithPerPixel);
+    },
+    set tintMethod(value: TintMethod)
+    {
+        canvasUtils._tintMethod = value;
+    },
     _canvasSourceCache: new WeakMap<TextureSource, CanvasSourceCache>(),
     _unpremultipliedCache: new WeakMap<TextureSource, CanvasSourceCache>(),
     getCanvasSource: (texture: Texture): CanvasImageSource | null =>
@@ -510,5 +536,3 @@ export const canvasUtils = {
         context.transform(a, b, c, d, tx, ty);
     },
 };
-
-canvasUtils.tintMethod = canvasUtils.canUseMultiply ? canvasUtils.tintWithMultiply : canvasUtils.tintWithPerPixel;
