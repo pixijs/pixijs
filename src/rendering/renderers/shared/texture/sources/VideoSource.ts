@@ -269,7 +269,10 @@ export class VideoSource extends TextureSource<VideoResource>
             source.addEventListener('loadedmetadata', this._onLoadedMetadata);
         }
 
-        this.alphaMode = await detectVideoAlphaMode();
+        if (!options.alphaMode)
+        {
+            this.alphaMode = await detectVideoAlphaMode();
+        }
 
         // Create and return the loading promise
         this._load = new Promise((resolve, reject): void =>

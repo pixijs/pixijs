@@ -2,6 +2,7 @@ import '~/environment-browser/browserAll';
 import { VideoSource } from '../sources/VideoSource';
 import { getAsset } from '@test-utils';
 import { Assets } from '~/assets';
+import * as detectVideoAlphaModeModule from '~/utils/browser/detectVideoAlphaMode';
 
 import type { VideoSourceOptions } from '../sources/VideoSource';
 import type { Texture } from '../Texture';
@@ -164,6 +165,105 @@ describe('VideoSource', () =>
         expect(source.isValid).toBe(false);
         expect(configureSpy).toHaveBeenCalledTimes(1);
         expect(mediaReadySpy).not.toHaveBeenCalled();
+    });
+
+    it('should respect explicit alphaMode passed via Assets.load and skip detectVideoAlphaMode', async () =>
+    {
+        const detectSpy = jest.spyOn(detectVideoAlphaModeModule, 'detectVideoAlphaMode');
+
+        try
+        {
+            const { source } = await setup({ alphaMode: 'no-premultiply-alpha' });
+
+            await source.load();
+
+            expect(source.alphaMode).toBe('no-premultiply-alpha');
+            expect(detectSpy).not.toHaveBeenCalled();
+        }
+        finally
+        {
+            detectSpy.mockRestore();
+        }
+    });
+
+    it('should respect explicit alphaMode passed directly to VideoSource constructor', async () =>
+    {
+        const detectSpy = jest.spyOn(detectVideoAlphaModeModule, 'detectVideoAlphaMode');
+
+        try
+        {
+            const video = document.createElement('video');
+
+            Object.defineProperty(video, 'readyState', { value: video.HAVE_ENOUGH_DATA, configurable: true });
+            Object.defineProperty(video, 'videoWidth', { value: 64, configurable: true });
+            Object.defineProperty(video, 'videoHeight', { value: 64, configurable: true });
+
+            const source = new VideoSource({
+                resource: video,
+                alphaMode: 'no-premultiply-alpha',
+                autoLoad: false,
+            });
+
+            await source.load();
+
+            expect(source.alphaMode).toBe('no-premultiply-alpha');
+            expect(detectSpy).not.toHaveBeenCalled();
+
+            source.destroy();
+        }
+        finally
+        {
+            detectSpy.mockRestore();
+        }
+    });
+
+    it('should call detectVideoAlphaMode only once when loading via Assets.load without explicit alphaMode', async () =>
+    {
+        const detectSpy = jest.spyOn(detectVideoAlphaModeModule, 'detectVideoAlphaMode');
+
+        try
+        {
+            const { source } = await setup();
+
+            await source.load();
+
+            expect(detectSpy).toHaveBeenCalledTimes(1);
+            expect(source.alphaMode).toBe(await detectVideoAlphaModeModule.detectVideoAlphaMode());
+        }
+        finally
+        {
+            detectSpy.mockRestore();
+        }
+    });
+
+    it('should detect alphaMode when creating VideoSource directly without explicit alphaMode', async () =>
+    {
+        const detectSpy = jest.spyOn(detectVideoAlphaModeModule, 'detectVideoAlphaMode');
+
+        try
+        {
+            const video = document.createElement('video');
+
+            Object.defineProperty(video, 'readyState', { value: video.HAVE_ENOUGH_DATA, configurable: true });
+            Object.defineProperty(video, 'videoWidth', { value: 64, configurable: true });
+            Object.defineProperty(video, 'videoHeight', { value: 64, configurable: true });
+
+            const source = new VideoSource({
+                resource: video,
+                autoLoad: false,
+            });
+
+            await source.load();
+
+            expect(detectSpy).toHaveBeenCalledTimes(1);
+            expect(source.alphaMode).toBe(await detectVideoAlphaModeModule.detectVideoAlphaMode());
+
+            source.destroy();
+        }
+        finally
+        {
+            detectSpy.mockRestore();
+        }
     });
 });
 
