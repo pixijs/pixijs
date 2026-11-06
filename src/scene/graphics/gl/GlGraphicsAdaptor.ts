@@ -9,19 +9,18 @@ import { getBatchSamplersUniformGroup } from '../../../rendering/renderers/gl/sh
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import { type Renderer } from '../../../rendering/renderers/types';
+import { AbstractGlGraphicsAdaptor } from './AbstractGlGraphicsAdaptor';
 
-import type { Batch } from '../../../rendering/batcher/shared/Batcher';
 import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRenderer';
-import type { Graphics } from '../shared/Graphics';
-import type { GraphicsContextSystem } from '../shared/GraphicsContextSystem';
-import type { GraphicsAdaptor, GraphicsPipeLike } from '../shared/GraphicsPipe';
+import type { GraphicsContext } from '../shared/GraphicsContext';
+import type { GraphicsContextRenderData } from '../shared/GraphicsContextSystem';
 
 /**
  * A GraphicsAdaptor that uses WebGL to render graphics.
  * @category rendering
  * @ignore
  */
-export class GlGraphicsAdaptor implements GraphicsAdaptor
+export class GlGraphicsAdaptor extends AbstractGlGraphicsAdaptor<GraphicsContextRenderData>
 {
     /** @ignore */
     public static extension = {
@@ -30,8 +29,6 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         ],
         name: 'graphics',
     } as const;
-
-    public shader: Shader;
 
     public contextChange(renderer: Renderer): void
     {
@@ -62,50 +59,8 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         });
     }
 
-    public execute(graphicsPipe: GraphicsPipeLike, renderable: Graphics): void
+    protected _getRenderData(renderer: WebGLRenderer, context: GraphicsContext): GraphicsContextRenderData
     {
-        const context = renderable.context;
-        const shader = context.customShader || this.shader;
-        const renderer = graphicsPipe.renderer as WebGLRenderer;
-        const contextSystem = renderer.graphicsContext as GraphicsContextSystem;
-
-        const {
-            batcher, instructions,
-        } = contextSystem.getContextRenderData(context);
-
-        // WebGL specific..
-        shader.groups[0] = renderer.globalUniforms.bindGroup;
-
-        renderer.state.set(graphicsPipe.state);
-
-        renderer.shader.bind(shader);
-
-        renderer.geometry.bind(batcher.geometry, shader.glProgram);
-
-        const batches = instructions.instructions as Batch[];
-
-        for (let i = 0; i < instructions.instructionSize; i++)
-        {
-            const batch = batches[i];
-
-            if (batch.size)
-            {
-                for (let j = 0; j < batch.textures.count; j++)
-                {
-                    renderer.texture.bind(batch.textures.textures[j], j);
-                }
-
-                // the batch shader declares float samplers on every unit, so none may be left holding an integer texture
-                renderer.texture.unbindIntegerTextures(batch.textures.count);
-
-                renderer.geometry.draw(batch.topology, batch.size, batch.start);
-            }
-        }
-    }
-
-    public destroy(): void
-    {
-        this.shader.destroy(true);
-        this.shader = null;
+        return renderer.graphicsContext.getContextRenderData(context);
     }
 }

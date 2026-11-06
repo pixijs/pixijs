@@ -1,6 +1,6 @@
 ---
 name: pixijs-scene-graphics
-description: "Use this skill when drawing vector shapes and paths in PixiJS v8. Covers the Graphics API: shape-then-fill methods (rect/circle/ellipse/poly/roundRect/star/regularPoly/roundPoly/roundShape/filletRect/chamferRect), path methods (moveTo/lineTo/bezierCurveTo/quadraticCurveTo/arc/arcTo/arcToSvg/closePath), fill/stroke/cut, holes, FillGradient (linear/radial), FillPattern, GraphicsContext sharing, svg import/export, containsPoint hit testing, cloning, clearing, bounds, fillStyle/strokeStyle, draw-time transforms (rotateTransform/scaleTransform/translateTransform/setTransform/save/restore), default styles, GraphicsPath reuse. Triggers on: Graphics, GraphicsContext, rect, circle, poly, roundRect, fill, stroke, cut, hole, beginHole, FillGradient, FillPattern, moveTo, bezierCurveTo, svg, graphicsContextToSvg, svg export, GraphicsOptions, containsPoint, clone, clear, bounds, rotateTransform, translateTransform, setFillStyle, setStrokeStyle, GraphicsPath."
+description: "Use this skill when drawing vector shapes and paths in PixiJS v8. Covers the Graphics API and SmoothGraphics (anti-aliasing without MSAA, DashLineShader): shape-then-fill methods (rect/circle/ellipse/poly/roundRect/star/regularPoly/roundPoly/roundShape/filletRect/chamferRect), path methods (moveTo/lineTo/bezierCurveTo/quadraticCurveTo/arc/arcTo/arcToSvg/closePath), fill/stroke/cut, holes, FillGradient (linear/radial), FillPattern, GraphicsContext sharing, svg import/export, containsPoint, cloning, clearing, bounds, fillStyle/strokeStyle, draw-time transforms (rotate/scale/translate/setTransform, save/restore), default styles, GraphicsPath reuse. Triggers on: Graphics, SmoothGraphics, DashLineShader, dashed, GraphicsContext, rect, circle, poly, roundRect, fill, stroke, cut, hole, beginHole, FillGradient, FillPattern, moveTo, bezierCurveTo, svg, graphicsContextToSvg, GraphicsOptions, containsPoint, clone, clear, bounds, rotateTransform, translateTransform, setFillStyle, setStrokeStyle, GraphicsPath."
 license: MIT
 ---
 
@@ -78,7 +78,7 @@ g.ellipse(100, 350, 60, 30).fill(0x1abc9c);
 | `join`       | `'miter'` | One of `'miter'`, `'round'`, `'bevel'`. Corner style.                   |
 | `miterLimit` | `10`      | Caps how far miter joins extend before falling back to bevel.           |
 | `alignment`  | `0.5`     | `1` = inside the shape, `0.5` = centered, `0` = outside.                |
-| `pixelLine`  | `false`   | Aligns 1-pixel lines to the pixel grid for crisp output. Graphics-only. |
+| `pixelLine`  | `false`   | Aligns 1-pixel lines to the pixel grid for crisp output. On `SmoothGraphics`, keeps `width` in screen pixels instead. |
 
 Strokes can use the same gradients and patterns as fills via `fill: gradient` or `texture: tex`:
 
@@ -269,6 +269,20 @@ g.texture(tex, 0xff0000, 100, 20, 64, 64);
 ```
 
 `Graphics.texture(texture, tint?, dx?, dy?, dw?, dh?)` is a shortcut for drawing a single textured rect without going through `fill()`. Useful for icons where you don't need the full sprite lifecycle.
+
+### Smooth edges without MSAA
+
+`SmoothGraphics` extends `Graphics` with the same API and anti-aliases edges in the shader, so shapes stay smooth with `antialias: false`, in render textures, and with thin or zoomed lines. Add dashed strokes with `DashLineShader` as the context's `customShader`:
+
+```ts
+const smooth = new SmoothGraphics().circle(100, 100, 50).fill(0xde3249).stroke({ width: 1, color: 0xffffff });
+
+const dashed = new SmoothGraphics();
+dashed.context.customShader = new DashLineShader({ dash: 10, gap: 5 });
+dashed.moveTo(0, 0).lineTo(200, 0).stroke({ width: 2, color: 0xffffff });
+```
+
+One `GraphicsContext` can't be drawn by both a `Graphics` and a `SmoothGraphics`; give one a `context.clone()`. See [references/smooth-graphics.md](references/smooth-graphics.md) for when to choose it, `pixelLine` and dash rules, performance, and caveats.
 
 ### GraphicsContext sharing
 
@@ -569,6 +583,8 @@ group.addChild(graphics, sprite);
 - [GraphicsOptions](https://pixijs.download/release/docs/scene.GraphicsOptions.html.md)
 - [GraphicsContext](https://pixijs.download/release/docs/scene.GraphicsContext.html.md)
 - [GraphicsPath](https://pixijs.download/release/docs/scene.GraphicsPath.html.md)
+- [SmoothGraphics](https://pixijs.download/release/docs/scene.SmoothGraphics.html.md)
+- [DashLineShader](https://pixijs.download/release/docs/scene.DashLineShader.html.md)
 - [graphicsContextToSvg](https://pixijs.download/release/docs/scene.graphicsContextToSvg.html.md)
 - [FillGradient](https://pixijs.download/release/docs/scene.FillGradient.html.md)
 - [FillPattern](https://pixijs.download/release/docs/scene.FillPattern.html.md)

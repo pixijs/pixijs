@@ -33,7 +33,7 @@ For the long-form description and trigger keywords of every skill, see [referenc
 |---|---|
 | [pixijs-scene-container](../pixijs-scene-container/SKILL.md) | Working with `Container`: `addChild`/`removeChild`, transforms, `zIndex`, bounds, `toGlobal`/`toLocal`, `destroy`. |
 | [pixijs-scene-sprite](../pixijs-scene-sprite/SKILL.md) | Drawing images: `Sprite`, `AnimatedSprite`, `NineSliceSprite`, `TilingSprite`. |
-| [pixijs-scene-graphics](../pixijs-scene-graphics/SKILL.md) | Drawing vector shapes or paths: `Graphics`, `GraphicsContext`, `fill`/`stroke`, `FillGradient`, `FillPattern`, `textureSpace`, texture and pattern fills, SVG import (`svg()`, gradients). |
+| [pixijs-scene-graphics](../pixijs-scene-graphics/SKILL.md) | Drawing vector shapes or paths: `Graphics`, `GraphicsContext`, `fill`/`stroke`, `FillGradient`, `FillPattern`, `textureSpace`, texture and pattern fills, SVG import (`svg()`, gradients), smooth edges without MSAA (`SmoothGraphics`), dashed lines (`DashLineShader`). |
 | [pixijs-scene-text](../pixijs-scene-text/SKILL.md) | Rendering text: `Text`, `BitmapText`, `HTMLText`, `SplitText`, `TextStyle`. |
 | [pixijs-scene-mesh](../pixijs-scene-mesh/SKILL.md) | Custom geometry: `Mesh`, `MeshSimple`, `MeshPlane`, `MeshRope`, `PerspectiveMesh`. |
 | [pixijs-scene-particle-container](../pixijs-scene-particle-container/SKILL.md) | Rendering thousands of lightweight sprites: `ParticleContainer`, `Particle`, `dynamicProperties`. |

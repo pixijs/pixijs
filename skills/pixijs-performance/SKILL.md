@@ -349,6 +349,8 @@ await app.init({
 
 `resolution: 2` quadruples the pixel count. On mobile, this can halve frame rate. Profile to find the right balance.
 
+When only vector shapes need smooth edges, `SmoothGraphics` anti-aliases them in the shader and keeps `antialias: false` for the rest of the app; see `pixijs-scene-graphics/references/smooth-graphics.md` for its batching costs.
+
 ### Low-level rendering optimizations
 
 ```ts

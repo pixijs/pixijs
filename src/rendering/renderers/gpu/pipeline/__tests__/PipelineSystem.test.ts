@@ -3,6 +3,7 @@ import { RenderTarget } from '../../../shared/renderTarget/RenderTarget';
 import { Shader } from '../../../shared/shader/Shader';
 import { TextureSource } from '../../../shared/texture/sources/TextureSource';
 import { Texture } from '../../../shared/texture/Texture';
+import { GpuProgram } from '../../shader/GpuProgram';
 import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
 import { Mesh } from '~/scene/mesh/shared/Mesh';
 import { Sprite } from '~/scene/sprite/Sprite';
@@ -16,6 +17,46 @@ afterEach(() =>
 {
     renderer?.destroy();
     renderer = null;
+});
+
+describeLocalOnly('PipelineSystem vertex buffers', () =>
+{
+    function createGeometryAndProgram(attribute: string, size: 2 | 4)
+    {
+        const position = size === 2 ? `vec4<f32>(${attribute}, 0.0, 1.0)` : attribute;
+        const source = `
+            @vertex fn mainVert(@location(0) ${attribute}: vec${size}<f32>) -> @builtin(position) vec4<f32>
+            {
+                return ${position};
+            }
+            @fragment fn mainFrag() -> @location(0) vec4<f32>
+            {
+                return vec4<f32>(1.0);
+            }
+        `;
+
+        return {
+            geometry: new Geometry({
+                attributes: { [attribute]: { buffer: new Float32Array(size), format: `float32x${size}` } },
+            }),
+            program: new GpuProgram({
+                vertex: { source, entryPoint: 'mainVert' },
+                fragment: { source, entryPoint: 'mainFrag' },
+            }),
+        };
+    }
+
+    it('binds the buffers of each geometry when neither was drawn before', async () =>
+    {
+        renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        // the batchers bind their geometry before they create a pipeline for it
+        const first = createGeometryAndProgram('aFirst', 2);
+        const second = createGeometryAndProgram('aSecond', 4);
+
+        expect(renderer.pipeline.getBufferNamesToBind(first.geometry, first.program)).toEqual(['aFirst']);
+        expect(renderer.pipeline.getBufferNamesToBind(second.geometry, second.program)).toEqual(['aSecond']);
+    });
 });
 
 describeLocalOnly('PipelineSystem color format cache', () =>
