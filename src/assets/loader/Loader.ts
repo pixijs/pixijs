@@ -170,11 +170,21 @@ export class Loader
     /** Cache loading promises that ae currently active */
     public promiseCache: Record<string, PromiseAndParser> = {};
 
+    /**
+     * Assets that were unloaded, including ones whose load was unloaded before it finished.
+     * Pending `load` calls still resolve with the latter, but they are (or are about to be)
+     * destroyed, so they must not be cached, and destroying them must not touch a newer load
+     * of the same url.
+     * @internal
+     */
+    public _unloadedAssets = new WeakSet<object>();
+
     /** function used for testing */
     public reset(): void
     {
         this._parsersValidated = false;
         this.promiseCache = {};
+        this._unloadedAssets = new WeakSet();
     }
 
     /**
@@ -370,9 +380,17 @@ export class Loader
 
             if (loadPromise)
             {
+                // Remove the entry right away, not once the pending load has finished. Otherwise a
+                // `load` called while we wait would join the load we are about to destroy, and get
+                // a destroyed asset back.
+                delete this.promiseCache[url];
+
                 const loadedAsset = await loadPromise.promise;
 
-                delete this.promiseCache[url];
+                if (loadedAsset && typeof loadedAsset === 'object')
+                {
+                    this._unloadedAssets.add(loadedAsset);
+                }
 
                 await loadPromise.parser?.unload?.(loadedAsset, asset, this);
             }
@@ -421,6 +439,7 @@ export class Loader
         let attempt = 0;
         const { onError, strategy, retryCount, retryDelay } = options;
         const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+        let loadPromise: PromiseAndParser = null;
 
         while (true)
         {
@@ -431,14 +450,27 @@ export class Loader
                     this.promiseCache[url] = this._getLoadPromiseAndParser(url, asset);
                 }
 
-                assets[asset.src] = await this.promiseCache[url].promise as T;
+                loadPromise = this.promiseCache[url];
+
+                const loadedAsset = await loadPromise.promise as T;
+
+                // the asset was unloaded while we were waiting for it
+                if (this.promiseCache[url] !== loadPromise && loadedAsset && typeof loadedAsset === 'object')
+                {
+                    this._unloadedAssets.add(loadedAsset);
+                }
+
+                assets[asset.src] = loadedAsset;
 
                 return;
             }
             catch (e)
             {
-                // clear cache for a new attempt
-                delete this.promiseCache[url];
+                // clear cache for a new attempt, unless it was already replaced by a newer load
+                if (this.promiseCache[url] === loadPromise)
+                {
+                    delete this.promiseCache[url];
+                }
                 delete assets[asset.src];
 
                 attempt++;

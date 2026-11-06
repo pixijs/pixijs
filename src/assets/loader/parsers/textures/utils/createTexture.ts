@@ -35,6 +35,10 @@ export function createTexture(source: TextureSource, loader: Loader, url: string
     // remove the promise from the loader and the url from the cache when the texture is destroyed
     texture.source.once('destroy', () =>
     {
+        // Unloaded through the loader: the promise and cache entries for this url may already
+        // belong to a newer load of the same url, so leave them alone
+        if (loader._unloadedAssets?.has(texture)) return;
+
         if (loader.promiseCache[url])
         {
             // #if _DEBUG
@@ -48,6 +52,8 @@ export function createTexture(source: TextureSource, loader: Loader, url: string
 
     texture.once('destroy', () =>
     {
+        if (loader._unloadedAssets?.has(texture)) return;
+
         if (!source.destroyed)
         {
             // #if _DEBUG

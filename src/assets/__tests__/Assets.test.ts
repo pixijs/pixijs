@@ -425,6 +425,44 @@ describe('Assets', () =>
         expect(bunny.baseTexture).toBe(null);
     });
 
+    it('should return a usable texture to a load that starts while the texture is being unloaded', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        const url = 'textures/bunny.png';
+
+        const first = Assets.load<Texture>(url);
+        const unload = Assets.unload(url);
+        const second = Assets.load<Texture>(url);
+
+        const [firstTexture, , secondTexture] = await Promise.all([first, unload, second]);
+
+        expect(firstTexture.destroyed).toBe(true);
+        expect(secondTexture).not.toBe(firstTexture);
+        expect(secondTexture.destroyed).toBe(false);
+        expect(secondTexture.source).not.toBe(null);
+        expect(Assets.get(url)).toBe(secondTexture);
+    });
+
+    it('should not cache a texture that was unloaded before it finished loading', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        const url = 'textures/bunny.png';
+
+        const load = Assets.load<Texture>(url);
+        const unload = Assets.unload(url);
+
+        const [texture] = await Promise.all([load, unload]);
+
+        expect(texture.destroyed).toBe(true);
+        expect(Assets.cache.has(url)).toBe(false);
+    });
+
     it('should load TXT assets from data URL', async () =>
     {
         let txtDataURL1 = `
