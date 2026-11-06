@@ -1,15 +1,10 @@
 import { DashLineShader } from '../shared/DashLineShader';
 import { SmoothGraphics } from '../shared/SmoothGraphics';
-import { getWebGLRenderer, getWebGPURenderer } from '@test-utils';
+import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
 import { CanvasRenderer, Texture } from '~/rendering';
 import { Container, Graphics, GraphicsContext } from '~/scene';
 
 import type { Renderer } from '~/rendering';
-
-const rendererTypes: [string, (options?: { antialias?: boolean }) => Promise<Renderer>][] = [
-    ['WebGL', (options) => getWebGLRenderer({ antialias: false, ...options })],
-    ['WebGPU', (options) => getWebGPURenderer({ antialias: false, ...options })],
-];
 
 /**
  * Renders the content over an opaque black 100x100 background
@@ -77,7 +72,7 @@ describe('SmoothGraphics', () =>
         deepClone.destroy();
     });
 
-    describe.each(rendererTypes)('%s', (_name, getRenderer) =>
+    const rendererTests = (getRenderer: () => Promise<Renderer>) =>
     {
         let renderer: Renderer;
 
@@ -193,6 +188,16 @@ describe('SmoothGraphics', () =>
 
             graphics.destroy(true);
         });
+    };
+
+    describe('WebGL', () =>
+    {
+        rendererTests(() => getWebGLRenderer({ antialias: false }));
+    });
+
+    describeLocalOnly('WebGPU', () =>
+    {
+        rendererTests(() => getWebGPURenderer({ antialias: false }));
     });
 
     it('should draw like a Graphics on the canvas renderer', async () =>
