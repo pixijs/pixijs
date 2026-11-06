@@ -392,7 +392,8 @@ export class FilterSystem implements System
      * @param previousBounds - The previous bounds to use for offsetting the copy.
      * @param inputTexture - The input texture of the filter the copy is for. The copy is at the resolution of
      * the surface, not the filter, so its pooled texture is sized to cover the same area as this one. A
-     * shader can then sample both with the same coordinates.
+     * shader can then sample both with the same coordinates. Without it the copy is sized on its own, and
+     * only lines up with a filter input at the same resolution.
      */
     public getBackTexture(
         lastRenderSurface: RenderTarget,
@@ -423,7 +424,8 @@ export class FilterSystem implements System
         x = Math.floor(x * backgroundResolution);
         y = Math.floor(y * backgroundResolution);
 
-        // a rounding error in the bounds must not ask for more than the texture holds
+        // bounds snapped to a fractional resolution can scale to a hair over a whole pixel,
+        // which must not ask for more than the texture holds
         const width = Math.min(Math.ceil(bounds.width * backgroundResolution), backTexture.source.pixelWidth);
         const height = Math.min(Math.ceil(bounds.height * backgroundResolution), backTexture.source.pixelHeight);
 

@@ -244,10 +244,12 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
      * samples with the coordinates of the other, such as the backdrop a filter reads alongside its input.
      *
      * The backing size is the other texture's scaled by the two resolutions, so it is not rounded to a
-     * power of two or a screen. A size that does not scale to whole pixels is rounded up.
+     * power of two or capped to a screen. A size that does not scale to whole pixels is rounded up, which
+     * leaves the two under a pixel apart at the far edge.
      * @param texture - The texture to line up with.
      * @param resolution - The resolution of the new texture.
-     * @returns A pooled texture with the same frame as the given texture.
+     * @returns A pooled texture with a frame the size of the given texture's.
+     * @internal
      */
     public getAlignedTexture(texture: Texture, resolution: number): Texture
     {
@@ -459,7 +461,8 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
 
     /**
      * Destroys the idle textures in every bucket that has a non power of two dimension matching no live
-     * screen. Power of two buckets are always kept, as any request can fall back to them.
+     * screen. Power of two buckets are always kept, as any request can fall back to them. Aligned textures
+     * of other sizes go too, and are made again the next time they are asked for.
      */
     private _pruneScreenTextures(): void
     {

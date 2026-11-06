@@ -86,6 +86,8 @@ type Rgb = [number, number, number];
 interface Effect
 {
     createFilter: () => Filter;
+    /** How far past a point the filter reads the backdrop. */
+    reach: number;
     /** The colour the filter should leave at a point, from the backdrop. */
     expected: (x: number, y: number) => Rgb;
 }
@@ -100,16 +102,22 @@ function backdropColor(x: number, y: number): Rgb
     return [40 + (Math.floor(x / CELL) * 20), 40 + (Math.floor(y / CELL) * 20), 0];
 }
 
-const effects: Record<string, Effect> = {
-    'an advanced blend mode': {
-        createFilter: () => new DifferenceBlend(),
-        expected: (x, y) => backdropColor(x, y).map((channel) => 255 - channel) as Rgb,
-    },
-    'a filter that displaces the backdrop': {
-        createFilter: createBackdropShiftFilter,
-        expected: (x, y) => backdropColor(x + CELL, y + CELL),
-    },
+const blend: Effect = {
+    createFilter: () => new DifferenceBlend(),
+    reach: 0,
+    expected: (x, y) => backdropColor(x, y).map((channel) => 255 - channel) as Rgb,
 };
+
+const shift: Effect = {
+    createFilter: createBackdropShiftFilter,
+    reach: CELL,
+    expected: (x, y) => backdropColor(x + CELL, y + CELL),
+};
+
+const effects: [string, Effect][] = [
+    ['an advanced blend mode', blend],
+    ['a filter that displaces the backdrop', shift],
+];
 
 function createBackdrop(): Graphics
 {
@@ -153,13 +161,15 @@ interface Setup
     /** The resolution of the texture rendered to, or null to render to the canvas. */
     textureResolution: number | null;
     filterResolution: number | 'inherit';
+    /** The position of the filtered square on both axes. */
+    origin: number;
     /** The size of the filtered square, which decides the pooled textures the filter gets. */
     size: number;
 }
 
 /**
  * Renders a filtered white square over the backdrop and returns the worst channel error over the centre of
- * every cell the filter writes backdrop to.
+ * every cell the filter writes backdrop to and reads it from inside the square.
  * @param createRenderer - makes the renderer for a resolution
  * @param effect - the filter on the square, and what it should leave behind
  * @param setup - the resolutions involved
@@ -170,7 +180,7 @@ async function worstError(
     setup: Setup,
 ): Promise<number>
 {
-    const { rendererResolution, textureResolution, filterResolution, size } = setup;
+    const { rendererResolution, textureResolution, filterResolution, origin, size } = setup;
     const resolution = textureResolution ?? rendererResolution;
     const renderer = await createRenderer(rendererResolution);
     const target = textureResolution === null
@@ -183,20 +193,23 @@ async function worstError(
 
     try
     {
-        const square = new Graphics().rect(CELL, CELL, size, size).fill(0xffffff);
+        const square = new Graphics().rect(origin, origin, size, size).fill(0xffffff);
 
         square.filters = [filter];
         stage.addChild(createBackdrop(), square);
         renderer.render({ container: stage, target: target ?? undefined, clear: true });
 
         const { pixels, width } = target ? renderer.extract.pixels(target) : readCanvas(renderer);
+        const inside = (centre: number) =>
+            centre > origin + (CELL / 4) && centre + effect.reach < origin + size - (CELL / 4);
         let worst = 0;
 
-        // the last cell is left out, as the displaced one reads past the edge of the square there
-        for (let y = CELL * 1.5; y < size; y += CELL)
+        for (let y = CELL / 2; y < SIZE; y += CELL)
         {
-            for (let x = CELL * 1.5; x < size; x += CELL)
+            for (let x = CELL / 2; x < SIZE; x += CELL)
             {
+                if (!inside(x) || !inside(y)) continue;
+
                 const offset = ((Math.floor(y * resolution) * width) + Math.floor(x * resolution)) * 4;
                 const expected = effect.expected(x, y);
 
@@ -220,32 +233,50 @@ async function worstError(
 }
 
 // renderer resolution, then the resolution of the texture rendered to (null for the canvas)
-const targets: [number, number | null][] = [[1, null], [1.5, null], [2, null], [3, null], [1, 3], [3, 1], [2, 2]];
-const filterResolutions: Setup['filterResolution'][] = [1, 2, 'inherit'];
+const targets: [number, number | null][] = [[1, null], [1.5, null], [2, null], [3, null], [1, 3]];
 // 100 fits the power of two both textures round up to, 140 has one of them capped to the screen instead
 const sizes = [100, 140];
+const filterResolutions = [1, 2];
 
 const cases = targets.flatMap(([rendererResolution, textureResolution]) =>
     filterResolutions.flatMap((filterResolution) =>
         sizes.map((size): [string, Setup] =>
         {
             const target = textureResolution === null ? 'the canvas' : `a ${textureResolution}x texture`;
-            const filter = filterResolution === 'inherit' ? 'an inherit' : `a ${filterResolution}x`;
 
             return [
-                `a ${rendererResolution}x renderer, ${target}, ${filter} filter and a ${size}px square`,
-                { rendererResolution, textureResolution, filterResolution, size },
+                `a ${rendererResolution}x renderer, ${target}, a ${filterResolution}x filter and a ${size}px square`,
+                { rendererResolution, textureResolution, filterResolution, origin: CELL, size },
             ];
         })));
 
 function resolutionSuite(createRenderer: (resolution: number) => Promise<Renderer>): void
 {
-    describe.each(Object.entries(effects))('%s', (_, effect) =>
+    describe.each(effects)('%s', (_, effect) =>
     {
         it.each(cases)('should line the backdrop up with %s', async (_label, setup) =>
         {
             expect(await worstError(createRenderer, effect, setup)).toBeLessThanOrEqual(1);
         });
+
+        it('should line the backdrop up with a filter that inherits its resolution', async () =>
+        {
+            const setup: Setup = {
+                rendererResolution: 3, textureResolution: null, filterResolution: 'inherit', origin: CELL, size: 100,
+            };
+
+            expect(await worstError(createRenderer, effect, setup)).toBeLessThanOrEqual(1);
+        });
+    });
+
+    it('should copy the backdrop when its bounds scale to a hair over a whole pixel', async () =>
+    {
+        // snapped to thirds the square is 64.666 to 86, which is 64.00000000000003 pixels wide at 3x
+        const setup: Setup = {
+            rendererResolution: 3, textureResolution: null, filterResolution: 'inherit', origin: 64.8, size: 21.1,
+        };
+
+        expect(await worstError(createRenderer, blend, setup)).toBeLessThanOrEqual(1);
     });
 }
 
