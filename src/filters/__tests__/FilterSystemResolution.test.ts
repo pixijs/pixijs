@@ -8,7 +8,9 @@ import { DifferenceBlend } from '~/advanced-blend-modes';
 import { GlProgram, GpuProgram, RenderTexture, Texture, TexturePool } from '~/rendering';
 import { Container, Graphics } from '~/scene';
 
-import type { Renderer } from '~/rendering';
+import type { Renderer, RendererOptions } from '~/rendering';
+
+type CreateRenderer = (options: Partial<RendererOptions>) => Promise<Renderer>;
 
 const SIZE = 200;
 const CELL = 20;
@@ -166,13 +168,13 @@ interface Setup
 /**
  * Renders a filtered white square over the backdrop and returns the worst channel error over every point
  * the filter writes backdrop to and reads it from inside the square.
- * @param createRenderer - makes the renderer for a resolution
+ * @param createRenderer - makes the renderer
  * @param effect - the filter on the square, and what it should leave behind
  * @param setup - the resolutions involved
  * @param points - the positions to check on both axes, the centre of every cell by default
  */
 async function worstError(
-    createRenderer: (resolution: number) => Promise<Renderer>,
+    createRenderer: CreateRenderer,
     effect: Effect,
     setup: Setup,
     points = Array.from({ length: SIZE / CELL }, (_, i) => (i + 0.5) * CELL),
@@ -180,7 +182,7 @@ async function worstError(
 {
     const { rendererResolution, textureResolution, filterResolution, origin, size } = setup;
     const resolution = textureResolution ?? rendererResolution;
-    const renderer = await createRenderer(rendererResolution);
+    const renderer = await createRenderer({ width: SIZE, height: SIZE, resolution: rendererResolution });
     const target = textureResolution === null
         ? null
         : RenderTexture.create({ width: SIZE, height: SIZE, resolution });
@@ -249,7 +251,7 @@ const cases = targets.flatMap(([rendererResolution, textureResolution]) =>
             ];
         })));
 
-function resolutionSuite(createRenderer: (resolution: number) => Promise<Renderer>): void
+function resolutionSuite(createRenderer: CreateRenderer): void
 {
     describe.each(effects)('%s', (_, effect) =>
     {
@@ -288,14 +290,44 @@ function resolutionSuite(createRenderer: (resolution: number) => Promise<Rendere
         // either side of the cell edges at 40 and 80, which land on whole pixels at 2.625x
         expect(await worstError(createRenderer, blend, setup, [39.9, 40, 79.9, 80])).toBeLessThanOrEqual(1);
     });
+
+    it('should keep the backdrop of a filter that covers the screen the size of the canvas', async () =>
+    {
+        // a 4096 power of two input would need a 10240 pixel backdrop at 2.5x, past the 8192 a device takes
+        const renderer = await createRenderer({ width: 3000, height: 10, resolution: 2.5 });
+        const getAlignedTexture = jest.spyOn(TexturePool, 'getAlignedTexture');
+        const stage = new Container();
+        const filter = blend.createFilter();
+
+        try
+        {
+            const cover = new Graphics().rect(0, 0, 3000, 10).fill(0xffffff);
+
+            cover.filters = [filter];
+            stage.addChild(cover);
+            renderer.render({ container: stage });
+
+            const { pixelWidth, pixelHeight } = getAlignedTexture.mock.results[0].value.source;
+
+            expect([pixelWidth, pixelHeight]).toEqual([renderer.canvas.width, renderer.canvas.height]);
+        }
+        finally
+        {
+            getAlignedTexture.mockRestore();
+            stage.destroy({ children: true });
+            filter.destroy();
+            TexturePool.clear();
+            renderer.destroy();
+        }
+    });
 }
 
 describe('FilterSystem backdrop resolution with WebGL', () =>
 {
-    resolutionSuite((resolution) => getWebGLRenderer({ width: SIZE, height: SIZE, resolution, useBackBuffer: true }));
+    resolutionSuite((options) => getWebGLRenderer({ ...options, useBackBuffer: true }));
 });
 
 describeLocalOnly('FilterSystem backdrop resolution with WebGPU', () =>
 {
-    resolutionSuite((resolution) => getWebGPURenderer({ width: SIZE, height: SIZE, resolution }));
+    resolutionSuite((options) => getWebGPURenderer(options));
 });

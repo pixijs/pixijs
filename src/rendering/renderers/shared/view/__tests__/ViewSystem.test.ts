@@ -74,6 +74,26 @@ describe('ViewSystem', () =>
         renderer.destroy();
     });
 
+    it('should register the resolution of the screen with the texture pool', async () =>
+    {
+        const renderer = await getWebGLRenderer({ width: 393, height: 852, resolution: 3 });
+
+        const before = TexturePool.getOptimalTexture({ width: 393, height: 852 });
+
+        expect([before.source.pixelWidth, before.source.pixelHeight]).toEqual([393, 852]);
+        TexturePool.returnTexture(before);
+
+        // the same 1179x2556 pixels, so only the resolution is new
+        renderer.resize(1179, 2556, 1);
+
+        const after = TexturePool.getOptimalTexture({ width: 393, height: 852 });
+
+        expect([after.source.pixelWidth, after.source.pixelHeight]).toEqual([512, 1024]);
+
+        TexturePool.returnTexture(after);
+        renderer.destroy();
+    });
+
     it('should remove the screen from both pools when the renderer is destroyed', async () =>
     {
         const renderer = await getWebGLRenderer({ width: 640, height: 480, resolution: 2 });
