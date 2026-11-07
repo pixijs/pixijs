@@ -484,6 +484,19 @@ describe('TexturePool', () =>
             expect(texture.source.height).toBe(360);
         });
 
+        it('should fit a request at another resolution to the screen at that resolution', () =>
+        {
+            pool.setScreenSize(1, 1179, 2556, 3);
+
+            const fullScreen = pool.getOptimalTexture({ width: 393, height: 852 });
+            const partial = pool.getOptimalTexture({ width: 200, height: 852 });
+            const physical = pool.getOptimalTexture({ width: 393, height: 852, resolution: 3 });
+
+            expect([fullScreen.source.pixelWidth, fullScreen.source.pixelHeight]).toEqual([393, 852]);
+            expect([partial.source.pixelWidth, partial.source.pixelHeight]).toEqual([256, 852]);
+            expect([physical.source.pixelWidth, physical.source.pixelHeight]).toEqual([1179, 2556]);
+        });
+
         it('should keep capped and power-of-two requests in separate buckets', () =>
         {
             pool.setScreenSize(1, 1280, 720);
@@ -855,6 +868,50 @@ describe('TexturePool', () =>
             pool.enableFullScreen = true;
 
             expect(pool.enableFullScreen).toBe(true);
+        });
+    });
+
+    describe('Aligned Textures', () =>
+    {
+        it('should cover the same area as the other texture at its own resolution', () =>
+        {
+            const input = pool.getOptimalTexture({ width: 100, height: 60 });
+            const aligned = pool.getAlignedTexture(input, 3);
+
+            expect(aligned.source.pixelWidth).toBe(384);
+            expect(aligned.source.pixelHeight).toBe(192);
+            expect(aligned.source.width).toBe(input.source.width);
+            expect(aligned.source.height).toBe(input.source.height);
+            expect(aligned.frame.width).toBe(100);
+            expect(aligned.frame.height).toBe(60);
+        });
+
+        it('should round up a size that does not scale to whole pixels', () =>
+        {
+            pool.setScreenSize(1, 375, 667);
+
+            const input = pool.getOptimalTexture({ width: 375, height: 100 });
+            const aligned = pool.getAlignedTexture(input, 0.5);
+
+            expect(input.source.pixelWidth).toBe(375);
+            expect(aligned.source.pixelWidth).toBe(188);
+            expect(aligned.source.pixelHeight).toBe(64);
+        });
+
+        it('should share a bucket with optimal textures of the same backing size', () =>
+        {
+            const input = pool.getOptimalTexture({ width: 100, height: 60, resolution: 2 });
+            const optimal = pool.getOptimalTexture({ width: 100, height: 60, resolution: 2 });
+
+            pool.returnTexture(optimal);
+
+            const aligned = pool.getAlignedTexture(input, 2);
+
+            expect(aligned).toBe(optimal);
+
+            pool.returnTexture(aligned);
+
+            expect(pool.getAlignedTexture(input, 2)).toBe(aligned);
         });
     });
 

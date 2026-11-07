@@ -294,7 +294,10 @@ export abstract class AbstractSplitText<T extends SplitableTextObject> extends C
         this.words = res.words;
         this.lines = res.lines;
 
-        this.addChild(...this.lines);
+        if (this.lines.length > 0)
+        {
+            this.addChild(...this.lines);
+        }
 
         // force origin to be set
         this.charAnchor = this._charAnchor;

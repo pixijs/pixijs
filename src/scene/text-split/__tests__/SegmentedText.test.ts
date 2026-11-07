@@ -96,6 +96,16 @@ describe('SegmentedText', () =>
             expect(text.lines.length).toBe(2);
         });
 
+        it('should handle empty text', () =>
+        {
+            const text = new SplitText({
+                text: '',
+                style: { fontSize: 24 },
+            });
+
+            expect(text.text).toBeEmpty();
+        });
+
         it('should respect text alignment', () =>
         {
             const text = new SplitBitmapText({

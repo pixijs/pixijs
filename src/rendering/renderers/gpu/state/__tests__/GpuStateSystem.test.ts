@@ -3,17 +3,16 @@ import { GpuStateSystem } from '../GpuStateSystem';
 
 describe('GpuStateSystem.getColorTargets', () =>
 {
-    it('uses the supplied format on every emitted target', () =>
+    it('gives each target its own attachment format', () =>
     {
         const system = new GpuStateSystem();
         const state = new State();
 
         state.blend = true;
 
-        const targets = system.getColorTargets(state, 3, 'rgba16float');
+        const targets = system.getColorTargets(state, ['rgba16float', 'rg16float', 'rgba8unorm']);
 
-        expect(targets).toHaveLength(3);
-        expect(targets.every((t) => t.format === 'rgba16float')).toBe(true);
+        expect(targets.map((t) => t.format)).toEqual(['rgba16float', 'rg16float', 'rgba8unorm']);
     });
 
     it('emits one fresh GPUColorTargetState per slot (no shared object refs)', () =>
@@ -23,7 +22,7 @@ describe('GpuStateSystem.getColorTargets', () =>
 
         state.blend = true;
 
-        const targets = system.getColorTargets(state, 2, 'bgra8unorm');
+        const targets = system.getColorTargets(state, ['bgra8unorm', 'bgra8unorm']);
 
         expect(targets[0]).not.toBe(targets[1]);
 
@@ -42,7 +41,7 @@ describe('GpuStateSystem.getColorTargets', () =>
 
         state.blend = false;
 
-        const targets = system.getColorTargets(state, 1, 'rgba8unorm');
+        const targets = system.getColorTargets(state, ['rgba8unorm']);
 
         expect(targets[0].blend).toBeUndefined();
     });
@@ -54,8 +53,22 @@ describe('GpuStateSystem.getColorTargets', () =>
 
         state.blend = true;
 
-        const targets = system.getColorTargets(state, 1, 'rgba8unorm');
+        const targets = system.getColorTargets(state, ['rgba8unorm']);
 
         expect(targets[0].blend).toBeDefined();
+    });
+
+    it('never blends an integer attachment', () =>
+    {
+        const system = new GpuStateSystem();
+        const state = new State();
+
+        state.blend = true;
+
+        const targets = system.getColorTargets(state, ['rgba8unorm', 'r32uint', 'rg16sint']);
+
+        expect(targets[0].blend).toBeDefined();
+        expect(targets[1].blend).toBeUndefined();
+        expect(targets[2].blend).toBeUndefined();
     });
 });

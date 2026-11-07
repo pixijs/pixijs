@@ -515,3 +515,99 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
         renderer.destroy();
     });
 });
+
+describeLocalOnly('GpuRenderTargetAdaptor clear values', () =>
+{
+    it('clears an attachment to its own clearValue, and the rest to the bind\'s colour, then the default', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const target = new RenderTarget({
+            colorTextures: [new TextureSource({ width: 16, height: 16 }), new TextureSource({ width: 16, height: 16 })],
+        });
+
+        target.colorAttachments[1].clearValue = [1, 0, 0, 1];
+
+        const attachments = () => renderer.renderTarget.getGpuRenderTarget(target).descriptor.colorAttachments;
+
+        renderer.render({ target, container: new Container(), clear: true, clearColor: [0, 0, 1, 1] });
+
+        expect(attachments()[0].clearValue).toEqual([0, 0, 1, 1]);
+        expect(attachments()[1].clearValue).toEqual([1, 0, 0, 1]);
+
+        renderer.render({ target, container: new Container(), clear: true });
+
+        expect(attachments()[0].clearValue).toEqual([0, 0, 0, 0]);
+        expect(attachments()[1].clearValue).toEqual([1, 0, 0, 1]);
+
+        renderer.destroy();
+    });
+
+    it('the bind decides whether anything clears, and loadOp: load opts an attachment out, on clear() too', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const target = new RenderTarget({
+            colorTextures: [new TextureSource({ width: 16, height: 16 }), new TextureSource({ width: 16, height: 16 })],
+        });
+        const gpuRenderTarget = renderer.renderTarget.getGpuRenderTarget(target);
+        const loadOps = () => Array.from(gpuRenderTarget.descriptor.colorAttachments, (attachment) => attachment.loadOp);
+
+        renderer.encoder.renderStart();
+
+        // the bind clears, attachment 1 opts out
+        target.colorAttachments[1].loadOp = 'load';
+        renderer.renderTarget.bind({ target, clear: true });
+
+        expect(loadOps()).toEqual(['clear', 'load']);
+
+        // the bind doesn't clear: nothing clears, whatever an attachment says, and the open pass is reused
+        const descriptor = gpuRenderTarget.descriptor;
+
+        target.colorAttachments[0].loadOp = 'clear';
+        target.colorAttachments[1].loadOp = 'clear';
+        renderer.renderTarget.bind({ target, clear: false });
+
+        expect(gpuRenderTarget.descriptor).toBe(descriptor);
+
+        // an explicit clear follows the same rule: attachment 1 still opts out
+        target.colorAttachments[1].loadOp = 'load';
+        renderer.renderTarget.clear(target, CLEAR.COLOR);
+
+        expect(loadOps()).toEqual(['clear', 'load']);
+
+        renderer.encoder.postrender();
+        renderer.destroy();
+    });
+
+    it('a filter handing back to a target with loadOp: clear attachments keeps what was drawn', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const color = new TextureSource({ width: 16, height: 16, resolution: 1 });
+        const target = new RenderTarget({
+            colorAttachments: [{ texture: color, loadOp: 'clear', clearValue: [0, 0, 0, 1] }],
+        });
+
+        // the left half drawn first; the right half through a filter, which pops back to `target` with clear: false
+        const scene = new Container();
+        const filtered = new Graphics().rect(8, 0, 8, 16).fill(0xffffff);
+
+        filtered.filters = [new AlphaFilter()];
+        scene.addChild(new Graphics().rect(0, 0, 8, 16).fill(0xffffff), filtered);
+
+        renderer.render({ target, container: scene, clear: true });
+
+        const { pixels } = renderer.extract.pixels(new Texture({ source: color }));
+        const at = (x: number, y: number) => Array.from(pixels.slice(((y * 16) + x) * 4, (((y * 16) + x) * 4) + 4));
+
+        expect(at(4, 8)).toEqual([255, 255, 255, 255]);
+        expect(at(12, 8)).toEqual([255, 255, 255, 255]);
+
+        // and a plain rebind that doesn't clear keeps it too
+        renderer.render({ target, container: new Container(), clear: false });
+
+        const { pixels: after } = renderer.extract.pixels(new Texture({ source: color }));
+
+        expect(Array.from(after.slice(((8 * 16) + 4) * 4, (((8 * 16) + 4) * 4) + 4))).toEqual([255, 255, 255, 255]);
+
+        renderer.destroy();
+    });
+});

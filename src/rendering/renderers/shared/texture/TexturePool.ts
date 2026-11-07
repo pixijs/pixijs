@@ -233,6 +233,44 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
             };
         }
 
+        const { width, height } = this.getOptimalSize(options.width, options.height, options.resolution ?? 1);
+
+        return this._getTexture(width, height, options);
+    }
+
+    /**
+     * Gets a pooled texture that covers the same area as another texture at a resolution of its own, so
+     * texture coordinates for one address the same point in the other. Use it for a texture a shader
+     * samples with the coordinates of the other, such as the backdrop a filter reads alongside its input.
+     *
+     * The backing size is the other texture's scaled by the two resolutions, so it is not rounded to a
+     * power of two or capped to a screen. A size that does not scale to whole pixels is rounded up, which
+     * leaves the two under a pixel apart at the far edge.
+     * @param texture - The texture to line up with.
+     * @param resolution - The resolution of the new texture.
+     * @returns A pooled texture with a frame the size of the given texture's.
+     * @internal
+     */
+    public getAlignedTexture(texture: Texture, resolution: number): Texture
+    {
+        const source = texture.source;
+        const scale = resolution / source._resolution;
+
+        return this._getTexture(
+            Math.ceil((source.pixelWidth * scale) - 1e-6),
+            Math.ceil((source.pixelHeight * scale) - 1e-6),
+            { width: texture.frame.width, height: texture.frame.height, resolution },
+        );
+    }
+
+    /**
+     * Takes a texture of a backing size from its bucket, creating one if the bucket is empty.
+     * @param textureWidth - The backing width in physical pixels.
+     * @param textureHeight - The backing height in physical pixels.
+     * @param options - The request the texture is for; its width and height become the frame.
+     */
+    private _getTexture(textureWidth: number, textureHeight: number, options: TexturePoolRequest): Texture
+    {
         const frameWidth = options.width;
         const frameHeight = options.height;
         const resolution = options.resolution ?? 1;
@@ -240,12 +278,6 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
         const autoGenerateMipmaps = options.autoGenerateMipmaps ?? false;
         const format = options.format ?? this.textureOptions.format ?? TextureSource.defaultOptions.format;
         const scaleMode = options.scaleMode ?? this.textureOptions.scaleMode ?? TextureStyle.defaultOptions.scaleMode;
-
-        const { width: textureWidth, height: textureHeight } = this.getOptimalSize(
-            frameWidth,
-            frameHeight,
-            resolution,
-        );
 
         // #if _DEBUG
         if (textureWidth > maxKeyDimension || textureHeight > maxKeyDimension)
@@ -304,9 +336,10 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
      * would allocate for a request, without taking a texture from the pool.
      *
      * Each axis is the next power of two, or the smallest registered screen the request fits inside
-     * (see {@link TexturePoolClass#setScreenSize|setScreenSize}). Use it when a consumer needs to know
-     * where a request's content will sit inside its pooled texture before it has one, such as a uniform
-     * that maps content space onto texture space.
+     * (see {@link TexturePoolClass#setScreenSize|setScreenSize}). A screen counts at its physical size and
+     * at its size at the resolution of the request. Use it when a consumer needs to know where a request's
+     * content will sit inside its pooled texture before it has one, such as a uniform that maps content
+     * space onto texture space.
      * @param frameWidth - The minimum width of the texture.
      * @param frameHeight - The minimum height of the texture.
      * @param resolution - The resolution of the texture.
@@ -318,9 +351,9 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
         const pixelHeight = Math.ceil((frameHeight * resolution) - 1e-6);
 
         const po2Width = nextPow2(pixelWidth);
-        const screenWidth = this._screens.getFittingWidth(pixelWidth);
+        const screenWidth = this._screens.getFittingWidth(pixelWidth, resolution);
         const po2Height = nextPow2(pixelHeight);
-        const screenHeight = this._screens.getFittingHeight(pixelHeight);
+        const screenHeight = this._screens.getFittingHeight(pixelHeight, resolution);
 
         return {
             width: screenWidth !== undefined ? Math.min(screenWidth, po2Width) : po2Width,
@@ -386,8 +419,9 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
 
         if (!textures)
         {
-            // the bucket this texture belongs to was pruned (its size no longer matches a screen),
-            // so there is nothing to return it to - destroy it rather than resurrect a dead bucket
+            // the bucket this texture belongs to was pruned (its size is not a power of two and no longer
+            // matches a screen), so there is nothing to return it to - destroy it rather than resurrect a
+            // dead bucket
             this._dropTextures([renderTexture], true);
 
             return;
@@ -403,13 +437,18 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
      * that axis instead of the next power of two, which stops a full screen filter from allocating a texture
      * far larger than the screen. Requests larger than every registered screen on an axis keep the power of
      * two size - the pool never rounds a request up to a screen it does not fit in.
+     *
+     * The resolution says how large the screen is in the scene. A request at another resolution is fitted
+     * to the screen at that resolution too, so a resolution 1 filter over a 1179x2556 screen at 3x gets a
+     * 393x852 texture, where the physical size alone would leave it at 512x1024.
      * @param rendererUid - The uid of the renderer, used to update or remove this screen later.
      * @param pixelWidth - The width of the screen in physical pixels.
      * @param pixelHeight - The height of the screen in physical pixels.
+     * @param resolution - The resolution of the screen. Defaults to 1.
      */
-    public setScreenSize(rendererUid: number, pixelWidth: number, pixelHeight: number): void
+    public setScreenSize(rendererUid: number, pixelWidth: number, pixelHeight: number, resolution = 1): void
     {
-        if (!this._screens.set(rendererUid, pixelWidth, pixelHeight)) return;
+        if (!this._screens.set(rendererUid, pixelWidth, pixelHeight, resolution)) return;
 
         this._pruneScreenTextures();
     }
@@ -429,7 +468,9 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
 
     /**
      * Destroys the idle textures in every bucket that has a non power of two dimension matching no live
-     * screen. Power of two buckets are always kept, as any request can fall back to them.
+     * screen. Power of two buckets are always kept, as any request can fall back to them. Aligned textures
+     * of other sizes and textures fitted to a screen at another resolution go too, and are made again the
+     * next time they are asked for.
      */
     private _pruneScreenTextures(): void
     {

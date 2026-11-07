@@ -393,13 +393,30 @@ export class FilterSystem implements System
      */
     public getBackTexture(lastRenderSurface: RenderTarget, bounds: Bounds, previousBounds?: Bounds)
     {
-        const backgroundResolution = lastRenderSurface.colorTexture.source._resolution;
-
         const backTexture = TexturePool.getOptimalTexture({
             width: bounds.width,
             height: bounds.height,
-            resolution: backgroundResolution,
+            resolution: lastRenderSurface.colorTexture.source._resolution,
         });
+
+        return this._copyBackTexture(lastRenderSurface, backTexture, bounds, previousBounds);
+    }
+
+    /**
+     * Copies an area of a render surface into a texture at the resolution of the surface.
+     * @param lastRenderSurface - The render surface to copy from.
+     * @param backTexture - The texture to copy to.
+     * @param bounds - The bounds of the area to copy.
+     * @param previousBounds - The previous bounds to use for offsetting the copy.
+     */
+    private _copyBackTexture(
+        lastRenderSurface: RenderTarget,
+        backTexture: Texture,
+        bounds: Bounds,
+        previousBounds?: Bounds
+    ): Texture
+    {
+        const backgroundResolution = backTexture.source._resolution;
 
         let x = bounds.minX;
         let y = bounds.minY;
@@ -410,11 +427,15 @@ export class FilterSystem implements System
             y -= previousBounds.minY;
         }
 
-        x = Math.floor(x * backgroundResolution);
-        y = Math.floor(y * backgroundResolution);
+        // bounds snapped to a fractional resolution can scale to a hair under a whole pixel,
+        // which must not start the copy a pixel early
+        x = Math.floor((x * backgroundResolution) + 1e-6);
+        y = Math.floor((y * backgroundResolution) + 1e-6);
 
-        const width = Math.ceil(bounds.width * backgroundResolution);
-        const height = Math.ceil(bounds.height * backgroundResolution);
+        // bounds snapped to a fractional resolution can scale to a hair over a whole pixel,
+        // which must not ask for more than the texture holds
+        const width = Math.min(Math.ceil(bounds.width * backgroundResolution), backTexture.source.pixelWidth);
+        const height = Math.min(Math.ceil(bounds.height * backgroundResolution), backTexture.source.pixelHeight);
 
         this.renderer.renderTarget.copyToTexture(
             lastRenderSurface,
@@ -623,7 +644,19 @@ export class FilterSystem implements System
             // if we don't do this, we won't be able to copy pixels for the background
             const renderTarget = renderer.renderTarget.getRenderTarget(filterData.outputRenderSurface);
 
-            filterData.backTexture = this.getBackTexture(renderTarget, bounds, previousFilterData?.bounds);
+            // the copy is at the resolution of the surface, not the filter, so its texture is sized to cover
+            // the same area as the input, and a shader can sample both with the same coordinates
+            const backTexture = TexturePool.getAlignedTexture(
+                filterData.inputTexture,
+                renderTarget.colorTexture.source._resolution
+            );
+
+            filterData.backTexture = this._copyBackTexture(
+                renderTarget,
+                backTexture,
+                bounds,
+                previousFilterData?.bounds
+            );
         }
 
         renderer.renderTarget.bind({ target: filterData.inputTexture, clear: true });

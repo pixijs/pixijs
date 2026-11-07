@@ -102,13 +102,13 @@ const color = new TextureSource({ width: 512, height: 512 });
 
 // pass 1: write depth
 const writeTarget = new RenderTarget({
-  colorAttachments: [{ texture: color, loadOp: "clear", clearValue: [0, 0, 0, 1] }],
+  colorAttachments: [{ texture: color, clearValue: [0, 0, 0, 1] }],
   depthStencilAttachment: { texture: depth, depthLoadOp: "clear", depthClearValue: 1 },
 });
 
 // pass 2: keep the same depth attached read-only while sampling it
 const readTarget = new RenderTarget({
-  colorAttachments: [{ texture: color, loadOp: "load" }],
+  colorAttachments: [{ texture: color, loadOp: "load" }], // keeps pass 1's color even when bound with clear
   depthStencilAttachment: { texture: depth, depthReadOnly: true },
 });
 
@@ -141,7 +141,27 @@ const shader = Shader.from({
 
 Integer formats (`*uint`, `*sint`) hold exact integers. Use them where a float texture would lose bits, since small integers are denormal floats and GPUs may flush them to zero. They can't be filtered, so set `scaleMode: "nearest"`. `BufferImageSource` infers `rgba32uint` from a `Uint32Array` and `rgba16uint` from a `Uint16Array`; pass `format: "rgba32sint"` (or another signed format) explicitly for signed data. It defaults integer formats to `alphaMode: "no-premultiply-alpha"` because integer data can't be premultiplied on upload.
 
-In GLSL ES 3.0, declare `uniform usampler2D uIds;` (or `isampler2D`) and read it with `texelFetch(uIds, ivec2(x, y), 0)`. GLSL ES 3.0 gives integer samplers no default precision, so PixiJS declares `highp` for them and you don't need a precision line. A precision line you write yourself is kept. In WGSL, declare `@group(0) @binding(1) var uIds: texture_2d<u32>;` (or `<i32>`) and read it with `textureLoad(uIds, vec2<i32>(x, y), 0)`; the generated bind group layout takes its `sampleType` from the `<u32>` / `<i32>` suffix. PixiJS can't render into integer textures yet.
+In GLSL ES 3.0, declare `uniform usampler2D uIds;` (or `isampler2D`) and read it with `texelFetch(uIds, ivec2(x, y), 0)`. GLSL ES 3.0 gives integer samplers no default precision, so PixiJS declares `highp` for them and you don't need a precision line. A precision line you write yourself is kept. In WGSL, declare `@group(0) @binding(1) var uIds: texture_2d<u32>;` (or `<i32>`) and read it with `textureLoad(uIds, vec2<i32>(x, y), 0)`; the generated bind group layout takes its `sampleType` from the `<u32>` / `<i32>` suffix. An integer texture can also be a render target's color attachment (below); it can't be antialiased.
+
+## Several color attachments
+
+```ts
+import { RenderTarget, TextureSource } from "pixi.js";
+
+const target = new RenderTarget({
+  colorAttachments: [
+    { texture: new TextureSource({ width, height, format: "rgba16float" }) },
+    { texture: new TextureSource({ width, height, format: "rg16float" }), clearValue: [0, 0, 0, 0] },
+    { texture: new TextureSource({ width, height, format: "r32uint" }), clearValue: [0xffffffff, 0, 0, 0] },
+  ],
+});
+```
+
+Each attachment keeps its own format. A draw writes only the attachments its fragment shader has outputs for: WGSL `@location(n)` fields of the returned struct (or a single `-> @location(0)` return), GLSL ES 3.0 `layout(location = n) out` declarations. Every other attachment is left as it was, so a 2D sprite drawn into this target changes attachment 0 only. PixiJS reads the outputs from the source; a shader it can't read (an output built by a macro) writes every attachment. `GpuProgram.fragmentOutputMask` and `GlProgram.fragmentOutputMask` show what it found, one bit per location, or `null` when it couldn't read them.
+
+Every attachment a draw writes blends with the draw's blend mode, except integer formats, which never blend. A blended draw needs a `vec4` output for each attachment it writes, as the blend reads its alpha: WebGPU reports a validation error and skips the draw, and WebGL blends with an undefined alpha. Write integer outputs as `u32` / `i32` in WGSL, and as `highp uint` / `highp int` in GLSL: a GLSL ES 3.0 fragment shader defaults integers to `mediump`, which only guarantees 16 bits on some phones. `renderer.extract` reads 8-bit color only, and throws when asked to read a float, integer or depth texture. For a 16-bit float texture, extract `new Sprite(texture)` instead. For 32-bit float, integer and depth textures, extract a `Mesh` whose shader reads the texture and outputs color.
+
+The bind's `clear` decides whether anything clears. Each attachment clears to its own `clearValue`, or to the bind's clear color where it has none; integer attachments take the numbers as integers. An attachment with `loadOp: "load"` keeps its contents even when the bind clears, and a bind with `clear: false` never clears. WebGL1 clears all attachments or none.
 
 ## 3D and array textures
 
