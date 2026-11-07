@@ -1,7 +1,7 @@
 import { warn } from '../../../../utils/logging/warn';
 import { CLEAR } from '../../gl/const';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
-import { GpuMsaaTexture } from '../texture/GpuTextureSystem';
+import { GpuMsaaTexture } from '../texture/GpuMsaaTexture';
 import { GpuDepthCopy } from './GpuDepthCopy';
 import { GpuMsaaRestore } from './GpuMsaaRestore';
 import { GpuRenderTarget } from './GpuRenderTarget';

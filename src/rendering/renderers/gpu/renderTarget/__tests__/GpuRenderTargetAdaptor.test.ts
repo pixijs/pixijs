@@ -7,7 +7,8 @@ import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
 import { AlphaFilter } from '~/filters';
 import { Container, Graphics } from '~/scene';
 
-import type { GpuMsaaTexture, GPUTextureGpuData } from '../../texture/GpuTextureSystem';
+import type { GpuMsaaTexture } from '../../texture/GpuMsaaTexture';
+import type { GPUTextureGpuData } from '../../texture/GpuTextureSystem';
 import type { WebGPURenderer } from '../../WebGPURenderer';
 import type { GpuRenderTarget } from '../GpuRenderTarget';
 

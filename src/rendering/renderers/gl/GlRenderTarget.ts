@@ -36,11 +36,13 @@ export class GlRenderTarget
      */
     public depthStencilRenderBuffer: WebGLRenderbuffer;
     /**
-     * On an MSAA target with a depth/stencil texture, the texture's multisampled renderbuffer attached to the
-     * framebuffer (see GlTextureSystem.getMsaaRenderBuffer). It belongs to the texture, not the target.
+     * Tracks which renderbuffer is currently attached as this MSAA target's depth/stencil, when it has a
+     * depth/stencil texture. WebGL textures can't be multisampled, so the texture keeps its samples in its
+     * `GlTexture.msaaRenderBuffer` and the target attaches that; it is only re-attached when the texture makes
+     * a new one. It belongs to the texture, so the target never deletes it.
      * @internal
      */
-    public _attachedDepthStencilSamples: WebGLRenderbuffer = null;
+    public _attachedDepthStencilRenderBuffer: WebGLRenderbuffer = null;
     /**
      * The stencil state the stencil system and the mask pipe track for this target on this renderer.
      * It lives here rather than in a uid-keyed record so it is restored when the target is bound again

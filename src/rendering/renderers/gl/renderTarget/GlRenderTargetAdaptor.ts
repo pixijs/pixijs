@@ -272,7 +272,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
                 // keeps in a renderbuffer instead
                 if (gpuRenderTarget.msaa)
                 {
-                    this._attachDepthStencilSamples(renderTarget, gpuRenderTarget);
+                    this._attachMsaaDepthStencil(renderTarget, gpuRenderTarget);
                 }
                 else
                 {
@@ -863,7 +863,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
      * @param renderTarget - the target, which has a depth/stencil texture
      * @param glRenderTarget - its backend target
      */
-    private _attachDepthStencilSamples(renderTarget: RenderTarget, glRenderTarget: GlRenderTarget): void
+    private _attachMsaaDepthStencil(renderTarget: RenderTarget, glRenderTarget: GlRenderTarget): void
     {
         const gl = this._renderer.gl;
         const textures = this._renderer.texture;
@@ -885,7 +885,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
                 glTexture.msaaRenderBuffer = ownRenderBuffer;
                 glTexture.msaaWidth = glRenderTarget.width;
                 glTexture.msaaHeight = glRenderTarget.height;
-                glRenderTarget._attachedDepthStencilSamples = ownRenderBuffer;
+                glRenderTarget._attachedDepthStencilRenderBuffer = ownRenderBuffer;
             }
             else
             {
@@ -900,9 +900,9 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         // a resize reallocates the storage of the same renderbuffer, which stays attached; it is only a new one
         // after the texture's GL texture was unloaded and made again
-        if (glRenderTarget._attachedDepthStencilSamples !== renderBuffer)
+        if (glRenderTarget._attachedDepthStencilRenderBuffer !== renderBuffer)
         {
-            glRenderTarget._attachedDepthStencilSamples = renderBuffer;
+            glRenderTarget._attachedDepthStencilRenderBuffer = renderBuffer;
 
             gl.framebufferRenderbuffer(
                 gl.FRAMEBUFFER,

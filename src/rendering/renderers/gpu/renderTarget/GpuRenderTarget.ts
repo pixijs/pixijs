@@ -1,7 +1,7 @@
 import { STENCIL_MODES } from '../../shared/state/const';
 
 import type { TextureSource } from '../../shared/texture/sources/TextureSource';
-import type { GpuMsaaTexture } from '../texture/GpuTextureSystem';
+import type { GpuMsaaTexture } from '../texture/GpuMsaaTexture';
 
 /**
  * A class which holds the canvas contexts and textures for a render target.
