@@ -24,6 +24,58 @@ import type { WebGPURenderer } from '../WebGPURenderer';
 import type { GpuTextureUploader } from './uploaders/GpuTextureUploader';
 
 /**
+ * The multisampled colour texture an antialiased texture is drawn into, and resolved from, by every render
+ * target over it. Made on first render into the texture, and destroyed with its GPU data, so it lives as
+ * long as the texture's GPU texture, not as long as a render target. A canvas has no GPU data, so its
+ * render target keeps one of its own.
+ * @internal
+ */
+export class GpuMsaaTexture
+{
+    public texture: GPUTexture;
+    public view: GPUTextureView;
+    /**
+     * Never stored, so a pass that reopens it restores it from the resolved texture (see GpuMsaaRestore).
+     * Always on tile-based GPUs; elsewhere storing it is cheaper, so only when the texture is marked
+     * `transient`. Read once, when it is made.
+     */
+    public transient: boolean;
+
+    /**
+     * @param renderer - the renderer whose device makes it
+     * @param source - the texture it holds the samples of, which sets its format and size
+     */
+    constructor(renderer: WebGPURenderer, source: TextureSource)
+    {
+        const { tileBased, transientAttachment } = renderer.device.extensions;
+
+        this.transient = tileBased || source.transient;
+
+        let usage = GPUTextureUsage.RENDER_ATTACHMENT;
+
+        if (this.transient && transientAttachment) usage |= GPUTextureUsage.TRANSIENT_ATTACHMENT;
+
+        this.texture = renderer.gpu.device.createTexture({
+            label: source.label,
+            size: { width: source.pixelWidth, height: source.pixelHeight, depthOrArrayLayers: source.depthOrArrayLayers },
+            format: source.format,
+            sampleCount: 4,
+            // WebGPU requires multisampled textures to have exactly 1 mip level
+            mipLevelCount: 1,
+            usage,
+        });
+        this.view = this.texture.createView();
+    }
+
+    public destroy(): void
+    {
+        this.texture.destroy();
+        this.texture = null;
+        this.view = null;
+    }
+}
+
+/**
  * Stores GPU-specific data for a Texture instance in WebGL context.
  * @internal
  */
@@ -32,6 +84,8 @@ export class GPUTextureGpuData implements GPUData
     public gpuTexture: GPUTexture;
     public textureView: GPUTextureView = null;
     public textureViews: Record<string, GPUTextureView> = Object.create(null);
+    /** The samples of an antialiased texture, made on first render into it (see {@link GpuTextureSystem.getMsaaTexture}). */
+    public msaa: GpuMsaaTexture | null = null;
 
     constructor(gpuTexture: GPUTexture)
     {
@@ -42,9 +96,11 @@ export class GPUTextureGpuData implements GPUData
     public destroy(): void
     {
         this.gpuTexture.destroy();
+        this.msaa?.destroy();
         this.textureView = null;
         this.textureViews = null;
         this.gpuTexture = null;
+        this.msaa = null;
     }
 }
 
@@ -329,6 +385,24 @@ export class GpuTextureSystem implements System, CanvasGenerator
         source._gcLastUsed = this._renderer.gc.now;
 
         return (source._gpuData[this._renderer.uid] as GPUTextureGpuData)?.gpuTexture || this.initSource(source);
+    }
+
+    /**
+     * The multisampled texture an antialiased texture is drawn into, made on first use. It belongs to the
+     * texture, so every render target over the texture shares its samples, and it goes with the texture's GPU
+     * texture: when the texture is destroyed, unloaded or resized.
+     * @param source - the antialiased texture
+     * @returns its multisampled texture
+     */
+    public getMsaaTexture(source: TextureSource): GpuMsaaTexture
+    {
+        this.getGpuSource(source);
+
+        const gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
+
+        gpuData.msaa ??= new GpuMsaaTexture(this._renderer, source);
+
+        return gpuData.msaa;
     }
 
     /**

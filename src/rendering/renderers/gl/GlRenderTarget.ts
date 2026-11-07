@@ -30,8 +30,17 @@ export class GlRenderTarget
     public _drawBuffersMask = -1;
     public framebuffer: WebGLFramebuffer;
     public resolveTargetFramebuffer: WebGLFramebuffer;
-    public msaaRenderBuffer: WebGLRenderbuffer[] = [];
+    /**
+     * The target's own depth/stencil renderbuffer, for a target with the depth or stencil flag and no
+     * depth/stencil texture. Multisampled on an MSAA target.
+     */
     public depthStencilRenderBuffer: WebGLRenderbuffer;
+    /**
+     * On an MSAA target with a depth/stencil texture, the texture's multisampled renderbuffer attached to the
+     * framebuffer (see GlTextureSystem.getMsaaRenderBuffer). It belongs to the texture, not the target.
+     * @internal
+     */
+    public _attachedDepthStencilSamples: WebGLRenderbuffer = null;
     /**
      * The stencil state the stencil system and the mask pipe track for this target on this renderer.
      * It lives here rather than in a uid-keyed record so it is restored when the target is bound again

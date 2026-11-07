@@ -152,6 +152,13 @@ export interface PixiDepthStencilAttachment extends Omit<GPURenderPassDepthStenc
  * clear color (0 to 1) clears them to 0 or 1. The bind's `clear` decides whether anything clears; an
  * attachment with `loadOp: 'load'` keeps its contents even when the bind clears. An antialiased target can't
  * have an integer attachment.
+ *
+ * Several render targets can be built over the same textures, for example one that writes a depth texture
+ * and one that only tests against it. They draw into the same pixels: an antialiased texture's samples are
+ * kept with the texture, not with a target. They are made when the texture is first drawn into and go with
+ * its GPU texture, when it is destroyed, unloaded or resized; destroying a target frees only what the target
+ * owns, not the samples of textures passed to it. Targets that share a depth/stencil texture must either
+ * all be antialiased or all not be.
  * @category rendering
  * @advanced
  */

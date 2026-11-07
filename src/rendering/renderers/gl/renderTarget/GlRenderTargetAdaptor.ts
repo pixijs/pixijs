@@ -266,11 +266,18 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         // the root target renders to the canvas, whose context owns its depth/stencil buffers
         if (gpuRenderTarget.framebuffer)
         {
-            // WebGL textures can't be multisampled, so an MSAA target keeps its depth/stencil in a
-            // multisampled renderbuffer even when a depth-stencil texture was requested
-            if (renderTarget.depthStencilAttachment && !gpuRenderTarget.msaa)
+            if (renderTarget.depthStencilAttachment)
             {
-                this._attachDepthStencilTexture(renderTarget, mipLevel, layer);
+                // WebGL textures can't be multisampled, so an MSAA target draws into the samples the texture
+                // keeps in a renderbuffer instead
+                if (gpuRenderTarget.msaa)
+                {
+                    this._attachDepthStencilSamples(renderTarget, gpuRenderTarget);
+                }
+                else
+                {
+                    this._attachDepthStencilTexture(renderTarget, mipLevel, layer);
+                }
             }
             // depth/stencil requested without an explicit texture — a renderbuffer is cheaper
             // and (unlike a texture) can be multisampled to match an MSAA color attachment
@@ -534,19 +541,12 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             gpuRenderTarget.resolveTargetFramebuffer = null;
         }
 
+        // the multisampled colour and depth/stencil texture renderbuffers belong to the textures
         if (gpuRenderTarget.depthStencilRenderBuffer)
         {
             gl.deleteRenderbuffer(gpuRenderTarget.depthStencilRenderBuffer);
             gpuRenderTarget.depthStencilRenderBuffer = null;
         }
-
-        gpuRenderTarget.msaaRenderBuffer.forEach((renderBuffer) =>
-        {
-            gl.deleteRenderbuffer(renderBuffer);
-        });
-
-        // stays an array so destroying the same target again finds nothing to delete
-        gpuRenderTarget.msaaRenderBuffer.length = 0;
     }
 
     /**
@@ -702,7 +702,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         if (glRenderTarget.depthStencilRenderBuffer)
         {
-            this._resizeStencil(renderTarget, glRenderTarget);
+            this._resizeStencil(glRenderTarget);
         }
 
         // _resizeColor (MSAA) rebinds framebuffers; force the next startRenderPass to bind explicitly
@@ -785,18 +785,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         if (glRenderTarget.msaa)
         {
-            const viewFramebuffer = gl.createFramebuffer();
-
-            glRenderTarget.framebuffer = viewFramebuffer;
-
-            gl.bindFramebuffer(gl.FRAMEBUFFER, viewFramebuffer);
-
-            renderTarget.colorAttachments.forEach((_, i) =>
-            {
-                const msaaRenderBuffer = gl.createRenderbuffer();
-
-                glRenderTarget.msaaRenderBuffer[i] = msaaRenderBuffer;
-            });
+            glRenderTarget.framebuffer = gl.createFramebuffer();
         }
         else
         {
@@ -849,41 +838,78 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             const renderer = this._renderer;
             const gl = renderer.gl;
 
-            const viewFramebuffer = glRenderTarget.framebuffer;
+            gl.bindFramebuffer(gl.FRAMEBUFFER, glRenderTarget.framebuffer);
 
-            gl.bindFramebuffer(gl.FRAMEBUFFER, viewFramebuffer);
-
+            // each colour texture keeps its samples in a renderbuffer shared by every target over it. The other
+            // targets meet a resize after the first, so getting it here only allocates storage for the first
             renderTarget.colorAttachments.forEach((colorAttachment, i) =>
             {
-                const source = colorAttachment.texture;
-
-                renderer.texture.bindSource(source, 0);
-                const glSource = renderer.texture.getGlSource(source);
-
-                const glInternalFormat = glSource.internalFormat;
-
-                const msaaRenderBuffer = glRenderTarget.msaaRenderBuffer[i];
-
-                gl.bindRenderbuffer(
-                    gl.RENDERBUFFER,
-                    msaaRenderBuffer
-                );
-
-                gl.renderbufferStorageMultisample(
-                    gl.RENDERBUFFER,
-                    4,
-                    glInternalFormat,
-                    source.pixelWidth,
-                    source.pixelHeight
-                );
-
                 gl.framebufferRenderbuffer(
                     gl.FRAMEBUFFER,
                     gl.COLOR_ATTACHMENT0 + i,
                     gl.RENDERBUFFER,
-                    msaaRenderBuffer
+                    renderer.texture.getMsaaRenderBuffer(colorAttachment.texture)
                 );
             });
+        }
+    }
+
+    /**
+     * Attaches the samples of an MSAA target's depth/stencil texture to its framebuffer, which is bound. They
+     * are kept in a renderbuffer with the texture (see GlTextureSystem.getMsaaRenderBuffer), so every MSAA
+     * target over the texture tests and writes the same depth. Runs every pass: getting the renderbuffer marks
+     * the texture used, which nothing else does as the target never binds it, so the GC can't unload samples
+     * in use; and it follows the texture's size, reallocating the storage after a resize.
+     * @param renderTarget - the target, which has a depth/stencil texture
+     * @param glRenderTarget - its backend target
+     */
+    private _attachDepthStencilSamples(renderTarget: RenderTarget, glRenderTarget: GlRenderTarget): void
+    {
+        const gl = this._renderer.gl;
+        const textures = this._renderer.texture;
+        const source = renderTarget.depthStencilAttachment.texture;
+        const ownRenderBuffer = glRenderTarget.depthStencilRenderBuffer;
+
+        // drawn to with only the depth or stencil flag before the texture was added
+        // (RenderTarget.ensureDepthStencilTexture), so it has a renderbuffer of its own
+        if (ownRenderBuffer)
+        {
+            const glTexture = textures.getGlSource(source);
+
+            // when no other target has drawn to the texture yet, the target's own renderbuffer becomes the
+            // texture's, which keeps the depth and stencil already drawn. It stays attached where it is, as
+            // both are depth/stencil. ensureDepthStencilTexture always matches the format; only an attachment
+            // assigned by hand can differ
+            if (!glTexture.msaaRenderBuffer && glTexture.internalFormat === gl.DEPTH24_STENCIL8)
+            {
+                glTexture.msaaRenderBuffer = ownRenderBuffer;
+                glTexture.msaaWidth = glRenderTarget.width;
+                glTexture.msaaHeight = glRenderTarget.height;
+                glRenderTarget._attachedDepthStencilSamples = ownRenderBuffer;
+            }
+            else
+            {
+                // deleting it while its framebuffer is bound detaches it
+                gl.deleteRenderbuffer(ownRenderBuffer);
+            }
+
+            glRenderTarget.depthStencilRenderBuffer = null;
+        }
+
+        const renderBuffer = textures.getMsaaRenderBuffer(source);
+
+        // a resize reallocates the storage of the same renderbuffer, which stays attached; it is only a new one
+        // after the texture's GL texture was unloaded and made again
+        if (glRenderTarget._attachedDepthStencilSamples !== renderBuffer)
+        {
+            glRenderTarget._attachedDepthStencilSamples = renderBuffer;
+
+            gl.framebufferRenderbuffer(
+                gl.FRAMEBUFFER,
+                this._getDepthStencilAttachmentPoint(renderTarget),
+                gl.RENDERBUFFER,
+                renderBuffer
+            );
         }
     }
 
@@ -981,10 +1007,10 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         );
 
         // TODO
-        this._resizeStencil(renderTarget, glRenderTarget);
+        this._resizeStencil(glRenderTarget);
     }
 
-    private _resizeStencil(renderTarget: RenderTarget, glRenderTarget: GlRenderTarget)
+    private _resizeStencil(glRenderTarget: GlRenderTarget)
     {
         const gl = this._renderer.gl;
 
@@ -995,16 +1021,10 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         if (glRenderTarget.msaa)
         {
-            const depthStencilTexture = renderTarget.depthStencilAttachment?.texture;
-
-            // stands in for the depth-stencil texture, so it takes the texture's format —
-            // copyDepthTexture's blit out of it needs the formats to match
             gl.renderbufferStorageMultisample(
                 gl.RENDERBUFFER,
                 4,
-                depthStencilTexture
-                    ? this._renderer.texture.getGlSource(depthStencilTexture).internalFormat
-                    : gl.DEPTH24_STENCIL8,
+                gl.DEPTH24_STENCIL8,
                 glRenderTarget.width,
                 glRenderTarget.height
             );

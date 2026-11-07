@@ -64,7 +64,7 @@ export class GpuMsaaRestore
             width: colorTexture.width,
             height: colorTexture.height,
             resolution: colorTexture._resolution,
-            format: gpuRenderTarget.msaaTextures[index].format,
+            format: colorTexture.format,
             autoGenerateMipmaps: false,
             // every restore copies into it afresh, so an idle one can be freed and re-created on the next restore
             autoGarbageCollect: true,
