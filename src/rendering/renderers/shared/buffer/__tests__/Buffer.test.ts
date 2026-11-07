@@ -199,7 +199,7 @@ describe('Buffer', () =>
         expect(updateObserver).not.toHaveBeenCalled();
     });
 
-    it('update should always use the last updateSize passed to it', async () =>
+    it('update should cover the whole buffer unless given a size', async () =>
     {
         const data = new Float32Array([1, 2, 3]);
 
@@ -210,10 +210,20 @@ describe('Buffer', () =>
         });
 
         buffer.setDataWithSize(data, 2, true);
+        buffer.update();
+
+        expect(buffer._updateSize).toBeUndefined();
+        expect(buffer._updateOffset).toBe(0);
+
+        buffer.update(4, 8);
+
+        expect(buffer._updateSize).toBe(4);
+        expect(buffer._updateOffset).toBe(8);
 
         buffer.update();
 
-        expect(buffer._updateSize).toBe(2 * 4);
+        expect(buffer._updateSize).toBeUndefined();
+        expect(buffer._updateOffset).toBe(0);
     });
 
     it('unload should re-key the buffer and emit a change event', () =>

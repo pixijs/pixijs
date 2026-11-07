@@ -1,9 +1,11 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { State } from '../../shared/state/State';
+import { isIntegerFormat } from '../../shared/texture/utils/isIntegerFormat';
 import { GpuBlendModesToPixi } from './GpuBlendModesToPixi';
 
 import type { BLEND_MODES } from '../../shared/state/const';
 import type { System } from '../../shared/system/System';
+import type { TEXTURE_FORMATS } from '../../shared/texture/const';
 import type { GPU } from '../GpuDeviceSystem';
 
 /**
@@ -69,10 +71,9 @@ export class GpuStateSystem implements System
     /**
      * Gets the blend mode data for the current state
      * @param state - The state to get the blend mode from
-     * @param count - The number of color targets to create
-     * @param format - The texture format of the color attachments (assumed uniform across attachments)
+     * @param formats - The texture format of each color attachment; one target is created per format
      */
-    public getColorTargets(state: State, count: number, format: GPUTextureFormat): GPUColorTargetState[]
+    public getColorTargets(state: State, formats: readonly GPUTextureFormat[]): GPUColorTargetState[]
     {
         // WebGPU blending is enabled/disabled by the presence of `GPUColorTargetState.blend`.
         // A boolean flag alone doesn't exist at the API level.
@@ -85,12 +86,15 @@ export class GpuStateSystem implements System
 
         // Emit one fresh object per attachment so the caller can mutate per-target fields
         // (e.g. writeMask) without aliasing across slots.
-        for (let i = 0; i < count; i++)
+        for (let i = 0; i < formats.length; i++)
         {
+            const format = formats[i];
+
             targets[i] = {
                 format,
                 writeMask: 0,
-                blend,
+                // integer formats can't blend: WebGPU rejects a blend on them, and WebGL skips it
+                blend: isIntegerFormat(format as TEXTURE_FORMATS) ? undefined : blend,
             };
         }
 

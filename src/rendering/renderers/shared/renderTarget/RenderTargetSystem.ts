@@ -10,6 +10,7 @@ import { CanvasSource } from '../texture/sources/CanvasSource';
 import { TextureSource } from '../texture/sources/TextureSource';
 import { Texture } from '../texture/Texture';
 import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
+import { isIntegerFormat } from '../texture/utils/isIntegerFormat';
 import { isRenderingToScreen } from './isRenderingToScreen';
 import { RenderTarget } from './RenderTarget';
 
@@ -1184,7 +1185,31 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
     public getGpuRenderTarget(renderTarget: RenderTarget)
     {
         return this._gpuRenderTargetHash[renderTarget.uid]
-        || (this._gpuRenderTargetHash[renderTarget.uid] = this.adaptor.initGpuRenderTarget(renderTarget));
+        || (this._gpuRenderTargetHash[renderTarget.uid] = this._initGpuRenderTarget(renderTarget));
+    }
+
+    private _initGpuRenderTarget(renderTarget: RenderTarget): RENDER_TARGET
+    {
+        const attachments = renderTarget.colorAttachments;
+
+        // an antialiased target resolves every attachment, and neither backend can resolve an
+        // integer format (WebGPU can't even multisample r32uint, nor WebGL R32UI), so fail here
+        // with the culprit named rather than later with a backend error
+        if (attachments.some((attachment) => attachment.texture.antialias))
+        {
+            const index = attachments.findIndex((attachment) => isIntegerFormat(attachment.texture.format));
+
+            if (index !== -1)
+            {
+                throw new Error(
+                    `[RenderTargetSystem] color attachment ${index} is ${attachments[index].texture.format}, `
+                    + 'an integer format, and integer formats can\'t be antialiased. '
+                    + 'Create the render target\'s textures without antialias.'
+                );
+            }
+        }
+
+        return this.adaptor.initGpuRenderTarget(renderTarget);
     }
 
     public resetState(): void

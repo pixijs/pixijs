@@ -6,6 +6,7 @@ module.exports = {
     testEnvironment: '@pixi/jest-electron/environment',
     setupFilesAfterEnv: [
         'jest-extended/all',
+        '<rootDir>/scripts/jest/jest-file-cleanup.ts',
     ],
     globalSetup: '<rootDir>/scripts/jest/jest-global-setup.ts',
     globalTeardown: '<rootDir>/scripts/jest/jest-global-teardown.ts',

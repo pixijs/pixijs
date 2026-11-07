@@ -52,9 +52,12 @@ export class BufferResource extends EventEmitter<{
 
     /** the underlying buffer that this resource is using */
     public buffer: Buffer;
-    /** the offset of the buffer this resource is using. If not provided, then it will use the offset of the buffer. */
+    /**
+     * the byte offset into the buffer this resource starts at, defaulting to 0.
+     * Must be a multiple of `renderer.limits.minUniformBufferOffsetAlignment`.
+     */
     public readonly offset: number;
-    /** the size of the buffer this resource is using. If not provided, then it will use the size of the buffer. */
+    /** the number of bytes this resource covers. If not provided, it covers the rest of the buffer after `offset`. */
     public readonly size: number;
     /**
      * A cheeky hint to the GL renderer to let it know this is a BufferResource
@@ -72,10 +75,10 @@ export class BufferResource extends EventEmitter<{
      * Create a new Buffer Resource.
      * @param options - The options for the buffer resource
      * @param options.buffer - The underlying buffer that this resource is using
-     * @param options.offset - The offset of the buffer this resource is using.
-     * If not provided, then it will use the offset of the buffer.
-     * @param options.size - The size of the buffer this resource is using.
-     * If not provided, then it will use the size of the buffer.
+     * @param options.offset - The byte offset into the buffer this resource starts at, defaulting to 0.
+     * Must be a multiple of `renderer.limits.minUniformBufferOffsetAlignment`.
+     * @param options.size - The number of bytes this resource covers.
+     * If not provided, it covers the rest of the buffer after `offset`.
      */
     constructor({ buffer, offset, size }: { buffer: Buffer; offset?: number; size?: number; })
     {
@@ -127,6 +130,7 @@ export class BufferResource extends EventEmitter<{
 
         this.emit('change', this);
 
+        this.buffer.off('change', this.onBufferChange, this);
         this.buffer = null;
         this.removeAllListeners();
     }

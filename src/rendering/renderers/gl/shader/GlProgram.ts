@@ -1,4 +1,5 @@
 import { createIdFromString } from '../../shared/utils/createIdFromString';
+import { extractFragmentOutputMaskFromGlProgram } from './program/extractFragmentOutputMaskFromGlProgram';
 import { getMaxFragmentPrecision } from './program/getMaxFragmentPrecision';
 import { addProgramDefines } from './program/preprocessors/addProgramDefines';
 import { ensurePrecision } from './program/preprocessors/ensurePrecision';
@@ -24,6 +25,8 @@ export interface GlUniformData
 export interface GlUniformBlockData
 {
     index: number;
+    /** the uniform buffer binding slot this block reads from, fixed when the program links */
+    binding: number;
     name: string;
     size: number;
     value?: TypedArray;
@@ -136,6 +139,8 @@ export class GlProgram
      */
     public _cacheKey: string;
 
+    private _fragmentOutputMask: number | null | undefined;
+
     /**
      * Creates a shiny new GlProgram. Used by WebGL renderer.
      * @param options - The options for the program.
@@ -180,6 +185,23 @@ export class GlProgram
         this.transformFeedbackVaryings = options.transformFeedbackVaryings;
 
         this._key = createIdFromString(`${this.vertex}:${this.fragment}`, 'gl-program');
+    }
+
+    /**
+     * Which color locations the fragment shader writes: bit `n` is set when it writes location `n`.
+     * A render target's color attachments that the shader doesn't write are left alone.
+     * `null` if the outputs couldn't be read, in which case every attachment is written.
+     * @advanced
+     */
+    get fragmentOutputMask(): number | null
+    {
+        // `undefined` = not read yet; `null` = read, but couldn't be parsed (kept, not retried)
+        if (this._fragmentOutputMask === undefined)
+        {
+            this._fragmentOutputMask = extractFragmentOutputMaskFromGlProgram(this.fragment);
+        }
+
+        return this._fragmentOutputMask;
     }
 
     /** destroys the program */

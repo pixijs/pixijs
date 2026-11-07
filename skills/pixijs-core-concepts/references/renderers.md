@@ -128,7 +128,7 @@ import { CLEAR, RenderTarget, Texture, TextureSource } from "pixi.js";
 const depthSource = new TextureSource({ width: 512, height: 512, format: "depth24plus-stencil8" });
 
 const target = new RenderTarget({
-  colorAttachments: [{ texture: new TextureSource({ width: 512, height: 512 }), loadOp: "clear" }],
+  colorAttachments: [{ texture: new TextureSource({ width: 512, height: 512 }), clearValue: [0, 0, 0, 1] }],
   depthStencilAttachment: { texture: depthSource, depthLoadOp: "clear" },
 });
 
@@ -149,6 +149,7 @@ renderer.renderTarget.copyDepthTexture(target, depthCopy, { x: 0, y: 0 }, { widt
 ```
 
 - `RenderTarget` takes WebGPU-style `colorAttachments`/`depthStencilAttachment` or the older `colorTextures`/`depth`/`stencil`/`depthStencilTexture` options. `colorTextures: 0` with `depth: true` makes a depth-only target.
+- A target's color attachments can each have their own format (`rgba16float`, `rg16float`, `r32uint`, ...). A draw writes only the attachments its shader has outputs for; integer attachments never blend and can't be antialiased. The bind's `clear` decides whether anything clears; an attachment with `loadOp: "load"` keeps its contents anyway, and `clear: false` never clears. See `pixijs-custom-rendering` for writing several outputs.
 - Positional `bind(target, clear, ...)` and `push(...)` are deprecated since 8.20.0. `pop()` throws when the stack is empty.
 - `copyDepthTexture` needs WebGL2 or WebGPU and a depth-format destination. The next render into the destination target must clear color only (`clear: CLEAR.COLOR`), or the copied depth is lost.
 - Destroy a target you constructed with `target.destroy()`; the renderer releases the GPU objects it built for it.
@@ -213,7 +214,7 @@ if (isWebGLSupported()) {
 
 // after init, WebGPU-only capability flags
 if (renderer.name === "webgpu") {
-  renderer.device.extensions.transientAttachment; // GPUTextureUsage.TRANSIENT_ATTACHMENT available
+  renderer.device.extensions.transientAttachment; // PixiJS uses GPUTextureUsage.TRANSIENT_ATTACHMENT
   renderer.limits.supportsOverrideConstants; // pipeline constants vs. source-baked overrides
 }
 ```

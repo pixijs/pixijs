@@ -1,8 +1,59 @@
-import '~/rendering/renderers/shared/texture/Texture';
 import { Container } from '../Container';
 import '../../text/init';
-import { getWebGLRenderer } from '@test-utils';
-import { Text } from '~/scene';
+import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
+import { RenderTexture, Texture } from '~/rendering';
+import { Sprite, Text } from '~/scene';
+
+import type { Renderer } from '~/rendering';
+
+function describeCachedContainerMove(createRenderer: () => Promise<Renderer>): void
+{
+    it('should draw a cached container at its new position after it moves', async () =>
+    {
+        const renderer = await createRenderer();
+        const target = RenderTexture.create({ width: 32, height: 32 });
+        const stage = new Container();
+
+        // fillers so the cached container's vertices don't start at the beginning of the attribute buffer
+        for (let i = 0; i < 5; i++)
+        {
+            stage.addChild(new Sprite({ texture: Texture.WHITE, width: 1, height: 1 }));
+        }
+
+        const cached = new Container({ x: 4, y: 4 });
+
+        cached.addChild(new Sprite({ texture: Texture.WHITE, width: 8, height: 8, tint: 0xff0000 }));
+        cached.cacheAsTexture(true);
+        stage.addChild(cached);
+
+        const render = () =>
+        {
+            renderer.render({ container: stage, target, clear: true });
+
+            const { pixels, width } = renderer.extract.pixels(target);
+
+            return (x: number, y: number) =>
+            {
+                const offset = ((y * width) + x) * 4;
+
+                return Array.from(pixels.subarray(offset, offset + 4));
+            };
+        };
+
+        expect(render()(8, 8)).toEqual([255, 0, 0, 255]);
+
+        cached.position.set(20, 20);
+
+        const pixelAt = render();
+
+        expect(pixelAt(24, 24)).toEqual([255, 0, 0, 255]);
+        expect(pixelAt(8, 8)).toEqual([0, 0, 0, 0]);
+
+        stage.destroy({ children: true });
+        target.destroy(true);
+        renderer.destroy();
+    });
+}
 
 describe('RenderGroupSystem', () =>
 {
@@ -71,4 +122,20 @@ describe('RenderGroupSystem', () =>
 
         expect(container.renderGroup.texture._source.scaleMode).toEqual('nearest');
     });
+});
+
+describe('RenderGroupSystem cacheAsTexture on WebGL', () =>
+{
+    describeCachedContainerMove(() => getWebGLRenderer());
+});
+
+// the cached container's vertices are a ranged update past offset 0, which WebGL1 uploads differently
+describe('RenderGroupSystem cacheAsTexture on WebGL1', () =>
+{
+    describeCachedContainerMove(() => getWebGLRenderer({ preferWebGLVersion: 1 }));
+});
+
+describeLocalOnly('RenderGroupSystem cacheAsTexture on WebGPU', () =>
+{
+    describeCachedContainerMove(() => getWebGPURenderer());
 });

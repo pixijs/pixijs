@@ -37,15 +37,15 @@ import type { HTMLSourceCanvas } from './HTMLSourceTypes';
 export interface HTMLSourceOptions extends TextureSourceOptions<Element>
 {
     /**
-     * The canvas that owns this element's layout subtree. When omitted, this is inferred from
-     * `resource.parentElement` when the resource is a direct canvas child.
+     * The canvas that owns this element. It must be the resource's nearest `<canvas>` ancestor,
+     * or the constructor throws. Leave it out and it's inferred.
      * @example
      * ```ts
      * // Inferred automatically — domElement is appended to the Pixi canvas.
      * app.canvas.appendChild(domElement);
      * const source = new HTMLSource({ resource: domElement });
      *
-     * // Passed explicitly when inference is not possible.
+     * // Equivalent: the same canvas, passed explicitly.
      * const explicit = new HTMLSource({
      *     resource: domElement,
      *     canvas: app.canvas as HTMLSourceCanvas,
@@ -54,12 +54,13 @@ export interface HTMLSourceOptions extends TextureSourceOptions<Element>
      */
     canvas?: HTMLSourceCanvas;
     /**
-     * Automatically set the `layoutsubtree` attribute on the owning canvas. The browser only
-     * lays out and paints canvas children when this attribute is present.
+     * Automatically set `content="drawable"` on the owning canvas, plus the `layoutsubtree`
+     * attribute that Chrome versions before 155 expect. The browser only lays out and paints
+     * canvas descendants when it is present.
      * @default true
      * @example
      * ```ts
-     * // Opt out when you set `<canvas layoutsubtree>` yourself in markup.
+     * // Opt out when you set `<canvas content="drawable">` yourself in markup.
      * const source = new HTMLSource({ resource: domElement, autoLayout: false });
      * ```
      */
@@ -91,11 +92,6 @@ export interface HTMLSourceOptions extends TextureSourceOptions<Element>
     autoRequestPaint?: boolean;
 }
 
-function isCanvas(resource: unknown): resource is HTMLCanvasElement
-{
-    return !!globalThis.HTMLCanvasElement && resource instanceof HTMLCanvasElement;
-}
-
 /**
  * @experimental
  * A texture source backed by the experimental HTML-in-Canvas browser APIs. It renders a live
@@ -106,9 +102,15 @@ function isCanvas(resource: unknown): resource is HTMLCanvasElement
  * links stay clickable, and CSS animations keep running. PixiJS just mirrors its pixels into
  * the GPU each time the browser repaints it.
  *
- * The source resource must be a direct child of the renderer's `<canvas layoutsubtree>`
- * element. For an immutable, transferable copy that never repaints, use
- * {@link ElementImageSource} instead.
+ * The source resource must be inside the renderer's `<canvas>`, with the canvas as its nearest
+ * `<canvas>` ancestor. The source sets `content="drawable"` on the canvas and `drawable` on the
+ * resource for you. Chrome versions before 155 only draw direct children of the canvas, and
+ * WebGPU in Chrome 156 still does. For an immutable, transferable copy that never repaints,
+ * use {@link ElementImageSource} instead.
+ *
+ * In Chrome 155+, the browser doesn't know where WebGL or WebGPU drew the element, so the
+ * element isn't hit-testable until you call `canvas.updateElementGeometry()` with its drawn
+ * position. See {@link HTMLSourceCanvas.updateElementGeometry}.
  *
  * > [!NOTE]
  * > This relies on an experimental browser proposal and requires the HTML-in-Canvas API to be
@@ -126,7 +128,7 @@ function isCanvas(resource: unknown): resource is HTMLCanvasElement
  * await app.init({ resizeTo: window });
  * document.body.appendChild(app.canvas);
  *
- * // The element must be a direct child of the Pixi canvas.
+ * // The element must be inside the Pixi canvas.
  * const form = document.createElement('form');
  *
  * form.innerHTML = '<input value="still editable" />';
@@ -237,7 +239,7 @@ export class HTMLSource extends TextureSource<Element>
      * @example
      * ```ts
      * const source = new HTMLSource({
-     *     resource: domElement,   // a direct child of the Pixi canvas
+     *     resource: domElement,   // inside the Pixi canvas
      *     autoUpdate: true,       // track browser repaints (default)
      *     autoRequestPaint: true, // request one initial paint (default)
      * });
@@ -252,25 +254,37 @@ export class HTMLSource extends TextureSource<Element>
             throw new Error('[HTMLSource] resource is required.');
         }
 
-        super(options);
-
-        const canvas = options.canvas ?? this._inferCanvas(options.resource);
+        // The browser only draws an element into its nearest canvas ancestor.
+        const nearestCanvas = options.resource.parentElement?.closest('canvas');
+        const canvas: HTMLSourceCanvas | null | undefined = options.canvas ?? nearestCanvas;
 
         if (!canvas)
         {
             throw new Error(
                 // eslint-disable-next-line max-len
-                '[HTMLSource] Could not determine the owning canvas. Append the element to the canvas before constructing this source, or pass the `canvas` option.',
+                '[HTMLSource] Could not determine the owning canvas. Append the element to the canvas before constructing this source.',
             );
         }
 
-        if (options.resource.parentElement !== canvas)
+        if (nearestCanvas !== canvas)
         {
             throw new Error(
                 // eslint-disable-next-line max-len
-                '[HTMLSource] resource must be a direct child of the owning canvas. Append the element to the canvas before constructing this source.',
+                '[HTMLSource] resource must be inside the owning canvas. Append the element to the canvas before constructing this source.',
             );
         }
+
+        // Opt in to layout before `super()` measures the element; canvas fallback content has no size.
+        if (options.autoLayout !== false)
+        {
+            canvas.setAttribute('content', 'drawable');
+            canvas.setAttribute('layoutsubtree', '');
+        }
+
+        // Chrome 155+ only draws canvas descendants marked `drawable`.
+        options.resource.setAttribute('drawable', '');
+
+        super(options);
 
         this.canvas = canvas;
         this._autoUpdate = options.autoUpdate !== false;
@@ -278,11 +292,6 @@ export class HTMLSource extends TextureSource<Element>
 
         // Without requestPaint (or with auto-update off) there is no first paint to wait for.
         this._isReady = !this._autoUpdate || !canvas.requestPaint;
-
-        if (options.autoLayout !== false)
-        {
-            canvas.setAttribute('layoutsubtree', '');
-        }
 
         if (this._autoUpdate)
         {
@@ -372,17 +381,13 @@ export class HTMLSource extends TextureSource<Element>
         return (this.resource as HTMLElement).offsetHeight || 1;
     }
 
-    private _inferCanvas(resource: Element): HTMLSourceCanvas | null
-    {
-        return isCanvas(resource.parentElement) ? (resource.parentElement as HTMLSourceCanvas) : null;
-    }
-
     private _onPaint(event: Event & { changedElements?: Element[] }): void
     {
         const changedElements = event.changedElements;
 
         // A paint event can batch unrelated elements; only update when ours actually changed.
-        if (changedElements?.length && !changedElements.includes(this.resource))
+        // Chrome reports a nested drawable's changes on its outermost drawable ancestor instead.
+        if (changedElements?.length && !changedElements.some((element) => element.contains(this.resource)))
         {
             return;
         }
