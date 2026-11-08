@@ -17,7 +17,7 @@ export class GpuMsaaTexture
      * Always on tile-based GPUs; elsewhere storing it is cheaper, so only when the texture is marked
      * `transient`. Read once, when it is made.
      */
-    public transient: boolean;
+    public readonly transient: boolean;
 
     /**
      * @param renderer - the renderer whose device makes it

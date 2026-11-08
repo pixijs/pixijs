@@ -1168,7 +1168,7 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
     }
 
     /**
-     * Frees the backend objects (framebuffers, renderbuffers, MSAA textures) cached for a render target.
+     * Frees the backend objects (framebuffers, own renderbuffers, a canvas's MSAA textures) cached for a render target.
      * @param renderTarget - the render target whose backend counterpart is no longer needed
      */
     private _releaseGpuRenderTarget(renderTarget: RenderTarget): void

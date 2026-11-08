@@ -5,7 +5,7 @@ import { Shader } from '../shared/shader/Shader';
 import { State } from '../shared/state/State';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
 import { Texture } from '../shared/texture/Texture';
-import { getWebGLRenderer, getWebGPURenderer } from '@test-utils';
+import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
 import { Mesh } from '~/scene';
 
 import type { WebGLRenderer } from '../gl/WebGLRenderer';
@@ -191,8 +191,7 @@ const backends: [name: string, create: () => Promise<TestRenderer>, local: boole
 
 for (const [name, create, local, buffers] of backends)
 {
-    // CI has no WebGPU
-    const describeBackend = local && process.env.GITHUB_ACTIONS ? describe.skip : describe;
+    const describeBackend = local ? describeLocalOnly : describe;
 
     describeBackend(`render targets sharing an antialiased texture on ${name}`, () =>
     {
@@ -338,6 +337,34 @@ for (const [name, create, local, buffers] of backends)
 
             expect(error).toBeNull();
             expect(halves(renderer, color)).toEqual({ left: GREEN, right: RED });
+        });
+
+        it('should size a late depth texture to its colour at a fractional resolution', async () =>
+        {
+            // a target rounds this to 502 pixels wide, and 502 / 1.75 * 1.75 lands just short of 502
+            const fractionalColor = () => new TextureSource({
+                width: 287, height: 64, resolution: 1.75, antialias: true, autoGenerateMipmaps: false,
+            });
+            const color = fractionalColor();
+            const target = new RenderTarget({ colorTextures: [color] });
+            const drawnFirstColor = fractionalColor();
+            const drawnFirst = new RenderTarget({ colorTextures: [drawnFirstColor], depth: true, stencil: true });
+
+            target.ensureDepthStencilTexture();
+            renderer.render({ target: drawnFirst, container: quad(-1, 0, GREEN, 0.3), clear: true, clearColor: 'black' });
+            drawnFirst.ensureDepthStencilTexture();
+
+            const error = await errorOf(renderer, () =>
+            {
+                renderer.render({ target, container: quad(-1, 0, GREEN, 0.3), clear: true, clearColor: 'black' });
+                renderer.render({ target, container: quad(-1, 1, RED, 0.6), clear: false });
+                // behind the green it drew before the depth texture arrived
+                renderer.render({ target: drawnFirst, container: quad(-1, 1, RED, 0.6), clear: false });
+            });
+
+            expect(error).toBeNull();
+            expect(halves(renderer, color)).toEqual({ left: GREEN, right: RED });
+            expect(halves(renderer, drawnFirstColor)).toEqual({ left: GREEN, right: RED });
         });
 
         it('should move a target onto a late depth texture\'s samples when another target drew to them first', async () =>

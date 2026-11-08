@@ -283,7 +283,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             // and (unlike a texture) can be multisampled to match an MSAA color attachment
             else if (!gpuRenderTarget.depthStencilRenderBuffer && (renderTarget.stencil || renderTarget.depth))
             {
-                this._initStencil(renderTarget, gpuRenderTarget);
+                this._initStencil(gpuRenderTarget);
             }
         }
 
@@ -967,10 +967,9 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
     private _getDepthStencilAttachmentPoint(renderTarget: RenderTarget): number
     {
         const gl = this._renderer.gl;
-        const format = renderTarget.depthStencilAttachment?.texture.format;
+        const format = renderTarget.depthStencilAttachment.texture.format;
 
-        // without a texture the renderbuffer is always depth24plus-stencil8
-        if (!format || format === 'depth24plus-stencil8' || format === 'depth32float-stencil8')
+        if (format === 'depth24plus-stencil8' || format === 'depth32float-stencil8')
         {
             return gl.DEPTH_STENCIL_ATTACHMENT;
         }
@@ -983,7 +982,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         return gl.DEPTH_ATTACHMENT;
     }
 
-    private _initStencil(renderTarget: RenderTarget, glRenderTarget: GlRenderTarget)
+    private _initStencil(glRenderTarget: GlRenderTarget)
     {
         // this already exists on the default screen
         if (glRenderTarget.framebuffer === null) return;
@@ -1001,7 +1000,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         gl.framebufferRenderbuffer(
             gl.FRAMEBUFFER,
-            this._getDepthStencilAttachmentPoint(renderTarget),
+            gl.DEPTH_STENCIL_ATTACHMENT,
             gl.RENDERBUFFER,
             depthStencilRenderBuffer
         );
