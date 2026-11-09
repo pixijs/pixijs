@@ -11,6 +11,8 @@ jobs:
       AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
       SOURCE_DIR: '.s3_uploads'
+    # npm's trusted publishing only accepts GitHub-hosted runners, so this job
+    # can't move to Namespace.
     runs-on: ubuntu-22.04
     permissions:
       id-token: write

@@ -13,7 +13,8 @@ export interface GpuExtensions
      * `GPUTextureUsage.TRANSIENT_ATTACHMENT` (0x40) — when true, MSAA attachments can be
      * marked transient so TBDR drivers keep contents in tile memory and skip DRAM
      * allocation entirely. Not part of WebGPU 1.0; gated on the bit being present on
-     * the `GPUTextureUsage` enum at runtime.
+     * the `GPUTextureUsage` enum at runtime. It's also false on Safari 27.1 and later 27.x releases, where a WebKit
+     * bug can lose the device, and on WebKit that doesn't report a Safari version.
      */
     transientAttachment: boolean;
     /**

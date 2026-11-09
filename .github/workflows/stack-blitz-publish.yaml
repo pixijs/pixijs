@@ -10,7 +10,7 @@ jobs:
   build:
     if: github.repository == 'pixijs/pixijs'
 
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-linux-8-16
 
     steps:
       - name: Checkout code

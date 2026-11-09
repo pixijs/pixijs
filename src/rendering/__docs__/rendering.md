@@ -159,14 +159,81 @@ const color = new TextureSource({ width: 512, height: 512 });
 const depth = new TextureSource({ width: 512, height: 512, format: 'depth24plus-stencil8' });
 
 const target = new RenderTarget({
-    colorAttachments: [{ texture: color, loadOp: 'clear', clearValue: [0, 0, 0, 1] }],
+    colorAttachments: [{ texture: color, clearValue: [0, 0, 0, 1] }],
     depthStencilAttachment: { texture: depth, depthLoadOp: 'clear', depthClearValue: 1 },
 });
 
 renderer.render({ container, target });
 ```
 
-The attachment objects mirror the WebGPU render pass descriptors, with `texture` in place of `view`. The `clear` option you pass to `render()` overrides the attachments' load ops for that call. The older `colorTextures`, `depth`, `stencil`, and `depthStencilTexture` options still work and are converted to attachments internally.
+The attachment objects mirror the WebGPU render pass descriptors, with `texture` in place of `view`. The `clear` option you pass to `render()` decides whether anything clears: a color attachment clears to its own `clearValue`, or to the bind's clear color where it has none. Give an attachment `loadOp: 'load'` to keep its contents even when the bind clears. A bind with `clear: false` never clears, so returning to a target (after a filter, or with `pop()`) can't wipe it. The older `colorTextures`, `depth`, `stencil`, and `depthStencilTexture` options still work and are converted to attachments internally.
+
+### Several color attachments
+
+One draw can write several color attachments, each with its own format. This is how a 3D renderer writes motion vectors, normals or object ids beside its color in a single pass.
+
+```ts
+import { Mesh, RenderTarget, Shader, Texture, TextureSource } from 'pixi.js';
+
+const size = { width: 512, height: 512 };
+const color = new TextureSource({ ...size, format: 'rgba16float' });
+const velocity = new TextureSource({ ...size, format: 'rg16float' });
+const ids = new TextureSource({ ...size, format: 'r32uint' });
+
+const target = new RenderTarget({
+    colorAttachments: [
+        { texture: color },
+        { texture: velocity, clearValue: [0, 0, 0, 0] },
+        { texture: ids, clearValue: [0xffffffff, 0, 0, 0] }, // an integer attachment takes integers
+    ],
+});
+
+// the shader declares one output per attachment it writes
+const shader = Shader.from({
+    gpu: {
+        vertex: { source: vertexWgsl, entryPoint: 'main' },
+        fragment: {
+            entryPoint: 'main',
+            source: `
+                struct Outputs {
+                    @location(0) color: vec4<f32>,
+                    @location(1) velocity: vec4<f32>, // the target keeps .rg
+                    @location(2) id: u32,
+                };
+                @fragment fn main() -> Outputs { ... }
+            `,
+        },
+    },
+    gl: {
+        vertex: vertexGlsl,
+        fragment: `#version 300 es
+            precision highp float;
+            layout(location = 0) out vec4 color;
+            layout(location = 1) out vec4 velocity;
+            layout(location = 2) out highp uint id; // highp: int defaults to mediump, 16 bits on some phones
+            void main() { ... }
+        `,
+    },
+});
+
+const opaque = new Mesh({ geometry, shader });
+
+opaque.state.blend = false;
+
+renderer.render({ container: opaque, target, clear: true });
+
+// a 2D sprite writes location 0 only, so it blends into color and leaves velocity and ids alone
+renderer.render({ container: sprites, target, clear: false });
+
+// sample an attachment in a later pass, like any texture
+const velocityTexture = new Texture({ source: velocity });
+```
+
+- **What a draw writes comes from its shader.** Each attachment is written only if the fragment shader has an output at its location; every other attachment is left as it was. PixiJS reads the outputs from the shader source; `GpuProgram.fragmentOutputMask` and `GlProgram.fragmentOutputMask` show what it found, one bit per location. If it can't read them (an output declared through a macro, say), the mask is `null` and the draw writes every attachment, as it would without this rule.
+- **Blending.** Every attachment a draw writes blends with the draw's blend mode, except integer formats, which never blend. A blended draw needs a `vec4` output for each attachment it writes, because the blend reads its alpha: WebGPU reports a validation error and skips the draw, and WebGL blends with an undefined alpha.
+- **Clearing.** Each attachment clears to its own `clearValue`, or to the bind's clear color. An integer attachment takes the numbers as integers, so give it a `clearValue` for anything other than 0 or 1. WebGL1 clears all attachments or none.
+- **Antialiasing.** An antialiased target can't have an integer attachment, because integer formats can't be resolved; creating one throws.
+- **Reading pixels back.** `renderer.extract` reads 8-bit color only, and throws when asked to read a float, integer or depth texture. For a 16-bit float texture, extract `new Sprite(texture)` instead. For 32-bit float, integer and depth textures, extract a `Mesh` whose shader reads the texture and outputs color.
 
 ### Depth-only targets
 
@@ -311,7 +378,7 @@ The same flag works for the canvas. Pass `transient: true` to the renderer when 
 await app.init({ preference: 'webgpu', antialias: true, transient: true });
 ```
 
-`renderer.device.extensions.transientAttachment` reports whether the usage bit is available.
+`renderer.device.extensions.transientAttachment` reports whether PixiJS uses the usage bit. It's `false` where the browser doesn't expose the bit, on Safari 27.1 and later 27.x releases, and on iOS browsers and web views that don't report a Safari version. A WebKit bug in those Safari releases can lose the device when the bit is used.
 
 ### Device loss
 

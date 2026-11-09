@@ -4,6 +4,7 @@ export * from './browser/isMobile';
 export * from './browser/isSafari';
 export * from './browser/isWebGLSupported';
 export * from './browser/isWebGPUSupported';
+export * from './browser/isWebKit';
 export * from './browser/unsafeEvalSupported';
 export * from './canvas/getCanvasBoundingBox';
 export * from './const';
