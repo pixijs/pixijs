@@ -30,7 +30,8 @@ describe('Graphics', () =>
         {
             const style = toFillStyle({ color: '#ff000080' }, GraphicsContext.defaultFillStyle);
 
-            expect(style.alpha).toBe(0.5);
+            // 0x80 is 128 / 255, stored as a 32-bit float
+            expect(style.alpha).toBe(Math.fround(128 / 255));
         });
 
         it('should multiply alpha component from a color string value with a passed alpha value', () =>
@@ -40,7 +41,7 @@ describe('Graphics', () =>
                 GraphicsContext.defaultFillStyle
             );
 
-            expect(style.alpha).toBe(0.25);
+            expect(style.alpha).toBe(Math.fround(128 / 255) * 0.5);
         });
     });
 

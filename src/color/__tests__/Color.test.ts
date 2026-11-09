@@ -123,6 +123,15 @@ describe('Color', () =>
             uint8RgbArray: [255, 0, 0],
         };
 
+        // A hex alpha byte is exact: 0x80 is 128 / 255, not 0.5 (stored as a 32-bit float)
+        const semiRedHexAlpha = Math.fround(128 / 255);
+        const semiRedHex = {
+            ...semiRed,
+            array: [1, 0, 0, semiRedHexAlpha],
+            rgba: { r: 1, g: 0, b: 0, a: semiRedHexAlpha },
+            rgbaString: `rgba(255,0,0,${semiRedHexAlpha})`,
+        };
+
         // [value, expectedRgba]
         const testCases: Array<[ColorSource, typeof transparent]> = [
             // Float32Array
@@ -155,9 +164,9 @@ describe('Color', () =>
             ['0xff0000', red],
             ['#ff0000', red],
             ['#ff0000', red],
-            ['ff000080', semiRed],
-            ['#ff000080', semiRed],
-            ['0xff000080', semiRed],
+            ['ff000080', semiRedHex],
+            ['#ff000080', semiRedHex],
+            ['0xff000080', semiRedHex],
             ['#ffffff', white],
             ['#fff', white],
             ['fff', white],
