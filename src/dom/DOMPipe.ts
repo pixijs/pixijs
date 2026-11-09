@@ -1,11 +1,33 @@
 /* eslint-disable no-restricted-globals */
 import { ExtensionType } from '../extensions/Extensions';
+import { ViewTracker } from '../rendering/renderers/shared/view/ViewTracker';
 import { CanvasObserver } from './CanvasObserver';
-import { type DOMContainer } from './DOMContainer';
 
 import type { InstructionSet } from '../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../rendering/renderers/shared/instructions/RenderPipe';
+import type { RenderOptions } from '../rendering/renderers/shared/system/AbstractRenderer';
+import type { CanvasView } from '../rendering/renderers/shared/view/CanvasView';
+import type { TrackedViewData } from '../rendering/renderers/shared/view/ViewTracker';
 import type { Renderer } from '../rendering/renderers/types';
+import type { Container } from '../scene/container/Container';
+import type { DOMContainer } from './DOMContainer';
+
+/**
+ * The per-canvas DOM overlay tracked by the {@link DOMPipe}. One view exists for the renderer's
+ * main canvas and, under multiView, one for every additional canvas registered with the renderer.
+ * Each overlay is kept aligned with its canvas by a {@link CanvasObserver}, so a DOM element always
+ * sits over the canvas its scene was rendered to.
+ * @internal
+ */
+interface DOMViewData extends TrackedViewData
+{
+    /** The container the DOM elements rendered to this canvas are appended to. */
+    overlay: HTMLDivElement;
+    /** Keeps the overlay aligned with the canvas's page position and scale. */
+    observer: CanvasObserver;
+    /** The container last rendered to this canvas; DOM elements under it belong to this overlay. */
+    rootContainer: Container | null;
+}
 
 /**
  * The DOMPipe class is responsible for managing and rendering DOM elements within a PixiJS scene.
@@ -31,10 +53,11 @@ export class DOMPipe implements RenderPipe<DOMContainer>
 
     /** Array to keep track of attached DOM elements */
     private readonly _attachedDomElements: DOMContainer[] = [];
-    /** The main DOM element that acts as a container for other DOM elements */
-    public readonly _domElement: HTMLDivElement;
-    /** The CanvasTransformSync instance that keeps the DOM element in sync with the canvas */
-    private _canvasObserver: CanvasObserver;
+    /** The main DOM element that acts as a container for the main canvas's DOM elements */
+    private readonly _mainOverlay: HTMLDivElement;
+
+    /** Per-canvas overlay bookkeeping; resolves the view a frame targets and its scene root. */
+    private readonly _tracker: ViewTracker<DOMViewData>;
 
     /**
      * Constructor for the DOMPipe class.
@@ -44,30 +67,55 @@ export class DOMPipe implements RenderPipe<DOMContainer>
     {
         this._renderer = renderer;
 
-        // Add this DOMPipe to the postrender runner of the renderer
-        // we want to dom elements are calculated after all things have been rendered
+        // the main overlay exists before init: the main view's viewAdded reuses it as its overlay
+        this._mainOverlay = this._createOverlay();
+
+        this._tracker = new ViewTracker<DOMViewData>({
+            renderer,
+            participates: (view) => view.dom,
+            create: (view) => this._createViewData(view),
+            destroy: (data) =>
+            {
+                data.overlay.remove();
+                data.observer.destroy();
+            },
+        });
+
+        // prerender resolves the (un-swapped) target view; postrender lays the dom elements out
+        // after everything has been rendered
+        this._renderer.runners.prerender.add(this);
         this._renderer.runners.postrender.add(this);
 
-        // add DOMPipe to init runners
-        this._renderer.runners.init.add(this);
-
-        // Create a main DOM element to contain other DOM elements
-        this._domElement = document.createElement('div');
-        this._domElement.style.position = 'absolute';
-        this._domElement.style.top = '0';
-        this._domElement.style.left = '0';
-        this._domElement.style.pointerEvents = 'none';
-        this._domElement.style.zIndex = '1000';
+        // the view registry drives overlay creation/teardown; the main view is registered during
+        // the renderer's init, so this overlay exists before viewAdded fires for it
+        this._renderer.runners.viewAdded.add(this);
+        this._renderer.runners.viewRemoved.add(this);
     }
 
-    /** Initializes the DOMPipe, setting up the main DOM element and adding it to the document body. */
-    public init(): void
+    /** The html div element that holds all DOM Container elements for the main canvas. */
+    public get _domElement(): HTMLDivElement
     {
-        // Initialize the CanvasTransformSync to keep the DOM element in sync with the canvas
-        this._canvasObserver = new CanvasObserver({
-            domElement: this._domElement,
-            renderer: this._renderer,
-        });
+        return this._tracker.mainView?.overlay ?? this._mainOverlay;
+    }
+
+    /**
+     * Registers a per-canvas overlay for a newly added view. The main view reuses the public
+     * {@link DOMPipe#_domElement} as its overlay; secondary views get a fresh one.
+     * @param view - The view that was added to the renderer.
+     */
+    public viewAdded(view: CanvasView): void
+    {
+        this._tracker.addFromView(view);
+    }
+
+    /**
+     * Tears down the overlay for a removed view. The view registry owns removal, so per-source
+     * destroy listeners are not needed here.
+     * @param view - The view that was removed from the renderer.
+     */
+    public viewRemoved(view: CanvasView): void
+    {
+        this._tracker.removeView(view);
     }
 
     /**
@@ -102,68 +150,172 @@ export class DOMPipe implements RenderPipe<DOMContainer>
         return true;
     }
 
-    /** Handles the post-rendering process, ensuring DOM elements are correctly positioned and visible. */
+    /**
+     * Resolves the overlay this render targets (before any back-buffer swap), so postrender can lay
+     * its DOM elements over the right canvas. Texture/offscreen targets resolve to no view.
+     * @param options - the options the renderer was called with
+     */
+    public prerender(options: RenderOptions): void
+    {
+        // records the frame's active view (resolved by ViewSystem) and its rootContainer
+        this._tracker.setActive(this._renderer.view.activeView, options.container);
+    }
+
+    /** Lays out the DOM elements belonging to the canvas that was just rendered. */
     public postrender(): void
     {
-        const attachedDomElements = this._attachedDomElements;
+        const attached = this._attachedDomElements;
+        const view = this._tracker.consumeActive();
 
-        if (attachedDomElements.length === 0)
+        // drop elements removed from the scene graph entirely, or hidden by their own visible/renderable
+        // flags. Both signals are view-independent and always fresh (localDisplayStatus is written
+        // synchronously by the visible/renderable setters), so they are safe to act on regardless of which
+        // canvas rendered this frame. The cull bit (0b100) and ancestor visibility fold into
+        // globalDisplayStatus, which is only valid for a scene that rendered this frame, so that check stays
+        // gated per-view below.
+        for (let i = 0; i < attached.length; i++)
         {
-            this._domElement.remove();
+            const domContainer = attached[i];
 
-            return;
-        }
-
-        // Ensure the main DOM element is attached to the same parent as the canvas
-        this._canvasObserver.ensureAttached();
-
-        for (let i = 0; i < attachedDomElements.length; i++)
-        {
-            const domContainer = attachedDomElements[i];
-            const element = domContainer.element;
-
-            if (!domContainer.parent || domContainer.globalDisplayStatus < 0b111)
+            if (!domContainer.parent || (domContainer.localDisplayStatus & 0b011) !== 0b011)
             {
-                element?.remove();
-                attachedDomElements.splice(i, 1);
+                domContainer.element?.remove();
+                attached.splice(i, 1);
                 i--;
             }
-            else
+        }
+
+        if (!view) return;
+
+        const root = this._tracker.rootFor(view);
+
+        for (let i = 0; i < attached.length; i++)
+        {
+            const domContainer = attached[i];
+
+            if (!this._belongsToView(domContainer, root))
             {
-                if (!this._domElement.contains(element))
+                // it moved to another view's scene whose new owner has not rendered since; detach it
+                // from THIS overlay (only ever our own children) so it does not ghost over this canvas.
+                // Kept in `attached` so the new owning view re-parents it on its next render.
+                if (domContainer.element?.parentNode === view.overlay)
                 {
-                    element.style.position = 'absolute';
-                    element.style.pointerEvents = 'auto';
-                    this._domElement.appendChild(element);
+                    domContainer.element.remove();
                 }
 
-                const wt = domContainer.worldTransform;
-                const anchor = domContainer._anchor;
-                const ax = domContainer.width * anchor.x;
-                const ay = domContainer.height * anchor.y;
-
-                element.style.transformOrigin = `${ax}px ${ay}px`;
-                element.style.transform = `matrix(${wt.a}, ${wt.b}, ${wt.c}, ${wt.d}, ${wt.tx - ax}, ${wt.ty - ay})`;
-                element.style.opacity = domContainer.groupAlpha.toString();
+                continue;
             }
+
+            // hidden or culled within its own scene, which has now rendered so the status is valid
+            if (domContainer.globalDisplayStatus < 0b111)
+            {
+                domContainer.element?.remove();
+                attached.splice(i, 1);
+                i--;
+                continue;
+            }
+
+            const element = domContainer.element;
+
+            // re-parent into this view's overlay (also handles an element moving between canvases)
+            if (element.parentNode !== view.overlay)
+            {
+                element.style.position = 'absolute';
+                element.style.pointerEvents = 'auto';
+                view.overlay.appendChild(element);
+            }
+
+            const wt = domContainer.worldTransform;
+            const anchor = domContainer._anchor;
+            const ax = domContainer.width * anchor.x;
+            const ay = domContainer.height * anchor.y;
+
+            element.style.transformOrigin = `${ax}px ${ay}px`;
+            element.style.transform = `matrix(${wt.a}, ${wt.b}, ${wt.c}, ${wt.d}, ${wt.tx - ax}, ${wt.ty - ay})`;
+            element.style.opacity = domContainer.groupAlpha.toString();
         }
+
+        // an emptied overlay detaches itself; scoped per view so it never strips another canvas's overlay
+        if (view.overlay.childElementCount === 0)
+        {
+            view.overlay.remove();
+        }
+        else
+        {
+            view.observer.ensureAttached();
+        }
+    }
+
+    /**
+     * Whether a DOM container's scene was rendered to a given root, by walking up to that root.
+     * @param domContainer - the container to test
+     * @param root - the scene root the rendered view captured
+     */
+    private _belongsToView(domContainer: DOMContainer, root: Container | null): boolean
+    {
+        if (!root) return false;
+
+        let node: Container = domContainer;
+
+        while (node)
+        {
+            if (node === root) return true;
+            node = node.parent;
+        }
+
+        return false;
+    }
+
+    /**
+     * Builds the per-canvas overlay + observer for a view; the main view reuses the main overlay.
+     * @param view
+     */
+    private _createViewData(view: CanvasView): DOMViewData
+    {
+        const overlay = view.isMain ? this._mainOverlay : this._createOverlay();
+        const source = view.isMain ? null : view.source;
+
+        return {
+            overlay,
+            observer: new CanvasObserver({
+                domElement: overlay,
+                renderer: this._renderer,
+                source: source ?? undefined,
+            }),
+            rootContainer: null,
+        };
+    }
+
+    /** Creates an absolutely positioned, click-through overlay container. */
+    private _createOverlay(): HTMLDivElement
+    {
+        const overlay = document.createElement('div');
+
+        overlay.style.position = 'absolute';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.pointerEvents = 'none';
+        overlay.style.zIndex = '1000';
+
+        return overlay;
     }
 
     /** Destroys the DOMPipe, removing all attached DOM elements and cleaning up resources. */
     public destroy(): void
     {
+        this._renderer.runners.prerender.remove(this);
         this._renderer.runners.postrender.remove(this);
+        this._renderer.runners.viewAdded.remove(this);
+        this._renderer.runners.viewRemoved.remove(this);
 
         for (let i = 0; i < this._attachedDomElements.length; i++)
         {
-            const domContainer = this._attachedDomElements[i];
-
-            domContainer.element?.remove();
+            this._attachedDomElements[i].element?.remove();
         }
-
         this._attachedDomElements.length = 0;
-        this._domElement.remove();
-        this._canvasObserver.destroy();
+
+        this._tracker.destroyAll();
+
         this._renderer = null;
     }
 }

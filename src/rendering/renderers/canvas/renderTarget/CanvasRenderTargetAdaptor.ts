@@ -104,7 +104,7 @@ export class CanvasRenderTargetAdaptor implements RenderTargetAdaptor<CanvasRend
 
         if (clear)
         {
-            this.clear(renderTarget, clear, clearColor, viewport);
+            this.clear(renderTarget, clear, clearColor, false, viewport);
         }
     }
 
@@ -113,6 +113,7 @@ export class CanvasRenderTargetAdaptor implements RenderTargetAdaptor<CanvasRend
      * @param renderTarget - Target to clear.
      * @param _clear - Clear mode (unused).
      * @param clearColor - Optional clear color.
+     * @param _standalone - Whether the clear is outside a render pass (unused; canvas draws directly).
      * @param viewport - Optional viewport rectangle.
      * @advanced
      */
@@ -120,6 +121,7 @@ export class CanvasRenderTargetAdaptor implements RenderTargetAdaptor<CanvasRend
         renderTarget: RenderTarget,
         _clear: CLEAR_OR_BOOL,
         clearColor?: number[],
+        _standalone?: boolean,
         viewport?: Rectangle
     ): void
     {

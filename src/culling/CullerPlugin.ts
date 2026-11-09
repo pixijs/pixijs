@@ -2,8 +2,36 @@ import { ExtensionType } from '../extensions/Extensions';
 import { Culler } from './Culler';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
+import type { Rectangle } from '../maths/shapes/Rectangle';
 import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
+
+/**
+ * The structural shape of a render view the {@link CullerPlugin} culls and renders. Declared
+ * locally (rather than importing {@link RenderView}) so the culling module avoids a dependency
+ * cycle with the app module.
+ */
+interface CullerView
+{
+    /** Whether {@link Application#render} renders this view. */
+    enabled: boolean;
+    /** The root container culled and rendered for this view. */
+    stage: Container;
+    /** The CSS-pixel viewport this view's stage is culled against. */
+    screen: Rectangle;
+    /** Renders this view's stage to its canvas. */
+    render(): void;
+}
+
+/**
+ * The structural shape of the {@link Application} the {@link CullerPlugin} drives. Declared locally
+ * to keep the culling module free of an app import cycle.
+ */
+interface CullerApp
+{
+    /** All render views driven each frame; `views[0]` is the primary view. */
+    views: ReadonlyArray<CullerView>;
+}
 
 /**
  * Application options for the {@link CullerPlugin}.
@@ -145,9 +173,27 @@ export class CullerPlugin
         {
             // default to true for updateTransform, unless specified otherwise
             const updateTransform = options?.culler?.updateTransform !== true;
+            const views = (this as unknown as CullerApp).views;
 
-            Culler.shared.cull(this.stage, this.renderer.screen, updateTransform);
-            this.renderer.render({ container: this.stage });
+            // cull + render added views first and the primary view last, so the renderer's
+            // lastObjectRendered ends on the primary stage (the main view's hit-test root)
+            for (let i = 1; i < views.length; i++)
+            {
+                const view = views[i];
+
+                if (!view.enabled) continue;
+
+                Culler.shared.cull(view.stage, view.screen, updateTransform);
+                view.render();
+            }
+
+            const primary = views[0];
+
+            if (primary?.enabled)
+            {
+                Culler.shared.cull(primary.stage, primary.screen, updateTransform);
+                primary.render();
+            }
         };
     }
 

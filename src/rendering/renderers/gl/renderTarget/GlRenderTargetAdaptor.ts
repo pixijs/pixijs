@@ -208,59 +208,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
                 || gpuRenderTarget._attachedLayer !== layer)
         )
         {
-            renderTarget.colorAttachments.forEach((attachment, i) =>
-            {
-                const colorTexture = attachment.texture;
-                const glSource = this._renderer.texture.getGlSource(colorTexture);
-
-                if (glSource.target === gl.TEXTURE_2D)
-                {
-                    if (layer !== 0)
-                    {
-                        throw new Error('[RenderTargetSystem] layer must be 0 when rendering to 2D textures in WebGL.');
-                    }
-
-                    gl.framebufferTexture2D(
-                        gl.FRAMEBUFFER,
-                        gl.COLOR_ATTACHMENT0 + i,
-                        gl.TEXTURE_2D,
-                        glSource.texture,
-                        mipLevel
-                    );
-                }
-                else if (glSource.target === gl.TEXTURE_2D_ARRAY || glSource.target === gl.TEXTURE_3D)
-                {
-                    gl.framebufferTextureLayer(
-                        gl.FRAMEBUFFER,
-                        gl.COLOR_ATTACHMENT0 + i,
-                        glSource.texture,
-                        mipLevel,
-                        layer
-                    );
-                }
-                else if (glSource.target === gl.TEXTURE_CUBE_MAP)
-                {
-                    if (layer < 0 || layer > 5)
-                    {
-                        throw new Error('[RenderTargetSystem] Cube map layer must be between 0 and 5.');
-                    }
-
-                    gl.framebufferTexture2D(
-                        gl.FRAMEBUFFER,
-                        gl.COLOR_ATTACHMENT0 + i,
-                        gl.TEXTURE_CUBE_MAP_POSITIVE_X + layer,
-                        glSource.texture,
-                        mipLevel
-                    );
-                }
-                else
-                {
-                    throw new Error('[RenderTargetSystem] Unsupported texture target for render-to-layer in WebGL.');
-                }
-            });
-
-            gpuRenderTarget._attachedMipLevel = mipLevel;
-            gpuRenderTarget._attachedLayer = layer;
+            this._attachSubresource(renderTarget, gpuRenderTarget, mipLevel, layer);
         }
 
         // the root target renders to the canvas, whose context owns its depth/stencil buffers
@@ -324,7 +272,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             );
         }
 
-        this.clear(renderTarget, clear, clearColor);
+        this.clear(renderTarget, clear, clearColor, false);
 
         // switch on only what the bound program writes; a program bound later does the same
         // through GlShaderSystem
@@ -427,6 +375,80 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         }
 
         return buffers;
+    }
+
+    /**
+     * Attaches each color texture of the render target to the currently-bound framebuffer at the given
+     * mip level / array layer, and updates the gpuRenderTarget's attachment trackers. The caller must
+     * have bound `gpuRenderTarget.framebuffer` first. Shared by {@link startRenderPass} and the
+     * standalone {@link clear} path so both honour the requested subresource.
+     * @param renderTarget - the render target whose color textures are attached
+     * @param gpuRenderTarget - its gpu render target (holds the attachment trackers)
+     * @param mipLevel - the mip level to attach
+     * @param layer - the array layer / cube face to attach
+     */
+    private _attachSubresource(
+        renderTarget: RenderTarget,
+        gpuRenderTarget: GlRenderTarget,
+        mipLevel: number,
+        layer: number
+    ): void
+    {
+        const gl = this._renderer.gl;
+
+        renderTarget.colorAttachments.forEach((attachment, i) =>
+        {
+            const colorTexture = attachment.texture;
+            const glSource = this._renderer.texture.getGlSource(colorTexture);
+
+            if (glSource.target === gl.TEXTURE_2D)
+            {
+                if (layer !== 0)
+                {
+                    throw new Error('[RenderTargetSystem] layer must be 0 when rendering to 2D textures in WebGL.');
+                }
+
+                gl.framebufferTexture2D(
+                    gl.FRAMEBUFFER,
+                    gl.COLOR_ATTACHMENT0 + i,
+                    gl.TEXTURE_2D,
+                    glSource.texture,
+                    mipLevel
+                );
+            }
+            else if (glSource.target === gl.TEXTURE_2D_ARRAY || glSource.target === gl.TEXTURE_3D)
+            {
+                gl.framebufferTextureLayer(
+                    gl.FRAMEBUFFER,
+                    gl.COLOR_ATTACHMENT0 + i,
+                    glSource.texture,
+                    mipLevel,
+                    layer
+                );
+            }
+            else if (glSource.target === gl.TEXTURE_CUBE_MAP)
+            {
+                if (layer < 0 || layer > 5)
+                {
+                    throw new Error('[RenderTargetSystem] Cube map layer must be between 0 and 5.');
+                }
+
+                gl.framebufferTexture2D(
+                    gl.FRAMEBUFFER,
+                    gl.COLOR_ATTACHMENT0 + i,
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_X + layer,
+                    glSource.texture,
+                    mipLevel
+                );
+            }
+            else
+            {
+                throw new Error('[RenderTargetSystem] Unsupported texture target for render-to-layer in WebGL.');
+            }
+        });
+
+        gpuRenderTarget._attachedMipLevel = mipLevel;
+        gpuRenderTarget._attachedLayer = layer;
     }
 
     public finishRenderPass(renderTarget?: RenderTarget)
@@ -556,16 +578,19 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
      * @param renderTarget - the target to clear
      * @param clear - what to clear
      * @param clearColor - the colour for attachments without a `clearValue`
+     * @param standalone - true outside a render pass: the target's framebuffer is bound for the clear,
+     * then the previous binding is restored
      * @param _viewport - unused on WebGL
-     * @param _mipLevel - unused on WebGL
+     * @param mipLevel - the mip level a standalone clear attaches
      * @param layer - must be 0 on WebGL
      */
     public clear(
         renderTarget: RenderTarget,
         clear: CLEAR_OR_BOOL,
         clearColor?: RgbaArray,
+        standalone = false,
         _viewport?: Rectangle,
-        _mipLevel = 0,
+        mipLevel = 0,
         layer = 0
     )
     {
@@ -579,23 +604,25 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             clear = clear ? CLEAR.ALL : CLEAR.NONE;
         }
 
-        // which attachments clear, one bit each; none on a depth-only target
-        const attachments = renderTarget.colorAttachments;
+        // which attachments clear, one bit each; none on a depth-only target. A fresh renderer's
+        // no-target clear() has no target, so it clears whatever framebuffer is bound
+        const attachments = renderTarget?.colorAttachments;
         let colorMask = 0;
 
-        if (clear & CLEAR.COLOR)
+        if (attachments && (clear & CLEAR.COLOR))
         {
             for (let i = 0; i < attachments.length; i++)
             {
                 if (attachments[i].loadOp !== 'load') colorMask |= 1 << i;
             }
-        }
 
-        if (!colorMask) clear &= ~CLEAR.COLOR;
+            if (!colorMask) clear &= ~CLEAR.COLOR;
+        }
 
         if (!clear) return;
 
         const gl = this._renderer.gl;
+        const renderTargetSystem = this._renderTargetSystem;
 
         // gl.clear's depth write is masked by gl.depthMask, which 2D rendering
         // (State.for2d) leaves disabled — force it on for the clear, then restore
@@ -603,16 +630,64 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         if (forceDepthMask) gl.depthMask(true);
 
-        if (clear & CLEAR.COLOR)
+        // A standalone clear (renderer.clear({ target }) outside a render) does not run startRenderPass,
+        // so the target's framebuffer is never bound and gl.clear would land on whatever FBO is current.
+        // Bind its framebuffer here (mirroring startRenderPass) and restore afterwards. A clear through a
+        // live render pass already has the right FBO bound, so standalone is false and this is skipped.
+        const standaloneTarget = (standalone && renderTarget)
+            ? renderTargetSystem.getGpuRenderTarget(renderTarget)
+            : null;
+
+        // capture the raw GL binding (not the system's renderTarget) so it can be put back verbatim;
+        // re-resolving through getGpuRenderTarget on restore would re-init a target that was released
+        // between frames (e.g. a destroyed canvas source), crashing or leaking a fresh FBO
+        const previousFramebuffer = standaloneTarget
+            ? gl.getParameter(gl.FRAMEBUFFER_BINDING) as WebGLFramebuffer | null
+            : null;
+
+        if (standaloneTarget)
         {
-            const glRenderTarget = this._renderTargetSystem.getGpuRenderTarget(renderTarget);
+            // mirror startRenderPass's subresource guards so a standalone clear of an unsupported mip
+            // fails loudly instead of silently clearing whatever mip happens to be attached
+            if (mipLevel > 0 && !renderTarget.isRoot)
+            {
+                if (standaloneTarget.msaa)
+                {
+                    throw new Error(
+                        '[RenderTargetSystem] Clearing mip levels is not supported with MSAA render targets.'
+                    );
+                }
+
+                if (this._renderer.context.webGLVersion < 2)
+                {
+                    throw new Error('[RenderTargetSystem] Clearing mip levels requires WebGL2.');
+                }
+            }
+
+            this.bindFramebuffer(standaloneTarget.framebuffer);
+
+            // honour the requested mip: attach it so gl.clear lands on the right subresource (root /
+            // canvas targets have no attachable subresource). The tracker is left pointing at this mip;
+            // the next startRenderPass sees the mismatch and re-attaches, so no restore is needed here.
+            if (!renderTarget.isRoot && standaloneTarget._attachedMipLevel !== mipLevel)
+            {
+                this._attachSubresource(renderTarget, standaloneTarget, mipLevel, 0);
+            }
+        }
+
+        // read before the color clear below, which drops the COLOR bit once it clears each attachment alone
+        const clearsColor = !!(clear & CLEAR.COLOR);
+
+        if (clearsColor)
+        {
+            const glRenderTarget = renderTarget ? renderTargetSystem.getGpuRenderTarget(renderTarget) : null;
 
             // gl.clear knows one colour, clears every attachment, and rejects an integer one outright, so it
             // only serves a target with one non-integer attachment. Anything else clears each attachment on
             // its own, to its own value, with the clearBuffer call its format takes. WebGL2 only: WebGL1 has
             // no clearBuffer, so it clears all or none. clearBuffer* reaches the bound framebuffer, so only
             // while this target is the bound one
-            const eachAlone = this._renderer.context.webGLVersion === 2
+            const eachAlone = glRenderTarget && this._renderer.context.webGLVersion === 2
                 && (attachments.length > 1 || isIntegerFormat(attachments[0].texture.format));
 
             if (eachAlone && glRenderTarget.framebuffer === this._boundFramebuffer)
@@ -628,7 +703,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             }
             else
             {
-                const color = attachments[0].clearValue ?? clearColor ?? this._renderTargetSystem.defaultClearColor;
+                const color = attachments?.[0].clearValue ?? clearColor ?? renderTargetSystem.defaultClearColor;
                 const cache = this._clearColorCache;
 
                 if (cache[0] !== color[0] || cache[1] !== color[1] || cache[2] !== color[2] || cache[3] !== color[3])
@@ -646,6 +721,20 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         if (clear) gl.clear(clear);
 
         if (forceDepthMask) gl.depthMask(false);
+
+        if (standaloneTarget)
+        {
+            // the clear hit the MSAA renderbuffer FBO, but sampling reads the resolve texture; the resolve
+            // blit normally only runs in finishRenderPass, so blit now or the standalone clear is invisible
+            if (standaloneTarget.msaa && clearsColor)
+            {
+                this.finishRenderPass(renderTarget);
+            }
+
+            // restore the exact framebuffer that was bound before this standalone clear, so a later
+            // in-place clear (which skips the bind) lands on the right FBO instead of the one left bound
+            this.bindFramebuffer(previousFramebuffer);
+        }
     }
 
     /**
@@ -1063,11 +1152,16 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         {
             const contextCanvas = this._renderer.context.canvas;
             const canvasSource = colorTexture as unknown as CanvasSource;
+            const context2D = canvasSource.context2D;
 
-            canvasSource.context2D.drawImage(
+            // 'copy' replaces the destination outright (alpha included), otherwise transparent
+            // frames would composite over the previous frame's pixels and ghost
+            context2D.globalCompositeOperation = 'copy';
+            context2D.drawImage(
                 contextCanvas as CanvasImageSource,
                 0, canvasSource.pixelHeight - contextCanvas.height
             );
+            context2D.globalCompositeOperation = 'source-over';
         }
     }
 

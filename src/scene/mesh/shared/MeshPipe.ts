@@ -157,6 +157,7 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 
             gpuBatchableMesh.setTexture(mesh._texture);
             gpuBatchableMesh.geometry = mesh._geometry;
+            gpuBatchableMesh.roundPixels = (this.renderer._roundPixels | mesh._roundPixels) as 0 | 1;
 
             batcher.addToBatch(gpuBatchableMesh, instructionSet);
         }
@@ -242,7 +243,6 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
         gpuMesh.renderable = mesh;
         gpuMesh.setTexture(mesh._texture);
         gpuMesh.transform = mesh.groupTransform;
-        gpuMesh.roundPixels = (this.renderer._roundPixels | mesh._roundPixels) as 0 | 1;
 
         mesh._gpuData[this.renderer.uid].batchableMesh = gpuMesh;
 

@@ -147,6 +147,14 @@ describe('Round Pixels', () =>
             text: 'hello world',
         });
 
+        const container = new Container();
+
+        container.addChild(text, textHTML);
+
+        // batched pipes bake roundPixels on the per-frame add path, so the renderable must be rendered
+        // before the value is set (matches the batched-items test above)
+        renderer.render(container);
+
         const batchableTextData = renderer.renderPipes.text['_getGpuText'](text);
 
         expect(batchableTextData.roundPixels).toBe(1);

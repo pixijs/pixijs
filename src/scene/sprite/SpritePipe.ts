@@ -32,6 +32,8 @@ export class SpritePipe implements RenderPipe<Sprite>
 
         if (sprite.didViewUpdate) this._updateBatchableSprite(sprite, gpuSprite);
 
+        gpuSprite.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;
+
         // TODO visibility
         this._renderer.renderPipes.batch.addToBatch(gpuSprite, instructionSet);
     }
@@ -75,7 +77,6 @@ export class SpritePipe implements RenderPipe<Sprite>
         batchableSprite.transform = sprite.groupTransform;
         batchableSprite.texture = sprite._texture;
         batchableSprite.bounds = sprite.visualBounds;
-        batchableSprite.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;
 
         sprite._gpuData[this._renderer.uid] = batchableSprite;
 
