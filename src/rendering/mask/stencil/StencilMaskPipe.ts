@@ -13,6 +13,19 @@ import type { Renderer } from '../../renderers/types';
 import type { StencilMask } from './StencilMask';
 import type { StencilMaskInstruction } from './StencilMaskTypes';
 
+/**
+ * A stencil mask opened while building an instruction set, with the mask instructions its pop replays.
+ * @internal
+ */
+export interface OpenStencilMask
+{
+    pipe: StencilMaskPipe;
+    maskContainer: Container;
+    inverse: boolean;
+    instructionsStart: number;
+    instructionsLength: number;
+}
+
 /** @internal */
 export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
 {
@@ -26,11 +39,6 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
 
     private _renderer: Renderer;
 
-    private _maskHash = new WeakMap<StencilMask, {
-        instructionsStart: number,
-        instructionsLength: number,
-    }>();
-
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
@@ -39,36 +47,36 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
     public push(mask: Effect, _container: Container, instructionSet: InstructionSet): void
     {
         const effect = mask as StencilMask;
+        const maskContainer = effect.mask;
+        const inverse = !!_container._maskOptions.inverse;
+        const pending = instructionSet._pendingStencilPop;
+
+        // a pop directly followed by a push of the same mask leaves the stencil unchanged: keep the mask open
+        if (pending && pending.maskContainer === maskContainer && pending.inverse === inverse)
+        {
+            instructionSet._pendingStencilPop = null;
+            instructionSet._openStencilMasks.push(pending);
+
+            return;
+        }
 
         const renderer = this._renderer;
 
         renderer.renderPipes.batch.break(instructionSet);
 
-        renderer.renderPipes.blendMode.setBlendMode(effect.mask as Renderable, 'none', instructionSet);
+        renderer.renderPipes.blendMode.setBlendMode(maskContainer as Renderable, 'none', instructionSet);
 
         instructionSet.add({
             renderPipeId: 'stencilMask',
             action: 'pushMaskBegin',
             mask,
-            inverse: _container._maskOptions.inverse,
+            inverse,
             canBundle: false,
         } as StencilMaskInstruction);
 
-        const maskContainer = effect.mask;
-
         maskContainer.includeInBuild = true;
 
-        if (!this._maskHash.has(effect))
-        {
-            this._maskHash.set(effect, {
-                instructionsStart: 0,
-                instructionsLength: 0,
-            });
-        }
-
-        const maskData = this._maskHash.get(effect);
-
-        maskData.instructionsStart = instructionSet.instructionSize;
+        const instructionsStart = instructionSet.instructionSize;
 
         maskContainer.collectRenderables(
             instructionSet,
@@ -84,38 +92,60 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
             renderPipeId: 'stencilMask',
             action: 'pushMaskEnd',
             mask,
-            inverse: _container._maskOptions.inverse,
+            inverse,
             canBundle: false,
         } as StencilMaskInstruction);
 
-        const instructionsLength = instructionSet.instructionSize - maskData.instructionsStart - 1;
-
-        maskData.instructionsLength = instructionsLength;
+        // kept per push, as a pooled mask effect can be pushed again later in the build
+        instructionSet._openStencilMasks.push({
+            pipe: this,
+            maskContainer,
+            inverse,
+            instructionsStart,
+            instructionsLength: instructionSet.instructionSize - instructionsStart - 1,
+        });
     }
 
-    public pop(mask: Effect, _container: Container, instructionSet: InstructionSet): void
+    public pop(_mask: Effect, _container: Container, instructionSet: InstructionSet): void
     {
-        const effect = mask as StencilMask;
+        instructionSet._flushPendingStencilPop();
+        instructionSet._pendingStencilPop = instructionSet._openStencilMasks.pop();
+
+        // an advanced blend mode's filter pass must not run on across the mask boundary
+        if (this._renderer.renderPipes.blendMode.isAdvanced)
+        {
+            this.emitPendingPop(instructionSet);
+        }
+    }
+
+    /**
+     * Writes the stencil pop deferred by {@link StencilMaskPipe#pop}.
+     * @param instructionSet - the instruction set being built
+     * @internal
+     */
+    public emitPendingPop(instructionSet: InstructionSet): void
+    {
+        const openMask = instructionSet._pendingStencilPop;
+
+        instructionSet._pendingStencilPop = null;
 
         const renderer = this._renderer;
 
         // stencil is stored based on current render target..
         renderer.renderPipes.batch.break(instructionSet);
-        renderer.renderPipes.blendMode.setBlendMode(effect.mask as Renderable, 'none', instructionSet);
+        renderer.renderPipes.blendMode.setBlendMode(openMask.maskContainer as Renderable, 'none', instructionSet);
 
         instructionSet.add({
             renderPipeId: 'stencilMask',
             action: 'popMaskBegin',
-            inverse: _container._maskOptions.inverse,
+            inverse: openMask.inverse,
             canBundle: false,
         } as StencilMaskInstruction);
 
-        const maskData = this._maskHash.get(mask as StencilMask);
-
-        for (let i = 0; i < maskData.instructionsLength; i++)
+        for (let i = 0; i < openMask.instructionsLength; i++)
         {
-            // eslint-disable-next-line max-len
-            instructionSet.instructions[instructionSet.instructionSize++] = instructionSet.instructions[maskData.instructionsStart++];
+            instructionSet.instructions[instructionSet.instructionSize++]
+                = instructionSet.instructions[openMask.instructionsStart + i];
         }
 
         instructionSet.add({
@@ -195,6 +225,5 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
     public destroy()
     {
         this._renderer = null;
-        this._maskHash = null;
     }
 }
