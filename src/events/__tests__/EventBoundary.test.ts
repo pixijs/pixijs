@@ -1,7 +1,10 @@
 import { EventBoundary } from '../EventBoundary';
 import { FederatedPointerEvent } from '../FederatedPointerEvent';
 import { getApp } from '@test-utils';
+import { Rectangle } from '~/maths';
 import { Container, Graphics } from '~/scene';
+
+import type { Point } from '~/maths';
 
 function graphicsWithRect(x: number, y: number, width: number, height: number)
 {
@@ -364,6 +367,90 @@ describe('EventBoundary', () =>
         expect(outSpy).not.toHaveBeenCalled();
         expect(containerOutSpy).toHaveBeenCalledOnce();
         expect(toOverSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should notify each interactive ancestor of the hit target once per global move event', () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const container = stage.addChild(new Container());
+        const target = container.addChild(graphicsWithRect(0, 0, 100, 100));
+        const other = stage.addChild(graphicsWithRect(200, 0, 100, 100));
+
+        stage.eventMode = 'static';
+        container.eventMode = 'static';
+        target.eventMode = 'static';
+        other.eventMode = 'static';
+
+        const calls: string[] = [];
+        const objects = { stage, container, target, other };
+
+        for (const [name, obj] of Object.entries(objects))
+        {
+            obj.addEventListener('globalpointermove', () => calls.push(`${name}:globalpointermove`));
+            obj.onglobalmousemove = () => calls.push(`${name}.on:globalmousemove`);
+        }
+
+        const move = new FederatedPointerEvent(boundary);
+
+        move.pointerId = 1;
+        move.pointerType = 'mouse';
+        move.type = 'pointermove';
+        move.global.set(50, 50);
+
+        boundary.mapEvent(move);
+
+        expect(calls.filter((c) => c.startsWith('container'))).toEqual([
+            'container:globalpointermove',
+            'container.on:globalmousemove',
+        ]);
+        expect(calls.filter((c) => c.startsWith('stage'))).toEqual([
+            'stage:globalpointermove',
+            'stage.on:globalmousemove',
+        ]);
+        expect(calls.filter((c) => c.startsWith('target'))).toEqual([
+            'target:globalpointermove',
+            'target.on:globalmousemove',
+        ]);
+        expect(calls.filter((c) => c.startsWith('other'))).toEqual([
+            'other:globalpointermove',
+            'other.on:globalmousemove',
+        ]);
+        expect(calls).toHaveLength(8);
+    });
+
+    it('should prune a parent once per move hit test, not once per child', () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const a = stage.addChild(graphicsWithRect(0, 0, 100, 100));
+        const b = stage.addChild(graphicsWithRect(0, 0, 100, 100));
+        const c = stage.addChild(graphicsWithRect(0, 0, 100, 100));
+
+        stage.eventMode = 'static';
+        stage.hitArea = new Rectangle(0, 0, 10, 10);
+        a.eventMode = 'static';
+        b.eventMode = 'static';
+        c.eventMode = 'static';
+
+        const pruneFn = boundary['hitPruneFn'];
+        let stagePruneCalls = 0;
+
+        boundary['hitPruneFn'] = (container: Container, location: Point) =>
+        {
+            if (container === stage) stagePruneCalls++;
+
+            return pruneFn(container, location);
+        };
+
+        boundary['_isPointerMoveEvent'] = true;
+
+        // the point is over every child but outside the stage's hitArea, so nothing is hit
+        expect(boundary.hitTest(50, 50)).toBeFalsy();
+        // children are still collected for global move events, each once
+        expect(boundary['_allInteractiveElements']).toEqual([c, b, a, stage]);
+        // once for the children, once for the stage's own hit test
+        expect(stagePruneCalls).toBe(2);
     });
 
     it('should only call listener once when using .once() to register listener', () =>
