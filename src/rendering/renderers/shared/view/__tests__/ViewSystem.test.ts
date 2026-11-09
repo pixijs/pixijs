@@ -1,4 +1,4 @@
-import { getWebGLRenderer } from '@test-utils';
+import { getWebGLRenderer, getWebGPURenderer, itLocalOnly } from '@test-utils';
 import { CanvasPool, TexturePool } from '~/rendering';
 
 describe('ViewSystem', () =>
@@ -107,5 +107,23 @@ describe('ViewSystem', () =>
         expect([canvas.width, canvas.height]).toEqual([2048, 1024]);
 
         TexturePool.returnTexture(texture);
+    });
+
+    itLocalOnly('should set up the WebGPU canvas in the preferred format by default', async () =>
+    {
+        const renderer = await getWebGPURenderer();
+
+        expect(renderer.view.texture.source.format).toBe(navigator.gpu.getPreferredCanvasFormat());
+
+        renderer.destroy();
+    });
+
+    itLocalOnly('should keep an explicit WebGPU canvas format', async () =>
+    {
+        const renderer = await getWebGPURenderer({ format: 'rgba16float' });
+
+        expect(renderer.view.texture.source.format).toBe('rgba16float');
+
+        renderer.destroy();
     });
 });

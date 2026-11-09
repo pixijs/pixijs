@@ -4,6 +4,7 @@ import { type GPUData } from '../../../../scene/view/ViewContainer';
 import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
 import { UniformGroup } from '../../shared/shader/UniformGroup';
 import { CanvasPool } from '../../shared/texture/CanvasPool';
+import { canvasAllowedFormats } from '../renderTarget/GpuRenderTargetAdaptor';
 import { BindGroup } from '../shader/BindGroup';
 import { GpuMsaaTexture } from './GpuMsaaTexture';
 import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageResource';
@@ -463,11 +464,18 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
         const context = canvas.getContext('webgpu') as unknown as GPUCanvasContext;
 
+        // the copy below needs the canvas in the source's format (an -srgb suffix aside), which needn't be
+        // the preferred one: Android prefers rgba8unorm while render textures default to bgra8unorm
+        const sourceFormat = texture.source.format.replace('-srgb', '');
+        const format = canvasAllowedFormats[sourceFormat]
+            ? sourceFormat as GPUTextureFormat
+            : DOMAdapter.get().getNavigator().gpu.getPreferredCanvasFormat();
+
         context.configure({
             device: renderer.gpu.device,
 
             usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC,
-            format: DOMAdapter.get().getNavigator().gpu.getPreferredCanvasFormat(),
+            format,
             alphaMode: 'premultiplied',
         });
 

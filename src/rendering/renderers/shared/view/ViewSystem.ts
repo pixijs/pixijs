@@ -2,7 +2,7 @@ import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
-import { type Renderer, type RendererOptions } from '../../types';
+import { type Renderer, type RendererOptions, RendererType } from '../../types';
 import { RenderTarget } from '../renderTarget/RenderTarget';
 import { CanvasPool } from '../texture/CanvasPool';
 import { TexturePool } from '../texture/TexturePool';
@@ -11,6 +11,7 @@ import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { TypeOrBool } from '../../../../scene/container/destroyTypes';
 import type { System } from '../system/System';
+import type { TEXTURE_FORMATS } from '../texture/const';
 import type { CanvasSource } from '../texture/sources/CanvasSource';
 import type { Texture } from '../texture/Texture';
 
@@ -60,6 +61,14 @@ export interface ViewSystemOptions
      * @default false
      */
     transient?: boolean;
+    /**
+     * WebGPU only. The format the canvas is set up with. WebGL and the canvas renderer ignore it.
+     * Defaults to the browser's preferred canvas format (`bgra8unorm` on most desktops, `rgba8unorm` on Android),
+     * as any other format costs the browser an extra full-screen copy every frame.
+     * Pass `rgba16float` for an HDR canvas.
+     * @default navigator.gpu.getPreferredCanvasFormat()
+     */
+    format?: TEXTURE_FORMATS;
 }
 
 /**
@@ -197,6 +206,12 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         // `depth` asks for a depth buffer here, but on a TextureSource it's a 3D texture's depth,
         // so it goes to the render target and not to the canvas source
         const { depth, ...canvasOptions } = options;
+
+        // only WebGPU sets up the canvas with a format
+        if (!canvasOptions.format && this._renderer.type === RendererType.WEBGPU)
+        {
+            canvasOptions.format = DOMAdapter.get().getNavigator().gpu.getPreferredCanvasFormat() as TEXTURE_FORMATS;
+        }
 
         this.texture = getCanvasTexture(this.canvas, canvasOptions);
         this.renderTarget = new RenderTarget({

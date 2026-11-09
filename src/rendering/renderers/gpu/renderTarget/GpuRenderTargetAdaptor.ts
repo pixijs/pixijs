@@ -16,7 +16,8 @@ import type { WebGPURenderer } from '../WebGPURenderer';
 
 // WebGPU's `GPUCanvasContext.configure` only accepts these formats. Anything else on a
 // CanvasSource falls back to the platform-preferred format with a warning.
-const canvasAllowedFormats: Record<string, true> = {
+/** @internal */
+export const canvasAllowedFormats: Record<string, true> = {
     bgra8unorm: true,
     rgba8unorm: true,
     rgba16float: true,
