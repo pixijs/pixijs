@@ -61,8 +61,12 @@ function generateUpdateFunction(
     `);
 
     // add to the front..
+    // declare the scratch variables the property code writes (offset, plus w0/w1/h0/h1 used by the
+    // vertex code) so they stay function locals instead of leaking onto globalThis.
+    // not strict mode: custom property code that assigns an undeclared name must keep working
     funcFragments.unshift(`
         var stride = ${offset};
+        var offset = 0, w0 = 0, w1 = 0, h0 = 0, h1 = 0;
     `);
 
     const functionSource = funcFragments.join('\n');
