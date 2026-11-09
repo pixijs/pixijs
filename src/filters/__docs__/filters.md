@@ -147,10 +147,11 @@ Advanced blend modes sample the existing render target to combine source and
 destination pixels. Like other filters, they use `Filter.defaultOptions` when
 created, whose default `resolution` is `1` for performance.
 
-If your renderer uses a non-`1` resolution, such as on high-DPI displays, and an
-advanced blend mode appears clipped, scaled, or only partially applied, opt in to
-render-target resolution inheritance before creating filters or display objects
-that use advanced blend modes:
+The render target is read at its own resolution, but the blended object itself
+is drawn at the filter's. If your renderer uses a non-`1` resolution, such as on
+high-DPI displays, and an object with an advanced blend mode looks soft, opt in
+to render-target resolution inheritance before creating filters or display
+objects that use advanced blend modes:
 
 ```ts
 import { Filter } from 'pixi.js';

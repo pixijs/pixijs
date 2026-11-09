@@ -4,6 +4,12 @@ import type { ColorSource } from '../Color';
 
 describe('Color', () =>
 {
+    it('should return false from isColorLike for null and undefined', () =>
+    {
+        expect(Color.isColorLike(null)).toBe(false);
+        expect(Color.isColorLike(undefined)).toBe(false);
+    });
+
     it.concurrent('should throw error for invalid color values', async () =>
     {
         const invalidColorValues: any[] = [

@@ -1,6 +1,8 @@
-// description: An interactive HTML form rendered via HTMLSource onto a cursor-tilted PerspectiveMesh (rotation clamped); a per-frame CSS matrix3d homography keeps the real inputs aligned and usable under the 3D warp, and the slider drives a BlurFilter
+// description: An interactive HTML form rendered via HTMLSource onto a cursor-tilted PerspectiveMesh (rotation clamped); a per-frame homography passed to canvas.updateElementGeometry (or a CSS matrix3d on Chrome before 155) keeps the real inputs aligned and usable under the 3D warp, and the slider drives a BlurFilter
 import { Application, BlurFilter, PerspectiveMesh, Texture } from 'pixi.js';
 import { HTMLSource } from 'pixi.js/html-source';
+
+import type { HTMLSourceCanvas } from 'pixi.js/html-source';
 
 (async () => {
   const app = new Application();
@@ -9,11 +11,12 @@ import { HTMLSource } from 'pixi.js/html-source';
   document.body.appendChild(app.canvas);
   document.body.style.cssText = 'margin: 0; overflow: hidden';
 
-  // The element must be a direct child of the Pixi canvas so HTMLSource can capture it.
+  // The element must be inside the Pixi canvas so HTMLSource can capture it.
   const form = document.createElement('div');
 
-  // transform-origin 0 0 so the matrix3d below maps the form's local (0,0)-(w,h) box
-  // straight onto screen pixels, matching the mesh's projected corners exactly.
+  // Chrome before 155 hit tests the form through its CSS transform. Pin it to the canvas
+  // origin with transform-origin 0 0 so the matrix below maps the form's local (0,0)-(w,h)
+  // box straight onto screen pixels, matching the mesh's projected corners exactly.
   form.style.cssText = [
     'position: absolute',
     'top: 0',
@@ -129,7 +132,7 @@ import { HTMLSource } from 'pixi.js/html-source';
     }
   }
 
-  // --- CSS matrix3d homography -----------------------------------------------
+  // --- Homography -------------------------------------------------------------
   // Standard 4-point projective transform (adjugate method). It builds the 3x3
   // matrix that maps the form's flat rect onto the same screen quad the mesh
   // renders, so the DOM inputs stay clickable under the perspective warp.
@@ -183,7 +186,7 @@ import { HTMLSource } from 'pixi.js/html-source';
   // Source quad in TL, TR, BL, BR order — never changes.
   const srcQuad = [0, 0, formWidth, 0, 0, formHeight, formWidth, formHeight];
 
-  function formMatrix3d(): string {
+  function formTransform(): DOMMatrix {
     // Mesh local point (lx, ly) renders at (mesh.x - pivot + l) with scale 1.
     const offsetX = mesh.x - halfFormWidth;
     const offsetY = mesh.y - halfFormHeight;
@@ -199,14 +202,16 @@ import { HTMLSource } from 'pixi.js/html-source';
     const matrix = general2DProjection(srcQuad, dstQuad);
     const h = matrix.map((value) => value / matrix[8]);
 
-    // Embed the 3x3 homography into a column-major 4x4 matrix3d (z passthrough).
-    return `matrix3d(${[
+    // Embed the 3x3 homography into a column-major 4x4 matrix (z passthrough).
+    return new DOMMatrix([
       h[0], h[3], 0, h[6],
       h[1], h[4], 0, h[7],
       0, 0, 1, 0,
       h[2], h[5], 0, h[8],
-    ].join(',')})`;
+    ]);
   }
+
+  const canvas = app.canvas as HTMLSourceCanvas;
 
   app.ticker.add(() => {
     rotate3D(300);
@@ -222,7 +227,14 @@ import { HTMLSource } from 'pixi.js/html-source';
       outPoints[3].y,
     );
 
-    form.style.transform = formMatrix3d();
+    const transform = formTransform();
+
+    // Chrome 155+ takes the drawn position directly; older builds read the CSS transform.
+    if (canvas.updateElementGeometry) {
+      canvas.updateElementGeometry(form, { canvasTransform: transform });
+    } else {
+      form.style.transform = transform.toString();
+    }
   });
 
   app.stage.hitArea = app.screen;

@@ -191,7 +191,7 @@ await app.init({ useBackBuffer: true });
 sprite.blendMode = "color-burn";
 ```
 
-Advanced blend modes are filter-based, so they inherit `Filter.defaultOptions`, whose `resolution` defaults to `1`. On high-DPI render targets this can make a blend mode look clipped, scaled, or only partially applied. Set `Filter.defaultOptions.resolution = 'inherit'` before creating the affected objects to render at the render target resolution, at higher memory and runtime cost:
+Advanced blend modes are filter-based, so they inherit `Filter.defaultOptions`, whose `resolution` defaults to `1`. On a high-DPI renderer the blended object is drawn at resolution `1` and looks soft, while the backdrop keeps the render target's resolution. For a sharp result, set `Filter.defaultOptions.resolution = 'inherit'` before creating the affected objects. It applies to every filter created afterwards and can increase memory use and runtime cost:
 
 ```ts
 import { Filter } from "pixi.js";

@@ -188,6 +188,16 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         }
     }
 
+    /**
+     * Opens a pass on the target. The bind's `clear` decides whether color clears, and a color
+     * attachment whose own `loadOp` is `'load'` keeps its contents anyway.
+     * @param renderTarget - the target to render to
+     * @param clear - what to clear
+     * @param clearColor - the colour for attachments without a `clearValue`
+     * @param viewport - the viewport
+     * @param mipLevel - the mip level to render to
+     * @param layer - the array layer to render to
+     */
     public startRenderPass(
         renderTarget: RenderTarget,
         clear: CLEAR_OR_BOOL = true,
@@ -195,7 +205,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         viewport?: Rectangle,
         mipLevel = 0,
         layer = 0
-    )
+    ): void
     {
         const renderTargetSystem = this._renderTargetSystem;
 
@@ -216,11 +226,11 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         // viewport. This avoids a redundant pass teardown + state-cache flush (and re-binding every
         // pipeline / bind group / vertex buffer on the next draw). A *partial* clear still forces a
         // real begin because you cannot flip a loadOp to 'clear' mid-pass.
-        let clearBits: CLEAR_OR_BOOL = clear;
+        let clearBits: CLEAR = clear as CLEAR;
 
-        if (typeof clearBits === 'boolean')
+        if (typeof clear === 'boolean')
         {
-            clearBits = clearBits ? CLEAR.ALL : CLEAR.NONE;
+            clearBits = clear ? CLEAR.ALL : CLEAR.NONE;
         }
 
         // depth/stencil requested without an explicit texture — WebGPU always backs
@@ -255,7 +265,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             return;
         }
 
-        const { descriptor, restore } = this._buildDescriptor(renderTarget, clear, clearColor, mipLevel, layer);
+        const { descriptor, restore } = this._buildDescriptor(renderTarget, clearBits, clearColor, mipLevel, layer);
 
         gpuRenderTarget.descriptor = descriptor;
 
@@ -362,7 +372,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
      * `load`. Those buffers were discarded, so the pass must restore them before drawing.
      * @param renderTarget - the target to render to
      * @param clear - what to clear
-     * @param clearValue - the colour to clear to
+     * @param clearValue - the colour to clear attachments that have no `clearValue` of their own to
      * @param mipLevel - the mip level to render to
      * @param layer - the array layer to render to
      */
@@ -371,7 +381,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         clear: CLEAR_OR_BOOL,
         clearValue: RgbaArray,
         mipLevel = 0,
-        layer = 0
+        layer = 0,
     ): { descriptor: GPURenderPassDescriptor; restore: number[] | null }
     {
         let restoreList: number[] = null;
@@ -430,14 +440,10 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     view = this._renderer.texture.getTextureView(msaaTexture);
                 }
 
-                let loadOp = colorAttachment.loadOp;
-
-                if (clear !== undefined)
-                {
-                    loadOp = (clear as CLEAR) & CLEAR.COLOR ? 'clear' : 'load';
-                }
-
-                clearValue ??= renderTargetSystem.defaultClearColor;
+                // the bind decides whether color clears, and an attachment whose loadOp is 'load' opts out,
+                // so `clear: false` never clears anything
+                const clearsColor = ((clear as CLEAR) & CLEAR.COLOR) !== 0;
+                let loadOp: GPULoadOp = clearsColor && colorAttachment.loadOp !== 'load' ? 'clear' : 'load';
 
                 // a transient MSAA buffer is never stored, so a pass that would load it clears and restores it
                 // from the resolved texture instead (see GpuMsaaRestore). The first pass of a canvas frame has
@@ -471,8 +477,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                 }
                 else if (loadOp === 'clear')
                 {
-                    clearValue ??= (colorAttachment.clearValue as RgbaArray) ?? renderTargetSystem.defaultClearColor;
-                    baseAttachment.clearValue = clearValue;
+                    // the attachment's own value first, then the bind's colour, then the default
+                    baseAttachment.clearValue = colorAttachment.clearValue ?? clearValue
+                        ?? renderTargetSystem.defaultClearColor;
                 }
 
                 for (const key in colorAttachment)

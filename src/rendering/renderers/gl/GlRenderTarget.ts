@@ -22,6 +22,12 @@ export class GlRenderTarget
      * @internal
      */
     public _attachedLayer = 0;
+    /**
+     * Which color attachments the framebuffer's draw buffers currently enable, one bit per
+     * attachment. Only tracked for targets with several attachments; `-1` means unknown.
+     * @internal
+     */
+    public _drawBuffersMask = -1;
     public framebuffer: WebGLFramebuffer;
     public resolveTargetFramebuffer: WebGLFramebuffer;
     public msaaRenderBuffer: WebGLRenderbuffer[] = [];
