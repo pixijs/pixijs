@@ -270,6 +270,30 @@ describe('Multi-view EventSystem', () =>
         renderer.destroy();
     });
 
+    it('should route contextmenu events to the view they occurred on', async () =>
+    {
+        const { renderer, canvasB, sceneA, sceneB } = await setupMultiView();
+
+        const spyA = jest.fn();
+        const spyB = jest.fn();
+
+        sceneA.graphics.on('contextmenu', spyA);
+        sceneB.graphics.on('contextmenu', spyB);
+
+        canvasB.dispatchEvent(new MouseEvent('contextmenu', {
+            clientX: 225,
+            clientY: 25,
+            bubbles: true,
+            cancelable: true,
+        }));
+
+        expect(spyB).toHaveBeenCalledTimes(1);
+        expect(spyA).not.toHaveBeenCalled();
+        expect(spyB.mock.calls[0][0].global.x).toBe(25);
+
+        renderer.destroy();
+    });
+
     it('should synthesize over and out per view from document moves', async () =>
     {
         const { renderer, sceneB } = await setupMultiView();
