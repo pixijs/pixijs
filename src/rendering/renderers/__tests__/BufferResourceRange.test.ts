@@ -536,4 +536,28 @@ describe('BufferResource', () =>
 
         buffer.destroy();
     });
+
+    it('should not listen to its buffer or follow its changes when unwatched', () =>
+    {
+        const buffer = createSwatchBuffer();
+        const before = buffer.listenerCount('change');
+        const resource = new BufferResource({ buffer, watch: false });
+        const id = resource._resourceId;
+        const onChange = jest.fn();
+
+        resource.on('change', onChange);
+
+        expect(resource.watch).toBe(false);
+        expect(buffer.listenerCount('change')).toBe(before);
+
+        // grows the buffer, which a watched resource follows with a new id
+        buffer.data = new Float32Array(ROW_FLOATS * 4);
+
+        expect(resource._resourceId).toBe(id);
+        expect(onChange).not.toHaveBeenCalled();
+
+        resource.destroy(true);
+
+        expect(onChange).toHaveBeenCalledTimes(1);
+    });
 });
