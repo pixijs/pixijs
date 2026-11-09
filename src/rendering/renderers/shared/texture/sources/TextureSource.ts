@@ -107,6 +107,10 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
      * of writing them to memory: depth/stencil, and on GPUs that aren't tile-based also colour (tile-based
      * GPUs already discard colour; see {@link GpuExtensions.tileBased}). If the target is reopened anyway,
      * the colour is restored from the resolved texture but the depth/stencil is lost.
+     *
+     * Set it on every colour texture of a render target that has several: each texture's own flag decides
+     * its colour samples, and the first texture's decides the depth/stencil. It is read when the texture's
+     * samples are made, the first time it is drawn into.
      * @default false
      */
     transient?: boolean;

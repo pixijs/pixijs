@@ -152,6 +152,14 @@ export interface PixiDepthStencilAttachment extends Omit<GPURenderPassDepthStenc
  * clear color (0 to 1) clears them to 0 or 1. The bind's `clear` decides whether anything clears; an
  * attachment with `loadOp: 'load'` keeps its contents even when the bind clears. An antialiased target can't
  * have an integer attachment.
+ *
+ * Several render targets can be built over the same textures, for example one that writes a depth texture
+ * and one that only tests against it. They draw into the same pixels: an antialiased texture's samples are
+ * kept with the texture, not with a target. They are made when the texture is first drawn into and go with
+ * its GPU texture, when it is destroyed, unloaded or resized; destroying a target frees only what the target
+ * owns, not the samples of textures passed to it. Targets that share a depth/stencil texture must all be
+ * antialiased, or none of them. On WebGPU a canvas can have only one render target. Building a second
+ * reconfigures its context, and destroying one unconfigures it.
  * @category rendering
  * @advanced
  */
@@ -161,7 +169,7 @@ export class RenderTarget extends EventEmitter<{
 {
     /**
      * emits when the render target is destroyed, before its attachments are released.
-     * letting the renderer know that it needs to free the framebuffers and MSAA buffers it built for it
+     * letting the renderer know that it needs to free the framebuffers and other GPU objects it built for it
      * @event destroy
      */
 
@@ -505,19 +513,22 @@ export class RenderTarget extends EventEmitter<{
     {
         if (this.depthStencilAttachment) return this.depthStencilAttachment;
 
+        const texture = new TextureSource({
+            width,
+            height,
+            resolution,
+            format: 'depth24plus-stencil8',
+            autoGenerateMipmaps: false,
+            antialias: false,
+            mipLevelCount: 1,
+            // sampleCount: handled by the render target system..
+        });
+
+        // the constructor doesn't round, and a size derived from whole pixels can land just short of them
+        texture.resize(width, height, resolution);
+
         this._managedDepthStencilTexture = true;
-        this.depthStencilAttachment = {
-            texture: new TextureSource({
-                width,
-                height,
-                resolution,
-                format: 'depth24plus-stencil8',
-                autoGenerateMipmaps: false,
-                antialias: false,
-                mipLevelCount: 1,
-                // sampleCount: handled by the render target system..
-            }),
-        };
+        this.depthStencilAttachment = { texture };
 
         return this.depthStencilAttachment;
     }

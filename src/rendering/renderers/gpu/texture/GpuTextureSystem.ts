@@ -5,6 +5,7 @@ import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
 import { UniformGroup } from '../../shared/shader/UniformGroup';
 import { CanvasPool } from '../../shared/texture/CanvasPool';
 import { BindGroup } from '../shader/BindGroup';
+import { GpuMsaaTexture } from './GpuMsaaTexture';
 import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageResource';
 import { blockDataMap, gpuUploadCompressedTextureResource } from './uploaders/gpuUploadCompressedTextureResource';
 import { createGpuUploadCubeTextureResource } from './uploaders/gpuUploadCubeTextureResource';
@@ -32,6 +33,8 @@ export class GPUTextureGpuData implements GPUData
     public gpuTexture: GPUTexture;
     public textureView: GPUTextureView = null;
     public textureViews: Record<string, GPUTextureView> = Object.create(null);
+    /** The samples of an antialiased texture, made on first render into it (see {@link GpuTextureSystem.getMsaaTexture}). */
+    public msaa: GpuMsaaTexture | null = null;
 
     constructor(gpuTexture: GPUTexture)
     {
@@ -42,9 +45,11 @@ export class GPUTextureGpuData implements GPUData
     public destroy(): void
     {
         this.gpuTexture.destroy();
+        this.msaa?.destroy();
         this.textureView = null;
         this.textureViews = null;
         this.gpuTexture = null;
+        this.msaa = null;
     }
 }
 
@@ -188,8 +193,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             if (source.transient)
             {
                 // TRANSIENT_ATTACHMENT goes on top when the browser exposes the bit. The render target adaptor
-                // never loads or stores a transient MSAA buffer (a reopened pass restores colour from the
-                // resolved texture instead).
+                // never loads or stores a transient MSAA buffer.
                 if (this._renderer.device.extensions.transientAttachment)
                 {
                     usage |= GPUTextureUsage.TRANSIENT_ATTACHMENT;
@@ -329,6 +333,24 @@ export class GpuTextureSystem implements System, CanvasGenerator
         source._gcLastUsed = this._renderer.gc.now;
 
         return (source._gpuData[this._renderer.uid] as GPUTextureGpuData)?.gpuTexture || this.initSource(source);
+    }
+
+    /**
+     * The multisampled texture an antialiased texture is drawn into, made on first use. It belongs to the
+     * texture, so every render target over the texture shares its samples, and it goes with the texture's GPU
+     * texture: when the texture is destroyed, unloaded or resized.
+     * @param source - the antialiased texture
+     * @returns its multisampled texture
+     */
+    public getMsaaTexture(source: TextureSource): GpuMsaaTexture
+    {
+        this.getGpuSource(source);
+
+        const gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
+
+        gpuData.msaa ??= new GpuMsaaTexture(this._renderer, source);
+
+        return gpuData.msaa;
     }
 
     /**

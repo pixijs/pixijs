@@ -157,6 +157,7 @@ export * from './renderers/gpu/shader/utils/removeStructAndGroupDuplicates';
 export * from './renderers/gpu/state/GpuBlendModesToPixi';
 export * from './renderers/gpu/state/GpuStateSystem';
 export * from './renderers/gpu/state/GpuStencilModesToPixi';
+export * from './renderers/gpu/texture/GpuMsaaTexture';
 export * from './renderers/gpu/texture/GpuTextureSystem';
 export * from './renderers/gpu/texture/uploaders/GpuTextureUploader';
 export * from './renderers/gpu/texture/uploaders/gpuUploadBufferImageResource';

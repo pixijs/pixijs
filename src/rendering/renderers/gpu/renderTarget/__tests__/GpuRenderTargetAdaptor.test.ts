@@ -7,8 +7,20 @@ import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
 import { AlphaFilter } from '~/filters';
 import { Container, Graphics } from '~/scene';
 
+import type { GpuMsaaTexture } from '../../texture/GpuMsaaTexture';
+import type { GPUTextureGpuData } from '../../texture/GpuTextureSystem';
 import type { WebGPURenderer } from '../../WebGPURenderer';
 import type { GpuRenderTarget } from '../GpuRenderTarget';
+
+/**
+ * The samples a pass has already made for a texture: read from its GPU data, so nothing is made here.
+ * @param renderer - the renderer that drew into the texture
+ * @param source - the antialiased texture
+ */
+function samplesOf(renderer: WebGPURenderer, source: TextureSource): GpuMsaaTexture | null
+{
+    return (source._gpuData[renderer.uid] as GPUTextureGpuData)?.msaa ?? null;
+}
 
 function makeTarget(): RenderTarget
 {
@@ -103,11 +115,8 @@ describeLocalOnly('GpuRenderTargetAdaptor msaa textures', () =>
             renderer.encoder.renderStart();
             renderer.renderTarget.bind({ target, clear: true });
 
-            const msaaTexture = renderer.renderTarget.getGpuRenderTarget(target).msaaTextures[0];
-
             // multisampled textures must have exactly 1 mip level
-            expect(msaaTexture.autoGenerateMipmaps).toBe(false);
-            expect(msaaTexture.mipLevelCount).toBe(1);
+            expect(samplesOf(renderer, target.colorTexture).texture.mipLevelCount).toBe(1);
 
             renderer.encoder.postrender();
 
@@ -162,7 +171,7 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
         const gpuRenderTarget = renderer.renderTarget.getGpuRenderTarget(target);
         const first = gpuRenderTarget.descriptor.colorAttachments[0];
 
-        expect(gpuRenderTarget.msaaTextures[0].transient).toBe(true);
+        expect(samplesOf(renderer, target.colorTexture).transient).toBe(true);
         expect(first.loadOp).toBe('clear');
         expect(first.storeOp).toBe('discard');
         expect(restoredSlots(gpuRenderTarget)).toEqual([]);
@@ -331,6 +340,31 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
         renderer.destroy();
     });
 
+    it('should make the canvas samples again after a resize', async () =>
+    {
+        const renderer = (await getWebGPURenderer({ antialias: true })) as WebGPURenderer;
+        const device = renderer.gpu.device;
+        const shape = new Graphics().rect(0, 0, 10, 10).fill('red');
+        const root = () => renderer.renderTarget.getGpuRenderTarget(renderer.renderTarget.rootRenderTarget);
+
+        device.pushErrorScope('validation');
+
+        renderer.render(shape);
+
+        const before = root().canvasMsaaTextures[0];
+
+        renderer.resize(80, 80);
+        renderer.render({ container: shape, clear: false });
+
+        const after = root().canvasMsaaTextures[0];
+
+        expect(await device.popErrorScope()).toBeNull();
+        expect(after).not.toBe(before);
+        expect(after.texture.width).toBe(80);
+
+        renderer.destroy();
+    });
+
     it('should discard the canvas msaa depth/stencil only when the renderer is created transient', async () =>
     {
         for (const transient of [false, true])
@@ -366,7 +400,7 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
 
         const gpuRenderTarget = renderer.renderTarget.getGpuRenderTarget(target);
 
-        expect(gpuRenderTarget.msaaTextures[0].transient).toBe(false);
+        expect(samplesOf(renderer, target.colorTexture).transient).toBe(false);
         expect(gpuRenderTarget.descriptor.colorAttachments[0].storeOp).toBe('store');
 
         renderer.renderTarget.bind({ target: other, clear: true });

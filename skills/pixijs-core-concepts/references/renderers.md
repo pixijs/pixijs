@@ -152,7 +152,7 @@ renderer.renderTarget.copyDepthTexture(target, depthCopy, { x: 0, y: 0 }, { widt
 - A target's color attachments can each have their own format (`rgba16float`, `rg16float`, `r32uint`, ...). A draw writes only the attachments its shader has outputs for; integer attachments never blend and can't be antialiased. The bind's `clear` decides whether anything clears; an attachment with `loadOp: "load"` keeps its contents anyway, and `clear: false` never clears. See `pixijs-custom-rendering` for writing several outputs.
 - Positional `bind(target, clear, ...)` and `push(...)` are deprecated since 8.20.0. `pop()` throws when the stack is empty.
 - `copyDepthTexture` needs WebGL2 or WebGPU and a depth-format destination. The next render into the destination target must clear color only (`clear: CLEAR.COLOR`), or the copied depth is lost.
-- Destroy a target you constructed with `target.destroy()`; the renderer releases the GPU objects it built for it.
+- Destroy a target you constructed with `target.destroy()`; the renderer releases the GPU objects it built for it. An antialiased texture you passed in keeps its multisample memory until you destroy or unload the texture.
 
 ### Resizing, texture generation, and interop
 
