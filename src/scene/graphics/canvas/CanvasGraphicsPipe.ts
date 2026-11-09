@@ -5,8 +5,8 @@ import { GCManagedHash } from '../../../utils/data/GCManagedHash';
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../../rendering/renderers/types';
+import type { GraphicsAdaptor } from '../shared/AbstractGraphicsPipe';
 import type { Graphics } from '../shared/Graphics';
-import type { GraphicsAdaptor } from '../shared/GraphicsPipe';
 
 /** @internal */
 export class CanvasGraphicsPipe implements RenderPipe<Graphics>
