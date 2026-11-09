@@ -293,7 +293,8 @@ describe('Graphics Drawing', () =>
             graphics.strokeStyle = ({ color: '#ff000080', width: 1, alpha: 0.5 });
 
             expect(graphics.strokeStyle.color).toEqual(0xFF0000);
-            expect(graphics.strokeStyle.alpha).toEqual(0.25);
+            // 0x80 is 128 / 255, stored as a 32-bit float
+            expect(graphics.strokeStyle.alpha).toEqual(Math.fround(128 / 255) * 0.5);
 
             graphics.destroy();
         });
@@ -305,7 +306,7 @@ describe('Graphics Drawing', () =>
             graphics.strokeStyle = { color: '#ff000080', alpha: 1, width: 1 };
 
             expect(graphics.strokeStyle.color).toEqual(0xFF0000);
-            expect(graphics.strokeStyle.alpha).toEqual(0.5);
+            expect(graphics.strokeStyle.alpha).toEqual(Math.fround(128 / 255));
 
             graphics.destroy();
         });

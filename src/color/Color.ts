@@ -1,7 +1,7 @@
-import { colord, extend } from '@pixi/colord';
-import namesPlugin from '@pixi/colord/plugins/names';
+import { colord, extend } from 'colord';
+import namesPlugin from 'colord/plugins/names';
 
-import type { AnyColor, HslaColor, HslColor, HsvaColor, HsvColor, RgbaColor, RgbColor } from '@pixi/colord';
+import type { AnyColor, HslaColor, HslColor, HsvaColor, HsvColor, RgbaColor, RgbColor } from 'colord';
 
 extend([namesPlugin]);
 
