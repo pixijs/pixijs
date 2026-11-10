@@ -35,6 +35,7 @@ export abstract class AbstractBatchableGraphics
     public _textureId: number;
     public _attributeStart: number;
     public _batcher: Batcher = null;
+    public _batcherBuildId = -1;
     public _batch: Batch = null;
 
     abstract get uvs(): number[] | Float32Array;

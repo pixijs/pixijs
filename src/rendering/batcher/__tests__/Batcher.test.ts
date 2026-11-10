@@ -1,8 +1,86 @@
 import '~/rendering/renderers/shared/texture/sources/ImageSource';
 import { TestBatcher } from './TestBatcher';
+import { InstructionSet } from '~/rendering/renderers/shared/instructions/InstructionSet';
+import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+
+import type { BatchableElement } from '../shared/Batcher';
+
+function createQuadElement(): BatchableElement
+{
+    return {
+        packAsQuad: true,
+        indexSize: 6,
+        attributeSize: 4,
+        blendMode: 'normal',
+        topology: 'triangle-list',
+        texture: Texture.WHITE,
+    } as unknown as BatchableElement;
+}
+
+function createBatcher(): TestBatcher
+{
+    const batcher = new TestBatcher({ maxTextures: 16, attributesInitialSize: 4, indicesInitialSize: 6 });
+
+    batcher.vertexSize = 6;
+
+    return batcher;
+}
 
 describe('Batcher', () =>
 {
+    it('should update an element of the current build', () =>
+    {
+        const batcher = createBatcher();
+        const first = createQuadElement();
+        const second = createQuadElement();
+
+        const instructionSet = new InstructionSet();
+
+        batcher.begin();
+        batcher.add(first);
+        batcher.add(second);
+        batcher.break(instructionSet);
+
+        const packQuadAttributes = jest.spyOn(batcher, 'packQuadAttributes');
+
+        batcher.updateElement(second);
+
+        expect(packQuadAttributes).toHaveBeenCalledTimes(1);
+        expect(packQuadAttributes.mock.calls[0][0]).toBe(second);
+        expect(packQuadAttributes.mock.calls[0][3]).toBe(4 * 6);
+    });
+
+    it('should not update an element that was left out of the last build', () =>
+    {
+        const batcher = createBatcher();
+        const leftOut = createQuadElement();
+        const kept = createQuadElement();
+
+        const instructionSet = new InstructionSet();
+
+        batcher.begin();
+        batcher.add(leftOut);
+        batcher.add(kept);
+        batcher.break(instructionSet);
+
+        // the next build no longer contains leftOut, kept now uses its place in the buffers
+        batcher.begin();
+        batcher.add(kept);
+        batcher.break(instructionSet);
+
+        const packQuadAttributes = jest.spyOn(batcher, 'packQuadAttributes');
+
+        batcher.updateElement(leftOut);
+
+        expect(packQuadAttributes).not.toHaveBeenCalled();
+
+        batcher.updateElement(kept);
+
+        expect(packQuadAttributes).toHaveBeenCalledTimes(1);
+        expect(packQuadAttributes.mock.calls[0][0]).toBe(kept);
+        expect(packQuadAttributes.mock.calls[0][3]).toBe(0);
+    });
+
     it('should ensure attribute size and resize correctly', () =>
     {
         const batcher = new TestBatcher({
