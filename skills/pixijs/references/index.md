@@ -1,136 +1,132 @@
-# PixiJS Skills: Full Index
+# PixiJS reference index
 
-Detailed routing table for the PixiJS v8 skill collection. Each entry lists the skill's full description and the trigger keywords that should match it. For a scannable short-form table, see the parent `SKILL.md`.
+Look here when no router row in `SKILL.md` matches: every topic file and sub-page, with the long-tail keywords (rare options, v7 names, error strings, symptoms) that send you to it. Open the file you land on and read it.
 
 ## Foundations
 
-### pixijs-application
-Create and configure a PixiJS v8 `Application`. Covers `new Application()` + async `app.init()` options (width, height, background, antialias, resolution, autoDensity, preference, resizeTo, autoStart, sharedTicker, canvas), `app.stage`/`renderer`/`canvas`/`screen` access, `ResizePlugin`, `TickerPlugin`, and `app.destroy()`.
+### [application](application.md)
+Keywords: `new Application(options)` (v7 constructor), `app.view` → `app.canvas`, `app.domContainerRoot`, `releaseGlobalResources`, `removeView`, destroy before init, `Assets.unload` on teardown, `ResizePlugin`, `ResizeObserver`, `app.resize()`, `cancelResize`, renderer `'resize'` event, `renderer.view.autoDensity`, `renderer.resolution`, `devicePixelRatio`, `TickerPlugin`, `ApplicationPlugin`, `ExtensionType.Application`, extension priority, `PixiMixins.ApplicationOptions`.
 
-**Triggers:** Application, app.init, app.stage, app.renderer, app.canvas, app.screen, ApplicationOptions, resizeTo, preference, autoStart, sharedTicker, app.destroy.
+- [application/application-options.md](application/application-options.md): every `app.init` option and its default. Keywords: `ApplicationOptions`, `background`/`backgroundColor`, `backgroundAlpha` (fixed after init), `clearBeforeRender`, `antialias`, `depth`, `transient`, `roundPixels`, `hello`, `failIfMajorPerformanceCaveat`, `bezierSmoothness`, `culler.updateTransform`, `eventMode`, `eventFeatures`, `accessibilityOptions`, `context`, `powerPreference`, `premultipliedAlpha`, `preserveDrawingBuffer` / `toDataURL`, `preferWebGLVersion`, `multiView`, `useBackBuffer`, `forceFallbackAdapter`, `gpu`, `gcActive`, `gcMaxUnusedTime`, `gcFrequency`, deprecated `textureGC*`/`renderableGC*`, per-renderer `webgl`/`webgpu`/`canvasOptions` overrides.
 
-### pixijs-core-concepts
-How PixiJS v8 renders frames: the systems-and-pipes renderer, the render loop, and how the library adapts to different environments. Covers `WebGLRenderer`/`WebGPURenderer`/`CanvasRenderer` selection, `renderer.render()` pipeline, environment detection, and pointers to per-topic deep dives.
+### [core-concepts](core-concepts.md)
+How frames get to the screen; the per-frame loop is in [ticker](ticker.md). Keywords: `WebGLRenderer`, `WebGPURenderer`, `CanvasRenderer`.
 
-**Triggers:** renderer, WebGL, WebGPU, Canvas, render loop, render pipeline, systems, environments, autoDetectRenderer, RenderTexture, RenderTarget, render to texture, flipY, mipLevel, layer, 3D texture, depth slice, renderTarget.bind, copyToTexture, copyDepthTexture, depth-only, WebGLLoader, WebGPULoader, CanvasLoader, RendererLoader, lazy-load renderer systems, context lost, webglcontextlost, device lost, GPUDevice.lost.
+- [core-concepts/renderers.md](core-concepts/renderers.md): backends, `renderer.render()` options, render targets, `generateTexture`, interop. Keywords: `preference` string vs array, `isWebGPUSupported`, `isWebGLSupported`, `renderer.name` vs `type`, `instanceof WebGPURenderer`, Canvas renderer limits (filters skipped, `Mesh` draws nothing), `WebGLLoader`/`WebGPULoader`/`CanvasLoader`, code-splitting renderer systems, `new WebGLRenderer()` + `renderer.init()`, `mipLevel`, `layer`, `flipY`, `colorAttachments`, `depthStencilAttachment`, depth-only target, `renderTarget.push`/`pop`/`bind`/`getBindState`, `copyDepthTexture`, `generateTexture` `frame`/`resolution`/`clearColor`, "copyTo is not a function", `resetState`, `webglcontextlost`, `GPUDevice.lost`, `isBundleValid`/`RenderBundle`.
 
-### pixijs-create
-Scaffold a new PixiJS v8 project with the `create-pixi` CLI or add PixiJS to an existing project. Covers npm/yarn/pnpm/bun create commands, interactive vs non-interactive flows, available template presets (bundler-vite, bundler-webpack, bundler-esbuild, bundler-import-map, creation-web, framework-react, extension-default), Node version requirements, TypeScript 5/6/7 tsconfig setup (`moduleResolution`, `@webgpu/types`, `@types/web`), and post-scaffold dev flow.
+### [ticker](ticker.md)
+Keywords: `addOnce`, `remove(fn, context)`, v7 `dt` callback (TS2365, `NaN`), pixel readback, `elapsedMS`, `targetFPMS`, `FPS`, `onRender` while invisible, `_onRender` (TS2415, TS2425), v7 `updateTransform` override (TS2416), `Ticker.system`, `new Ticker`, `autoStart: false`, `ticker.update(time)`, double render, `visibilitychange` pause.
 
-**Triggers:** create pixi.js, npm create, scaffold, template, bundler-vite, bundler-webpack, creation-web, framework-react, new project, getting started, TypeScript, tsconfig, moduleResolution, @webgpu/types, @types/web, Cannot find name GPUTextureUsage.
+### [environments](environments.md)
+Keywords: `DOMAdapter.set`/`get`, `BrowserAdapter`, `WebWorkerAdapter`, `transferControlToOffscreen`, worker resize/DPR by `postMessage`, `new URL(..., import.meta.url)` worker bundling, "Image is not defined", `HTMLText`/SVG/`extract.image` in a worker, `createImageBitmap`, node-canvas, `Adapter` interface, `adapter.fetch`, `preferWorkers`, `preferCreateImageBitmap`, `unsafe-eval`, `manageImports`, tree-shaking, `pixi.js/browser`, `pixi.js/webworker`, `pixi.js/events`, `pixi.js/filters`, `loadEnvironmentExtensions`, `autoDetectEnvironment`, v7 `settings.ADAPTER`.
 
-### pixijs-environments
-Run PixiJS v8 outside a standard browser: Web Workers, `OffscreenCanvas`, Node/SSR, or CSP-restricted contexts. Covers `DOMAdapter.set`, `BrowserAdapter`, `WebWorkerAdapter`, custom `Adapter` interface, `pixi.js/unsafe-eval` for strict CSP.
+### [create](create.md)
+Keywords: `create pixi.js`, templates (`bundler-vite`, `bundler-webpack`, `bundler-esbuild`, `bundler-import-map`, `creation-web`, `framework-react`, `extension-default`), `npm install pixi.js`, the `--` separator, Node version, "Top-level await is not available", `es2022` target, `@types/web`, "Cannot find name GPUTextureUsage" (TS2552), `moduleResolution` `node`/`bundler` (TS2882, TS5107, TS5108).
 
-**Triggers:** DOMAdapter, BrowserAdapter, WebWorkerAdapter, Web Worker, OffscreenCanvas, Node, headless, SSR, CSP, unsafe-eval, Adapter.
+### [migration-v8](migration-v8.md)
+A whole-codebase v7 checklist; each entry links to the topic file that owns the rule. Keywords: `@pixi/*`, `pixi-filters`, `beginFill`/`endFill`/`lineStyle`/`drawRect`, `beginHole`, `GraphicsGeometry`, `Text` positional args, `NineSlicePlane`, `SimpleMesh`/`SimplePlane`/`SimpleRope`, `MeshGeometry`, `ParticleContainer`/`Particle`, `interactive`/`buttonMode`, ticker `dt`, `Shader.from`/`Filter`/`UniformGroup`, `BaseTexture`/`baseTexture`, `mipmap`/`autoGenerateMipmaps`, dynamic texture frame, `cacheAsBitmap`, `getChildByName`, `settings.RESOLUTION`/`ROUND_PIXELS`/`SCALE_MODE`/`PREFER_ENV`/`TARGET_FPMS`/`ADAPTER`, `defaultOptions`, `getBounds` returning `Bounds`, `SCALE_MODES`/`WRAP_MODES`/`DRAW_MODES`/`BLEND_MODES`, `Loader.shared`, `Assets.add` positional, `BitmapFont.from`, `strokeThickness`/`dropShadow`, `TextFormat` parser renames.
 
-### pixijs-migration-v8
-Upgrade a PixiJS project from v7 to v8 or diagnose broken v7 code after an upgrade. Covers async `app.init`, single `pixi.js` package (deprecated `@pixi/*` sub-packages), `Graphics` shape-then-fill, `BaseTexture` -> `TextureSource`, shader/uniform rework, `ParticleContainer`+`Particle`, constructor options objects, `DisplayObject` removal, `settings`/`utils` removal, `Ticker` signature, events rewrite.
+### [scene-core-concepts](scene-core-concepts.md)
+Keywords: `addChild` on a `Sprite`/`Graphics`/`Text` (deprecation warning), `ParticleContainer.addChild` throws, `DisplayObject` removed, mask type overview.
 
-**Triggers:** migrate v7, v8 breaking changes, @pixi/ import, DisplayObject, beginFill, endFill, cacheAsBitmap, BaseTexture, deprecated.
+- [transforms.md](scene-core-concepts/transforms.md): `localTransform`, `groupTransform`, `worldTransform`, `getGlobalTransform`, screen vs global coordinates, CSS-scaled canvas, `event.client`, `app.renderer.events.pointer.global`, `getGlobalAlpha`, `scale = 0` / `toLocal` divide by zero.
+- [render-groups.md](scene-core-concepts/render-groups.md): `isRenderGroup`, `enableRenderGroup`, panning or zooming a large world, HUD fading, render group vs `cacheAsTexture`, nested render groups.
+- [constructor-options.md](scene-core-concepts/constructor-options.md): `new Container({ ... })`, `children`/`parent`/`label`, `width`/`height` in options (scale stays 1), `cacheAsTexture` in options (type error, later throws), `setMask`, `interactive`, `effects`, `boundsArea`, `autoGarbageCollect`.
+- [layers.md](scene-core-concepts/layers.md): `RenderLayer`, `attach`/`detach`/`detachAll`, `renderLayerChildren`, y-sort, `sortFunction`, `sortRenderLayerChildren`, `layer.visible` ignored, reparent detaches, layer in another render group, filters on a layer's ancestor.
+- [masking.md](scene-core-concepts/masking.md): `StencilMask`, `AlphaMask`, `ColorMask`, `ScissorMask`, channel `'alpha'` vs red, inverse mask, `mask = null`, destroying a mask texture, "[MaskFilter] The mask texture was destroyed", masks on the Canvas renderer.
 
-### pixijs-scene-core-concepts
-The PixiJS v8 scene graph as a whole: how containers, leaves, transforms, and render order fit together. Covers leaf vs container distinction, local/world coordinates, culling, render groups, sortable children, masking, `RenderLayer`, and which leaf skill covers which display object.
+## Scene objects
 
-**Triggers:** scene graph, display list, Container, Sprite, Graphics, Text, Mesh, ParticleContainer, DOMContainer, GifSprite, masking, mask texture destroyed, MaskFilter, render group, RenderLayer, world transform.
+### [scene-container](scene-container.md)
+Keywords: `addChildAt`, `removeChildren` range bug, `replaceChild`, `removeFromParent`, `getChildByLabel`, `sortableChildren`, "contains is not a function" (`getBounds().rectangle`), `getGlobalPosition`, `getSize`, `childAdded`/`added`/`destroyed`/`visibleChanged` events, `destroy(true)`.
 
-## Scene Objects
+### [scene-sprite](scene-sprite.md)
+Keywords: `skipCache`, `defaultAnchor`, texture `frame` readonly (TS2540), `texture.update()` vs `source.update()`, canvas redraw, `destroy(true)` on a shared texture.
 
-### pixijs-scene-container
-Group, position, or transform display objects. Covers `Container` constructor options (`isRenderGroup`, `sortableChildren`, `boundsArea`), `addChild`/`removeChild`/`addChildAt`/`swapChildren`/`setChildIndex`, `position`/`scale`/`rotation`/`pivot`/`skew`/`alpha`/`tint`, `getBounds`/`getGlobalPosition`/`toLocal`/`toGlobal`, `zIndex` sorting, `cullable`, `destroy`.
+- [sprite.md](scene-sprite/sprite.md): `Sprite.from`, `visualBounds`, `roundPixels`, canvas and video textures.
+- [animated-sprite.md](scene-sprite/animated-sprite.md): `animationSpeed` fps, `autoPlay`, `autoUpdate` / `Ticker.shared`, `textures` swap, `gotoAndPlay` one-shot replay, `onComplete`, `FrameObject` `time` in ms, `fromFrames`/`fromImages`, `updateAnchor`, `currentFrame` out of range.
+- [nineslice-sprite.md](scene-sprite/nineslice-sprite.md): v7 `NineSlicePlane`, `leftWidth`/`topHeight`, `defaultBorders`, nine-slice from `generateTexture` (`frame` `Rectangle`), `originalWidth`.
+- [tiling-sprite.md](scene-sprite/tiling-sprite.md): `tilePosition`, `tileScale`, `tileRotation`, `applyAnchorToTexture`, NPOT, `addressMode` `'repeat'`.
 
-**Triggers:** Container, addChild, removeChild, addChildAt, swapChildren, sortableChildren, zIndex, position, scale, rotation, pivot, getBounds, toGlobal, toLocal, destroy.
+### [scene-graphics](scene-graphics.md)
+Keywords: `SmoothGraphics`, `DashLineShader`, dashed line, anti-aliasing without MSAA, `GraphicsPath`, `FillStyle`/`StrokeStyle`, `addColorStop`, `colorStops`, `textureSpace` `global`/`local`, `FillPattern` `repetition`/`setTransform`, `poly`/`roundRect`/`star`/`regularPoly`/`roundPoly`/`roundShape`/`chamferRect`/`filletRect`, `moveTo`/`lineTo`/`bezierCurveTo`/`quadraticCurveTo`/`arc`/`arcTo`/`arcToSvg`/`closePath`/`beginPath`, `cut` holes, `containsPoint`, `clone(true)`, `clear`, `bounds`, `setFillStyle`/`setStrokeStyle`, `defaultFillStyle`/`defaultStrokeStyle`, `rotateTransform`/`translateTransform`/`scaleTransform`/`setTransform`/`transform`/`save`/`restore`, stroke `alignment`/`pixelLine`/`cap`/`join`/`miterLimit`, `g.texture()`, `batchMode`, `customShader`, `roundPixels`, v7 `drawCircle`/`beginHole`/`endHole`/`beginTextureFill`/`GraphicsGeometry`. Symptoms: shape draws nothing, gradient shows one colour, rotated shape lands in the wrong place, shared context destroyed and render throws, redrawing every frame.
 
-### pixijs-scene-dom-container
-Overlay HTML elements on the PixiJS v8 canvas. Covers `DOMContainer` with `element`, `anchor`, and scene-graph-driven CSS transforms, the `pixi.js/dom` side-effect import, `DOMPipe` registration, visibility sync, pointer-events handling.
+- [scene-graphics/smooth-graphics.md](scene-graphics/smooth-graphics.md): `SmoothGraphics` (shader anti-aliasing), when to choose it over `Graphics`, `pixelLine` keeping width, `DashLineShader` dash rules, no context sharing with `Graphics`, batching and movement costs, seams.
 
-**Triggers:** DOMContainer, pixi.js/dom, DOMPipe, HTML overlay, input on canvas, iframe overlay, DOMContainerOptions, element, anchor.
+### [scene-text](scene-text.md)
+Keywords: `TextStyle` defaults (black fill), positional constructor deprecated, Arabic/CJK/shaped scripts.
 
-### pixijs-scene-gif
-Display animated GIFs. Covers the `pixi.js/gif` side-effect import, `Assets.load` returning a `GifSource`, `GifSprite` playback (`play`/`stop`/`currentFrame`/`animationSpeed`), `autoPlay`/`loop` options, `onComplete`/`onLoop`/`onFrameChange` callbacks, `GifSource` sharing, `clone`, `destroy`.
+- [text.md](scene-text/text.md): `TextStyle` fields, `tagStyles`, `textureStyle` `scaleMode: 'nearest'`, stroke clipped by `padding`, `FillGradient`/`FillPattern` text, v7 gradient arrays, sharing and destroying a `TextStyle`.
+- [bitmap-text.md](scene-text/bitmap-text.md): `BitmapFont.install`, `dynamicFill`, `chars`, `BitmapFontManager`, `.fnt` face name, MSDF, the `resolution` warning.
+- [html-text.md](scene-text/html-text.md): `HTMLTextStyle`, `addOverride`/`cssOverrides`, async texture with synchronous width, fonts.
+- [split-text.md](scene-text/split-text.md): `SplitText`, `SplitBitmapText`, `autoSplit`, `charAnchor`, `lines`/`words`/`chars`.
 
-**Triggers:** GifSprite, GifSource, pixi.js/gif, animationSpeed, currentFrame, autoPlay, onComplete, onFrameChange.
+### [scene-mesh](scene-mesh.md)
+Keywords: `topology` `triangle-strip`/`line-strip`, `indexCount`, `batchMode`, `shrinkBuffersToFit`, `aPosition`/`aUV`, `getBuffer().update()`, `State`, custom shader on a mesh, `hitArea`/`containsPoint`, atlas sub-texture UVs, UVs above 1, v7 `SimpleMesh`/`SimplePlane`/`SimpleRope`/`drawMode`, replaced `onRender` stops updates.
 
-### pixijs-html-source
-Render live HTML/DOM elements or frozen snapshots as PixiJS v8 textures via the HTML-in-Canvas browser APIs. Experimental: requires a browser that supports the HTML-in-Canvas spec (the API must be enabled, or the texture uploader throws on first render). Covers the `pixi.js/html-source` side-effect import, feature detection with `canvas.requestPaint`, `HTMLSource` for a live repainting element (`autoLayout`/`autoUpdate`/`autoRequestPaint`, `requestPaint`, `isReady`, the inside-the-canvas + `content="drawable"` rule, nested `drawable` elements, hit testing with `updateElementGeometry`), `ElementImageSource` for an immutable `captureElementImage()` snapshot (`autoClose`, ready immediately), using the source on a `Sprite`/`Texture`/`Mesh`, and fallback-only auto-detection via `Texture.from`.
+- [mesh.md](scene-mesh/mesh.md): base `Mesh` options, updating vertex buffers, drawing part of the index buffer, custom shaders.
+- [mesh-simple.md](scene-mesh/mesh-simple.md): `MeshSimple` `vertices`, `autoUpdate`.
+- [mesh-plane.md](scene-mesh/mesh-plane.md): `MeshPlane` `verticesX`/`verticesY`, `autoResize`, `PlaneGeometry.build`.
+- [mesh-rope.md](scene-mesh/mesh-rope.md): `MeshRope` `points`, `textureScale`, rope width, `RopeGeometry.update`, trails.
+- [mesh-perspective.md](scene-mesh/mesh-perspective.md): `PerspectiveMesh`, `setCorners`, `x0`..`y3`, `PerspectivePlaneOptions`.
 
-**Triggers:** HTMLSource, ElementImageSource, pixi.js/html-source, requestPaint, captureElementImage, ElementImage, layoutsubtree, content=drawable, drawable, updateElementGeometry, autoRequestPaint, autoClose, HTML in canvas, HTML-in-Canvas, render DOM to texture, render HTML to texture, HTMLSourceCanvas, texElementSubImage2D, drawElementImageToTexture, texElementImage2D, copyElementImageToTexture, experimental.
+### [scene-particle-container](scene-particle-container.md)
+Keywords: `IParticle`, `particleChildren` typing (TS2339 on `tint`/`alpha`), `removeParticle`/`removeParticles`/`addParticleAt`, `dynamicProperties` `vertex`/`position`/`rotation`/`uvs`/`color`, `boundsArea` vs `hitArea`, `Particle.defaultOptions`, `ParticleShader`, v7 `Sprite` children, `maxSize`, `tint`/`alpha`/`scale` keys.
 
-### pixijs-scene-graphics
-Draw vector shapes and paths. Covers the `Graphics` shape-then-fill API (`rect`/`circle`/`ellipse`/`poly`/`roundRect`/`star`), path methods (`moveTo`/`lineTo`/`bezierCurveTo`/`arc`), `fill`/`stroke`/`cut`, `FillGradient`, `FillPattern`, `GraphicsContext` sharing, SVG markup, `SmoothGraphics` for anti-aliased edges without MSAA, and `DashLineShader` dashed strokes.
+### [scene-dom-container](scene-dom-container.md)
+Keywords: `pixi.js/dom`, `skipExtensionImports`, `DOMPipe`, HTML overlay/input/iframe, `pointer-events` click-through, positioned wrapper offset, `removeFromParent` of an ancestor, `dom.width` scales, CSS transform overwritten, TS7016.
 
-**Triggers:** Graphics, SmoothGraphics, DashLineShader, dashed line, anti-aliasing, GraphicsContext, rect, circle, poly, roundRect, fill, stroke, cut, FillGradient, FillPattern, FillPatternOptions, textureSpace, pattern fill, texture fill, spritesheet fill, radialGradient, linearGradient, svg gradient, moveTo, bezierCurveTo, svg.
+### [scene-gif](scene-gif.md)
+Keywords: `pixi.js/gif` side-effect import, type-only import elided, `data.fps` and untimed frames, `GifSprite` `fps` ignored, `autoUpdate` on `Ticker.shared`, `clone`, `Assets.unload` vs `destroy(true)`, `parser: 'gif'`.
 
-### pixijs-scene-mesh
-Render custom geometry. Covers `Mesh` with `MeshGeometry` (positions, uvs, indices, topology), `MeshSimple` for per-frame vertex animation, `MeshPlane` for subdivided deformation, `MeshRope` for path-following textures, `PerspectiveMesh` for 2.5D corners.
-
-**Triggers:** Mesh, MeshGeometry, MeshSimple, MeshPlane, MeshRope, PerspectiveMesh, positions, uvs, indices, topology, setCorners.
-
-### pixijs-scene-particle-container
-Render thousands of lightweight sprites. Covers `ParticleContainer` with `Particle` instances, `addParticle`/`removeParticle`, `particleChildren` array, `dynamicProperties` (vertex, position, rotation, uvs, color), `boundsArea`, `roundPixels`, `update`.
-
-**Triggers:** ParticleContainer, Particle, IParticle, addParticle, particleChildren, dynamicProperties, boundsArea, particle effects, particle alpha, particle tint, fade particles.
-
-### pixijs-scene-sprite
-Draw images. Covers `Sprite` with `anchor`/`tint`/`texture`, `AnimatedSprite` for frame animation, `NineSliceSprite` for resizable UI panels, `TilingSprite` for scrolling/repeating backgrounds.
-
-**Triggers:** Sprite, AnimatedSprite, NineSliceSprite, TilingSprite, Sprite.from, anchor, tint, tilePosition, animationSpeed, gotoAndPlay, leftWidth, topHeight.
-
-### pixijs-scene-text
-Render text. Covers `Text` for canvas-quality styled labels, `BitmapText` for cheap per-frame updates via glyph atlas, `HTMLText` for HTML/CSS markup via SVG, `SplitText` and `SplitBitmapText` for per-character animation, `TextStyle`, `tagStyles`.
-
-**Triggers:** Text, BitmapText, HTMLText, SplitText, SplitBitmapText, TextStyle, HTMLTextStyle, BitmapFont.install, tagStyles, fontFamily, wordWrap, textureStyle, scaleMode, context loss.
+### [html-source](html-source.md)
+Keywords: `HTMLSourceCanvas`, `HTMLSource.defaultOptions`, `texElementSubImage2D`/`drawElementImageToTexture`/`texElementImage2D`/`copyElementImageToTexture` errors, `autoLayout`/`autoUpdate`/`autoRequestPaint`, `content="drawable"`, `layoutsubtree`, element inside the canvas (constructor throws), `isReady`, `updateElementGeometry`/`clearElementGeometry`/`canvasTransform`, `captureElementImage`, `ElementImage`, `autoClose`, `snapshot.close()`, `Sprite.from` vs `new Sprite(source)`, `Texture.from` detection priority -10, Chrome 155/157.
 
 ## Utilities
 
-### pixijs-assets
-Load and manage resources. Covers `Assets.init`, `Assets.load`/`add`/`unload`, bundles, manifests, background loading, `onProgress`, caching, spritesheets, compressed textures, SVG as texture or Graphics, resolution detection.
+### [assets](assets.md)
+Keywords: `Assets.load` array not iterable (TS2488), `Assets.get` with array keys, `strategy` `skip`/`retry`, `retryCount`, `onError` on every attempt, `data` on first load only, unknown URL resolves `null`, `blob:` URL, no audio loader, `Assets.reset`, `defaultSearchParams`, `bundleIdentifier`, loader names (`loadTextures`, `loadSvg`, `loadVideoTextures`, `loadJson`, `loadTxt`, `spritesheetAsset`), `loadParser`, `crossOrigin`, `setPreferences`.
 
-**Triggers:** Assets, Assets.load, Assets.init, loadBundle, manifest, backgroundLoad, Spritesheet, Cache, LoadOptions, unload, svg, loadSvg, parseAsGraphicsContext, svg gradient.
+- [bundles.md](assets/bundles.md): `addBundle`, `loadBundle` result keys, `unloadBundle`, unregistered bundle resolves `undefined`.
+- [manifests.md](assets/manifests.md): `Assets.init({ manifest })`, inline or from a URL.
+- [caching.md](assets/caching.md): `Assets.get`, `Assets.unload`, the `Cache` class.
+- [background.md](assets/background.md): `backgroundLoad`, `backgroundLoadBundle`.
+- [progress.md](assets/progress.md): `onProgress` for loading bars.
+- [spritesheet.md](assets/spritesheet.md): `Spritesheet` JSON fields, `meta.scale`, `related_multi_packs`, `parseSync`, hand-built sheets, `data.texture`, cleanup.
+- [fonts.md](assets/fonts.md): `loadWebFont`, `family` and `data` descriptors, bitmap fonts (`.fnt`, `.xml`).
+- [video.md](assets/video.md): `VideoSource` options, `resource` play/unmute, autoplay and sound, `updateFPS`, `crossorigin`.
+- [svg.md](assets/svg.md): SVG as texture or `GraphicsContext`, `parseAsGraphicsContext` / `setPreferences`, `<style>` ignored.
+- [compressed-textures.md](assets/compressed-textures.md): KTX2, Basis, DDS, KTX imports, `getSupportedCompressedTextureFormats`.
+- [resolution.md](assets/resolution.md): `@2x`, `RETINA_PREFIX`, `texturePreference`, `{webp,png}` format patterns.
 
-### pixijs-color
-Create, convert, or manipulate colors. Covers `Color` class input formats (hex, CSS names, RGB/HSL objects, arrays, `Uint8Array`), conversion methods (`toHex`, `toNumber`, `toArray`, `toRgba`), component access, `setAlpha`/`multiply`/`premultiply`, `Color.shared` singleton.
+### [events](events.md)
+Keywords: `eventMode` `none`/`passive`/`auto`/`static`/`dynamic`, `app.init({ eventMode })`, `isInteractive`, `interactive`, `buttonMode`, `e.detail`, `pointerupoutside`, `contextmenu` / right click, capture phase, `stopPropagation`, passive parent delegation, `cursorStyles`, `persistentDeviceId`, event object reuse, `FederatedWheelEvent`, wheel `preventDefault` / page scroll.
 
-**Triggers:** Color, ColorSource, hex, rgb, hsl, tint, premultiply, Color.shared, color conversion.
+### [math](math.md)
+Keywords: `copy()` missing, `Point.shared`/`Matrix.shared`/`Matrix.IDENTITY`, `PointData`, `PointLike`, mirror/flip/negative scale, `setTransform`, `Rectangle` `pad`/`fit`/`enlarge`/`ceil`/`containsRect`/`intersects`/`copyFromBounds`, `Rectangle.EMPTY`, `Circle`/`Ellipse`/`Polygon`/`RoundedRectangle`/`Triangle`, `strokeContains`, `isClockwise`, `containsPolygon`, `SHAPE_PRIMITIVE`, math-extras `rotate` out-param bug, `intersection`, `union`, `lineIntersection`/`segmentIntersection` not exported.
 
-### pixijs-events
-Handle pointer, mouse, touch, or wheel input. Covers `eventMode` (none, passive, auto, static, dynamic), `FederatedEvent` types, propagation and capture phase, `hitArea`, `interactiveChildren`, `cursor` and `cursorStyles`, global move events for drag, `eventFeatures` config.
+### [color](color.md)
+Keywords: `0xRRGGBBAA` throws, tint alpha, normalized `toRgba`, `toUint8RgbArray`, `toHexa`, `toPremultiplied`, `Color.shared`, `isColorLike`, `toBgrNumber`.
 
-**Triggers:** eventMode, FederatedPointerEvent, pointerdown, click, tap, globalpointermove, drag, hitArea, cursor, stopPropagation, persistentDeviceId.
+### [accessibility](accessibility.md)
+Keywords: `accessibleHint`, `accessibleText`, `accessibleType`, `accessibleChildren`, `accessiblePointerEvents`, `AccessibilitySystem`, `enabledByDefault`, `debug`, `activateOnTab`, `deactivateOnMouseMove`, `setAccessibilityEnabled`, tab order, "container N" title, relabelling an element, keyboard activation with `e.global` undefined, mobile touch hook, `pixi.js/accessibility` with `skipExtensionImports`, unavailable on the Canvas renderer and in Web Workers.
 
-### pixijs-math
-Coordinates, vectors, matrices, shapes, and hit testing. Covers `Point`/`ObservablePoint`, `Matrix` (2D affine, decompose, apply), shapes (`Rectangle`, `Circle`, `Ellipse`, `Polygon`, `RoundedRectangle`, `Triangle`), `toGlobal`/`toLocal`, `PointData` types, `DEG_TO_RAD`, and `pixi.js/math-extras` vector helpers.
+## Effects and rendering
 
-**Triggers:** Point, ObservablePoint, Matrix, Rectangle, Circle, Polygon, Triangle, RoundedRectangle, strokeContains, containsRect, intersects, isClockwise, winding order, stroke hit test, decompose, mirror, flip, negative scale, setFromMatrix, toGlobal, toLocal, hitArea, math-extras, DEG_TO_RAD, PointData.
+### [blend-modes](blend-modes.md)
+Keywords: v7 `BLEND_MODES`, `none`/`min`/`max`, `inherit`, `renderer.render` root `blendMode`, `isRenderGroup` inheritance, `cacheAsTexture` blend mode, erase layer isolation, paint-out `RenderTexture` with `clear: false`, `pixi.js/advanced-blend-modes`, `color-burn`/`overlay`/`soft-light`, `useBackBuffer`, `Filter.defaultOptions.resolution`.
 
-### pixijs-ticker
-Run per-frame logic or control the render loop. Covers `Ticker.add`/`addOnce`/`remove`, `deltaTime` vs `deltaMS` vs `elapsedMS`, `UPDATE_PRIORITY` ordering, `maxFPS`/`minFPS` capping, speed scaling, `Ticker.shared` vs new instances, per-object `onRender` hook, manual rendering.
+### [filters](filters.md)
+Keywords: frozen `filters` array, "object is not extensible", `BlurFilter` `strengthX`/`strengthY`/`kernelSize`/`repeatEdgePixels`, `ColorMatrixFilter` multiply order and presets, `DisplacementFilter` map sprite and `scale` Point, `NoiseFilter` `seed`, `defaultFilterVert`, `GlProgram` filter, `vTextureCoord`, `uInputSize`, `uOutputFrame`, `uInputClamp`, v7 `uSampler`, highp link error ("Precisions of uniform ... differ"), premultiplied colour / invert filter, `resolution: 'inherit'`, `antialias`, `clipToViewport`, full-screen filter with `app.screen`, `uBackTexture`, gl-only filter on WebGPU, `@pixi/filter-*` (v7), v7 `filter.uniforms`, v7 `new Filter(vertex, fragment, uniforms)`.
 
-**Triggers:** Ticker, UPDATE_PRIORITY, deltaTime, deltaMS, elapsedMS, onRender, app.ticker, maxFPS, minFPS, Ticker.shared.
+- [filters/multi-pass.md](filters/multi-pass.md): custom `apply()`, bloom, `TexturePool.getSameSizeTexture`, `applyFilter`, `compatibleRenderers`, v7 `getFilterTexture`.
+- [filters/wgsl-filter.md](filters/wgsl-filter.md): WGSL filter skeleton, the `gpu` program, `GlobalFilterUniforms`, `@group(0)` bindings.
 
-## Advanced
+### [custom-rendering](custom-rendering.md)
+Keywords: `uWorldTransformMatrix`, `uTransformMatrix`, `uColor`, `uWorldColorAlpha`, v7 `projectionMatrix`/`translationMatrix`, `mesh.texture` with a custom shader, premultiplied shader output, `#version 300 es`, precision and sampler precision, `compatibleRenderers`, "Mesh shader has no gpuProgram", `isStatic`/`update()`, UBO / `ubo: true`, `uTexture`/`uSampler`/`source.style` resources, resource key matching, CSP `unsafe-eval`.
 
-### pixijs-accessibility
-Add screen reader and keyboard navigation to PixiJS v8 apps. Covers `AccessibilitySystem` options (`enabledByDefault`, `debug`, `activateOnTab`, `deactivateOnMouseMove`), per-container accessibility properties, shadow DOM overlay, mobile touch-hook activation.
+- [custom-rendering/uniform-types.md](custom-rendering/uniform-types.md): uniform `type` strings, `mat3x3<f32>` from a `Matrix`, non-square matrices, array uniforms with `size`.
+- [custom-rendering/advanced-gpu.md](custom-rendering/advanced-gpu.md): custom `Batcher` (`ExtensionType.Batcher`, `batcherName`, `BatchableElement`), `InstructionPipe` and `destroyInstructionSet`, `Buffer.update` ranges, `BufferImageSource.update`, `vertexCount`/`getSize`, `indexCount`/`batchMode`, `clockwiseFrontFace`/`cullMode`, WGSL `overrides`/`ShaderOverrides`, `gpuLayout`, `TextureView` depth sampling, integer textures (`usampler2D`), several color attachments (`colorAttachments`, MRT, fragment outputs, `clearValue`/`loadOp`), 3D/array textures (`sampler3D`, `layer`), storage textures, render bundles, `TexturePool.getOptimalTexture`.
 
-**Triggers:** accessibility, a11y, screen reader, ARIA, keyboard navigation, tab order, AccessibilitySystem, accessibleTitle, accessibleHint, tabIndex, accessibleChildren.
-
-### pixijs-blend-modes
-Composite display objects with blend modes. Covers standard modes (`normal`, `add`, `multiply`, `screen`, `erase`, `min`, `max`), advanced modes via `pixi.js/advanced-blend-modes` (`color-burn`, `overlay`, `hard-light`, etc.), batch-friendly ordering.
-
-**Triggers:** blendMode, additive, multiply, screen, overlay, color-burn, color-dodge, advanced-blend-modes, glow, erase.
-
-### pixijs-custom-rendering
-Write custom shaders, uniforms, or batchers. Covers `Shader.from({gl, gpu, resources})`, `GlProgram`/`GpuProgram`, `UniformGroup` with typed uniforms (`f32`, `vec2`, `mat4x4`), UBO mode, textures as resources, 3D and array textures, WebGPU storage textures, several color attachments with mixed formats, custom `Filter`, custom `Batcher` via extensions.
-
-**Triggers:** Shader, GlProgram, GpuProgram, UniformGroup, Batcher, Filter, GLSL, WGSL, UBO, uniform, custom shader, ShaderOverrides, gpuLayout, bind group layout, TextureView, depth texture, 3D texture, sampler3D, texture_3d, storage texture, Buffer.update, vertexCount, indexCount, getSize, clockwiseFrontFace, cullMode, render bundle, beginBundle, executeBundle, RenderBundle, colorAttachments, multiple render targets, MRT, fragment outputs, clearValue, loadOp, TexturePool, getOptimalTexture, InstructionPipe, destroyInstructionSet.
-
-### pixijs-filters
-Apply visual effects to containers via the filter pipeline. Covers built-in filters (`AlphaFilter`, `BlurFilter`, `ColorMatrixFilter`, `DisplacementFilter`, `NoiseFilter`), custom `Filter.from()` with GLSL/WGSL, options (`resolution`, `padding`, `antialias`, `blendRequired`), `filterArea` optimization, `pixi-filters` community package.
-
-**Triggers:** filters, BlurFilter, ColorMatrixFilter, DisplacementFilter, NoiseFilter, Filter.from, GLSL filter, pixi-filters, filterArea.
-
-### pixijs-performance
-Profile or optimize a PixiJS v8 app for FPS, draw calls, or GPU memory. Covers destroy patterns (`cacheAsTexture(false)`, `releaseGlobalResources`), `GCSystem` and `TextureGCSystem`, `PrepareSystem`, object pooling, batching rules, `BitmapText` for dynamic text, culling (`Culler`, `CullerPlugin`, `cullable`, `cullArea`), resolution/antialias tradeoffs.
-
-**Triggers:** FPS, jank, draw calls, batching, object pool, GCSystem, PrepareSystem, Culler, cacheAsTexture, memory leak, destroy patterns, render bundle, transient, MSAA, Buffer.update, WebGPU performance, TexturePool, repeatEdgePixels, bind group.
+### [performance](performance.md)
+Keywords: jank, level teardown, `releaseGlobalResources`, `gcMaxUnusedTime`/`gcFrequency`/`gcActive`, deprecated `textureGC`, `texture.source.unload()`, `pixi.js/prepare`, `prepare.upload`, staggered destroy, `updateCacheTexture`, max texture size, `maxBatchableTextures`, `@0.5x`, `Culler`, `cullArea`, `cullableChildren`, culled one frame late, `filterArea`, `repeatEdgePixels`, mask cost, `interactiveChildren`, transient MSAA `RenderTexture`, `tileBased`, `Buffer.update` range, render bundles, `generateTexture` of a `Graphics`.
