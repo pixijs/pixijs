@@ -43,7 +43,7 @@ describe('Graphics Destroy', () =>
         graphics.destroy({ context: false });
 
         expect(graphics.context).toBeNull();
-        expect(graphics._gpuData).toBeEmptyObject();
+        expect(graphics._gpuData).toBeNull();
         expect(spy).not.toHaveBeenCalled();
 
         context.destroy(true);

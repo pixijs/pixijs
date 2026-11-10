@@ -57,7 +57,8 @@ export class GCManagedHash<T extends GCable & { uid: number } & Pick<EventEmitte
     {
         if (!this.items[item.uid]) return;
 
-        const gpuData = item._gpuData[this._renderer.uid];
+        // a destroyed view has no GPU data record left
+        const gpuData = item._gpuData?.[this._renderer.uid];
 
         if (!gpuData) return;
 

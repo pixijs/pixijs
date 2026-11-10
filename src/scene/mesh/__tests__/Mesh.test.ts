@@ -50,7 +50,7 @@ describe('Mesh', () =>
         expect(mesh.geometry).toBeNull();
         expect(mesh.texture).toBeNull();
 
-        expect(mesh._gpuData).toBeEmptyObject();
+        expect(mesh._gpuData).toBeNull();
     });
 
     it('should clean up correctly when not batching', async () =>
@@ -74,7 +74,7 @@ describe('Mesh', () =>
         expect(mesh.geometry).toBeNull();
         expect(mesh.texture).toBeNull();
 
-        expect(mesh._gpuData).toBeEmptyObject();
+        expect(mesh._gpuData).toBeNull();
     });
 
     itLocalOnly('should render a non-batched mesh with a WebGPU renderer after another one was destroyed', async () =>
