@@ -123,8 +123,7 @@ export class GlTextureSystem implements System, CanvasGenerator
         this._managedTextures.removeAll(true);
 
         this._glSamplers = Object.create(null);
-        this._boundSamplers = Object.create(null);
-        this._premultiplyAlpha = false;
+        this.resetState();
 
         for (let i = 0; i < 16; i++)
         {
