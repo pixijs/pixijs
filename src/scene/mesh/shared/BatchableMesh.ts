@@ -31,6 +31,7 @@ export class BatchableMesh implements DefaultBatchableMeshElement
 
     public _attributeStart: number;
     public _batcher: Batcher = null;
+    public _batcherBuildId = -1;
     public _batch: Batch = null;
     public _indexStart: number;
     public _textureId: number;

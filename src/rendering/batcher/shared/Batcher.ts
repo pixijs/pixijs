@@ -185,6 +185,14 @@ export interface BatchableElement
     _batcher: Batcher;
 
     /**
+     * The build of the batcher this element was last added in (see `Batcher.begin`).
+     * An element of an older build no longer owns its place in the buffers.
+     * @type {number}
+     * @private
+     */
+    _batcherBuildId?: number;
+
+    /**
      * Reference to the batch.
      * @type {Batch}
      * @private
@@ -334,6 +342,9 @@ export abstract class Batcher
 
     private _elements: BatchableElement[] = [];
 
+    /** Changes with every `begin()`: the buffers are refilled from scratch, earlier element positions are void. */
+    private _buildId = 0;
+
     private _batchIndexStart: number;
     private _batchIndexSize: number;
 
@@ -409,6 +420,8 @@ export abstract class Batcher
 
     public begin()
     {
+        this._buildId++;
+
         this.elementSize = 0;
         this.elementStart = 0;
         this.indexSize = 0;
@@ -434,6 +447,7 @@ export abstract class Batcher
         batchableObject._indexStart = this.indexSize;
         batchableObject._attributeStart = this.attributeSize;
         batchableObject._batcher = this;
+        batchableObject._batcherBuildId = this._buildId;
 
         this.indexSize += batchableObject.indexSize;
         this.attributeSize += ((batchableObject.attributeSize) * this.vertexSize);
@@ -455,6 +469,10 @@ export abstract class Batcher
 
     public updateElement(batchableObject: BatchableElement)
     {
+        // an element that is not part of the current build (e.g. a mask whose masked container was hidden or
+        // removed) still points at its old place in the buffers, which another element may use now
+        if (batchableObject._batcherBuildId !== this._buildId) return;
+
         this.dirty = true;
 
         const attributeBuffer = this.attributeBuffer;
