@@ -35,6 +35,9 @@ interface IIntl
     };
 }
 
+/** Strings made only of these characters split into one grapheme per character. */
+const asciiGraphemesPattern = /^[\t\n\x20-\x7e]*$/;
+
 // Default settings used for all getContext calls
 const contextSettings: ICanvasRenderingContext2DSettings = {
     // TextMetrics requires getImageData readback for measuring fonts.
@@ -155,10 +158,17 @@ export class CanvasTextMetrics
     {
         if (typeof (Intl as IIntl)?.Segmenter === 'function')
         {
-            const segmenter = new (Intl as IIntl).Segmenter();
+            // created on first use, as constructing it loads the ICU break data
+            let segmenter: ISegmenter | undefined;
 
             return (s: string) =>
             {
+                // printable ASCII, tabs and newlines are one grapheme per character, so they skip the segmenter.
+                // (\r is left out: Intl.Segmenter keeps \r\n together as one grapheme)
+                if (asciiGraphemesPattern.test(s)) return s.split('');
+
+                segmenter ??= new (Intl as IIntl).Segmenter();
+
                 const segments = segmenter.segment(s);
                 const result = [];
 
@@ -526,7 +536,9 @@ export class CanvasTextMetrics
             }
             else
             {
-                letterSpacingVal = (CanvasTextMetrics.graphemeSegmenter(text).length - 1) * letterSpacing;
+                letterSpacingVal = letterSpacing === 0
+                    ? 0
+                    : (CanvasTextMetrics.graphemeSegmenter(text).length - 1) * letterSpacing;
             }
             metricWidth += letterSpacingVal;
         }

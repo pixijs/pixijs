@@ -12,6 +12,12 @@ import type { GlProgram } from '../GlProgram';
 import type { IGLUniformData } from '../GlProgramData';
 
 /**
+ * Matches a GLSL 1.00 attribute declaration, capturing its name. `in` counts too, as pixi's GLSL 1.00 vertex
+ * shaders get `#define in attribute` (see addProgramDefines).
+ */
+const attributePattern = /^[ \t]*(?:attribute|in)[ \t]+(?:(?:lowp|mediump|highp)[ \t]+)?\w+[ \t]+(\w+)[ \t]*;/gm;
+
+/**
  * generates a WebGL Program object from a high level Pixi Program.
  * @param gl - a rendering context on which to generate the program
  * @param program - the high level Pixi Program.
@@ -49,6 +55,24 @@ export function generateProgram(gl: GlRenderingContext, program: GlProgram): GlP
         }
     }
 
+    // GLSL 1.00: bind attributes sorted by name in ascending order
+    // GLSL 3.00: don't change the attribute locations that where chosen by the compiler
+    //            or assigned by the layout specifier in the shader source code
+    const sortAttributes = !(/^[ \t]*#[ \t]*version[ \t]+300[ \t]+es[ \t]*$/m).test(program.vertex);
+
+    if (sortAttributes)
+    {
+        // bind the declared attributes before linking, so the program needn't be linked again once the active
+        // ones are known. extractAttributesFromGlProgram checks the result and relinks if any were inactive.
+        const names = [...new Set(Array.from(program.vertex.matchAll(attributePattern), (match) => match[1]))]
+            .sort((a, b) => ((a > b) ? 1 : -1));
+
+        for (let i = 0; i < names.length; i++)
+        {
+            gl.bindAttribLocation(webGLProgram, i, names[i]);
+        }
+    }
+
     gl.linkProgram(webGLProgram);
 
     if (!gl.getProgramParameter(webGLProgram, gl.LINK_STATUS))
@@ -56,14 +80,7 @@ export function generateProgram(gl: GlRenderingContext, program: GlProgram): GlP
         logProgramError(gl, webGLProgram, glVertShader, glFragShader);
     }
 
-    // GLSL 1.00: bind attributes sorted by name in ascending order
-    // GLSL 3.00: don't change the attribute locations that where chosen by the compiler
-    //            or assigned by the layout specifier in the shader source code
-    program._attributeData = extractAttributesFromGlProgram(
-        webGLProgram,
-        gl,
-        !(/^[ \t]*#[ \t]*version[ \t]+300[ \t]+es[ \t]*$/m).test(program.vertex)
-    );
+    program._attributeData = extractAttributesFromGlProgram(webGLProgram, gl, sortAttributes);
 
     program._uniformData = getUniformData(webGLProgram, gl);
     // each block reads from its own binding slot for the program's whole life, so two blocks can never

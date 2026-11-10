@@ -144,7 +144,8 @@ export class GlContextSystem implements System<ContextSystemOptions>
     };
 
     /**
-     * Extensions available.
+     * Extensions available. The compressed texture entries (`s3tc`, `s3tc_sRGB`, `etc`, `etc1`, `pvrtc`, `atc`,
+     * `astc`, `bptc`, `rgtc`) are enabled the first time they are read, not at init.
      * @type {object}
      * @readonly
      * @property {WEBGL_draw_buffers} drawBuffers - WebGL v1 extension
@@ -342,17 +343,6 @@ export class GlContextSystem implements System<ContextSystemOptions>
         const common = {
             anisotropicFiltering: gl.getExtension('EXT_texture_filter_anisotropic'),
             floatTextureLinear: gl.getExtension('OES_texture_float_linear'),
-
-            s3tc: gl.getExtension('WEBGL_compressed_texture_s3tc'),
-            s3tc_sRGB: gl.getExtension('WEBGL_compressed_texture_s3tc_srgb'), // eslint-disable-line camelcase
-            etc: gl.getExtension('WEBGL_compressed_texture_etc'),
-            etc1: gl.getExtension('WEBGL_compressed_texture_etc1'),
-            pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc')
-                || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
-            atc: gl.getExtension('WEBGL_compressed_texture_atc'),
-            astc: gl.getExtension('WEBGL_compressed_texture_astc'),
-            bptc: gl.getExtension('EXT_texture_compression_bptc'),
-            rgtc: gl.getExtension('EXT_texture_compression_rgtc'),
             loseContext: gl.getExtension('WEBGL_lose_context'),
         };
 
@@ -390,6 +380,42 @@ export class GlContextSystem implements System<ContextSystemOptions>
                 provokeExt.provokingVertexWEBGL(provokeExt.FIRST_VERTEX_CONVENTION_WEBGL);
             }
         }
+
+        // Each getExtension call is a round trip to the GPU process, and most apps never upload a compressed
+        // texture, so these are enabled on first read.
+        const extensions = this.extensions;
+        const lazyExtension = (key: keyof WebGLExtensions, ...names: string[]): void =>
+        {
+            Object.defineProperty(extensions, key, {
+                configurable: true,
+                enumerable: true,
+                get: () =>
+                {
+                    let extension = null;
+
+                    for (let i = 0; i < names.length && !extension; i++)
+                    {
+                        extension = gl.getExtension(names[i]);
+                    }
+
+                    Object.defineProperty(extensions, key, {
+                        configurable: true, enumerable: true, writable: true, value: extension
+                    });
+
+                    return extension;
+                },
+            });
+        };
+
+        lazyExtension('s3tc', 'WEBGL_compressed_texture_s3tc');
+        lazyExtension('s3tc_sRGB', 'WEBGL_compressed_texture_s3tc_srgb');
+        lazyExtension('etc', 'WEBGL_compressed_texture_etc');
+        lazyExtension('etc1', 'WEBGL_compressed_texture_etc1');
+        lazyExtension('pvrtc', 'WEBGL_compressed_texture_pvrtc', 'WEBKIT_WEBGL_compressed_texture_pvrtc');
+        lazyExtension('atc', 'WEBGL_compressed_texture_atc');
+        lazyExtension('astc', 'WEBGL_compressed_texture_astc');
+        lazyExtension('bptc', 'EXT_texture_compression_bptc');
+        lazyExtension('rgtc', 'EXT_texture_compression_rgtc');
     }
 
     /**
