@@ -393,10 +393,13 @@ export class FilterSystem implements System
      */
     public getBackTexture(lastRenderSurface: RenderTarget, bounds: Bounds, previousBounds?: Bounds)
     {
+        // WebGPU only copies between matching formats, and the surface needn't be in the pool's default
+        const { _resolution: resolution, format } = lastRenderSurface.colorTexture.source;
         const backTexture = TexturePool.getOptimalTexture({
             width: bounds.width,
             height: bounds.height,
-            resolution: lastRenderSurface.colorTexture.source._resolution,
+            resolution,
+            format,
         });
 
         return this._copyBackTexture(lastRenderSurface, backTexture, bounds, previousBounds);
@@ -645,10 +648,13 @@ export class FilterSystem implements System
             const renderTarget = renderer.renderTarget.getRenderTarget(filterData.outputRenderSurface);
 
             // the copy is at the resolution of the surface, not the filter, so its texture is sized to cover
-            // the same area as the input, and a shader can sample both with the same coordinates
+            // the same area as the input, and a shader can sample both with the same coordinates.
+            // It's in the surface's format too, as WebGPU only copies between matching formats
+            const surfaceSource = renderTarget.colorTexture.source;
             const backTexture = TexturePool.getAlignedTexture(
                 filterData.inputTexture,
-                renderTarget.colorTexture.source._resolution
+                surfaceSource._resolution,
+                surfaceSource.format,
             );
 
             filterData.backTexture = this._copyBackTexture(
