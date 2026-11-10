@@ -248,10 +248,11 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
      * leaves the two under a pixel apart at the far edge.
      * @param texture - The texture to line up with.
      * @param resolution - The resolution of the new texture.
+     * @param format - The format of the new texture. Defaults to the pool's.
      * @returns A pooled texture with a frame the size of the given texture's.
      * @internal
      */
-    public getAlignedTexture(texture: Texture, resolution: number): Texture
+    public getAlignedTexture(texture: Texture, resolution: number, format?: TEXTURE_FORMATS): Texture
     {
         const source = texture.source;
         const scale = resolution / source._resolution;
@@ -259,7 +260,7 @@ export class TexturePoolClass extends EventEmitter<{ evict: [] }>
         return this._getTexture(
             Math.ceil((source.pixelWidth * scale) - 1e-6),
             Math.ceil((source.pixelHeight * scale) - 1e-6),
-            { width: texture.frame.width, height: texture.frame.height, resolution },
+            { width: texture.frame.width, height: texture.frame.height, resolution, format },
         );
     }
 
