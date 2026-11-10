@@ -1,5 +1,5 @@
 import { getWebGLRenderer, getWebGPURenderer, itLocalOnly } from '@test-utils';
-import { CanvasPool, TexturePool } from '~/rendering';
+import { CanvasPool, TexturePool, TextureSource } from '~/rendering';
 
 describe('ViewSystem', () =>
 {
@@ -111,11 +111,23 @@ describe('ViewSystem', () =>
 
     itLocalOnly('should set up the WebGPU canvas in the preferred format by default', async () =>
     {
+        const preferred = navigator.gpu.getPreferredCanvasFormat();
+        const originalFormat = TextureSource.defaultOptions.format;
+
+        // set the texture default to the other format, so a canvas that just took it fails the test
+        TextureSource.defaultOptions.format = preferred === 'bgra8unorm' ? 'rgba8unorm' : 'bgra8unorm';
+
         const renderer = await getWebGPURenderer();
 
-        expect(renderer.view.texture.source.format).toBe(navigator.gpu.getPreferredCanvasFormat());
-
-        renderer.destroy();
+        try
+        {
+            expect(renderer.view.texture.source.format).toBe(preferred);
+        }
+        finally
+        {
+            TextureSource.defaultOptions.format = originalFormat;
+            renderer.destroy();
+        }
     });
 
     itLocalOnly('should keep an explicit WebGPU canvas format', async () =>

@@ -62,10 +62,11 @@ export interface ViewSystemOptions
      */
     transient?: boolean;
     /**
-     * WebGPU only. The format the canvas is set up with. WebGL and the canvas renderer ignore it.
+     * WebGPU only. The format the canvas is set up with: `bgra8unorm`, `rgba8unorm` or `rgba16float`.
+     * WebGL and the canvas renderer ignore it.
      * Defaults to the browser's preferred canvas format (`bgra8unorm` on most desktops, `rgba8unorm` on Android),
-     * as any other format costs the browser an extra full-screen copy every frame.
-     * Pass `rgba16float` for an HDR canvas.
+     * as the other 8-bit format can cost the browser an extra full-screen copy every frame.
+     * Pass `rgba16float` for an HDR canvas; it never costs that copy.
      * @default navigator.gpu.getPreferredCanvasFormat()
      */
     format?: TEXTURE_FORMATS;

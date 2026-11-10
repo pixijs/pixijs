@@ -14,9 +14,11 @@ import type { RenderTargetAdaptor, RenderTargetSystem } from '../../shared/rende
 import type { Texture } from '../../shared/texture/Texture';
 import type { WebGPURenderer } from '../WebGPURenderer';
 
-// WebGPU's `GPUCanvasContext.configure` only accepts these formats. Anything else on a
-// CanvasSource falls back to the platform-preferred format with a warning.
-/** @internal */
+/**
+ * WebGPU's `GPUCanvasContext.configure` only accepts these formats. Anything else on a
+ * CanvasSource falls back to the platform-preferred format with a warning.
+ * @internal
+ */
 export const canvasAllowedFormats: Record<string, true> = {
     bgra8unorm: true,
     rgba8unorm: true,

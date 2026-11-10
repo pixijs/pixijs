@@ -67,7 +67,7 @@ describeLocalOnly('ExtractSystem render texture formats (WebGPU)', () =>
         renderer.destroy();
     });
 
-    // one of the two is never the preferred canvas format, which the copy into the extract canvas used to need
+    // the browser prefers one of these, so the other covers a non-preferred format on any machine
     it.each(['rgba8unorm', 'bgra8unorm'] as const)('reads a %s render texture', async (format) =>
     {
         const target = RenderTexture.create({ width: 4, height: 4, format });
