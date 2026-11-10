@@ -10,7 +10,9 @@ license: MIT
 2. **Read each listed file before you write the code for that part**, even for a one-line change. Open the file itself; a Grep hit is a fragment that drops the rule and the exception beside it. Each topic file links to its sub-pages for rarer branches.
 3. **Done when every file on your list has been opened.** Then check your code against the pitfall group below for each feature you built.
 
-No row fits: scan [references/index.md](references/index.md) (sub-pages, long-tail keywords, error strings), then the project's local PixiJS docs or `https://pixijs.download/release/docs/llms.txt`.
+No row fits: scan [references/index.md](references/index.md) (sub-pages, long-tail keywords, error strings), then the project's local PixiJS docs.
+
+For a signature or option this skill doesn't cover, fetch the class's API page: `https://pixijs.download/release/docs/<module>.<Class>.html.md` (`app.Application`, `scene.Graphics`, `rendering.Texture`, `assets.Assets`). To find a class's module, look it up in `https://pixijs.download/release/docs/llms.txt`.
 
 ## Pitfalls that fail silently
 
