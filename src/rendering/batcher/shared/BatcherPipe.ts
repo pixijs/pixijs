@@ -90,6 +90,8 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 
     public addToBatch(batchableObject: BatchableElement, instructionSet: InstructionSet)
     {
+        instructionSet._flushPendingStencilPop();
+
         if (this._activeBatch.name !== batchableObject.batcherName)
         {
             this._activeBatch.break(instructionSet);
@@ -111,11 +113,13 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 
     public break(instructionSet: InstructionSet)
     {
+        instructionSet._flushPendingStencilPop();
         this._activeBatch.break(instructionSet);
     }
 
     public buildEnd(instructionSet: InstructionSet)
     {
+        instructionSet._flushPendingStencilPop();
         this._activeBatch.break(instructionSet);
 
         const batches = this._activeBatches;

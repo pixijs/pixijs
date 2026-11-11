@@ -1,5 +1,6 @@
 import { uid } from '../../../../utils/data/uid';
 
+import type { OpenStencilMask } from '../../../mask/stencil/StencilMaskPipe';
 import type { Renderable } from '../Renderable';
 import type { Instruction } from './Instruction';
 
@@ -29,10 +30,33 @@ export class InstructionSet
     /** used by the garbage collector to track when the instruction set was last used */
     public gcTick = 0;
 
+    /**
+     * A stencil mask pop that the StencilMaskPipe deferred while building. It is written before anything else enters
+     * the set, or dropped when the next thing is a push of the same mask.
+     * @internal
+     */
+    public _pendingStencilPop: OpenStencilMask | null = null;
+    /**
+     * Stencil masks open at the current point of the build, innermost last.
+     * @internal
+     */
+    public readonly _openStencilMasks: OpenStencilMask[] = [];
+
     /** reset the instruction set so it can be reused set size back to 0 */
     public reset()
     {
         this.instructionSize = 0;
+        this._pendingStencilPop = null;
+        this._openStencilMasks.length = 0;
+    }
+
+    /**
+     * Writes the deferred stencil mask pop, if any. Called before anything else enters the set or the batcher.
+     * @internal
+     */
+    public _flushPendingStencilPop()
+    {
+        this._pendingStencilPop?.pipe.emitPendingPop(this);
     }
 
     /**
@@ -63,6 +87,7 @@ export class InstructionSet
      */
     public add(instruction: Instruction)
     {
+        this._flushPendingStencilPop();
         this.instructions[this.instructionSize++] = instruction;
     }
 
