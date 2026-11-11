@@ -1,4 +1,3 @@
-import { removeItems } from '../../../utils/data/removeItems';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 
 import type { Container, ContainerChild } from '../Container';
@@ -263,20 +262,15 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
     {
         const end = endIndex ?? this.children.length;
         const range = end - beginIndex;
-        const removed: ContainerChild[] = [];
 
         if (range > 0 && range <= end)
         {
-            for (let i = end - 1; i >= beginIndex; i--)
+            const removed = this.children.splice(beginIndex, range);
+
+            for (let i = 0; i < removed.length; ++i)
             {
-                const child = this.children[i];
-
-                if (!child) continue;
-                removed.push(child);
-                child.parent = null;
+                removed[i].parent = null;
             }
-
-            removeItems(this.children, beginIndex, range);
 
             const renderGroup = this.renderGroup || this.parentRenderGroup;
 
@@ -291,8 +285,8 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
 
                 child.parentRenderLayer?.detach(child);
 
-                this.emit('childRemoved', child, this, i);
-                removed[i].emit('removed', this);
+                this.emit('childRemoved', child, this, beginIndex + i);
+                child.emit('removed', this);
             }
 
             if (removed.length > 0)
@@ -304,7 +298,7 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
         }
         else if (range === 0 && this.children.length === 0)
         {
-            return removed;
+            return [];
         }
 
         throw new RangeError('removeChildren: numeric values are outside the acceptable range.');
