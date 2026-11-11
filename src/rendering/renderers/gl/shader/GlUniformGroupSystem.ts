@@ -47,6 +47,12 @@ export class GlUniformGroupSystem implements System
     protected contextChange(gl: GlRenderingContext): void
     {
         this.gl = gl;
+        // The sync functions are generated from a program's uniform metadata, so the ones cached
+        // before the loss describe programs that no longer exist. GlShaderSystem drops its cache
+        // here for the same reason, and without this the first program compiled after the restore
+        // reuses the sync function of a program that failed to link, which uploads nothing.
+        this._cache = {};
+        this._uniformGroupSyncHash = {};
     }
 
     /**
