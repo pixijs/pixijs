@@ -138,4 +138,37 @@ describe('Batcher', () =>
 
         expect(batches).toEqual([[a.source.uid], [b.source.uid]]);
     });
+
+    it('should not update an element that was not added in the latest build', () =>
+    {
+        const batcher = new TestBatcher({ maxTextures: 16 });
+        // no texture or finish needed: add/updateElement never touch the texture,
+        // packAttributes is spied on below
+        const element = makeElement(null as unknown as Texture);
+        const packAttributes = jest.spyOn(batcher, 'packAttributes');
+
+        // first build: the element is batched, so in-place updates apply
+        batcher.begin();
+        batcher.add(element);
+
+        batcher.updateElement(element);
+
+        expect(packAttributes).toHaveBeenCalledTimes(1);
+
+        // the instruction set is rebuilt without the element (for example a stencil
+        // mask whose masked object was hidden): its offsets are now stale, so an
+        // update must not write into the live attribute buffer at the old offset
+        batcher.begin();
+
+        batcher.updateElement(element);
+
+        expect(packAttributes).toHaveBeenCalledTimes(1);
+
+        // the element is batched again, so in-place updates apply once more
+        batcher.add(element);
+
+        batcher.updateElement(element);
+
+        expect(packAttributes).toHaveBeenCalledTimes(2);
+    });
 });
