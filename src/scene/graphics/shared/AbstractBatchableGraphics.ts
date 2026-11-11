@@ -36,6 +36,7 @@ export abstract class AbstractBatchableGraphics
     public _attributeStart: number;
     public _batcher: Batcher = null;
     public _batch: Batch = null;
+    public _batchTick = 0;
 
     abstract get uvs(): number[] | Float32Array;
     abstract get positions(): number[] | Float32Array;

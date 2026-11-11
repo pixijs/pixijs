@@ -29,5 +29,6 @@ export class DummyBatchableObject implements BatchableMeshElement
     public _attributeStart: number;
     public _batcher: Batcher = null;
     public _batch: Batch = null;
+    public _batchTick = 0;
     public roundPixels: 0 | 1 = 0;
 }

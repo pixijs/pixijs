@@ -191,6 +191,17 @@ export interface BatchableElement
      */
     _batch: Batch;
 
+    /**
+     * The build in which the element was last added to the batcher.
+     * `updateElement` only writes for elements added in the latest build:
+     * an element that dropped out of the instruction set (for example a stencil
+     * mask whose masked object was hidden) keeps stale offsets, and writing
+     * at them would overwrite other elements' data in the live buffer.
+     * @type {number}
+     * @private
+     */
+    _batchTick: number;
+
 }
 
 /**
@@ -337,6 +348,9 @@ export abstract class Batcher
     private _batchIndexStart: number;
     private _batchIndexSize: number;
 
+    /** Increments on every `begin`, so elements added in the latest build can be told apart from stale ones. */
+    private _batchTick = 0;
+
     /** The maximum number of textures per batch. */
     public readonly maxTextures: number;
 
@@ -414,6 +428,8 @@ export abstract class Batcher
         this.indexSize = 0;
         this.attributeSize = 0;
 
+        this._batchTick++;
+
         for (let i = 0; i < this.batchIndex; i++)
         {
             returnBatchToPool(this.batches[i]);
@@ -434,6 +450,7 @@ export abstract class Batcher
         batchableObject._indexStart = this.indexSize;
         batchableObject._attributeStart = this.attributeSize;
         batchableObject._batcher = this;
+        batchableObject._batchTick = this._batchTick;
 
         this.indexSize += batchableObject.indexSize;
         this.attributeSize += ((batchableObject.attributeSize) * this.vertexSize);
@@ -455,6 +472,13 @@ export abstract class Batcher
 
     public updateElement(batchableObject: BatchableElement)
     {
+        // The element was not added to the batcher in the latest build, so its
+        // offsets point at data that no longer belongs to it. Writing here would
+        // overwrite other elements in the live attribute buffer. This happens when
+        // a renderable drops out of the instruction set without a transform update
+        // noticing - for example a stencil mask whose masked object was hidden.
+        if (batchableObject._batchTick !== this._batchTick) return;
+
         this.dirty = true;
 
         const attributeBuffer = this.attributeBuffer;

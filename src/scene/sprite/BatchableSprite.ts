@@ -35,6 +35,7 @@ export class BatchableSprite implements DefaultBatchableQuadElement, GPUData
     public _attributeStart = 0; // location in the buffer
     public _batcher: Batcher = null;
     public _batch: Batch = null;
+    public _batchTick = 0;
 
     get blendMode() { return this.renderable.groupBlendMode; }
     get color() { return this.renderable.groupColorAlpha; }
