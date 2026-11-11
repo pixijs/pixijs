@@ -2,6 +2,8 @@ import { SVGParser } from '../../../graphics/shared/svg/SVGParser';
 import { getFillInstructionData } from '../../../graphics/shared/svg/utils/fillOperations';
 import { GraphicsContext } from '../GraphicsContext';
 
+import type { StrokeInstruction } from '../GraphicsContext';
+
 describe('SVGParser Fill Rule', () =>
 {
     it('should handle evenodd fill rule with multiple subpaths using hole processing', () =>
@@ -260,5 +262,38 @@ describe('SVGParser Fill Rule', () =>
         // Invalid values should default to original behavior - in your implementation this is false
 
         expect(pathData.path.checkForHoles).toBe(false);
+    });
+});
+
+describe('SVGParser points', () =>
+{
+    it('should parse decimal points of a polygon', () =>
+    {
+        const context = new GraphicsContext();
+
+        SVGParser(`
+            <svg xmlns="http://www.w3.org/2000/svg">
+                <polygon points="20,20 180.5,180.5 20,180" />
+            </svg>
+        `, context);
+
+        const poly = getFillInstructionData(context).path.instructions[0];
+
+        expect(poly.data[0]).toEqual([20, 20, 180.5, 180.5, 20, 180]);
+    });
+
+    it('should parse decimal points of a polyline', () =>
+    {
+        const context = new GraphicsContext();
+
+        SVGParser(`
+            <svg xmlns="http://www.w3.org/2000/svg">
+                <polyline points="479.84 279.78 480.19 279.81 480 280.09 479.84 279.78" stroke="black" />
+            </svg>
+        `, context);
+
+        const poly = (context.instructions[0] as StrokeInstruction).data.path.instructions[0];
+
+        expect(poly.data[0]).toEqual([479.84, 279.78, 480.19, 279.81, 480, 280.09, 479.84, 279.78]);
     });
 });
