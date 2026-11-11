@@ -12,6 +12,37 @@ import type { GlProgram } from '../GlProgram';
 import type { IGLUniformData } from '../GlProgramData';
 
 /**
+ * Reads attribute and uniform reflection from a linked WebGL program onto a {@link GlProgram}.
+ * @param gl - a rendering context the program was linked on
+ * @param webGLProgram - the linked WebGL program
+ * @param program - the high level Pixi Program.
+ * @private
+ */
+export function updateProgramReflection(gl: GlRenderingContext, webGLProgram: WebGLProgram, program: GlProgram): void
+{
+    // GLSL 1.00: bind attributes sorted by name in ascending order
+    // GLSL 3.00: don't change the attribute locations that where chosen by the compiler
+    //            or assigned by the layout specifier in the shader source code
+    program._attributeData = extractAttributesFromGlProgram(
+        webGLProgram,
+        gl,
+        !(/^[ \t]*#[ \t]*version[ \t]+300[ \t]+es[ \t]*$/m).test(program.vertex)
+    );
+
+    program._uniformData = getUniformData(webGLProgram, gl);
+    // each block reads from its own binding slot for the program's whole life, so two blocks can never
+    // share one; transform feedback programs leave slot 0 free, as they always have
+    program._uniformBlockData = getUboData(webGLProgram, gl, program.transformFeedbackVaryings ? 1 : 0);
+
+    for (const name in program._uniformBlockData)
+    {
+        const { index, binding } = program._uniformBlockData[name];
+
+        gl.uniformBlockBinding(webGLProgram, index, binding);
+    }
+}
+
+/**
  * generates a WebGL Program object from a high level Pixi Program.
  * @param gl - a rendering context on which to generate the program
  * @param program - the high level Pixi Program.
@@ -56,26 +87,7 @@ export function generateProgram(gl: GlRenderingContext, program: GlProgram): GlP
         logProgramError(gl, webGLProgram, glVertShader, glFragShader);
     }
 
-    // GLSL 1.00: bind attributes sorted by name in ascending order
-    // GLSL 3.00: don't change the attribute locations that where chosen by the compiler
-    //            or assigned by the layout specifier in the shader source code
-    program._attributeData = extractAttributesFromGlProgram(
-        webGLProgram,
-        gl,
-        !(/^[ \t]*#[ \t]*version[ \t]+300[ \t]+es[ \t]*$/m).test(program.vertex)
-    );
-
-    program._uniformData = getUniformData(webGLProgram, gl);
-    // each block reads from its own binding slot for the program's whole life, so two blocks can never
-    // share one; transform feedback programs leave slot 0 free, as they always have
-    program._uniformBlockData = getUboData(webGLProgram, gl, transformFeedbackVaryings ? 1 : 0);
-
-    for (const name in program._uniformBlockData)
-    {
-        const { index, binding } = program._uniformBlockData[name];
-
-        gl.uniformBlockBinding(webGLProgram, index, binding);
-    }
+    updateProgramReflection(gl, webGLProgram, program);
 
     gl.deleteShader(glVertShader);
     gl.deleteShader(glFragShader);
@@ -92,7 +104,7 @@ export function generateProgram(gl: GlRenderingContext, program: GlProgram): GlP
         };
     }
 
-    const glProgram = new GlProgramData(webGLProgram, uniformData);
+    const glProgram = new GlProgramData(webGLProgram, uniformData, gl);
 
     return glProgram;
 }
