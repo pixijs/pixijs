@@ -9,8 +9,10 @@ name: Sync Skills
 # Use workflow_dispatch for manual / out-of-band syncs (e.g. an urgent skill
 # fix from dev ahead of a release); source_ref defaults to dev there.
 #
-# The standalone repo retains its own README, plugin configs, assets, etc.;
-# only the `skills/` folder is overwritten.
+# The standalone repo retains its own README, plugin configs, assets, etc.,
+# and the skills other repos sync into it (pixijs/pixi-3d syncs its own):
+# only this repo's skill folders are replaced. A skill deleted here must be
+# deleted in the mirror by hand.
 #
 # Auth: a GitHub App (installed on pixijs/pixijs-skills with `contents: write`)
 # mints a short-lived token per run. Requires two repository secrets:
@@ -86,10 +88,14 @@ jobs:
           path: target
           fetch-depth: 1
 
-      - name: Replace skills folder
+      - name: Replace this repo's skill folders
         run: |
-          rm -rf target/skills
-          cp -R source/skills target/skills
+          mkdir -p target/skills
+          for dir in source/skills/*/; do
+            name="$(basename "${dir}")"
+            rm -rf "target/skills/${name}"
+            cp -R "source/skills/${name}" "target/skills/${name}"
+          done
 
       - name: Detect changes
         id: diff
@@ -101,6 +107,7 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
+      # pixi-3d pushes to the same branch, so rebase onto its sync if one landed meanwhile.
       - name: Commit and push
         if: steps.diff.outputs.changed == 'true'
         working-directory: target
@@ -116,4 +123,8 @@ jobs:
           git commit -m "chore: sync skills from ${SOURCE_REPO}@${SOURCE_REF} (${SYNC_SHA:0:7})
 
           Source: https://github.com/${SOURCE_REPO}/commit/${SYNC_SHA}"
-          git push origin "${TARGET_REF}"
+          for attempt in 1 2 3; do
+            git push origin "HEAD:${TARGET_REF}" && exit 0
+            git pull --rebase origin "${TARGET_REF}"
+          done
+          exit 1
