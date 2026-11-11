@@ -122,9 +122,11 @@ export const pointExtraMixins: any = {
 
         const cosTheta = Math.cos(radians);
         const sinTheta = Math.sin(radians);
+        const x = this.x;
+        const y = this.y;
 
-        outPoint.x = (this.x * cosTheta) - (this.y * sinTheta);
-        outPoint.y = (this.x * sinTheta) + (this.y * cosTheta);
+        outPoint.x = (x * cosTheta) - (y * sinTheta);
+        outPoint.y = (x * sinTheta) + (y * cosTheta);
 
         return outPoint;
     }
