@@ -427,6 +427,15 @@ export abstract class Batcher
         this.dirty = true;
     }
 
+    /**
+     * @param element - The element whose blend mode is being resolved.
+     * @internal
+     */
+    protected getBlendMode(element: BatchableElement): BLEND_MODES
+    {
+        return getAdjustedBlendModeBlend(element.blendMode, element.texture._source);
+    }
+
     public add(batchableObject: BatchableElement)
     {
         this._elements[this.elementSize++] = batchableObject;
@@ -495,7 +504,7 @@ export abstract class Batcher
         textureBatch.clear();
 
         const firstElement = elements[this.elementStart];
-        let blendMode = getAdjustedBlendModeBlend(firstElement.blendMode, firstElement.texture._source);
+        let blendMode = this.getBlendMode(firstElement);
         let topology = firstElement.topology;
 
         if (this.attributeSize * 4 > this.attributeBuffer.size)
@@ -529,7 +538,7 @@ export abstract class Batcher
             const texture = element.texture;
             const source = texture._source;
 
-            const adjustedBlendMode = getAdjustedBlendModeBlend(element.blendMode, source);
+            const adjustedBlendMode = this.getBlendMode(element);
 
             const breakRequired = blendMode !== adjustedBlendMode || topology !== element.topology;
 
