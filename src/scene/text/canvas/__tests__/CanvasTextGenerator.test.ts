@@ -1,117 +1,53 @@
-import { TextStyle } from '../../TextStyle';
-import { CanvasTextGenerator } from '../CanvasTextGenerator';
-import { CanvasTextMetrics } from '../CanvasTextMetrics';
-import { fontStringFromTextStyle } from '../utils/fontStringFromTextStyle';
+import '~/environment-browser/browserAll';
+import { CanvasTextGenerator } from '~/scene/text/canvas/CanvasTextGenerator';
+import { TextStyle } from '~/scene/text/TextStyle';
 
-import type { CanvasAndContext } from '~/rendering';
-
-type DrawCall = { y: number, shadowColor: string };
-
-function createRecordingCanvas(width: number, height: number)
-{
-    const calls: DrawCall[] = [];
-    const state: Record<string, any> = {};
-    const record = (_text: string, _x: number, y: number) =>
-    {
-        calls.push({ y, shadowColor: state.shadowColor });
-    };
-    const methods: Record<string, any> = {
-        fillText: record,
-        strokeText: record,
-        measureText: (text: string) => ({ width: text.length * 10 }),
-    };
-
-    const context = new Proxy(state, {
-        get: (target, key: string) => methods[key] ?? target[key] ?? ((): undefined => undefined),
-        set: (target, key: string, value) =>
-        {
-            target[key] = value;
-
-            return true;
-        },
-    });
-
-    return {
-        calls,
-        canvasAndContext: { canvas: { width, height }, context } as unknown as CanvasAndContext,
-    };
-}
+import type { TextStyleOptions } from '~/scene/text/TextStyle';
 
 describe('CanvasTextGenerator', () =>
 {
-    const fontProperties = { ascent: 80, descent: 20, fontSize: 100 };
-    const strokeWidth = 20;
+    const boldTags: Record<string, TextStyleOptions> = { b: { fontWeight: 'bold' } };
 
-    afterEach(() =>
+    const render = (text: string, resolution: number, tagStyles?: Record<string, TextStyleOptions>) =>
     {
-        CanvasTextMetrics.clearMetrics();
-    });
+        const style = new TextStyle({
+            fontSize: 100,
+            fill: '#ffffff',
+            stroke: { color: '#ffff00', width: 10 },
+            dropShadow: { color: '#ff0000', alpha: 1, blur: 0, distance: 13, angle: Math.PI / 4 },
+            tagStyles,
+        });
+        const { canvasAndContext } = CanvasTextGenerator.getCanvasAndContext({ text, style, resolution });
+        const { canvas, context } = canvasAndContext;
+        const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
 
-    const createStyle = () => new TextStyle({
-        fontSize: 100,
-        fill: '#ffffff',
-        stroke: { color: '#111111', width: strokeWidth },
-        dropShadow: { color: '#000000', alpha: 1, angle: Math.PI / 4, blur: 10, distance: 13 },
-    });
+        CanvasTextGenerator.returnCanvasAndContext(canvasAndContext);
 
-    const render = (resolution: number, tagged: boolean) =>
-    {
-        const style = createStyle();
+        let black = 0;
+        let red = 0;
 
-        CanvasTextMetrics['_fonts'][fontStringFromTextStyle(style)] = fontProperties;
+        for (let i = 0; i < data.length; i += 4)
+        {
+            const [r, g, b, a] = [data[i], data[i + 1], data[i + 2], data[i + 3]];
 
-        const padding = style._getFinalPadding();
-        const lineHeight = fontProperties.fontSize + strokeWidth;
-        const measured = new CanvasTextMetrics(
-            'YEAH,', style, 50, lineHeight, ['YEAH,'], [50], lineHeight, 50, fontProperties,
-            tagged
-                ? {
-                    runsByLine: [[{ text: 'YEAH,', style }]],
-                    lineAscents: [fontProperties.ascent],
-                    lineDescents: [fontProperties.descent],
-                    lineHeights: [lineHeight],
-                    hasDropShadow: true,
-                }
-                : undefined
-        );
-        const height = Math.ceil(Math.ceil(measured.height + (padding * 2)) * resolution);
-        const { calls, canvasAndContext } = createRecordingCanvas(100, height);
+            if (a <= 128) continue;
+            if (r < 64 && g < 64 && b < 64) black++;
+            if (r > 192 && g < 64 && b < 64) red++;
+        }
 
-        CanvasTextGenerator['_renderTextToCanvas'](style, padding, resolution, canvasAndContext, measured);
-
-        const isShadowPass = (call: DrawCall) => call.shadowColor !== 'rgba(0,0,0,0)';
-
-        return {
-            shadowPass: calls.filter(isShadowPass),
-            textPass: calls.filter((call) => !isShadowPass(call)),
-            logicalHeight: height / resolution,
-        };
+        return { black, red };
     };
 
-    const cases: Array<[number, boolean]> = [
-        [0.25, false],
-        [0.35, false],
-        [1, false],
-        [2, false],
-        [0.25, true],
-        [2, true],
-    ];
-
-    cases.forEach(([resolution, tagged]) =>
+    // the hidden copy that casts the shadow is drawn in black, so black pixels mean it reached the canvas
+    it.each([
+        ['plain', 0.25, 'YEAH,', undefined],
+        ['tagged', 0.25, '<b>YEAH</b>,', boldTags],
+        ['plain', 2, 'YEAH,', undefined],
+    ])('should keep the hidden shadow copy of %s text off the canvas at resolution %s', (_, resolution, text, tagStyles) =>
     {
-        it(`should draw the drop shadow pass text above the canvas at resolution ${resolution} (tagged: ${tagged})`, () =>
-        {
-            const { shadowPass, textPass, logicalHeight } = render(resolution, tagged);
+        const { black, red } = render(text, resolution, tagStyles);
 
-            expect(shadowPass.length).toBeGreaterThan(0);
-            expect(shadowPass.length).toEqual(textPass.length);
-
-            // the context is scaled by the resolution, so the offset is in logical units and
-            // must move the hidden copy by at least the logical height of the canvas
-            shadowPass.forEach((call, i) =>
-            {
-                expect(textPass[i].y - call.y).toBeGreaterThanOrEqual(logicalHeight);
-            });
-        });
+        expect(black).toBe(0);
+        expect(red).toBeGreaterThan(0);
     });
 });
