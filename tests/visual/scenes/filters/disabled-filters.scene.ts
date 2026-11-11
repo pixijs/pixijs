@@ -1,5 +1,5 @@
 import { Assets } from '~/assets';
-import { BlurFilter, ColorMatrixFilter } from '~/filters';
+import { BlurFilter, ColorTransformFilter } from '~/filters';
 import { type Container, Sprite } from '~/scene';
 
 import type { TestScene } from '../../types';
@@ -19,16 +19,16 @@ export const scene: TestScene = {
         {
             const sprite = new Sprite({ texture });
             const blurFilter = new BlurFilter({ strength: 5 });
-            const colorMatrixFilter = new ColorMatrixFilter();
+            const colorTransformFilter = new ColorTransformFilter();
 
-            colorMatrixFilter.hue(45, true);
+            colorTransformFilter.hue(45, true);
 
             sprite.x = offsetX + (i * (texture.width + padding));
             sprite.y = offsetY;
-            sprite.filters = [blurFilter, colorMatrixFilter];
+            sprite.filters = [blurFilter, colorTransformFilter];
 
             blurFilter.enabled = i % 2 === 0;
-            colorMatrixFilter.enabled = i % 2 === 1;
+            colorTransformFilter.enabled = i % 2 === 1;
 
             scene.addChild(sprite);
         }

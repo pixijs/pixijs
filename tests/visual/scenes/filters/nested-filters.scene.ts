@@ -1,5 +1,5 @@
 import { Assets } from '~/assets';
-import { ColorMatrixFilter } from '~/filters';
+import { ColorTransformFilter } from '~/filters';
 import { Container, Sprite } from '~/scene';
 
 import type { TestScene } from '../../types';
@@ -9,7 +9,7 @@ export const scene: TestScene = {
     excludeRenderers: ['canvas'],
     create: async (scene: Container) =>
     {
-        const filter = new ColorMatrixFilter();
+        const filter = new ColorTransformFilter();
 
         filter.hue(90, true);
 
