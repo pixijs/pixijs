@@ -10,6 +10,7 @@ export type LIBKTXModuleCreator = (config: {
 /** @internal */
 export interface KTXTexture
 {
+    delete(): void;
     getImageData(level: number, layer: number, face: number): Uint8Array;
     glInternalformat: number;
     vkFormat: number

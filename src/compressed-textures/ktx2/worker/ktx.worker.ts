@@ -82,39 +82,46 @@ async function load(url: string): Promise<TextureSourceOptions>
 
     const ktxTexture = await fetchKTXTexture(url, ktx);
 
-    let format: COMPRESSED_TEXTURE_FORMATS;
-
-    if (ktxTexture.needsTranscoding)
+    try
     {
-        format = basisTranscodedTextureFormat;
+        let format: COMPRESSED_TEXTURE_FORMATS;
 
-        const transcodeFormat = ktx.TranscodeTarget[basisTranscoderFormat];
-        const result = ktxTexture.transcodeBasis(transcodeFormat, 0);
-
-        if (result !== ktx.ErrorCode.SUCCESS)
+        if (ktxTexture.needsTranscoding)
         {
-            throw new Error('Unable to transcode basis texture.');
+            format = basisTranscodedTextureFormat;
+
+            const transcodeFormat = ktx.TranscodeTarget[basisTranscoderFormat];
+            const result = ktxTexture.transcodeBasis(transcodeFormat, 0);
+
+            if (result !== ktx.ErrorCode.SUCCESS)
+            {
+                throw new Error('Unable to transcode basis texture.');
+            }
         }
+        else
+        {
+            format = getTextureFormatFromKTXTexture(ktxTexture);
+        }
+
+        const levelBuffers = createLevelBuffersFromKTX(ktxTexture);
+
+        const textureOptions = {
+            width: ktxTexture.baseWidth,
+            height: ktxTexture.baseHeight,
+            format: format as TEXTURE_FORMATS,
+            mipLevelCount: ktxTexture.numLevels,
+            resource: levelBuffers,
+            alphaMode: 'no-premultiply-alpha'
+        } as TextureSourceOptions;
+
+        convertFormatIfRequired(textureOptions);
+
+        return textureOptions;
     }
-    else
+    finally
     {
-        format = getTextureFormatFromKTXTexture(ktxTexture);
+        ktxTexture.delete();
     }
-
-    const levelBuffers = createLevelBuffersFromKTX(ktxTexture);
-
-    const textureOptions = {
-        width: ktxTexture.baseWidth,
-        height: ktxTexture.baseHeight,
-        format: format as TEXTURE_FORMATS,
-        mipLevelCount: ktxTexture.numLevels,
-        resource: levelBuffers,
-        alphaMode: 'no-premultiply-alpha'
-    } as TextureSourceOptions;
-
-    convertFormatIfRequired(textureOptions);
-
-    return textureOptions;
 }
 
 async function init(
