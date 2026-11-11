@@ -33,6 +33,26 @@ export interface BitmapTextLayoutData
 }
 
 /**
+ * Turns every CRLF into a single '\n'. `Intl.Segmenter` returns it as one '\r\n' grapheme,
+ * the code point fallback as '\r' followed by '\n'.
+ * @param chars - The segmented text
+ * @returns The segments with one '\n' per CRLF
+ */
+function normalizeCRLF(chars: string[]): string[]
+{
+    const normalized: string[] = [];
+
+    for (let i = 0; i < chars.length; i++)
+    {
+        if (chars[i] === '\r' && chars[i + 1] === '\n') continue;
+
+        normalized.push(chars[i] === '\r\n' ? '\n' : chars[i]);
+    }
+
+    return normalized;
+}
+
+/**
  * @param chars
  * @param style
  * @param font
@@ -88,6 +108,8 @@ export function getBitmapTextLayout(
     const shouldCollapseSpaces = collapseSpaces(style.whiteSpace);
     const shouldCollapseNewlines = collapseNewlines(style.whiteSpace);
 
+    chars = normalizeCRLF(chars);
+
     if (shouldCollapseSpaces || shouldCollapseNewlines)
     {
         const processed: string[] = [];
@@ -101,7 +123,6 @@ export function getBitmapTextLayout(
             {
                 if (shouldCollapseNewlines)
                 {
-                    if (char === '\r' && chars[c + 1] === '\n') c++;
                     char = ' ';
                 }
                 else
