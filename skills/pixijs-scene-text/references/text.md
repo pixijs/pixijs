@@ -114,7 +114,7 @@ Key TextStyle properties:
 - `leading`: additional line spacing in pixels on top of `lineHeight`
 - `trim`: boolean; crop transparent padding after rasterization (expensive, use only when needed)
 - `padding`: extra space around the rendered texture; increase when a stroke or shadow gets clipped
-- `filters`: array of Pixi filters applied to the generated text texture at bake time, cheaper than filters on the `Text` node for static strings
+- `filters`: array of Pixi filters applied to the generated text texture at bake time, cheaper than filters on the `Text` node for static strings. Filters render at their own `resolution` (default 1); set it to `'inherit'` to keep high-resolution text sharp.
 - `tagStyles`: per-tag inline style overrides
 
 ### Tagged text
