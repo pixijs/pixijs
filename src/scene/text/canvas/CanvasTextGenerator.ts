@@ -202,8 +202,9 @@ class CanvasTextGeneratorClass
         for (let i = 0; i < passesCount; ++i)
         {
             const isShadowPass = style.dropShadow && i === 0;
-            // we only want the drop shadow, so put text way off-screen
-            const dsOffsetText = isShadowPass ? Math.ceil(Math.max(1, height) + (padding * 2)) : 0;
+            // only the shadow should reach the canvas; the context is scaled by resolution,
+            // so move the hidden copy by at least the canvas's logical height
+            const dsOffsetText = isShadowPass ? Math.ceil(Math.max(1, height, height / resolution) + (padding * 2)) : 0;
             const dsOffsetShadow = dsOffsetText * resolution;
 
             if (isShadowPass)
@@ -359,7 +360,9 @@ class CanvasTextGeneratorClass
         for (let pass = 0; pass < passesCount; ++pass)
         {
             const isShadowPass = hasDropShadow && pass === 0;
-            const dsOffsetText = isShadowPass ? Math.ceil(Math.max(1, height) + (padding * 2)) : 0;
+            // only the shadow should reach the canvas; the context is scaled by resolution,
+            // so move the hidden copy by at least the canvas's logical height
+            const dsOffsetText = isShadowPass ? Math.ceil(Math.max(1, height, height / resolution) + (padding * 2)) : 0;
             const dsOffsetShadow = dsOffsetText * resolution;
 
             if (!isShadowPass)
