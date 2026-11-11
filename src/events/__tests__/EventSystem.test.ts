@@ -8,6 +8,7 @@ import { Rectangle } from '~/maths';
 import { Container, Graphics } from '~/scene';
 
 import type { FederatedPointerEvent } from '../FederatedPointerEvent';
+import type { FederatedWheelEvent } from '../FederatedWheelEvent';
 import type { RendererOptions } from '~/rendering';
 
 async function createRenderer(
@@ -100,6 +101,15 @@ function createScene(nested = true)
 function dispatchContextMenu(target: EventTarget, clientX = 25, clientY = 25): MouseEvent
 {
     const event = new MouseEvent('contextmenu', { clientX, clientY, bubbles: true, cancelable: true });
+
+    target.dispatchEvent(event);
+
+    return event;
+}
+
+function dispatchWheel(target: EventTarget, clientX = 25, clientY = 25): WheelEvent
+{
+    const event = new WheelEvent('wheel', { clientX, clientY, bubbles: true, cancelable: true });
 
     target.dispatchEvent(event);
 
@@ -877,6 +887,64 @@ describe('EventSystem', () =>
         );
 
         expect(eventSpy).toHaveBeenCalledTimes(3);
+    });
+
+    it('should keep the wheel listener passive when defaultEventFeatures omits wheelPassive', async () =>
+    {
+        const defaults = EventSystem.defaultEventFeatures;
+
+        EventSystem.defaultEventFeatures = { move: true, globalMove: true, click: true, wheel: true };
+
+        try
+        {
+            const renderer = await createRenderer();
+            const [stage, graphics] = createScene(false);
+            const listener = jest.fn((e: FederatedWheelEvent) => e.preventDefault());
+
+            renderer.render(stage);
+            graphics.on('wheel', listener);
+
+            const nativeEvent = dispatchWheel(renderer.canvas);
+
+            expect(listener).toHaveBeenCalledOnce();
+            expect(nativeEvent.defaultPrevented).toBe(false);
+        }
+        finally
+        {
+            EventSystem.defaultEventFeatures = defaults;
+        }
+    });
+
+    it('should cancel the native wheel event when wheelPassive is false', async () =>
+    {
+        const renderer = await createRenderer(undefined, undefined, { eventFeatures: { wheelPassive: false } });
+        const [stage, graphics] = createScene(false);
+
+        renderer.render(stage);
+        graphics.on('wheel', (e) => e.preventDefault());
+
+        const nativeEvent = dispatchWheel(renderer.canvas);
+
+        expect(nativeEvent.defaultPrevented).toBe(true);
+    });
+
+    it('should apply wheelPassive changes at runtime', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene(false);
+
+        renderer.render(stage);
+        graphics.on('wheel', (e) => e.preventDefault());
+
+        expect(dispatchWheel(renderer.canvas).defaultPrevented).toBe(false);
+
+        renderer.events.features.wheelPassive = false;
+
+        expect(dispatchWheel(renderer.canvas).defaultPrevented).toBe(true);
+
+        renderer.events.features.wheelPassive = true;
+
+        expect(dispatchWheel(renderer.canvas).defaultPrevented).toBe(false);
     });
 
     it('should dispatch global pointer move event with custom hitArea', async () =>
