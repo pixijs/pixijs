@@ -48,7 +48,13 @@ export class SmoothShader extends Shader
      */
     constructor(maxTextures: number, textured = false)
     {
-        const options = { maxTextures, textured, name: textured ? 'smooth-batch-textured' : 'smooth-batch' };
+        // the 'smooth' batcher only gets untextured elements, see setTexture() in buildSmoothContextData
+        const options = {
+            maxTextures,
+            textured,
+            untextured: !textured,
+            name: textured ? 'smooth-batch-textured' : 'smooth-batch',
+        };
 
         super({
             glProgram: getSmoothGlProgram(options),
