@@ -1,3 +1,4 @@
+import { GraphicsContext } from '../../graphics/shared/GraphicsContext';
 import { Text } from '../../text/Text';
 import { TextStyle } from '../../text/TextStyle';
 import { loadBitmapFont } from '../asset/loadBitmapFont';
@@ -9,6 +10,10 @@ import '../init';
 import '../../graphics/init';
 import { basePath, getWebGLRenderer } from '@test-utils';
 import { Cache, Loader, loadTextures, loadTxt } from '~/assets';
+import { PrepareSystem } from '~/prepare';
+
+import type { Graphics } from '../../graphics/shared/Graphics';
+import type { WebGLRenderer } from '~/rendering';
 
 describe('BitmapText', () =>
 {
@@ -346,5 +351,149 @@ describe('BitmapText', () =>
 
         // trailing 'D' must sit beyond 'C', not snap back to x=0
         expect(positions[3]).toBeGreaterThan(positions[2]);
+    });
+
+    describe('geometry initialization', () =>
+    {
+        let renderer: WebGLRenderer;
+        let text: BitmapText;
+        let clearSpy: jest.SpyInstance;
+        let prepare: PrepareSystem;
+
+        beforeEach(async () =>
+        {
+            renderer = await getWebGLRenderer();
+            text = new BitmapText({ text: 'AB', style: { fontFamily: font.fontFamily, fontSize: 24 } });
+            clearSpy = jest.spyOn(GraphicsContext.prototype, 'clear');
+        });
+
+        afterEach(() =>
+        {
+            clearSpy.mockRestore();
+            prepare?.destroy();
+            prepare = null;
+            text.destroy({ style: true });
+            renderer.destroy();
+        });
+
+        function geometryBuilds(forRenderer = renderer): number
+        {
+            const graphics = text._gpuData[forRenderer.uid] as Graphics;
+
+            return clearSpy.mock.instances.filter((context) => context === graphics.context).length;
+        }
+
+        it('should build geometry once on the first render', () =>
+        {
+            renderer.render(text);
+
+            expect(geometryBuilds()).toBe(1);
+        });
+
+        it('should reuse geometry initialized during validation', () =>
+        {
+            renderer.renderPipes.bitmapText.validateRenderable(text);
+            renderer.render(text);
+
+            expect(geometryBuilds()).toBe(1);
+        });
+
+        it('should reuse geometry uploaded by prepare', async () =>
+        {
+            prepare = new PrepareSystem(renderer);
+            await prepare.upload(text);
+            renderer.render(text);
+
+            expect(geometryBuilds()).toBe(1);
+        });
+
+        it.each(['text', 'style', 'anchor'])('should rebuild when %s changes after initialization', (property) =>
+        {
+            renderer.renderPipes.bitmapText.initGpuText(text);
+
+            if (property === 'text') text.text = 'ABCD';
+            else if (property === 'style') text.style.fontSize = 36;
+            else text.anchor.set(0.5);
+
+            renderer.render(text);
+
+            expect(geometryBuilds()).toBe(2);
+
+            const reference = new BitmapText({ text: text.text, style: text.style.clone(), anchor: text.anchor });
+
+            try
+            {
+                expect(renderer.extract.pixels(text)).toEqual(renderer.extract.pixels(reference));
+            }
+            finally
+            {
+                reference.destroy({ style: true });
+            }
+        });
+
+        it('should rebuild edited text after the first render', () =>
+        {
+            renderer.render(text);
+            clearSpy.mockClear();
+            text.text = 'ABCD';
+            renderer.render(text);
+
+            expect(geometryBuilds()).toBe(1);
+        });
+
+        it('should preserve another renderer\'s pending text update during initialization', async () =>
+        {
+            const other = await getWebGLRenderer();
+
+            try
+            {
+                renderer.render(text);
+                clearSpy.mockClear();
+                text.text = 'ABCD';
+                other.renderPipes.bitmapText.initGpuText(text);
+
+                expect(text._didTextUpdate).toBe(true);
+
+                renderer.render(text);
+
+                expect(geometryBuilds()).toBe(1);
+                expect(geometryBuilds(other)).toBe(1);
+            }
+            finally
+            {
+                other.destroy();
+            }
+        });
+
+        it('should rebuild unloaded text once', () =>
+        {
+            renderer.render(text);
+            text.unload();
+            renderer.render(text);
+
+            expect(geometryBuilds()).toBe(1);
+        });
+
+        it('should build non-batched SDF geometry once', async () =>
+        {
+            const sdfFont = await loader.load<BitmapFont>(`${basePath}fonts/msdf.fnt`);
+
+            Cache.set(`${sdfFont.fontFamily}-bitmap`, sdfFont);
+
+            try
+            {
+                text.style.fontFamily = sdfFont.fontFamily;
+                renderer.render(text);
+
+                const graphics = text._gpuData[renderer.uid] as Graphics;
+
+                expect(graphics.context.customShader).toBeTruthy();
+                expect(geometryBuilds()).toBe(1);
+            }
+            finally
+            {
+                Cache.remove(`${sdfFont.fontFamily}-bitmap`);
+            }
+        });
     });
 });
