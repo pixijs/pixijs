@@ -277,7 +277,22 @@ describe('Color', () =>
         expect(color.blue).toBe(0.25);
         expect(color.green).toBe(0.25);
         expect(color.alpha).toBe(0.25);
-        expect(color.toNumber()).toBe(0x3f3f3f);
+        // 0.25 * 255 = 63.75, which rounds to 0x40
+        expect(color.toNumber()).toBe(0x404040);
+    });
+
+    it('should round components between two bytes the same way in every output', () =>
+    {
+        const color = new Color([0.5, 0.25, 0.75]);
+
+        // 127.5, 63.75 and 191.25 round to 128, 64 and 191
+        expect(color.toUint8RgbArray()).toEqual([0x80, 0x40, 0xbf]);
+        expect(color.toRgbaString()).toBe('rgba(128,64,191,1)');
+        expect(color.toNumber()).toBe(0x8040bf);
+        expect(color.toHex()).toBe('#8040bf');
+        expect(color.toHexa()).toBe('#8040bfff');
+        expect(color.toBgrNumber()).toBe(0xbf4080);
+        expect(color.toLittleEndianNumber()).toBe(color.toBgrNumber());
     });
 
     it('should invalidate value when multiply', () =>
