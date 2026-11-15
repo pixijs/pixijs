@@ -1,4 +1,4 @@
-import { createLevelBuffers } from '../utils/createLevelBuffers';
+import { createTextureOptionsFromBasis } from '../utils/createTextureOptionsFromBasis';
 import { gpuFormatToBasisTranscoderFormat } from '../utils/gpuFormatToBasisTranscoderFormat';
 
 import type { TEXTURE_FORMATS } from '../../../rendering/renderers/shared/texture/const';
@@ -53,15 +53,13 @@ async function getBasis(): Promise<BasisTextureConstructor>
     return basisPromise;
 }
 
-async function fetchBasisTexture(url: string, BasisTexture: BasisTextureConstructor)
+async function fetchBasisData(url: string): Promise<Uint8Array>
 {
     const basisResponse = await fetch(url);
 
     if (basisResponse.ok)
     {
-        const basisArrayBuffer = await basisResponse.arrayBuffer();
-
-        return new BasisTexture(new Uint8Array(basisArrayBuffer));
+        return new Uint8Array(await basisResponse.arrayBuffer());
     }
 
     throw new Error(`Failed to load Basis texture: ${url}`);
@@ -77,19 +75,13 @@ const preferredTranscodedFormat: Partial<TEXTURE_FORMATS>[] = [
 
 async function load(url: string): Promise<TextureSourceOptions>
 {
-    const BasisTexture = await getBasis();
+    const BasisFile = await getBasis();
+    const data = await fetchBasisData(url);
 
-    const basisTexture = await fetchBasisTexture(url, BasisTexture);
-
-    const levelBuffers = createLevelBuffers(basisTexture, basisTranscoderFormat);
-
-    return {
-        width: basisTexture.getImageWidth(0, 0),
-        height: basisTexture.getImageHeight(0, 0),
-        format: basisTranscodedTextureFormat,
-        resource: levelBuffers,
-        alphaMode: 'no-premultiply-alpha'
-    } as TextureSourceOptions;
+    return createTextureOptionsFromBasis(BasisFile, data, {
+        transcoderFormat: basisTranscoderFormat,
+        transcodedFormat: basisTranscodedTextureFormat,
+    });
 }
 
 async function init(
