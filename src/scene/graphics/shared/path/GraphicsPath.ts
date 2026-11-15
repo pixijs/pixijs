@@ -144,10 +144,11 @@ export class GraphicsPath
      * @param x2 - The x-coordinate of the second point.
      * @param y2 - The y-coordinate of the second point.
      * @param radius - The radius of the arc.
+     * @param transform - An optional transform to apply to the arc.
      * @returns The instance of the current object for chaining.
      */
-    public arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): this;
-    public arcTo(...args: [number, number, number, number, number]): this
+    public arcTo(x1: number, y1: number, x2: number, y2: number, radius: number, transform?: Matrix): this;
+    public arcTo(...args: [number, number, number, number, number, Matrix?]): this
     {
         this.instructions.push({ action: 'arcTo', data: args });
 
