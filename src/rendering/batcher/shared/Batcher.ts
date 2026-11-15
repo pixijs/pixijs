@@ -503,7 +503,9 @@ export abstract class Batcher
             this._resizeAttributeBuffer(this.attributeSize * 4);
         }
 
-        if (this.indexSize > this.indexBuffer.length)
+        const needsUint32 = (this.attributeSize / this.vertexSize) > 65535;
+
+        if (this.indexSize > this.indexBuffer.length || (needsUint32 && this.indexBuffer.BYTES_PER_ELEMENT === 2))
         {
             this._resizeIndexBuffer(this.indexSize);
         }
@@ -742,12 +744,11 @@ export abstract class Batcher
 
         newSize += newSize % 2;
 
-        // this, is technically not 100% accurate, as really we should
-        // be checking the maximum value in the buffer. This approximation
-        // does the trick though...
-
-        // make sure buffer is always an even number..
-        const newIndexBuffer = (newSize > 65535) ? new Uint32Array(newSize) : new Uint16Array(newSize);
+        // Use 32-bit indices when either the index buffer length or vertex count
+        // exceeds the 16-bit index limit (65535), since vertex indices can
+        // exceed 65535 even when fewer than 65536 indices are emitted.
+        const useUint32 = newSize > 65535 || (this.attributeSize / this.vertexSize) > 65535;
+        const newIndexBuffer = useUint32 ? new Uint32Array(newSize) : new Uint16Array(newSize);
 
         if (newIndexBuffer.BYTES_PER_ELEMENT !== indexBuffer.BYTES_PER_ELEMENT)
         {
