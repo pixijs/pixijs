@@ -1,4 +1,5 @@
 import { getPo2TextureFromSource } from '../getPo2TextureFromSource';
+import { TexturePool } from '~/rendering';
 
 describe('getPo2TextureFromSource', () =>
 {
@@ -39,6 +40,27 @@ describe('getPo2TextureFromSource', () =>
             width: 128,
             height: 128,
         }));
+    });
+
+    it('should give a texture the source fits in when its size does not divide by the resolution', () =>
+    {
+        const canvas = document.createElement('canvas');
+
+        for (const resolution of [1.23, 2.51, 3, 4])
+        {
+            for (let size = 1; size <= 300; size++)
+            {
+                canvas.width = size;
+                canvas.height = 301 - size;
+
+                const texture = getPo2TextureFromSource(canvas, canvas.width, canvas.height, resolution);
+
+                expect(texture.source.pixelWidth).toBeGreaterThanOrEqual(canvas.width);
+                expect(texture.source.pixelHeight).toBeGreaterThanOrEqual(canvas.height);
+
+                TexturePool.returnTexture(texture);
+            }
+        }
     });
 
     describe('autoGenerateMipmaps parameter', () =>

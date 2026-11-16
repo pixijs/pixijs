@@ -34,8 +34,9 @@ export function getPo2TextureFromSource(
     bounds.minX = 0;
     bounds.minY = 0;
 
-    bounds.maxX = (image.width / resolution) | 0;
-    bounds.maxY = (image.height / resolution) | 0;
+    // rounding down here can make the texture smaller than the image, which then fails to upload
+    bounds.maxX = image.width / resolution;
+    bounds.maxY = image.height / resolution;
 
     const texture = TexturePool.getOptimalTexture({
         width: bounds.width,
