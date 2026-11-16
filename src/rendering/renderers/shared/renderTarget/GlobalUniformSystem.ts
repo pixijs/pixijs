@@ -94,6 +94,16 @@ export class GlobalUniformSystem implements System
     private readonly _bindGroupPool: BindGroup[] = [];
     private readonly _activeBindGroups: BindGroup[] = [];
 
+    private readonly _globalUniformDataPool: GlobalUniformData[] = [];
+    private readonly _activeGlobalUniformData: GlobalUniformData[] = [];
+
+    /** Values inherited by a bind on an empty stack. Shared and never written to. */
+    private readonly _defaultGlobalUniformData: Pick<GlobalUniformData, 'worldTransformMatrix' | 'worldColor' | 'offset'> = {
+        worldTransformMatrix: new Matrix(),
+        worldColor: 0xFFFFFFFF,
+        offset: new Point(),
+    };
+
     private _currentGlobalUniformData: GlobalUniformData;
 
     constructor(renderer: GlobalUniformRenderer)
@@ -115,8 +125,14 @@ export class GlobalUniformSystem implements System
             this._bindGroupPool.push(this._activeBindGroups[i]);
         }
 
+        for (let i = 0; i < this._activeGlobalUniformData.length; i++)
+        {
+            this._globalUniformDataPool.push(this._activeGlobalUniformData[i]);
+        }
+
         this._activeUniforms.length = 0;
         this._activeBindGroups.length = 0;
+        this._activeGlobalUniformData.length = 0;
     }
 
     public start(options: GlobalUniformOptions): void
@@ -136,21 +152,29 @@ export class GlobalUniformSystem implements System
     {
         const renderTarget = this._renderer.renderTarget.renderTarget;
 
-        const currentGlobalUniformData = this._stackIndex ? this._globalUniformDataStack[this._stackIndex - 1] : {
-            projectionData: renderTarget,
-            worldTransformMatrix: new Matrix(),
-            worldColor: 0xFFFFFFFF,
-            offset: new Point(),
-        };
+        const currentGlobalUniformData = this._stackIndex
+            ? this._globalUniformDataStack[this._stackIndex - 1]
+            : this._defaultGlobalUniformData;
 
-        const globalUniformData: GlobalUniformData = {
-            projectionMatrix: projectionMatrix || this._renderer.renderTarget.projectionMatrix,
-            resolution: size || renderTarget.size,
-            worldTransformMatrix: worldTransformMatrix || currentGlobalUniformData.worldTransformMatrix,
-            worldColor: worldColor || currentGlobalUniformData.worldColor,
-            offset: offset || currentGlobalUniformData.offset,
+        // bind runs for every render group, filter and mask push, so reuse the data objects
+        // the same way the uniform and bind groups are reused; they are returned in reset()
+        const globalUniformData: GlobalUniformData = this._globalUniformDataPool.pop() || {
+            projectionMatrix: null,
+            resolution: null,
+            worldTransformMatrix: null,
+            worldColor: 0,
+            offset: null,
             bindGroup: null,
         };
+
+        this._activeGlobalUniformData.push(globalUniformData);
+
+        globalUniformData.projectionMatrix = projectionMatrix || this._renderer.renderTarget.projectionMatrix;
+        globalUniformData.resolution = size || renderTarget.size;
+        globalUniformData.worldTransformMatrix = worldTransformMatrix || currentGlobalUniformData.worldTransformMatrix;
+        globalUniformData.worldColor = worldColor || currentGlobalUniformData.worldColor;
+        globalUniformData.offset = offset || currentGlobalUniformData.offset;
+        globalUniformData.bindGroup = null;
 
         const uniformGroup = this._uniformsPool.pop() || this._createUniforms();
 
@@ -250,6 +274,8 @@ export class GlobalUniformSystem implements System
         this._activeUniforms.length = 0;
         this._bindGroupPool.length = 0;
         this._activeBindGroups.length = 0;
+        this._globalUniformDataPool.length = 0;
+        this._activeGlobalUniformData.length = 0;
         this._currentGlobalUniformData = null;
     }
 }
