@@ -48,6 +48,12 @@ export interface BufferOptions
      * @default true
      */
     shrinkToFit?: boolean;
+    /**
+     * the index format of an index buffer created with a `size` and no `data`, which it is drawn with.
+     * A buffer with data takes its format from the data instead
+     * @default 'uint32'
+     */
+    indexFormat?: 'uint16' | 'uint32';
 }
 
 /** @internal */
@@ -161,6 +167,8 @@ export class Buffer extends EventEmitter<{
 
     private _autoGarbageCollect = true;
 
+    private readonly _indexFormat: 'uint16' | 'uint32';
+
     /**
      * should the GPU buffer be shrunk when the data becomes smaller?
      * changing this will cause the buffer to be destroyed and a new one created on the GPU
@@ -184,7 +192,7 @@ export class Buffer extends EventEmitter<{
     constructor(options: BufferOptions)
     {
         let { data, size } = options;
-        const { usage, label, shrinkToFit } = options;
+        const { usage, label, shrinkToFit, indexFormat } = options;
 
         super();
 
@@ -207,6 +215,23 @@ export class Buffer extends EventEmitter<{
         };
 
         this.shrinkToFit = shrinkToFit ?? true;
+        this._indexFormat = indexFormat ?? 'uint32';
+    }
+
+    /** the format an index buffer is drawn with: from its data when it has any, else the `indexFormat` option */
+    get indexFormat(): 'uint16' | 'uint32'
+    {
+        if (this._data) return this._data.BYTES_PER_ELEMENT === 2 ? 'uint16' : 'uint32';
+
+        return this._indexFormat;
+    }
+
+    /** how many indices an index buffer holds: its data's length, or for one with no data, its size in indices */
+    get indexCount(): number
+    {
+        if (this._data) return this._data.length;
+
+        return this.descriptor.size / (this._indexFormat === 'uint16' ? 2 : 4);
     }
 
     /** the data in the buffer */
