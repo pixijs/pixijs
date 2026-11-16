@@ -206,6 +206,9 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
                 maxSamplersPerShaderStage: adapter.limits.maxSamplersPerShaderStage,
                 // the spec default is 256; the adapter's own value is always supported and often smaller
                 minUniformBufferOffsetAlignment: adapter.limits.minUniformBufferOffsetAlignment,
+                // the spec defaults are 256 MiB and 128 MiB; a larger buffer is invalid, and so is every draw from it
+                maxBufferSize: adapter.limits.maxBufferSize,
+                maxStorageBufferBindingSize: adapter.limits.maxStorageBufferBindingSize,
             },
         });
 
