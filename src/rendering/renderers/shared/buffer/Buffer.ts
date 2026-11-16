@@ -49,7 +49,7 @@ export interface BufferOptions
      */
     shrinkToFit?: boolean;
     /**
-     * the index format of an index buffer created with a `size` and no `data`, which it is drawn with.
+     * index buffers only: the format a buffer created with a `size` and no `data` is drawn with.
      * A buffer with data takes its format from the data instead
      * @default 'uint32'
      */
@@ -218,7 +218,10 @@ export class Buffer extends EventEmitter<{
         this._indexFormat = indexFormat ?? 'uint32';
     }
 
-    /** the format an index buffer is drawn with: from its data when it has any, else the `indexFormat` option */
+    /**
+     * index buffers only: the format the buffer is drawn with, from its data when it has any,
+     * else the `indexFormat` option. Meaningless for vertex and uniform buffers
+     */
     get indexFormat(): 'uint16' | 'uint32'
     {
         if (this._data) return this._data.BYTES_PER_ELEMENT === 2 ? 'uint16' : 'uint32';
@@ -226,8 +229,12 @@ export class Buffer extends EventEmitter<{
         return this._indexFormat;
     }
 
-    /** how many indices an index buffer holds: its data's length, or for one with no data, its size in indices */
-    get indexCount(): number
+    /**
+     * How many indices an index buffer holds, the draw count when none is given: its data's length,
+     * or for one with no data, its size in indices. Unlike `Geometry.indexCount`, never 0 for "all"
+     * @internal
+     */
+    get _indexLength(): number
     {
         if (this._data) return this._data.length;
 

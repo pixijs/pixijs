@@ -57,7 +57,7 @@ describe('Buffer indexFormat', () =>
         const buffer = new Buffer({ data: new Uint16Array(6), usage: BufferUsage.INDEX, indexFormat: 'uint32' });
 
         expect(buffer.indexFormat).toBe('uint16');
-        expect(buffer.indexCount).toBe(6);
+        expect(buffer._indexLength).toBe(6);
     });
 
     it('should take the format from the option and the count from the size when it has no data', () =>
@@ -66,9 +66,9 @@ describe('Buffer indexFormat', () =>
         const uint32 = new Buffer({ size: 24, usage: BufferUsage.INDEX });
 
         expect(uint16.indexFormat).toBe('uint16');
-        expect(uint16.indexCount).toBe(12);
+        expect(uint16._indexLength).toBe(12);
         expect(uint32.indexFormat).toBe('uint32');
-        expect(uint32.indexCount).toBe(6);
+        expect(uint32._indexLength).toBe(6);
     });
 });
 
