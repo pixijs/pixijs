@@ -22,7 +22,41 @@ export function getTextureBatchBindGroup(textures: TextureSource[], size: number
         uid >>>= 0;
     }
 
-    return cachedGroups[uid] || generateTextureBatchBindGroup(textures, size, uid, maxTextures);
+    const cachedGroup = cachedGroups[uid];
+
+    const cachedGroupFitsBatch = ((): boolean =>
+    {
+        if (!cachedGroup)
+        {
+            return false;
+        }
+
+        const resources = cachedGroup.resources;
+
+        if (!resources[(maxTextures * 2) - 1])
+        {
+            return false;
+        }
+
+        for (let i = 0; i < size; i++)
+        {
+            if (resources[i * 2] === textures[i].source)
+            {
+                continue;
+            }
+
+            return false;
+        }
+
+        return true;
+    })();
+
+    if (cachedGroupFitsBatch)
+    {
+        return cachedGroup;
+    }
+
+    return generateTextureBatchBindGroup(textures, size, uid, maxTextures);
 }
 
 function generateTextureBatchBindGroup(textures: TextureSource[], size: number, key: number, maxTextures: number): BindGroup
