@@ -167,6 +167,106 @@ export class GlBufferSystem implements System
     }
 
     /**
+     * Writes bytes into a buffer's GPU storage, creating the storage first if the buffer has none yet.
+     * `buffer.data` is not changed.
+     *
+     * Use it on a buffer created size-only (`new Buffer({ size, usage })`), which keeps no CPU copy, or on a
+     * region never uploaded from the buffer's `data`: a later `buffer.update()` uploads from `data` and would
+     * overwrite the region.
+     *
+     * - The buffer needs `BufferUsage.COPY_DST`. On WebGPU, `offset` and `data.byteLength` must be multiples of 4.
+     * - Contents written this way exist only on the GPU, so they are lost with the context or device.
+     *   Write them again on the renderer's `contextChange`.
+     * - A buffer with no `data` is never garbage collected, so destroy it when you are done with it. One with
+     *   `data` is restored from `data` after a collection, losing these contents, unless `autoGarbageCollect` is off.
+     * - On WebGPU the write is queued ahead of the frame, which is submitted at the end of the render, so it
+     *   applies to the whole frame, including draws recorded earlier in the same render.
+     * @param buffer - the buffer to write into
+     * @param data - the bytes to write, `data.byteLength` of them starting at `data.byteOffset`
+     * @param offset - the byte offset in the buffer to write at, defaults to 0
+     */
+    public write(buffer: Buffer, data: ArrayBufferView, offset = 0): void
+    {
+        const { _gl: gl } = this;
+        const glBuffer = this._ensureStorage(buffer);
+        const webGL1 = this._renderer.context.webGLVersion !== 2;
+
+        // COPY_WRITE_BUFFER is read by no vertex array, so an index buffer write leaves the bound one alone.
+        // WebGL1 has no copy target, so it unbinds the vertex array first, as _updateIndexBuffer does
+        if (webGL1 && glBuffer.type === BUFFER_TYPE.ELEMENT_ARRAY_BUFFER && this._renderer.geometry._activeVao)
+        {
+            this._renderer.geometry.resetState();
+        }
+
+        const target = webGL1 ? glBuffer.type : gl.COPY_WRITE_BUFFER;
+
+        gl.bindBuffer(target, glBuffer.buffer);
+        gl.bufferSubData(target, offset, data);
+    }
+
+    /**
+     * Copies bytes from one buffer to another on the GPU, creating either buffer's GPU storage first if it has
+     * none yet. Use it to move a buffer's contents into a larger one when it grows. Neither buffer's `data` is
+     * changed.
+     *
+     * A later `to.update()` uploads from `to.data` and would overwrite the copied region, so copy into a
+     * size-only buffer (`new Buffer({ size, usage })`) or a region never uploaded from `data`.
+     *
+     * - `from` needs `BufferUsage.COPY_SRC` and `to` needs `BufferUsage.COPY_DST`. On WebGPU, `size` and both
+     *   offsets must be multiples of 4.
+     * - WebGL1 has no buffer-to-buffer copy, so this throws there.
+     * - Contents copied this way exist only on the GPU, so they are lost with the context or device.
+     *   Write them again on the renderer's `contextChange`.
+     * - A buffer with no `data` is never garbage collected, so destroy it when you are done with it. One with
+     *   `data` is restored from `data` after a collection, losing these contents, unless `autoGarbageCollect` is off.
+     * - On WebGPU the copy is submitted ahead of the frame, which is submitted at the end of the render, so it
+     *   applies to the whole frame, including draws recorded earlier in the same render.
+     * @param from - the buffer to copy from
+     * @param to - the buffer to copy into
+     * @param size - the number of bytes to copy
+     * @param fromOffset - the byte offset in `from` to copy from, defaults to 0
+     * @param toOffset - the byte offset in `to` to copy to, defaults to 0
+     */
+    public copy(from: Buffer, to: Buffer, size: number, fromOffset = 0, toOffset = 0): void
+    {
+        if (this._renderer.context.webGLVersion !== 2)
+        {
+            throw new Error('[GlBufferSystem] Copying between buffers requires WebGL2.');
+        }
+
+        const { _gl: gl } = this;
+        const source = this._ensureStorage(from).buffer;
+        const destination = this._ensureStorage(to).buffer;
+
+        // the copy targets for the reason write() gives
+        gl.bindBuffer(gl.COPY_READ_BUFFER, source);
+        gl.bindBuffer(gl.COPY_WRITE_BUFFER, destination);
+        gl.copyBufferSubData(gl.COPY_READ_BUFFER, gl.COPY_WRITE_BUFFER, fromOffset, toOffset, size);
+    }
+
+    /**
+     * Returns the buffer's `GlBuffer`, giving it storage if it has none: `getGlBuffer` creates the buffer object,
+     * but only the first upload allocates it. That upload binds the buffer to its own target, which fixes its
+     * type on WebGL2, so for an index buffer the bound vertex array is unbound first to keep it unchanged.
+     * @param buffer - the buffer that needs storage
+     */
+    private _ensureStorage(buffer: Buffer): GlBuffer
+    {
+        const glBuffer = this.getGlBuffer(buffer);
+
+        if (glBuffer.byteLength >= 0) return glBuffer;
+
+        if (glBuffer.type === BUFFER_TYPE.ELEMENT_ARRAY_BUFFER && this._renderer.geometry._activeVao)
+        {
+            this._renderer.geometry.resetState();
+        }
+
+        this._upload(buffer, glBuffer, glBuffer.type);
+
+        return glBuffer;
+    }
+
+    /**
      * Uploads the buffer's latest update through `target`, if it has not been uploaded yet.
      * @param buffer - the buffer to upload
      * @param glBuffer - its `GlBuffer`
