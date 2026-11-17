@@ -316,8 +316,10 @@ export const canvasUtils = {
         const outWidth = isVertical ? crop.height : crop.width;
         const outHeight = isVertical ? crop.width : crop.height;
 
-        canvas.width = Math.ceil(outWidth);
-        canvas.height = Math.ceil(outHeight);
+        // A canvas with a zero width or height can't be drawn (drawImage and createPattern throw),
+        // so an empty frame tints to a single transparent pixel
+        canvas.width = Math.max(1, Math.ceil(outWidth));
+        canvas.height = Math.max(1, Math.ceil(outHeight));
 
         context.save();
 
@@ -392,8 +394,10 @@ export const canvasUtils = {
         const outWidth = isVertical ? crop.height : crop.width;
         const outHeight = isVertical ? crop.width : crop.height;
 
-        canvas.width = Math.ceil(outWidth);
-        canvas.height = Math.ceil(outHeight);
+        // A canvas with a zero width or height can't be drawn (drawImage and createPattern throw),
+        // so an empty frame tints to a single transparent pixel
+        canvas.width = Math.max(1, Math.ceil(outWidth));
+        canvas.height = Math.max(1, Math.ceil(outHeight));
 
         context.save();
         context.globalCompositeOperation = 'copy';
@@ -447,8 +451,10 @@ export const canvasUtils = {
         const outWidth = isVertical ? crop.height : crop.width;
         const outHeight = isVertical ? crop.width : crop.height;
 
-        canvas.width = Math.ceil(outWidth);
-        canvas.height = Math.ceil(outHeight);
+        // A canvas with a zero width or height can't be drawn (drawImage and createPattern throw),
+        // so an empty frame tints to a single transparent pixel
+        canvas.width = Math.max(1, Math.ceil(outWidth));
+        canvas.height = Math.max(1, Math.ceil(outHeight));
 
         context.save();
         context.globalCompositeOperation = 'copy';
@@ -485,7 +491,7 @@ export const canvasUtils = {
         const g = (color >> 8) & 0xFF;
         const b = color & 0xFF;
 
-        const imageData = context.getImageData(0, 0, outWidth, outHeight);
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
         const data = imageData.data;
 
         for (let i = 0; i < data.length; i += 4)
