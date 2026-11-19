@@ -115,6 +115,7 @@ Top-level `accessibilityOptions`; the full API is in [accessibility](../accessib
 | --- | --- | --- | --- |
 | `powerPreference` | `'high-performance' \| 'low-power'` | `undefined` | Hint for `requestAdapter()`. |
 | `forceFallbackAdapter` | `boolean` | `false` | Software adapter; testing only. |
+| `tileBasedGpu` | `boolean` | `undefined` | Overrides whether PixiJS treats the GPU as tile-based for antialiased targets. Unset, it's judged from `adapter.info.vendor`. |
 | `gpu` | `{ adapter, device }` | — | Pre-created `GPUAdapter` + `GPUDevice`, e.g. shared with another engine. |
 
 ## Garbage collection
