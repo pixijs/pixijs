@@ -65,10 +65,8 @@ function getImageBuffers(dataView: DataView, glType: number, imagePixelByteSize:
     for (let mipmapLevel = 0; mipmapLevel < numberOfMipmapLevels; mipmapLevel++)
     {
         const imageSize = dataView.getUint32(imageOffset, littleEndian);
-        // 4x4 block-compressed levels are padded to whole blocks; uncompressed levels are not
-        const mipByteSize = glType === 0
-            ? ((mipWidth + 3) & ~3) * ((mipHeight + 3) & ~3) * imagePixelByteSize
-            : mipWidth * mipHeight * imagePixelByteSize;
+        // a compressed level is whole blocks of the format's own block size, so its length comes from the file
+        const mipByteSize = glType === 0 ? imageSize : mipWidth * mipHeight * imagePixelByteSize;
 
         imageBuffers[mipmapLevel] = new Uint8Array(dataView.buffer, imageOffset + 4, mipByteSize);
 
