@@ -21,7 +21,8 @@ export interface BufferSourceOptions extends TextureSourceOptions<TypedArray | A
  * A texture source that uses a TypedArray or ArrayBuffer as its resource
  *
  * Without a `format`, the array type picks it: `Float32Array` gives `rgba32float`,
- * 32-bit integer arrays give `rgba32uint`, 16-bit integer arrays give `rgba16uint`, anything else `bgra8unorm`.
+ * 32-bit integer arrays give `rgba32uint`, 16-bit integer arrays give `rgba16uint`, anything else `rgba8unorm`,
+ * read as R, G, B, A bytes on every renderer.
  * Integer formats default to `alphaMode: 'no-premultiply-alpha'`, since integer data can't be
  * premultiplied on upload; an explicit `alphaMode` still wins.
  *
@@ -173,13 +174,9 @@ export class BufferImageSource extends TextureSource<TypedArray | ArrayBuffer>
             {
                 format = 'rgba16uint';
             }
-            else if (buffer instanceof Int8Array)
-            {
-                format = 'bgra8unorm';
-            }
             else
             {
-                format = 'bgra8unorm';
+                format = 'rgba8unorm';
             }
         }
 

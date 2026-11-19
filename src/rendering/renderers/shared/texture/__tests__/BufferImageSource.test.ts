@@ -1,6 +1,8 @@
+import { CanvasRenderer } from '../../../canvas/CanvasRenderer';
 import { BufferImageSource } from '../sources/BufferImageSource';
 import { Texture } from '../Texture';
-import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
+import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer, itLocalOnly } from '@test-utils';
+import { Sprite } from '~/scene';
 
 import type { TextureShapeOptions, TextureSourceOptions } from '../sources/TextureSource';
 
@@ -211,5 +213,79 @@ describe('BufferImageSource with depth', () =>
 
         expect(() => source.update(0, 4)).toThrow('uploads whole');
         expect(() => source.update()).not.toThrow();
+    });
+});
+
+describe('BufferImageSource without a format', () =>
+{
+    const RED = [255, 0, 0, 255];
+
+    function createRedSprite(): Sprite
+    {
+        const source = new BufferImageSource({ resource: new Uint8Array(RED), width: 1, height: 1 });
+
+        return new Sprite(new Texture({ source }));
+    }
+
+    it.each([
+        ['Uint8Array', new Uint8Array(4)],
+        ['Uint8ClampedArray', new Uint8ClampedArray(4)],
+        ['Int8Array', new Int8Array(4)],
+        ['ArrayBuffer', new ArrayBuffer(4)],
+    ])('should give a %s rgba8unorm', (_name, resource) =>
+    {
+        expect(new BufferImageSource({ resource, width: 1, height: 1 }).format).toBe('rgba8unorm');
+    });
+
+    it('should keep a format that is passed', () =>
+    {
+        const source = new BufferImageSource({ resource: new Uint8Array(4), width: 1, height: 1, format: 'bgra8unorm' });
+
+        expect(source.format).toBe('bgra8unorm');
+    });
+
+    it('should leave Texture.WHITE on the default texture format', () =>
+    {
+        expect(Texture.WHITE.source.format).toBe('bgra8unorm');
+    });
+
+    it.each([1, 2] as const)('should read the bytes as R, G, B, A on WebGL%i', async (preferWebGLVersion) =>
+    {
+        const renderer = await getWebGLRenderer({ preferWebGLVersion });
+        const sprite = createRedSprite();
+
+        expect(Array.from(renderer.extract.pixels(sprite).pixels)).toEqual(RED);
+
+        sprite.destroy({ texture: true, textureSource: true });
+        renderer.destroy();
+    });
+
+    it('should read the bytes as R, G, B, A on the canvas renderer', async () =>
+    {
+        const renderer = new CanvasRenderer();
+
+        await renderer.init({ width: 1, height: 1, backgroundAlpha: 0 });
+
+        const sprite = createRedSprite();
+
+        renderer.render({ container: sprite });
+
+        const context = renderer.canvas.getContext('2d') as CanvasRenderingContext2D;
+
+        expect(Array.from(context.getImageData(0, 0, 1, 1).data)).toEqual(RED);
+
+        sprite.destroy({ texture: true, textureSource: true });
+        renderer.destroy();
+    });
+
+    itLocalOnly('should read the bytes as R, G, B, A on WebGPU', async () =>
+    {
+        const renderer = await getWebGPURenderer();
+        const sprite = createRedSprite();
+
+        expect(Array.from(renderer.extract.pixels(sprite).pixels)).toEqual(RED);
+
+        sprite.destroy({ texture: true, textureSource: true });
+        renderer.destroy();
     });
 });
