@@ -1,6 +1,7 @@
 import { DOMContainer } from '../DOMContainer';
-import { getApp } from '@test-utils';
+import { getApp, getWebGLRenderer } from '@test-utils';
 import { Point } from '~/maths/point/Point';
+import { Container } from '~/scene/container/Container';
 
 describe('DOMContainer', () =>
 {
@@ -230,6 +231,19 @@ describe('DOMContainer', () =>
             expect(app.renderer.renderPipes.dom['_domElement'].style.transform).toBe(
                 `translate(${bounds.left}px, ${bounds.top}px) scale(2, 2)`,
             );
+        });
+
+        it('should not throw when the renderer draws to an OffscreenCanvas', async () =>
+        {
+            const renderer = await getWebGLRenderer({ canvas: new OffscreenCanvas(100, 100) });
+            const stage = new Container();
+
+            stage.addChild(domContainer);
+
+            expect(() => renderer.render(stage)).not.toThrow();
+
+            stage.removeChild(domContainer);
+            renderer.destroy();
         });
     });
 });
