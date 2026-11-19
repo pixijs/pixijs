@@ -40,6 +40,7 @@ describe('Parse KTX', () =>
         expect(result.height).toBe(66);
         expect(result.format).toBe('astc-4x4-unorm-srgb');
         expect(result.resource.length).toBe(1);
+        expect(result.resource[0].byteLength).toBe(4624);
         expect(result.alphaMode).toBe('no-premultiply-alpha');
     });
 
@@ -54,6 +55,7 @@ describe('Parse KTX', () =>
         expect(result.height).toBe(66);
         expect(result.format).toBe('astc-5x5-unorm-srgb');
         expect(result.resource.length).toBe(1);
+        expect(result.resource[0].byteLength).toBe(3136);
         expect(result.alphaMode).toBe('no-premultiply-alpha');
     });
 
@@ -68,6 +70,7 @@ describe('Parse KTX', () =>
         expect(result.height).toBe(66);
         expect(result.format).toBe('astc-12x12-unorm-srgb');
         expect(result.resource.length).toBe(1);
+        expect(result.resource[0].byteLength).toBe(576);
         expect(result.alphaMode).toBe('no-premultiply-alpha');
     });
 
@@ -82,6 +85,7 @@ describe('Parse KTX', () =>
         expect(result.height).toBe(66);
         expect(result.format).toBe('bc1-rgba-unorm-srgb');
         expect(result.resource.length).toBe(1);
+        expect(result.resource[0].byteLength).toBe(2312);
         expect(result.alphaMode).toBe('no-premultiply-alpha');
     });
 
@@ -138,6 +142,7 @@ describe('Parse KTX', () =>
         expect(result.height).toBe(128);
         expect(result.format).toBe('bc3-rgba-unorm');
         expect(result.resource.length).toBe(8);
+        expect(result.resource.map((level) => level.byteLength)).toEqual([16384, 4096, 1024, 256, 64, 16, 16, 16]);
         expect(result.alphaMode).toBe('no-premultiply-alpha');
     });
 
