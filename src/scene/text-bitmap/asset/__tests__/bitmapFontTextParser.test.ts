@@ -1,4 +1,5 @@
 import { bitmapFontTextParser } from '../bitmapFontTextParser';
+import { withEnumerableArrayPrototypeProperty } from '@test-utils';
 
 const rawFontString = `
 info face="sans-serif" size=36 bold=0 italic=0 charset="" unicode=1 stretchH=100 smooth=1 aa=1 padding=1,1,1,1 spacing=1,1
@@ -51,5 +52,20 @@ describe('bitmapFontTextParser', () =>
 
         expect(parsedText.baseLineOffset).toBe(0);
         expect(Number.isFinite(parsedText.baseLineOffset)).toBe(true);
+    });
+
+    it('should parse when Array.prototype has an enumerable property', async () =>
+    {
+        const parsedText = await withEnumerableArrayPrototypeProperty(() => bitmapFontTextParser.parse(rawFontString));
+
+        expect(parsedText.chars['!'].id).toBe(33);
+        expect(parsedText.pages).toEqual([{ id: 0, file: 'sans-serif.png' }]);
+    });
+
+    it('should ignore a line that has no key=value pair', () =>
+    {
+        const parsedText = bitmapFontTextParser.parse(`${rawFontString}kernings none\n`);
+
+        expect(Object.keys(parsedText.chars)).toEqual([' ', '!']);
     });
 });
