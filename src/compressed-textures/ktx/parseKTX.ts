@@ -19,8 +19,6 @@ export function parseKTX(arrayBuffer: ArrayBuffer, supportedFormats: TEXTURE_FOR
 
     const {
         littleEndian,
-        glType,
-        glFormat,
         glInternalFormat,
         pixelWidth,
         pixelHeight,
@@ -39,10 +37,7 @@ export function parseKTX(arrayBuffer: ArrayBuffer, supportedFormats: TEXTURE_FOR
         throw new Error(`Unsupported texture format: ${textureFormat}, supportedFormats: ${supportedFormats}`);
     }
 
-    const imagePixelByteSize = getImagePixelByteSize(glType, glFormat, glInternalFormat);
-
-    const imageBuffers = getImageBuffers(dataView, glType, imagePixelByteSize, pixelWidth, pixelHeight, offset,
-        numberOfMipmapLevels, littleEndian);
+    const imageBuffers = getImageBuffers(dataView, offset, numberOfMipmapLevels, littleEndian);
 
     return {
         format: textureFormat,
@@ -53,11 +48,8 @@ export function parseKTX(arrayBuffer: ArrayBuffer, supportedFormats: TEXTURE_FOR
     };
 }
 
-function getImageBuffers(dataView: DataView, glType: number, imagePixelByteSize: number, pixelWidth: number,
-    pixelHeight: number, offset: number, numberOfMipmapLevels: number, littleEndian: boolean)
+function getImageBuffers(dataView: DataView, offset: number, numberOfMipmapLevels: number, littleEndian: boolean)
 {
-    let mipWidth = pixelWidth;
-    let mipHeight = pixelHeight;
     let imageOffset = offset;
 
     const imageBuffers = new Array<Uint8Array>(numberOfMipmapLevels);
@@ -65,53 +57,20 @@ function getImageBuffers(dataView: DataView, glType: number, imagePixelByteSize:
     for (let mipmapLevel = 0; mipmapLevel < numberOfMipmapLevels; mipmapLevel++)
     {
         const imageSize = dataView.getUint32(imageOffset, littleEndian);
-        // a compressed level is whole blocks of the format's own block size, so its length comes from the file
-        const mipByteSize = glType === 0 ? imageSize : mipWidth * mipHeight * imagePixelByteSize;
 
-        imageBuffers[mipmapLevel] = new Uint8Array(dataView.buffer, imageOffset + 4, mipByteSize);
+        imageBuffers[mipmapLevel] = new Uint8Array(dataView.buffer, imageOffset + 4, imageSize);
 
-        // HINT: Aligns to 4-byte boundary after jumping imageSize (in lieu of mipPadding)
-        imageOffset += imageSize + 4;// (+4 to jump the imageSize field itself)
+        // Skip the imageSize field, the level data and its mipPadding to the next 4-byte boundary
+        imageOffset += imageSize + 4;
         imageOffset = imageOffset % 4 !== 0 ? imageOffset + 4 - (imageOffset % 4) : imageOffset;
-
-        // Calculate mipWidth, mipHeight for _next_ iteration
-        mipWidth = (mipWidth >> 1) || 1;
-        mipHeight = (mipHeight >> 1) || 1;
     }
 
     return imageBuffers;
 }
 
-function getImagePixelByteSize(glType: number, glFormat: number, glInternalFormat: number)
-{
-    let imagePixelByteSize = KTX.INTERNAL_FORMAT_TO_BYTES_PER_PIXEL[glInternalFormat];
-
-    if (glType !== 0)
-    {
-        // Uncompressed texture format
-        if (KTX.TYPES_TO_BYTES_PER_COMPONENT[glType])
-        {
-            imagePixelByteSize = KTX.TYPES_TO_BYTES_PER_COMPONENT[glType] * KTX.FORMATS_TO_COMPONENTS[glFormat];
-        }
-        else
-        {
-            imagePixelByteSize = KTX.TYPES_TO_BYTES_PER_PIXEL[glType];
-        }
-    }
-
-    if (imagePixelByteSize === undefined)
-    {
-        throw new Error('Unable to resolve the pixel format stored in the *.ktx file!');
-    }
-
-    return imagePixelByteSize;
-}
-
 function parseKTXHeader(dataView: DataView)
 {
     const littleEndian = dataView.getUint32(KTX.FIELDS.ENDIANNESS, true) === KTX.ENDIANNESS;
-    const glType = dataView.getUint32(KTX.FIELDS.GL_TYPE, littleEndian);
-    const glFormat = dataView.getUint32(KTX.FIELDS.GL_FORMAT, littleEndian);
     const glInternalFormat = dataView.getUint32(KTX.FIELDS.GL_INTERNAL_FORMAT, littleEndian);
     const pixelWidth = dataView.getUint32(KTX.FIELDS.PIXEL_WIDTH, littleEndian);
     const pixelHeight = dataView.getUint32(KTX.FIELDS.PIXEL_HEIGHT, littleEndian) || 1;// "pixelHeight = 0" -> "1"
@@ -136,8 +95,6 @@ function parseKTXHeader(dataView: DataView)
 
     return {
         littleEndian,
-        glType,
-        glFormat,
         glInternalFormat,
         pixelWidth,
         pixelHeight,
