@@ -185,7 +185,9 @@ export class GlobalUniformSystem implements System
         {
             bindGroup = this._bindGroupPool.pop() || new BindGroup();
             this._activeBindGroups.push(bindGroup);
-            bindGroup.setResource(uniformGroup, 0);
+            // a pooled group re-pointed at a pooled uniform group on every bind, and both live as
+            // long as this system: a change listener would only be added and removed each time
+            bindGroup.setResourceUnwatched(uniformGroup, 0);
         }
 
         globalUniformData.bindGroup = bindGroup;

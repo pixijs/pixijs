@@ -6,7 +6,7 @@ import { AlphaFilter, BlurFilter } from '~/filters';
 import { RenderTexture, Texture, TexturePool } from '~/rendering';
 import { Container, Graphics, Text } from '~/scene';
 
-import type { BindResource, Renderer } from '~/rendering';
+import type { BindResource, Renderer, TextureSource, UniformGroup } from '~/rendering';
 
 describe('FilterSystem resize', () =>
 {
@@ -206,6 +206,33 @@ describe('FilterSystem resize', () =>
 
             expect(input.destroyed).toBe(true);
             expect(boundPassTextures(renderer, known)).toEqual(['empty', 'emptyStyle', 'empty']);
+        }
+        finally
+        {
+            stage.destroy({ children: true });
+            filter.destroy();
+            renderer.destroy();
+        }
+    });
+
+    it('should bind the pass textures and uniforms without listening to them', async () =>
+    {
+        const renderer = await getWebGLRenderer({ width: 301, height: 201 });
+        const { stage, filter } = createFullScreenFilter();
+
+        try
+        {
+            renderer.render(stage);
+            renderer.render(stage);
+
+            // the filter uniforms and the pass's pooled input are bound only here (the other slots hold
+            // shared resources other groups may watch)
+            const bindGroup = renderer.filter['_globalFilterBindGroup'];
+            const uniforms = bindGroup.getResource(0) as unknown as UniformGroup;
+            const input = bindGroup.getResource(1) as unknown as TextureSource;
+
+            expect(input).not.toBe(Texture.EMPTY.source);
+            expect([uniforms.listenerCount('change'), input.listenerCount('change')]).toEqual([0, 0]);
         }
         finally
         {

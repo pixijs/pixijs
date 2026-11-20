@@ -357,7 +357,15 @@ export class GpuEncoderSystem implements System
         slot.bindGroup = bindGroup;
         slot.program = program;
 
-        bindGroup._touch(this._renderer.gc.now);
+        const now = this._renderer.gc.now;
+
+        // the GC only needs one stamp a frame: a group bound for many draws (a batch's textures)
+        // would otherwise stamp every slot on every draw
+        if (bindGroup._touchedAt !== now)
+        {
+            bindGroup._touchedAt = now;
+            bindGroup._touch(now);
+        }
 
         const gpuBindGroup = this._renderer.bindGroup.getBindGroup(bindGroup, program, index);
 

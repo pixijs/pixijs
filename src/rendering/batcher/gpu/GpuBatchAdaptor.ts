@@ -53,11 +53,8 @@ export class GpuBatchAdaptor implements BatcherAdaptor
 
         const globalUniformsBindGroup = renderer.globalUniforms.bindGroup;
 
-        // low level - we need to reset the bind group at location 1 to null
-        // this is because we directly manipulate the bound buffer in the execute function for
-        // performance reasons.
-        // setting it to null ensures that the next bind group we set at location 1 will
-        // be the one we want.
+        // forget what the encoder thinks is bound at location 1, so the first batch always binds
+        // its textures, even if something since the last batch set that slot without the encoder
         encoder.resetBindGroup(1);
 
         encoder.setBindGroup(0, globalUniformsBindGroup, program);
@@ -82,10 +79,6 @@ export class GpuBatchAdaptor implements BatcherAdaptor
 
         tempState.blendMode = batch.blendMode;
 
-        const gpuBindGroup = renderer.bindGroup.getBindGroup(
-            batch.bindGroup, program, 1
-        );
-
         const pipeline = renderer.pipeline.getPipeline(
             this._geometry,
             program,
@@ -94,11 +87,11 @@ export class GpuBatchAdaptor implements BatcherAdaptor
             this._shader._overrides,
         );
 
-        batch.bindGroup._touch(renderer.gc.now);
-
         encoder.setPipeline(pipeline);
 
-        encoder.renderPassEncoder.setBindGroup(1, gpuBindGroup);
+        // through the encoder, so a batch that broke only on blend mode or topology, and kept the
+        // previous batch's textures, skips the rebind
+        encoder.setBindGroup(1, batch.bindGroup, program);
         encoder.renderPassEncoder.drawIndexed(batch.size, 1, batch.start);
     }
 }

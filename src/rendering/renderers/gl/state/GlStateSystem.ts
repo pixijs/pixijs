@@ -10,6 +10,11 @@ import type { GlRenderingContext } from '../context/GlRenderingContext';
 
 const { BLEND, OFFSET, CULLING, DEPTH_TEST, WINDING, DEPTH_MASK } = STATE_BITS;
 
+/** The slot of the blend mode check in {@link GlStateSystem#checks}. */
+const CHECK_BLEND = 0;
+/** The slot of the polygon offset check in {@link GlStateSystem#checks}. */
+const CHECK_OFFSET = 1;
+
 /**
  * System plugin to the renderer to manage WebGL state machines
  * @category rendering
@@ -63,7 +68,8 @@ export class GlStateSystem implements System
     protected readonly map: ((value: boolean) => void)[];
 
     /**
-     * Collection of check calls
+     * Collection of check calls. The blend and polygon offset checks each have a fixed slot, null while
+     * off, so turning one on or off never resizes the array.
      * @type {Function[]}
      */
     protected readonly checks: ((system: this, state: State) => void)[];
@@ -106,7 +112,7 @@ export class GlStateSystem implements System
         this.map[WINDING] = this.setFrontFace;
         this.map[DEPTH_MASK] = this.setDepthMask;
 
-        this.checks = [];
+        this.checks = [null, null];
 
         this.defaultState = State.for2d();
 
@@ -179,9 +185,11 @@ export class GlStateSystem implements System
         // based on the above settings we check for specific modes..
         // for example if blend is active we check and set the blend modes
         // or of polygon offset is active we check the poly depth.
-        for (let i = 0; i < this.checks.length; i++)
+        const checks = this.checks;
+
+        for (let i = 0; i < checks.length; i++)
         {
-            this.checks[i](this, state);
+            checks[i]?.(this, state);
         }
     }
 
@@ -196,9 +204,11 @@ export class GlStateSystem implements System
         {
             this.map[i].call(this, !!(state.data & (1 << i)));
         }
-        for (let i = 0; i < this.checks.length; i++)
+        const checks = this.checks;
+
+        for (let i = 0; i < checks.length; i++)
         {
-            this.checks[i](this, state);
+            checks[i]?.(this, state);
         }
 
         this.stateId = state.data;
@@ -210,7 +220,7 @@ export class GlStateSystem implements System
      */
     public setBlend(value: boolean): void
     {
-        this._updateCheck(GlStateSystem._checkBlendMode, value);
+        this.checks[CHECK_BLEND] = value ? GlStateSystem._checkBlendMode : null;
 
         this.gl[value ? 'enable' : 'disable'](this.gl.BLEND);
     }
@@ -221,7 +231,7 @@ export class GlStateSystem implements System
      */
     public setOffset(value: boolean): void
     {
-        this._updateCheck(GlStateSystem._checkPolygonOffset, value);
+        this.checks[CHECK_OFFSET] = value ? GlStateSystem._checkPolygonOffset : null;
 
         this.gl[value ? 'enable' : 'disable'](this.gl.POLYGON_OFFSET_FILL);
     }
@@ -358,29 +368,6 @@ export class GlStateSystem implements System
         // setting to '' means the blend mode will be set as soon as we set the first blend mode when rendering!
         this.blendMode = '' as BLEND_MODES;
         this.setBlendMode('normal');
-    }
-
-    /**
-     * Checks to see which updates should be checked based on which settings have been activated.
-     *
-     * For example, if blend is enabled then we should check the blend modes each time the state is changed
-     * or if polygon fill is activated then we need to check if the polygon offset changes.
-     * The idea is that we only check what we have too.
-     * @param func - the checking function to add or remove
-     * @param value - should the check function be added or removed.
-     */
-    private _updateCheck(func: (system: this, state: State) => void, value: boolean): void
-    {
-        const index = this.checks.indexOf(func);
-
-        if (value && index === -1)
-        {
-            this.checks.push(func);
-        }
-        else if (!value && index !== -1)
-        {
-            this.checks.splice(index, 1);
-        }
     }
 
     /**

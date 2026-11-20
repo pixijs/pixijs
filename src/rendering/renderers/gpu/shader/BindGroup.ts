@@ -155,6 +155,14 @@ export class BindGroup
     public _gpuEntryLayoutKey = -1;
 
     /**
+     * The `gc.now` this group last stamped its resources at with {@link BindGroup#_touch}, so a group
+     * bound many times in one frame stamps them once. Reset whenever a binding is re-pointed, so a
+     * resource bound later in the frame is stamped too.
+     * @internal
+     */
+    public _touchedAt = -1;
+
+    /**
      * The resource id each binding is in the key with, by binding number. A resource's id can move
      * before this group hears about it, so the mix taken out is this one, never the resource's own.
      */
@@ -230,9 +238,11 @@ export class BindGroup
      * {@link BindGroup#setResource} adds a `change` listener to every resource it holds, so the group
      * re-keys when the resource changes or is destroyed. That listener costs more than the bind for a
      * slot that is re-pointed on every draw, such as a pass that binds this frame's pooled texture,
-     * draws, and puts a placeholder back. Use this form for such a slot, and re-point it before the
-     * resource changes or is destroyed. A subclass that watches its own resources can instead pass
-     * every change of a resource it holds to `onResourceChange`.
+     * draws, and puts a placeholder back. Use this form for such a slot, and set it again before
+     * every draw that uses it: setting the resource already there re-keys the group if the
+     * resource's id moved since. Re-point it before the resource is destroyed. A subclass that
+     * watches its own resources can instead pass every change of a resource it holds to
+     * `onResourceChange`.
      * @param resource - The resource to set.
      * @param index - The index to set the resource at.
      */
@@ -240,9 +250,20 @@ export class BindGroup
     {
         const currentResource = this.resources[index];
 
-        if (resource === currentResource) return;
+        if (resource === currentResource)
+        {
+            // Nothing told this group if the resource changed its id while it sat here unwatched (a
+            // texture resized, a buffer reallocated), so binding it again is when the key catches up.
+            const id = resource._resourceId;
+
+            if (this._keyedIds[index] !== id) this._rekey(index, id);
+
+            return;
+        }
 
         const id = resource._resourceId;
+
+        this._touchedAt = -1;
 
         if (currentResource?._resourceType !== resource._resourceType) this._touchKeysValue = null;
 

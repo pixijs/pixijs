@@ -343,6 +343,41 @@ describe('BindGroup', () =>
         expect(keyOf(bindGroup)).toBe(keyOf(new BindGroup({ 0: texture })));
     });
 
+    it('should re-key an unwatched resource whose id moved when it is set again', () =>
+    {
+        const texture = new TextureSource();
+        const bindGroup = new BindGroup();
+        const entry = {} as BindGroup['_gpuEntry'];
+
+        bindGroup.setResourceUnwatched(texture, 0);
+        bindGroup._gpuEntry = entry;
+
+        // the same resource with the same id changes nothing
+        bindGroup.setResourceUnwatched(texture, 0);
+        expect(bindGroup._gpuEntry).toBe(entry);
+
+        // a resize or an unload moves the id while nothing listens; setting it again catches the key up
+        texture.unload();
+        bindGroup.setResourceUnwatched(texture, 0);
+
+        expect(texture.listenerCount('change')).toBe(0);
+        expect(bindGroup._gpuEntry).toBeNull();
+        expect(keyOf(bindGroup)).toBe(keyOf(new BindGroup({ 0: texture })));
+    });
+
+    it('should forget it was stamped this frame when a binding is re-pointed', () =>
+    {
+        const bindGroup = new BindGroup({ 0: new TextureSource() });
+
+        bindGroup._touchedAt = 1000;
+        bindGroup.setResource(new TextureSource(), 0);
+        expect(bindGroup._touchedAt).toBe(-1);
+
+        bindGroup._touchedAt = 1000;
+        bindGroup.setResourceUnwatched(new TextureSource(), 0);
+        expect(bindGroup._touchedAt).toBe(-1);
+    });
+
     it('should give every distinct set of resources its own key', () =>
     {
         // dense ascending ids, as uid('resource') hands them out, in the two shapes groups come in
