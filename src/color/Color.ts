@@ -1079,7 +1079,9 @@ export class Color
 
         const [r, g, b] = this._components;
 
-        this._int = ((r * 255) << 16) + ((g * 255) << 8) + ((b * 255) | 0);
+        // Round like toUint8RgbArray() does, so toNumber() and toHex() agree with toBgrNumber() and
+        // toRgbaString() for components that are not an exact multiple of 1/255
+        this._int = (Math.round(r * 255) << 16) + (Math.round(g * 255) << 8) + Math.round(b * 255);
     }
 
     /**
