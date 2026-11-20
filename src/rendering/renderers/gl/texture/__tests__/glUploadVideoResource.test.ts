@@ -1,12 +1,9 @@
-import type { Adapter } from '~/environment';
-
 const SAFARI_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 '
     + '(KHTML, like Gecko) Version/18.0 Safari/605.1.15';
 
 describe('glUploadVideoResource', () =>
 {
-    // start from a fresh module registry, so the uploader's module-level code runs again
-    // while we watch the adapter
+    // fresh modules per test, so each import evaluates the uploader's module-level code
     beforeEach(() =>
     {
         jest.resetModules();
@@ -29,34 +26,57 @@ describe('glUploadVideoResource', () =>
         }
     });
 
-    it('should use the adapter set after import to pick the default forceAllocation', async () =>
+    async function uploadVideoFrameTwice(userAgent?: string)
     {
         const { DOMAdapter } = await import('~/environment/adapter');
-        const { glUploadVideoResource } = await import('../uploaders/glUploadVideoResource');
-        const { glUploadImageResource } = await import('../uploaders/glUploadImageResource');
+        const { getAsset, getWebGLRenderer } = await import('@test-utils');
+        const { VideoSource } = await import('~/rendering/renderers/shared/texture/sources/VideoSource');
         const original = DOMAdapter.get();
 
-        DOMAdapter.set({
-            ...original,
-            getNavigator: () => ({ userAgent: SAFARI_UA, gpu: null }),
-        } as Adapter);
+        if (userAgent)
+        {
+            DOMAdapter.set({ ...original, getNavigator: () => ({ userAgent, gpu: null }) });
+        }
 
-        const upload = jest.spyOn(glUploadImageResource, 'upload').mockImplementation(() => undefined);
+        const renderer = await getWebGLRenderer();
+        const video = document.createElement('video');
+
+        video.src = getAsset('video/park.mp4');
+
+        const source = new VideoSource({ resource: video, autoPlay: false });
+
+        await source.load();
+
+        const texImage2D = jest.spyOn(renderer.gl, 'texImage2D');
+        const texSubImage2D = jest.spyOn(renderer.gl, 'texSubImage2D');
 
         try
         {
-            const source = { isValid: true } as any;
+            renderer.texture.initSource(source);
+            texImage2D.mockClear();
+            texSubImage2D.mockClear();
 
-            glUploadVideoResource.upload(source, {} as any, {} as any, 2);
-            glUploadVideoResource.upload(source, {} as any, {} as any, 2, undefined, false);
+            source.update();
 
-            expect(upload).toHaveBeenNthCalledWith(1, source, {}, {}, 2, undefined, true);
-            expect(upload).toHaveBeenNthCalledWith(2, source, {}, {}, 2, undefined, false);
+            return { reallocated: texImage2D.mock.calls.length, updatedInPlace: texSubImage2D.mock.calls.length };
         }
         finally
         {
-            upload.mockRestore();
+            texImage2D.mockRestore();
+            texSubImage2D.mockRestore();
+            source.destroy();
+            renderer.destroy();
             DOMAdapter.set(original);
         }
+    }
+
+    it('should re-allocate each video frame when the adapter set after import reports Safari', async () =>
+    {
+        expect(await uploadVideoFrameTwice(SAFARI_UA)).toEqual({ reallocated: 1, updatedInPlace: 0 });
+    });
+
+    it('should update video frames in place outside Safari', async () =>
+    {
+        expect(await uploadVideoFrameTwice()).toEqual({ reallocated: 0, updatedInPlace: 1 });
     });
 });
