@@ -88,6 +88,44 @@ describeLocalOnly('GpuDeviceSystem', () =>
                 sharing.destroy();
             }
         });
+
+        it('should take the tileBasedGpu option over the vendor', async () =>
+        {
+            const { device } = renderer.gpu;
+            const cases: [string, boolean][] = [['', true], ['apple', false]];
+
+            for (const [vendor, tileBasedGpu] of cases)
+            {
+                const adapter = { info: { vendor } } as unknown as GPUAdapter;
+                const sharing = await getWebGPURenderer({ width: 64, height: 64, gpu: { adapter, device }, tileBasedGpu });
+
+                expect(sharing.device.extensions.tileBased).toBe(tileBasedGpu);
+
+                sharing.destroy();
+            }
+        });
+
+        it('should keep the tileBasedGpu option after the device is lost', async () =>
+        {
+            const tileBasedGpu = !renderer.device.extensions.tileBased;
+            const owning = await getWebGPURenderer({ width: 64, height: 64, tileBasedGpu });
+
+            try
+            {
+                expect(owning.device.extensions.tileBased).toBe(tileBasedGpu);
+
+                const { extensions } = owning.device;
+
+                await loseAndRestoreDevice(owning);
+
+                expect(owning.device.extensions).not.toBe(extensions);
+                expect(owning.device.extensions.tileBased).toBe(tileBasedGpu);
+            }
+            finally
+            {
+                owning.destroy();
+            }
+        });
     });
 
     describe('transientAttachment', () =>
