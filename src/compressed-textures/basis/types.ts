@@ -41,7 +41,7 @@ export interface BasisTexture
         getAlphaForOpaqueFormats: number
     ): boolean;
 
-    /** Releases the file data the transcoder holds. */
+    /** Empties the transcoder's copy of the file without freeing its memory. */
     close(): void;
 
     /** Frees the file in the WebAssembly heap of the transcoder. */

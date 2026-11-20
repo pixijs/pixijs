@@ -7,7 +7,7 @@ import type { BasisTextureConstructor } from '../types';
 /**
  * Reads the bytes of a Basis file into texture options, transcoding every level.
  *
- * The Basis file lives in the transcoder's WebAssembly heap until it is closed and deleted, and nothing deletes it
+ * The Basis file lives in the transcoder's WebAssembly heap until it is deleted, and nothing deletes it
  * automatically, so it is closed and deleted here once its levels are transcoded, or when transcoding fails.
  * @param BasisFile - The Basis file class of the transcoder module.
  * @param data - The bytes of the Basis file.
