@@ -67,6 +67,15 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
 
     private _isAdvanced = false;
 
+    /**
+     * Whether an advanced (filter based) blend mode is active at the current point of the build.
+     * @internal
+     */
+    public get isAdvanced(): boolean
+    {
+        return this._isAdvanced;
+    }
+
     private _filterHash: Partial<Record<BLEND_MODES, FilterEffect>> = Object.create(null);
 
     constructor(renderer: Renderer)
@@ -122,6 +131,9 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
         instructionSet: InstructionSet
     )
     {
+        // before any state changes: the deferred pop calls setBlendMode itself
+        instructionSet._flushPendingStencilPop();
+
         const isRenderGroup = renderable instanceof RenderGroup;
 
         if (this._activeBlendMode === blendMode)
