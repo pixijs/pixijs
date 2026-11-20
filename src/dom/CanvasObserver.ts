@@ -32,9 +32,12 @@ export class CanvasObserver
         this._domElement = options.domElement;
         this._renderer = options.renderer;
 
-        // We need to ensure that the canvas is not an OffscreenCanvas
-        if (globalThis.OffscreenCanvas && this._renderer.canvas instanceof OffscreenCanvas) return;
-        this._canvas = this._renderer.canvas;
+        const canvas = this._renderer.canvas;
+
+        // Only a canvas element can be measured and observed
+        if (globalThis.OffscreenCanvas && canvas instanceof OffscreenCanvas) return;
+        if (typeof canvas.getBoundingClientRect !== 'function') return;
+        this._canvas = canvas;
         this._attachObserver();
     }
 
@@ -47,7 +50,7 @@ export class CanvasObserver
     /** Attaches the DOM element to the canvas parent if it is not already attached. */
     public ensureAttached()
     {
-        if (!this._domElement.parentNode && this._canvas.parentNode)
+        if (!this._domElement.parentNode && this._canvas?.parentNode)
         {
             this._canvas.parentNode.appendChild(this._domElement);
             this.updateTranslation();
