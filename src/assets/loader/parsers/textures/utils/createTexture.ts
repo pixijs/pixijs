@@ -2,6 +2,7 @@ import { Texture } from '../../../../../rendering/renderers/shared/texture/Textu
 import { warn } from '../../../../../utils/logging/warn';
 import { Cache } from '../../../../cache/Cache';
 
+import type { Rectangle } from '../../../../../maths/shapes/Rectangle';
 import type { TextureSource } from '../../../../../rendering/renderers/shared/texture/sources/TextureSource';
 import type { Loader } from '../../../Loader';
 
@@ -10,9 +11,10 @@ import type { Loader } from '../../../Loader';
  * @param source - source of the texture
  * @param loader - loader
  * @param url - url of the texture
+ * @param frame - the area of the source the texture shows, if not all of it
  * @ignore
  */
-export function createTexture(source: TextureSource, loader: Loader, url: string)
+export function createTexture(source: TextureSource, loader: Loader, url: string, frame?: Rectangle)
 {
     source.label = url;
     source._sourceOrigin = url;
@@ -20,6 +22,7 @@ export function createTexture(source: TextureSource, loader: Loader, url: string
     const texture = new Texture({
         source,
         label: url,
+        frame,
     });
 
     const unload = () =>

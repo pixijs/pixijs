@@ -14,16 +14,16 @@ const blockColors = [
 ];
 
 /**
- * Builds a single-level KTX1 file of ASTC void-extent (solid color) blocks, cycling colors per block.
+ * Builds a KTX1 file of ASTC void-extent (solid color) blocks, cycling colors per block and per mip level.
  * @param glInternalFormat - the ASTC internal format
  * @param blockSize - width and height of the format's block footprint
  * @param size - width and height of the texture
+ * @param levelCount - number of mip levels
  */
-function createAstcKTX(glInternalFormat: number, blockSize: number, size: number): ArrayBuffer
+function createAstcKTX(glInternalFormat: number, blockSize: number, size: number, levelCount = 1): ArrayBuffer
 {
-    const blocksPerRow = Math.ceil(size / blockSize);
-    const imageSize = blocksPerRow * blocksPerRow * 16;
-    const buffer = new ArrayBuffer(64 + 4 + imageSize);
+    const levelBlocks = Array.from({ length: levelCount }, (_, level) => Math.ceil(Math.max(size >> level, 1) / blockSize));
+    const buffer = new ArrayBuffer(64 + levelBlocks.reduce((sum, blocks) => sum + 4 + (blocks * blocks * 16), 0));
     const bytes = new Uint8Array(buffer);
     const view = new DataView(buffer);
 
@@ -35,21 +35,30 @@ function createAstcKTX(glInternalFormat: number, blockSize: number, size: number
     view.setUint32(36, size, true);
     view.setUint32(40, size, true);
     view.setUint32(52, 1, true); // numberOfFaces
-    view.setUint32(56, 1, true); // numberOfMipmapLevels
-    view.setUint32(64, imageSize, true);
+    view.setUint32(56, levelCount, true); // numberOfMipmapLevels
 
-    for (let y = 0; y < blocksPerRow; y++)
+    let levelOffset = 64;
+
+    levelBlocks.forEach((blocksPerRow, level) =>
     {
-        for (let x = 0; x < blocksPerRow; x++)
-        {
-            const offset = 68 + (((y * blocksPerRow) + x) * 16);
-            const color = blockColors[(x + (y * 2)) % blockColors.length];
+        view.setUint32(levelOffset, blocksPerRow * blocksPerRow * 16, true);
+        levelOffset += 4;
 
-            bytes.set([0xFC, 0xFD, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF], offset);
-            color.forEach((c, i) => view.setUint16(offset + 8 + (i * 2), c * 0xFFFF, true));
-            view.setUint16(offset + 14, 0xFFFF, true);
+        for (let y = 0; y < blocksPerRow; y++)
+        {
+            for (let x = 0; x < blocksPerRow; x++)
+            {
+                const offset = levelOffset + (((y * blocksPerRow) + x) * 16);
+                const color = blockColors[(x + (y * 2) + level) % blockColors.length];
+
+                bytes.set([0xFC, 0xFD, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF], offset);
+                color.forEach((c, i) => view.setUint16(offset + 8 + (i * 2), c * 0xFFFF, true));
+                view.setUint16(offset + 14, 0xFFFF, true);
+            }
         }
-    }
+
+        levelOffset += blocksPerRow * blocksPerRow * 16;
+    });
 
     return buffer;
 }
@@ -67,14 +76,25 @@ async function loadKTX(buffer: ArrayBuffer): Promise<Texture>
 export const scene: TestScene = {
     excludeRenderers: ['canvas'],
     it: 'should render ktx astc textures whose blocks are larger than 4x4',
-    options: { width: 170, height: 96 },
+    options: { width: 270, height: 96 },
     create: async (scene: Container) =>
     {
-        // Sizes are whole blocks so WebGPU doesn't pad the texture and squeeze the image
-        const astc5x5 = new Sprite(await loadKTX(createAstcKTX(0x93B2, 5, 70)));
-        const astc12x12 = new Sprite(await loadKTX(createAstcKTX(0x93BD, 12, 96)));
+        // 70 and 96 are whole blocks; 64 and 25 aren't, so their sources are padded to 72 and 36
+        const textures = await Promise.all([
+            loadKTX(createAstcKTX(0x93B2, 5, 70)),
+            loadKTX(createAstcKTX(0x93BD, 12, 96)),
+            loadKTX(createAstcKTX(0x93BD, 12, 64, 7)),
+            loadKTX(createAstcKTX(0x93BD, 12, 25, 5)),
+        ]);
+        let x = 0;
 
-        astc12x12.x = 74;
-        scene.addChild(astc5x5, astc12x12);
+        for (const texture of textures)
+        {
+            const sprite = new Sprite(texture);
+
+            sprite.x = x;
+            x += texture.width + 4;
+            scene.addChild(sprite);
+        }
     },
 };
