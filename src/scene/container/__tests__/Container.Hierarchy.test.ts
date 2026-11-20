@@ -322,11 +322,25 @@ describe('Container Hierarchy', () =>
             const removed = container.removeChildren(1, 3);
 
             expect(container.children).toEqual([children[0], children[3], children[4]]);
-            expect(removed).toEqual([children[2], children[1]]);
+            expect(removed).toEqual([children[1], children[2]]);
             expect(children[1].parent).toBeNull();
             expect(children[2].parent).toBeNull();
             expect(children[3].parent).toBe(container);
             expect(children[4].parent).toBe(container);
+        });
+
+        it('should emit childRemoved in index order with each child\'s original index', () =>
+        {
+            const container = new Container();
+            const children = Array.from({ length: 4 }, () => new Container());
+            const events: [Container, number][] = [];
+
+            container.addChild(...children);
+            container.on('childRemoved', (child, _container, index) => events.push([child, index]));
+
+            container.removeChildren(1, 3);
+
+            expect(events).toEqual([[children[1], 1], [children[2], 2]]);
         });
 
         it('should handle a range greater than length', () =>
