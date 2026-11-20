@@ -1,5 +1,5 @@
 import { getWebGLRenderer } from '@test-utils';
-import { MaskFilter } from '~/filters';
+import { AlphaFilter, MaskFilter } from '~/filters';
 import { AlphaMask, Texture, TextureSource } from '~/rendering';
 import { Container, Graphics, Sprite } from '~/scene';
 import { BigPool } from '~/utils';
@@ -296,5 +296,58 @@ describe('AlphaMaskPipe', () =>
         expect(mask.texture).toBe(maskTexture);
 
         renderer.destroy();
+    });
+
+    describe('render-to-texture mask inside a filter', () =>
+    {
+        function createMaskedScene(withFilter: boolean): Container
+        {
+            const stage = new Container();
+            const root = new Container({ x: 24, y: 24 });
+            const mask = new Graphics().circle(40, 40, 32).fill(0xffffff);
+            const content = new Graphics().rect(0, 0, 80, 80).fill(0xff0000);
+
+            root.addChild(mask, content);
+            content.addEffect(new AlphaMask({ mask }));
+            if (withFilter) root.filters = [new AlphaFilter({ alpha: 1 })];
+            stage.addChild(root);
+
+            return stage;
+        }
+
+        it('should rebind the filter input texture after rendering the mask texture', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+            const spy = jest.spyOn(renderer.renderTarget, 'bind');
+
+            renderer.render(createMaskedScene(true));
+
+            const binds = spy.mock.calls.map((call) => call[0] as unknown as { target: unknown, clear?: unknown });
+            // the filter binds its input texture with clear: true and never pushes it
+            const filterInput = binds.find((b) => b.clear === true && b.target instanceof Texture)?.target;
+
+            expect(filterInput).toBeInstanceOf(Texture);
+            // after the mask texture is popped, the pipe rebinds that input texture without clearing it
+            expect(binds.some((b) => b.target === filterInput && b.clear === false)).toBe(true);
+
+            renderer.destroy();
+        });
+
+        it('should not rebind the surface when the pop already restored it', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+            const spy = jest.spyOn(renderer.renderTarget, 'bind');
+
+            renderer.render(createMaskedScene(false));
+
+            const binds = spy.mock.calls.map((call) => call[0] as unknown as { target: unknown, clear?: unknown });
+            const rootSurface = binds[0].target;
+
+            // outside a filter the pop returns to the root surface and the mask filter then writes
+            // its output there: two binds without clearing, and the pipe adds no third one
+            expect(binds.filter((b) => b.target === rootSurface && b.clear === false)).toHaveLength(2);
+
+            renderer.destroy();
+        });
     });
 });
