@@ -35,9 +35,17 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
      * eg an ImageBimt / Canvas / Video etc
      */
     resource?: T;
-    /** the pixel width of this texture source. This is the REAL pure number, not accounting resolution */
+    /**
+     * The width before resolution is applied, matching {@link TextureSource#width}
+     *
+     * The source is `width * resolution` pixels wide: `width: 100, resolution: 2` makes 200 pixels.
+     */
     width?: number;
-    /** the pixel height of this texture source. This is the REAL pure number, not accounting resolution */
+    /**
+     * The height before resolution is applied, matching {@link TextureSource#height}
+     *
+     * The source is `height * resolution` pixels high.
+     */
     height?: number;
     /** the resolution of the texture. */
     resolution?: number;

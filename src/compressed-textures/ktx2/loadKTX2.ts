@@ -1,10 +1,8 @@
 import { LoaderParserPriority } from '../../assets/loader/parsers/LoaderParser';
-import { createTexture } from '../../assets/loader/parsers/textures/utils/createTexture';
 import { checkExtension } from '../../assets/utils/checkExtension';
 import { ExtensionType } from '../../extensions/Extensions';
-import { CompressedSource } from '../../rendering/renderers/shared/texture/sources/CompressedSource';
 import { getSupportedTextureFormats } from '../../rendering/renderers/shared/texture/utils/getSupportedTextureFormats';
-import { getResolutionOfUrl } from '../../utils/network/getResolutionOfUrl';
+import { createCompressedTexture } from '../shared/createCompressedTexture';
 import { loadKTX2onWorker } from './worker/loadKTX2onWorker';
 
 import type { Loader } from '../../assets/loader/Loader';
@@ -42,12 +40,7 @@ export const loadKTX2 = {
 
         const textureOptions = await loadKTX2onWorker(url, supportedTextures);
 
-        const compressedTextureSource = new CompressedSource({
-            ...textureOptions,
-            resolution: asset.data?.resolution || getResolutionOfUrl(url),
-        });
-
-        return createTexture(compressedTextureSource, loader, url);
+        return createCompressedTexture(textureOptions, url, asset, loader);
     },
 
     async unload(texture: Texture | Texture[]): Promise<void>
