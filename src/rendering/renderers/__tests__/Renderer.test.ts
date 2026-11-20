@@ -1,4 +1,5 @@
 import { WebGLRenderer } from '../gl/WebGLRenderer';
+import { withEnumerableArrayPrototypeProperty } from '@test-utils';
 
 describe('Renderer', () =>
 {
@@ -28,5 +29,16 @@ describe('Renderer', () =>
 
         renderer.destroy();
         expect(renderer.listenerCount('resize')).toBe(0);
+    });
+
+    it('should init when Array.prototype has an enumerable property', async () =>
+    {
+        const renderer = new WebGLRenderer();
+
+        await withEnumerableArrayPrototypeProperty(() => renderer.init({ width: 1, height: 1 }));
+
+        expect(renderer.width).toBe(1);
+
+        renderer.destroy();
     });
 });

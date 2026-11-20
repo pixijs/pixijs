@@ -10,3 +10,4 @@ export * from './localTest';
 export * from './loseContext';
 export * from './toArrayBuffer';
 export * from './waitForPendingHTMLText';
+export * from './withEnumerableArrayPrototypeProperty';
