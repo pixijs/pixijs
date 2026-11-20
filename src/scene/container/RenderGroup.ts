@@ -333,7 +333,8 @@ export class RenderGroup implements Instruction
     public updateRenderable(renderable: ViewContainer)
     {
         if (renderable.globalDisplayStatus < 0b111) return;
-        this.instructionSet.renderPipes[renderable.renderPipeId].updateRenderable(renderable);
+        // like collectRenderablesSimple, skip a renderable this renderer has no pipe for (e.g. a Mesh on canvas)
+        this.instructionSet.renderPipes[renderable.renderPipeId]?.updateRenderable(renderable);
         renderable.didViewUpdate = false;
     }
 

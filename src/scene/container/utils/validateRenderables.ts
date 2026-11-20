@@ -24,6 +24,9 @@ export function validateRenderables(renderGroup: RenderGroup, renderPipes: Rende
         const renderable = container;
         const pipe = renderPipes[renderable.renderPipeId as keyof RenderPipes] as RenderPipe<any>;
 
+        // a renderable this renderer has no pipe for (e.g. a Mesh on canvas) was never added to the instructions
+        if (!pipe) continue;
+
         rebuildRequired = pipe.validateRenderable(container);
 
         if (rebuildRequired)
