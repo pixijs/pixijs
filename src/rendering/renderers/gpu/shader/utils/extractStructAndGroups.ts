@@ -41,7 +41,7 @@ export function extractStructAndGroups(wgsl: string): StructsAndGroups
     const linePattern = /(^|[^/])@(group|binding)\(\d+\)[^;]+;/g;
     const groupPattern = /@group\((\d+)\)/;
     const bindingPattern = /@binding\((\d+)\)/;
-    const namePattern = /var(<[^>]+>)? (\w+)/;
+    const namePattern = /var(?:\s*(<[^>]+>))?\s+(\w+)/;
     const typePattern = /:\s*([\w<>]+)/;
     const structPattern = /struct\s+(\w+)\s*{([^}]+)}/g;
     const structMemberPattern = /(\w+)\s*:\s*([\w\<\>]+)/g;

@@ -40,6 +40,25 @@ describe('extractStructAndGroups', () =>
         });
     });
 
+    it('should recognize a uniform binding with whitespace before its qualifier', () =>
+    {
+        const wgslShader = `
+            struct GlobalFilterUniforms {
+                uOutputFrame: vec4<f32>,
+            }
+
+            @group(0) @binding(0) var <uniform> gfu: GlobalFilterUniforms;
+        `;
+
+        expect(extractStructAndGroups(wgslShader).groups).toEqual([{
+            group: 0,
+            binding: 0,
+            name: 'gfu',
+            accessMode: 'uniform',
+            type: 'GlobalFilterUniforms',
+        }]);
+    });
+
     it('should handle generic types with angle brackets in resource bindings', () =>
     {
         // Test case for issue #11821: type pattern should capture full generic types like array<Particle>
