@@ -8,7 +8,7 @@ import type { ResolvedAsset } from './types';
  * Key features:
  * - Sequential loading of assets
  * - Automatic pause when high-priority loads occur
- * - Configurable concurrency
+ * - Loads one asset at a time (concurrency is fixed)
  * @example
  * ```ts
  * import { Assets } from 'pixi.js';
@@ -120,9 +120,9 @@ export class BackgroundLoader
     }
 
     /**
-     * Loads the next set of assets. Will try to load as many assets as it can at the same time.
+     * Loads the next set of assets, up to `_maxConcurrent` at a time.
      *
-     * The max assets it will try to load at one time will be 4.
+     * The max assets it will try to load at one time is 1.
      */
     private async _next(): Promise<void>
     {
