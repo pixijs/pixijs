@@ -10,8 +10,18 @@ export const blockDataMap: Record<string, {blockBytes: number, blockWidth: numbe
     'bc7-rgba-unorm': { blockBytes: 16, blockWidth: 4, blockHeight: 4 },
     'etc1-rgb-unorm': { blockBytes: 8, blockWidth: 4, blockHeight: 4 },
     'etc2-rgba8unorm': { blockBytes: 16, blockWidth: 4, blockHeight: 4 },
-    'astc-4x4-unorm': { blockBytes: 16, blockWidth: 4, blockHeight: 4 },
 };
+
+for (const footprint of [
+    '4x4', '5x4', '5x5', '6x5', '6x6', '8x5', '8x6', '8x8', '10x5', '10x6', '10x8', '10x10', '12x10', '12x12',
+])
+{
+    const [blockWidth, blockHeight] = footprint.split('x').map(Number);
+    const blockData = { blockBytes: 16, blockWidth, blockHeight };
+
+    blockDataMap[`astc-${footprint}-unorm`] = blockData;
+    blockDataMap[`astc-${footprint}-unorm-srgb`] = blockData;
+}
 
 const defaultBlockData = { blockBytes: 4, blockWidth: 1, blockHeight: 1 };
 
