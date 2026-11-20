@@ -11,6 +11,28 @@ import type { WebGLRenderer } from '../gl/WebGLRenderer';
 
 describe('GenerateTexture', () =>
 {
+    it.each(['canvas', 'pixels'] as const)('should destroy a generated texture if %s extraction fails', async (method) =>
+    {
+        const renderer = await getWebGLRenderer();
+        const texture = RenderTexture.create({ width: 2, height: 2 });
+
+        jest.spyOn(renderer.textureGenerator, 'generateTexture').mockReturnValue(texture);
+
+        if (method === 'canvas')
+        {
+            jest.spyOn(renderer.texture, 'generateCanvas').mockImplementation(() => { throw new Error('extract failed'); });
+        }
+        else
+        {
+            jest.spyOn(renderer.texture, 'getPixels').mockImplementation(() => { throw new Error('extract failed'); });
+        }
+
+        expect(() => renderer.extract[method](new Container())).toThrow('extract failed');
+        expect(texture.destroyed).toBe(true);
+
+        renderer.destroy();
+    });
+
     describe('Container as source', () =>
     {
         it('should generate canvas from Container', async () =>
