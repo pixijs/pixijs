@@ -464,6 +464,51 @@ describe('Ticker', () =>
 
     describe('minFPS / maxFPS', () =>
     {
+        it('should keep a steady cadence at half the display refresh rate', () =>
+        {
+            const ticker = new Ticker();
+
+            ticker.maxFPS = 30;
+
+            const listener = jest.fn();
+            const frameDuration = 1000 / 60;
+            const startTime = 2999;
+
+            ticker.add(listener);
+            ticker.update(startTime);
+
+            for (let frame = 1; frame <= 720; frame++)
+            {
+                ticker.update(startTime + (frame * frameDuration));
+
+                expect(listener).toHaveBeenCalledTimes(1 + Math.floor(frame / 2));
+            }
+
+            ticker.destroy();
+        });
+
+        it('should retain the fractional time after a late frame without emitting early', () =>
+        {
+            const ticker = new Ticker();
+
+            ticker.maxFPS = 40;
+
+            const listener = jest.fn();
+
+            ticker.add(listener);
+            ticker.update(24);
+            ticker.update(60.75);
+            expect(listener).toHaveBeenCalledTimes(2);
+
+            ticker.update(73.99);
+            expect(listener).toHaveBeenCalledTimes(2);
+
+            ticker.update(74);
+            expect(listener).toHaveBeenCalledTimes(3);
+
+            ticker.destroy();
+        });
+
         it('should set minFPS independently when maxFPS is unlimited (0)', () =>
         {
             const ticker = new Ticker();
