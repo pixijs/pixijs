@@ -5,7 +5,8 @@ import { DefaultShader } from './DefaultShader';
 
 import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { Shader } from '../../renderers/shared/shader/Shader';
-import type { BatchableMeshElement, BatchableQuadElement, BatcherOptions } from './Batcher';
+import type { BLEND_MODES } from '../../renderers/shared/state/const';
+import type { BatchableElement, BatchableMeshElement, BatchableQuadElement, BatcherOptions } from './Batcher';
 
 let defaultShader: Shader = null;
 
@@ -105,7 +106,7 @@ export class DefaultBatcher extends Batcher
         textureId: number
     )
     {
-        const textureIdAndRound = (textureId << 16) | (element.roundPixels & 0xFFFF);
+        const textureIdAndRound = this._packTextureIdAndFlags(element, textureId);
 
         const wt = element.transform;
 
@@ -181,7 +182,7 @@ export class DefaultBatcher extends Batcher
         // a b g r
         const argb = element.color;
 
-        const textureIdAndRound = (textureId << 16) | (element.roundPixels & 0xFFFF);
+        const textureIdAndRound = this._packTextureIdAndFlags(element, textureId);
 
         float32View[index + 0] = (a * w1) + (c * h1) + tx;
         float32View[index + 1] = (d * h1) + (b * w1) + ty;
@@ -233,6 +234,25 @@ export class DefaultBatcher extends Batcher
         if (this.shader.maxTextures === maxTextures) return;
         defaultShader = new DefaultShader(maxTextures);
         this.shader = defaultShader;
+    }
+
+    /**
+     * @param element - The element whose blend mode is being resolved.
+     * @internal
+     */
+    protected override getBlendMode(element: BatchableElement): BLEND_MODES
+    {
+        // The default shader converts straight-alpha samples before blending.
+        return element.blendMode;
+    }
+
+    private _packTextureIdAndFlags(element: BatchableElement & DefaultBatchElements, textureId: number): number
+    {
+        // Keep bit 0 for pixel rounding and use bit 1 for straight-alpha samples.
+        const premultiply = element.texture._source.alphaMode === 'no-premultiply-alpha'
+            && !element.blendMode.endsWith('-npm');
+
+        return (textureId << 16) | element.roundPixels | (premultiply ? 2 : 0);
     }
 
     public override destroy(): void

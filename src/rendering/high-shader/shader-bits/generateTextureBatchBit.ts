@@ -81,7 +81,7 @@ export function generateTextureBatchBit(maxTextures: number): HighShaderBit
                 vTextureId = aTextureIdAndRound.y;
             `,
                 end: `
-                if(aTextureIdAndRound.x == 1)
+                if((aTextureIdAndRound.x & 1u) != 0u)
                 {
                     vPosition = vec4<f32>(roundPixels(vPosition.xy, globalUniforms.uResolution), vPosition.zw);
                 }
@@ -157,7 +157,7 @@ export function generateTextureBatchBitGl(maxTextures: number): HighShaderBit
                 vTextureId = aTextureIdAndRound.y;
             `,
                 end: `
-                if(aTextureIdAndRound.x == 1.)
+                if(mod(aTextureIdAndRound.x, 2.0) > 0.5)
                 {
                     gl_Position.xy = roundPixels(gl_Position.xy, uResolution);
                 }
