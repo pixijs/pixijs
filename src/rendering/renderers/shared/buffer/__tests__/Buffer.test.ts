@@ -368,4 +368,31 @@ describe('Buffer', () =>
 
         spy.mockRestore();
     });
+
+    itLocalOnly('should upload a partial update to every WebGPU renderer sharing the buffer', async () =>
+    {
+        const buffer = new Buffer({
+            data: new Float32Array([1, 2, 3, 4, 5, 6, 7, 8]),
+            usage: 1,
+        });
+
+        const rendererA = (await getWebGPURenderer()) as WebGPURenderer;
+        const rendererB = (await getWebGPURenderer()) as WebGPURenderer;
+
+        rendererA.buffer.updateBuffer(buffer);
+        rendererB.buffer.updateBuffer(buffer);
+
+        const spyA = jest.spyOn(rendererA.gpu.device.queue, 'writeBuffer');
+        const spyB = jest.spyOn(rendererB.gpu.device.queue, 'writeBuffer');
+
+        buffer.update(8, 8);
+
+        expect(spyA).toHaveBeenCalledTimes(1);
+        expect(spyB).toHaveBeenCalledTimes(1);
+
+        spyA.mockRestore();
+        spyB.mockRestore();
+        rendererA.destroy();
+        rendererB.destroy();
+    });
 });
