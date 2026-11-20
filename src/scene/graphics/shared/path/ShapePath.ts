@@ -126,15 +126,16 @@ export class ShapePath
      * @param x2 - The x-coordinate of the second point.
      * @param y2 - The y-coordinate of the second point.
      * @param radius - The radius of the arc.
+     * @param transform - An optional transform to apply to the arc.
      * @returns The instance of the current object for chaining.
      */
-    public arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): this
+    public arcTo(x1: number, y1: number, x2: number, y2: number, radius: number, transform?: Matrix): this
     {
         this._ensurePoly();
 
         const points = this._currentPoly.points;
 
-        buildArcTo(points, x1, y1, x2, y2, radius);
+        buildArcTo(points, x1, y1, x2, y2, radius, transform);
 
         return this;
     }

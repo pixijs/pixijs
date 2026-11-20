@@ -1,5 +1,7 @@
 import { buildArc } from './buildArc';
 
+import type { Matrix } from '../../../../maths/matrix/Matrix';
+
 /**
  * The arcTo() method creates an arc/curve between two tangents on the canvas.
  *
@@ -10,6 +12,7 @@ import { buildArc } from './buildArc';
  * @param x2
  * @param y2
  * @param radius
+ * @param transform
  * @internal
  */
 export function buildArcTo(
@@ -17,10 +20,34 @@ export function buildArcTo(
     x1: number, y1: number,
     x2: number, y2: number,
     radius: number,
+    transform?: Matrix,
 ): void
 {
     const fromX = points[points.length - 2];
     const fromY = points[points.length - 1];
+
+    if (transform)
+    {
+        const { a, b, c, d, tx, ty } = transform;
+
+        if ((a * d) - (b * c) === 0) return;
+
+        // The previous point is already transformed. Build the tangent arc in local coordinates.
+        const start = transform.applyInverse({ x: fromX, y: fromY });
+        const localPoints = [start.x, start.y];
+
+        buildArcTo(localPoints, x1, y1, x2, y2, radius);
+
+        for (let i = 2; i < localPoints.length; i += 2)
+        {
+            const x = localPoints[i];
+            const y = localPoints[i + 1];
+
+            points.push((a * x) + (c * y) + tx, (b * x) + (d * y) + ty);
+        }
+
+        return;
+    }
 
     const a1 = fromY - y1;
     const b1 = fromX - x1;
