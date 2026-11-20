@@ -677,14 +677,18 @@ export class Ticker
             // adjustment to ensure a relatively stable interval.
             if (this._minElapsedMS)
             {
-                const delta = currentTime - this._lastFrame | 0;
+                const delta = currentTime - this._lastFrame;
+                // Allow rounding error at a frame boundary without discarding fractional milliseconds.
+                const tolerance = Number.EPSILON * Math.max(Math.abs(currentTime), Math.abs(this._lastFrame));
 
-                if (delta < this._minElapsedMS)
+                if (delta + tolerance < this._minElapsedMS)
                 {
                     return;
                 }
 
-                this._lastFrame = currentTime - (delta % this._minElapsedMS);
+                const remainder = delta % this._minElapsedMS;
+
+                this._lastFrame = remainder + tolerance >= this._minElapsedMS ? currentTime : currentTime - remainder;
             }
 
             this.deltaMS = elapsedMS;
