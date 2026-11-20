@@ -37,9 +37,12 @@ export class GpuSmoothGraphicsAdaptor extends AbstractGpuGraphicsAdaptor<SmoothG
 
         const maxTextures = this._maxTextures = renderer.limits.maxBatchableTextures;
 
-        // both shaders share the uniform group, so the pipe only has to update this.shader
+        // both shaders share the uniform group, so the pipe only has to update this.shader;
+        // this.shader is only used when the context has no textured element (see _getShader())
         this.shader = new Shader({
-            gpuProgram: getSmoothGpuProgram({ name: 'smooth-local', maxTextures, localUniforms: true }),
+            gpuProgram: getSmoothGpuProgram({
+                name: 'smooth-local', maxTextures, localUniforms: true, untextured: true,
+            }),
             resources: { localUniforms },
         });
         this._texturedShader = new Shader({

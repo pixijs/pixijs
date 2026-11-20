@@ -481,9 +481,18 @@ function glHhaaAlphaBlock(): string
 
 /**
  * @param maxTextures - max batch textures
+ * @param untextured - whether to skip the sampling, see {@link SmoothShaderSourceOptions.untextured}
  */
-function glTextureSampleAndOutput(maxTextures: number): string
+function glTextureSampleAndOutput(maxTextures: number, untextured: boolean): string
 {
+    if (untextured)
+    {
+        return `
+    gl_FragColor = vColor * alpha;
+}
+`;
+    }
+
     const sampleSrc = generateGlSampleSrc(maxTextures);
 
     return `
@@ -960,9 +969,18 @@ function wgslHhaaAlphaBlock(): string
 
 /**
  * @param sampleBranches - WGSL texture sampling if/else branches
+ * @param untextured - whether to skip the sampling, see {@link SmoothShaderSourceOptions.untextured}
  */
-function wgslTextureSampleAndReturn(sampleBranches: string): string
+function wgslTextureSampleAndReturn(sampleBranches: string, untextured: boolean): string
 {
+    if (untextured)
+    {
+        return `
+    return input.vColor * alpha;
+}
+`;
+    }
+
     return `    var texColor: vec4<f32> = vec4<f32>(1.0);
     let textureIndex = input.vTextureId;
     let vTextureCoord = input.vTextureCoord;
@@ -987,6 +1005,13 @@ export interface SmoothShaderSourceOptions
     localUniforms?: boolean;
     /** Whether the vertices carry a texture coordinate matrix (the 'smoothTextured' vertex format) */
     textured?: boolean;
+    /**
+     * Whether everything drawn by the shader is untextured (Texture.WHITE), so that the fragment
+     * shader can skip sampling the textures. The sampling branches over all the batch textures,
+     * which is costly on weak GPUs and in software rendering. The textures are still declared,
+     * as they are bound for the batches anyway.
+     */
+    untextured?: boolean;
     /** Declarations added to the fragment shader (uniforms in GLSL, bind groups in WGSL) */
     fragmentHeader?: string;
     /** Code run in the fragment shader after the coverage is computed, it can change `alpha` */
@@ -1001,12 +1026,15 @@ export interface SmoothShaderSourceOptions
  */
 export function generateSmoothGlSource(options: SmoothShaderSourceOptions): { vertex: string; fragment: string }
 {
-    const { maxTextures, localUniforms = false, textured = false, fragmentHeader = '', fragmentAlpha = '' } = options;
+    const {
+        maxTextures, localUniforms = false, textured = false, untextured = false,
+        fragmentHeader = '', fragmentAlpha = '',
+    } = options;
 
     const fragment = `${glFragmentPreamble(maxTextures, fragmentHeader)}${glPixelLineFunction()}
 void main(void){
     float alpha = 1.0;
-${glHhaaAlphaBlock()}${fragmentAlpha}${glTextureSampleAndOutput(maxTextures)}`;
+${glHhaaAlphaBlock()}${fragmentAlpha}${glTextureSampleAndOutput(maxTextures, untextured)}`;
 
     return { vertex: buildGlVertexSrc(localUniforms, textured), fragment };
 }
@@ -1019,7 +1047,10 @@ ${glHhaaAlphaBlock()}${fragmentAlpha}${glTextureSampleAndOutput(maxTextures)}`;
  */
 export function generateSmoothWgslSource(options: SmoothShaderSourceOptions): string
 {
-    const { maxTextures, localUniforms = false, textured = false, fragmentHeader = '', fragmentAlpha = '' } = options;
+    const {
+        maxTextures, localUniforms = false, textured = false, untextured = false,
+        fragmentHeader = '', fragmentAlpha = '',
+    } = options;
     const { bindings, branches } = wgslTextureBindingsAndBranches(maxTextures);
 
     const worldMatrix = localUniforms
@@ -1032,5 +1063,5 @@ export function generateSmoothWgslSource(options: SmoothShaderSourceOptions): st
     return `
 ${wgslStructsAndConstants(textured)}${localUniforms ? wgslLocalUniformsBlock() : ''}${fragmentHeader}${bindings}
 ${wgslHelperFunctions()}${wgslVertexBody(worldMatrix, uniformColor, textured)}${wgslPixelLineFunction()}${
-    wgslFragmentOpen()}${wgslHhaaAlphaBlock()}${fragmentAlpha}${wgslTextureSampleAndReturn(branches)}`;
+    wgslFragmentOpen()}${wgslHhaaAlphaBlock()}${fragmentAlpha}${wgslTextureSampleAndReturn(branches, untextured)}`;
 }
