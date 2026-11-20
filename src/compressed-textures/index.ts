@@ -1,4 +1,6 @@
 // Auto-generated code, do not edit manually
+export * from './astc/loadASTC';
+export * from './astc/parseASTC';
 export * from './basis/detectBasis';
 export * from './basis/loadBasis';
 export * from './basis/types';

@@ -104,6 +104,20 @@ describe('Compressed Loader', () =>
         expect(asset).toEqual('my-image.bc3.dds');
     });
 
+    it.each([
+        ['image.astc', 'astc'],
+        ['image.test.astc', 'astc'],
+        ['https://cdn.example.com/image.astc?v=1#texture', 'astc'],
+        ['image.astc.ktx', 'astc'],
+        ['image.bc3.dds?v=1#texture', 'bc3'],
+        ['image.etc2.ktx2', 'etc2'],
+        ['image.ktx', 'ktx'],
+        ['image.unknown.ktx', undefined],
+    ])('should resolve compression format from %s', (src, format) =>
+    {
+        expect(resolveCompressedTextureUrl.parse(src)).toMatchObject({ src, format });
+    });
+
     it('should resolve asset resolution from url', () =>
     {
         const parsed = resolveCompressedTextureUrl.parse('my-image@0.5x.bc3.ktx');
