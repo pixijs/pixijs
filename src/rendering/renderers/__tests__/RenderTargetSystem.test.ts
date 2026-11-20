@@ -3,6 +3,7 @@ import { GpuProgram } from '../gpu/shader/GpuProgram';
 import { Geometry } from '../shared/geometry/Geometry';
 import { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import { State } from '../shared/state/State';
+import { CubeTextureSource } from '../shared/texture/sources/CubeTextureSource';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
 import { Texture } from '../shared/texture/Texture';
 import { describeLocalOnly, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
@@ -166,6 +167,32 @@ describeLocalOnly('RenderTargetSystem idempotent bind (WebGPU)', () =>
         renderer.renderTarget.bind({ target, clear: false, layer: 1 });
 
         expect(beginSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('shares a single-layer depth texture across every face of a cube target', async () =>
+    {
+        renderer = await getWebGPURenderer() as WebGPURenderer;
+
+        const device = renderer.gpu.device;
+        const target = new RenderTarget({
+            colorTextures: [new CubeTextureSource({ width: 32, height: 32 })],
+            depth: true,
+        });
+
+        device.pushErrorScope('validation');
+        renderer.encoder.renderStart();
+
+        for (let layer = 0; layer < 6; layer++)
+        {
+            renderer.renderTarget.bind({ target, clear: true, layer });
+        }
+
+        renderer.encoder.finishRenderPass();
+        renderer.encoder.postrender();
+
+        const error = await device.popErrorScope();
+
+        expect(error?.message).toBeUndefined();
     });
 
     it('reopens the pass after it has been finished (copy case)', async () =>
