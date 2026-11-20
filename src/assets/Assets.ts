@@ -1063,6 +1063,13 @@ export class AssetsClass
                 out[key] = asset;
             });
 
+            // the asset was unloaded before it finished loading, so it is being destroyed
+            // and must not end up in the cache (a newer load caches its own asset)
+            if (asset && typeof asset === 'object' && this.loader._unloadedAssets.has(asset))
+            {
+                return;
+            }
+
             Cache.set(keys, asset);
         });
 
