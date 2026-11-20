@@ -689,7 +689,8 @@ export class CanvasTextMetrics
                 const c = new OffscreenCanvas(0, 0);
                 const context = c.getContext('2d', contextSettings);
 
-                if (context?.measureText)
+                // Measure once here: a context can have measureText and still be unable to measure.
+                if (context?.measureText('M').width >= 0)
                 {
                     CanvasTextMetrics.__canvas = c as ICanvas;
 
