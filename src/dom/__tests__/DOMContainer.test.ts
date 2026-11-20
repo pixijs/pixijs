@@ -17,6 +17,26 @@ describe('DOMContainer', () =>
         domContainer.destroy();
     });
 
+    describe('domContainerRoot', () =>
+    {
+        it('should return the same div before and after a DOMContainer renders', async () =>
+        {
+            const app = await getApp();
+            const root = app.domContainerRoot;
+
+            expect(root).toBeInstanceOf(HTMLDivElement);
+            expect(app.domContainerRoot).toBe(root);
+
+            app.stage.addChild(domContainer);
+            app.renderer.render(app.stage);
+
+            expect(domContainer.element.parentNode).toBe(root);
+            expect(app.domContainerRoot).toBe(root);
+
+            app.destroy();
+        });
+    });
+
     describe('constructor', () =>
     {
         it('should create container with default values', () =>

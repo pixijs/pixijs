@@ -1,11 +1,38 @@
 import { CanvasObserver } from '../CanvasObserver';
+import { DOMContainer } from '../DOMContainer';
 import { getWebGLRenderer } from '@test-utils';
+import { Container } from '~/scene';
 import { Ticker } from '~/ticker';
 
 import type { Renderer } from '~/rendering';
 
 describe('CanvasObserver', () =>
 {
+    it('adds no Ticker.shared listener for a renderer that never renders a DOMContainer', async () =>
+    {
+        const originalRO = globalThis.ResizeObserver;
+
+        delete globalThis.ResizeObserver;
+
+        try
+        {
+            const before = Ticker.shared.count;
+            const renderer = await getWebGLRenderer();
+
+            renderer.render(new Container());
+
+            expect(Ticker.shared.count).toBe(before);
+
+            renderer.destroy();
+
+            expect(Ticker.shared.count).toBe(before);
+        }
+        finally
+        {
+            globalThis.ResizeObserver = originalRO;
+        }
+    });
+
     it('removes the fallback ticker listener on destroy', () =>
     {
         const originalRO = globalThis.ResizeObserver;
@@ -59,10 +86,16 @@ describe('CanvasObserver', () =>
 
         delete globalThis.ResizeObserver;
 
+        const domContainer = new DOMContainer();
+
         try
         {
             const before = Ticker.shared.count;
             const renderer = await getWebGLRenderer();
+            const stage = new Container();
+
+            stage.addChild(domContainer);
+            renderer.render(stage);
 
             expect(Ticker.shared.count).toBe(before + 1);
 
@@ -72,6 +105,7 @@ describe('CanvasObserver', () =>
         }
         finally
         {
+            domContainer.destroy();
             globalThis.ResizeObserver = originalRO;
         }
     });
