@@ -37,12 +37,12 @@ export interface OnRenderMixinConstructor
 export interface OnRenderMixin extends Required<OnRenderMixinConstructor>
 {
     /** @private */
-    _onRender: ((renderer: Renderer) => void) | null;
+    _onRenderCallback: ((renderer: Renderer) => void) | null;
 }
 
 /** @internal */
 export const onRenderMixin: Partial<Container> = {
-    _onRender: null,
+    _onRenderCallback: null,
 
     set onRender(func: (renderer: Renderer) => void)
     {
@@ -50,26 +50,26 @@ export const onRenderMixin: Partial<Container> = {
 
         if (!func)
         {
-            if (this._onRender)
+            if (this._onRenderCallback)
             {
                 renderGroup?.removeOnRender(this);
             }
 
-            this._onRender = null;
+            this._onRenderCallback = null;
 
             return;
         }
 
-        if (!this._onRender)
+        if (!this._onRenderCallback)
         {
             renderGroup?.addOnRender(this);
         }
 
-        this._onRender = func;
+        this._onRenderCallback = func;
     },
 
     get onRender(): (renderer: Renderer) => void
     {
-        return this._onRender;
+        return this._onRenderCallback;
     }
 } as Container;
