@@ -33,6 +33,12 @@ export const loadJson = {
     {
         const response = await DOMAdapter.get().fetch(url);
 
+        if (!response.ok)
+        {
+            throw new Error(`[loadJson] Failed to fetch ${url}: `
+                + `${response.status} ${response.statusText}`);
+        }
+
         const json = await response.json();
 
         return json as T;
