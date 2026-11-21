@@ -212,6 +212,8 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
             // more formats for TextureSource `storage`
             'bgra8unorm-storage',
             'texture-formats-tier1',
+            // lets r32float, rg32float and rgba32float textures bind where pipelines expect filterable floats
+            'float32-filterable',
         ].filter((feature) => adapter.features.has(feature)) as GPUFeatureName[];
 
         const device = await adapter.requestDevice({

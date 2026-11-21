@@ -138,7 +138,7 @@ const INTERNAL_FORMAT_TO_TEXTURE_FORMATS: { [id: number]: TEXTURE_FORMATS } = {
     [GL_INTERNAL_FORMAT.RGBA8UI]: 'rgba8uint',
     [GL_INTERNAL_FORMAT.RGBA8I]: 'rgba8sint',
     [GL_INTERNAL_FORMAT.RGBA]: 'rgba8unorm',
-    // [GL_INTERNAL_FORMAT.RGBA8]: 'bgra8unorm'
+    [GL_INTERNAL_FORMAT.RGBA8]: 'rgba8unorm',
 };
 
 /**

@@ -141,7 +141,7 @@ The buffer holds the slices (or layers) one after another, each in row-major ord
 
 Sample a 3D texture with `uniform sampler3D` in GLSL or `texture_3d<f32>` in WGSL, and a 2D array with `sampler2DArray` or `texture_2d_array<f32>`. PixiJS declares `precision highp` for the sampler types GLSL ES 3.0 gives no default, such as `sampler3D`, `sampler2DArray`, `usampler2D` and `isampler2D`, so you don't need a precision line. A precision you write yourself is kept. `sampler2D` and `samplerCube` keep their `lowp` default.
 
-A `Float32Array` gives `rgba32float` by default. On WebGPU, linear filtering of that format needs an optional feature PixiJS doesn't request, so use `scaleMode: 'nearest'` with it, or pick `rgba8unorm`, `r8unorm` or `rgba16float` for smooth sampling.
+A `Float32Array` gives `rgba32float` by default. On WebGPU it samples only where the GPU has the `float32-filterable` feature, which PixiJS enables when available; some mobile GPUs lack it. On WebGL, linear filtering of it needs `OES_texture_float_linear`. Pick `rgba16float`, `rgba8unorm` or `r8unorm` for a texture that must sample everywhere.
 
 With `autoGenerateMipmaps`, WebGL fills a 3D texture's mip chain with `gl.generateMipmap`. WebGPU writes the mips with a compute shader, so the texture needs `storage: true` and the `rgba8unorm` or `rgba16float` format. To draw into one slice or layer, see the [rendering guide](./rendering.md).
 

@@ -184,7 +184,7 @@ The buffer holds the slices (or layers) one after another, each in row-major ord
 
 In GLSL ES 3.0, declare `uniform sampler3D` or `uniform sampler2DArray`. In WGSL, declare `texture_3d<f32>` or `texture_2d_array<f32>`. PixiJS adds the precision line for `sampler3D` and `sampler2DArray`, as for integer samplers above.
 
-`rgba32float`, the default for a `Float32Array`, needs an optional feature for linear filtering that PixiJS doesn't request on WebGPU. Use `scaleMode: "nearest"` with it, or pick `rgba8unorm`, `r8unorm` or `rgba16float` for smooth sampling.
+`rgba32float`, the default for a `Float32Array`, samples on WebGPU only where the GPU has the `float32-filterable` feature, which PixiJS enables when available; some mobile GPUs lack it. On WebGL, linear filtering of it needs `OES_texture_float_linear`. Pick `rgba16float`, `rgba8unorm` or `r8unorm` for a texture that must sample everywhere.
 
 To draw into one slice or layer, pass the source itself as `target` and pick the slice with `layer`: `renderer.render({ container, target: noise, layer: z, clear: true })`. `layer` selects an array layer, a cube face, or a 3D depth slice. `RenderTexture.create` doesn't take `depth`, so use the `TextureSource` directly. `renderer.renderTarget.push({ target, layer })` takes `layer` too.
 

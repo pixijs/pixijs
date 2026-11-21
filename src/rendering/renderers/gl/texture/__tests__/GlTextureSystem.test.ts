@@ -1,4 +1,5 @@
 import { RenderTexture } from '../../../shared/texture/RenderTexture';
+import { BufferImageSource } from '../../../shared/texture/sources/BufferImageSource';
 import { CompressedSource } from '../../../shared/texture/sources/CompressedSource';
 import { TextureSource } from '../../../shared/texture/sources/TextureSource';
 import { Texture } from '../../../shared/texture/Texture';
@@ -105,5 +106,27 @@ describe('GlTextureSystem', () =>
 
         expect(Array.from(pixels.subarray(0, 4))).toEqual([255, 0, 0, 255]);
         expect(renderer.gl.getError()).toBe(renderer.gl.NO_ERROR);
+    });
+
+    // any depth makes a 3D texture, so the 2D case leaves it out
+    it.each([
+        ['2D', undefined],
+        ['3D', 2],
+    ] as const)('should upload a %s buffer with unaligned rows and leave the unpack alignment at 4', async (_, depth) =>
+    {
+        renderer = await getWebGLRenderer({ preferWebGLVersion: 2 });
+
+        const gl = renderer.gl;
+
+        gl.getError();
+
+        const source = new BufferImageSource({
+            resource: new Uint8Array(3 * 3 * (depth ?? 1)), width: 3, height: 3, depth, format: 'r8unorm',
+        });
+
+        renderer.texture.initSource(source);
+
+        expect(gl.getError()).toBe(gl.NO_ERROR);
+        expect(gl.getParameter(gl.UNPACK_ALIGNMENT)).toBe(4);
     });
 });

@@ -2,7 +2,7 @@ import type { COMPRESSED_TEXTURE_FORMATS } from '../types';
 
 const glFormatToGPUFormatMap: Record<number, COMPRESSED_TEXTURE_FORMATS> = {
     6408: 'rgba8unorm',
-    32856: 'bgra8unorm', //
+    32856: 'rgba8unorm',
     32857: 'rgb10a2unorm',
     33189: 'depth16unorm',
     33190: 'depth24plus',
