@@ -7,11 +7,13 @@ const footprints = new Set([
 ]);
 
 /**
- * Parses a single-level, two-dimensional raw ASTC file without decoding its blocks.
- * Raw ASTC headers do not specify a color space; pass `srgb` explicitly when needed.
- * @param buffer - Raw ASTC file, including its 16-byte header.
- * @param supportedFormats - Formats supported by the rendering device.
- * @param srgb - Whether the compressed texels represent sRGB colors.
+ * Parses a raw 2D `.astc` file into options for a single-level compressed texture, without decoding its blocks
+ *
+ * The 16-byte header stores no color space, so `srgb` picks between the `-unorm` and `-unorm-srgb` formats.
+ * @param buffer - the whole file, header included
+ * @param supportedFormats - the formats the device can sample
+ * @param srgb - picks the `-srgb` format, which the GPU converts from sRGB to linear when sampling
+ * @returns the texture options, with the image's width and height in pixels
  * @internal
  */
 export function parseASTC(

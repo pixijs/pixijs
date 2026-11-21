@@ -14,26 +14,38 @@ import type { TextureSourceOptions } from '../../rendering/renderers/shared/text
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 
 /**
- * Options for loading raw ASTC textures.
+ * Options for loading a raw `.astc` file
+ *
+ * The loader reads only `resolution` and `srgb`. Set other options, such as `scaleMode`, on `texture.source`
+ * after loading.
  * @category assets
  * @advanced
  */
 export interface ASTCOptions extends TextureSourceOptions
 {
     /**
-     * Raw ASTC files do not encode color space. Defaults to false (linear).
-     * @advanced
+     * Whether the GPU converts the texture's colors from sRGB to linear when sampling it
+     *
+     * A raw `.astc` file stores no color space. Leave this off for an image compressed from a PNG or JPEG, and
+     * PixiJS draws it like the PNG. Turn it on only when your shader expects linear color, because it draws
+     * mid-tones darker: a gray of 128 draws as 55.
+     * @default false
      */
     srgb?: boolean;
 }
 
 /**
- * Loads raw 2D ASTC files directly as compressed textures, without transcoding.
- * Register with `import 'pixi.js/astc'`. Requires device ASTC support.
+ * Loads a raw `.astc` file, as `astcenc` writes it, into a compressed texture
+ *
+ * Register it with `import 'pixi.js/astc'`. The loader uploads the file's blocks without transcoding, so the
+ * load rejects on a device without ASTC support. List a fallback after the `.astc` file, and the resolver picks
+ * it on those devices. A raw file holds one 2D image, so the texture has no mipmaps.
  * @example
  * ```ts
  * import 'pixi.js/astc';
- * const texture = await Assets.load({ src: 'image.astc', data: { srgb: true } });
+ * import { Assets } from 'pixi.js';
+ *
+ * const texture = await Assets.load({ src: ['image.astc', 'image.png'] });
  * ```
  * @category assets
  * @advanced
@@ -69,15 +81,16 @@ export const loadASTC = {
             ...options,
             width: Math.ceil(options.width / blockWidth) * blockWidth,
             height: Math.ceil(options.height / blockHeight) * blockHeight,
-            resolution,
         });
+
+        // the constructor multiplies width and height by resolution, but the parsed size is already in pixels
+        source.resolution = resolution;
         const texture = createTexture(source, loader, url);
 
-        // WebGPU allocations are block-aligned; exclude padded texels from the sprite's UVs.
+        // WebGPU only creates compressed textures whose size is whole blocks, so frame the texture to the image
         texture.noFrame = false;
         texture.frame.width = options.width / resolution;
         texture.frame.height = options.height / resolution;
-        texture.orig.copyFrom(texture.frame);
         texture.updateUvs();
 
         return texture;

@@ -38,7 +38,7 @@ export const resolveCompressedTextureUrl = {
         }
         else
         {
-            format = splitValue[splitValue.length - 1];
+            format = extension;
         }
 
         return {

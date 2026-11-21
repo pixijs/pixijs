@@ -33,18 +33,18 @@ const logo = new Sprite(Assets.get("logo"));
 
 ## Supported file types
 
-| Type                | Extensions                                                       | Parser ID                     | Loader | Notes |
-| ------------------- | ---------------------------------------------------------------- | ----------------------------- | ------ | ----- |
-| Textures            | `.png`, `.jpg`, `.jpeg`, `.webp`, `.avif`                        | `texture`                     | `loadTextures` | |
-| SVG                 | `.svg`                                                           | `svg`                         | `loadSvg` | Texture or `GraphicsContext` ([svg](assets/svg.md)) |
-| Video textures      | `.mp4`, `.m4v`, `.webm`, `.ogg`, `.ogv`, `.h264`, `.avi`, `.mov` | `video`                       | `loadVideoTextures` | [video](assets/video.md) |
-| Sprite sheets       | `.json` (Spritesheet format)                                     | `spritesheet`                 | `spritesheetAsset` | [spritesheet](assets/spritesheet.md) |
-| Bitmap fonts        | `.fnt`, `.xml`                                                   | `bitmap-font`                 | `loadBitmapFont` | Registered by default ([fonts](assets/fonts.md)) |
-| Web fonts           | `.ttf`, `.otf`, `.woff`, `.woff2`                                | `web-font`                    | `loadWebFont` | [fonts](assets/fonts.md) |
-| JSON                | `.json`                                                          | `json`                        | `loadJson` | |
-| Text                | `.txt`                                                           | `text`                        | `loadTxt` | |
-| Compressed textures | `.basis`, `.dds`, `.ktx`, `.ktx2`                                | `basis`, `dds`, `ktx`, `ktx2` | | Each needs its side-effect import ([compressed-textures](assets/compressed-textures.md)) |
-| Animated GIFs       | `.gif`                                                           | `gif`                         | | Needs `import 'pixi.js/gif'`; returns a `GifSource` ([scene-gif](scene-gif.md)) |
+| Type                | Extensions                                                       | Parser ID                             | Loader | Notes |
+| ------------------- | ---------------------------------------------------------------- | ------------------------------------- | ------ | ----- |
+| Textures            | `.png`, `.jpg`, `.jpeg`, `.webp`, `.avif`                        | `texture`                             | `loadTextures` | |
+| SVG                 | `.svg`                                                           | `svg`                                 | `loadSvg` | Texture or `GraphicsContext` ([svg](assets/svg.md)) |
+| Video textures      | `.mp4`, `.m4v`, `.webm`, `.ogg`, `.ogv`, `.h264`, `.avi`, `.mov` | `video`                               | `loadVideoTextures` | [video](assets/video.md) |
+| Sprite sheets       | `.json` (Spritesheet format)                                     | `spritesheet`                         | `spritesheetAsset` | [spritesheet](assets/spritesheet.md) |
+| Bitmap fonts        | `.fnt`, `.xml`                                                   | `bitmap-font`                         | `loadBitmapFont` | Registered by default ([fonts](assets/fonts.md)) |
+| Web fonts           | `.ttf`, `.otf`, `.woff`, `.woff2`                                | `web-font`                            | `loadWebFont` | [fonts](assets/fonts.md) |
+| JSON                | `.json`                                                          | `json`                                | `loadJson` | |
+| Text                | `.txt`                                                           | `text`                                | `loadTxt` | |
+| Compressed textures | `.astc`, `.basis`, `.dds`, `.ktx`, `.ktx2`                       | `astc`, `basis`, `dds`, `ktx`, `ktx2` | | Each needs its side-effect import ([compressed-textures](assets/compressed-textures.md)) |
+| Animated GIFs       | `.gif`                                                           | `gif`                                 | | Needs `import 'pixi.js/gif'`; returns a `GifSource` ([scene-gif](scene-gif.md)) |
 
 There is no audio loader: `.mp3`/`.wav`/`.ogg` audio resolves `null` (`.ogg` is tried as video). Use `@pixi/sound` or another audio library.
 
@@ -153,6 +153,6 @@ To route image loads through a custom `DOMAdapter.fetch` (auth headers, request 
 | Web fonts and bitmap fonts                                  | [fonts](assets/fonts.md) |
 | Video textures, autoplay, sound                             | [video](assets/video.md) |
 | SVG as texture or `Graphics`                                | [svg](assets/svg.md) |
-| `.ktx2`, `.basis`, `.dds`, `.ktx`                           | [compressed-textures](assets/compressed-textures.md) |
+| `.ktx2`, `.basis`, `.dds`, `.ktx`, `.astc`                  | [compressed-textures](assets/compressed-textures.md) |
 | `@2x` files, `texturePreference`, format fallbacks          | [resolution](assets/resolution.md) |
 | Animated GIFs                                               | [scene-gif](scene-gif.md) |

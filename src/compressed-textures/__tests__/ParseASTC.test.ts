@@ -60,6 +60,7 @@ describe('Raw ASTC', () =>
     it('reads all three dimension bytes', () =>
     {
         expect(parseASTC(file(12, 12, 65537, 1), ['astc-12x12-unorm']).width).toBe(65537);
+        expect(parseASTC(file(8, 5, 1024, 512), ['astc-8x5-unorm'])).toMatchObject({ width: 1024, height: 512 });
     });
 
     it('rejects a short header and bad magic', () =>
