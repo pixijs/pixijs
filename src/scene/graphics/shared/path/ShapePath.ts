@@ -157,6 +157,8 @@ export class ShapePath
         x: number, y: number
     ): this
     {
+        this._ensurePoly();
+
         const points = this._currentPoly.points;
 
         // this needs to work on both canvas and GPU backends so might want to move this to the Graphics2D path..
@@ -674,6 +676,10 @@ export class ShapePath
     {
         const shape = this._currentPoly;
 
+        // A subpath that is only a moveTo point has nothing to close, but it is still where the next segment
+        // starts (e.g. `M50 50 Z L60 60`), so keep it as the current polygon
+        if (closePath && shape?.points.length === 2) return this;
+
         if (shape && shape.points.length > 2)
         {
             shape.closePath = closePath;
@@ -699,9 +705,22 @@ export class ShapePath
 
             if (lastShape)
             {
-                // i KNOW its a rect..
-                let lx = lastShape.shape.x;
-                let ly = lastShape.shape.y;
+                const shape = lastShape.shape;
+                let lx: number;
+                let ly: number;
+
+                if (shape instanceof Polygon)
+                {
+                    // like the canvas API, closePath moves the current point back to the start of the subpath
+                    lx = shape.closePath ? shape.startX : shape.lastX;
+                    ly = shape.closePath ? shape.startY : shape.lastY;
+                }
+                else
+                {
+                    // i KNOW its a rect..
+                    lx = shape.x;
+                    ly = shape.y;
+                }
 
                 if (lastShape.transform && !lastShape.transform.isIdentity())
                 {
