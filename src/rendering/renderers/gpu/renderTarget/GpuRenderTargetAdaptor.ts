@@ -1,3 +1,4 @@
+import { DOMAdapter } from '../../../../environment/adapter';
 import { warn } from '../../../../utils/logging/warn';
 import { CLEAR } from '../../gl/const';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
@@ -29,7 +30,7 @@ function getCanvasContextFormat(format: GPUTextureFormat): GPUTextureFormat
 {
     if (canvasAllowedFormats[format]) return format;
 
-    const preferred = navigator.gpu.getPreferredCanvasFormat();
+    const preferred = DOMAdapter.get().getNavigator().gpu.getPreferredCanvasFormat();
 
     warn(`[WebGPU] CanvasSource format '${format}' is not a valid GPUCanvasContext format. `
         + `Falling back to '${preferred}'. Allowed formats are: bgra8unorm, rgba8unorm, rgba16float.`);
