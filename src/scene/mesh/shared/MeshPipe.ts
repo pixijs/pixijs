@@ -145,6 +145,8 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 
         const meshData = this._getMeshData(mesh);
 
+        meshData.batched = mesh.batched;
+
         if (mesh.didViewUpdate)
         {
             meshData.indexSize = mesh._geometry.indices?.length;
