@@ -35,6 +35,12 @@ export const loadTxt = {
     {
         const response = await DOMAdapter.get().fetch(url);
 
+        if (!response.ok)
+        {
+            throw new Error(`[loadTxt] Failed to fetch ${url}: `
+                + `${response.status} ${response.statusText}`);
+        }
+
         const txt = await response.text();
 
         return txt;

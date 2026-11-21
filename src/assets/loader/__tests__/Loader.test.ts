@@ -1,10 +1,12 @@
 import { Cache } from '../../cache/Cache';
 import { Loader } from '../Loader';
 import { loadJson } from '../parsers/loadJson';
+import { loadTxt } from '../parsers/loadTxt';
 import { loadWebFont } from '../parsers/loadWebFont';
 import { loadSvg } from '../parsers/textures/loadSVG';
 import { loadTextures } from '../parsers/textures/loadTextures';
 import { basePath } from '@test-utils';
+import { DOMAdapter } from '~/environment';
 import { Texture } from '~/rendering';
 
 import type { LoaderParser } from '../parsers/LoaderParser';
@@ -89,6 +91,60 @@ describe('Loader', () =>
         expect(json).toEqual({
             testNumber: 23,
             testString: 'Test String 23',
+        });
+    });
+
+    describe.each<[string, LoaderParser, string, unknown]>([
+        ['json', loadJson, '{"message":"loaded"}', { message: 'loaded' }],
+        ['txt', loadTxt, 'loaded', 'loaded'],
+    ])('HTTP errors for %s assets', (extension, parser, body, expected) =>
+    {
+        let fetch: jest.SpyInstance;
+        let loader: Loader;
+        const url = `${basePath}asset.${extension}`;
+
+        beforeEach(() =>
+        {
+            fetch = jest.spyOn(DOMAdapter.get(), 'fetch');
+            loader = new Loader();
+            loader.parsers.push(parser);
+        });
+
+        afterEach(() =>
+        {
+            fetch.mockRestore();
+        });
+
+        it.each<[number, string]>([
+            [404, 'Not Found'],
+            [503, 'Service Unavailable'],
+        ])('should reject %i responses with a valid body', async (status, statusText) =>
+        {
+            fetch.mockResolvedValue(new Response(body, { status, statusText }));
+
+            await expect(loader.load(url)).rejects.toThrow(`${url}: ${status} ${statusText}`);
+        });
+
+        it('should retry HTTP failures and cache the successful response', async () =>
+        {
+            const onError = jest.fn();
+
+            fetch
+                .mockResolvedValueOnce(new Response('{"error":"unavailable"}', {
+                    status: 503,
+                    statusText: 'Service Unavailable',
+                }))
+                .mockResolvedValueOnce(new Response(body));
+
+            await expect(loader.load(url, {
+                strategy: 'retry',
+                retryCount: 1,
+                retryDelay: 0,
+                onError,
+            })).resolves.toEqual(expected);
+            await expect(loader.load(url)).resolves.toEqual(expected);
+            expect(fetch).toHaveBeenCalledTimes(2);
+            expect(onError).toHaveBeenCalledTimes(1);
         });
     });
 
