@@ -45,6 +45,12 @@ export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
     preloadTimeoutMs?: number;
     /** The alpha mode of the video. */
     alphaMode?: ALPHA_MODES;
+    /**
+     * Use WebGL sub-image uploads to preserve transparency in HEVC video on Safari.
+     * This opts out of Safari's faster video upload path for this source.
+     * @default false
+     */
+    preserveAlpha?: boolean;
 }
 
 /**
@@ -86,6 +92,8 @@ export class VideoSource extends TextureSource<VideoResource>
     public isReady = false;
     /** The upload method for this texture. */
     public uploadMethodId = 'video';
+    /** Whether to preserve video transparency during WebGL uploads. */
+    public readonly preserveAlpha: boolean;
 
     // Protected
     /**
@@ -142,6 +150,7 @@ export class VideoSource extends TextureSource<VideoResource>
         this._msToNextUpdate = 0;
         this.autoPlay = options.autoPlay !== false;
         this.alphaMode = options.alphaMode ?? 'premultiply-alpha-on-upload';
+        this.preserveAlpha = options.preserveAlpha ?? false;
 
         // Binding for frame updates
         this._videoFrameRequestCallback = this._videoFrameRequestCallback.bind(this);
