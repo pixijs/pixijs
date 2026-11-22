@@ -312,4 +312,8 @@ export const uniformParserFunctions: UniformUploadFunction[] = [
             gl.uniform3f(ud[name].location, v.red, v.green, v.blue);
         }
     },
+    (name: string, _cu: any, _cv: any, _v: any, ud: any, uv: any, gl: any): void =>
+    {
+        gl.uniformMatrix4fv(ud[name].location, false, uv[name].elements);
+    },
 ];

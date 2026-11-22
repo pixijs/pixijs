@@ -690,6 +690,24 @@ describe('CanvasTextMetrics', () =>
 
     describe('graphemeSegmenter', () =>
     {
+        it('falls back to code points when the Intl global is absent at import', async () =>
+        {
+            const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'Intl');
+
+            try
+            {
+                Reflect.deleteProperty(globalThis, 'Intl');
+                jest.resetModules();
+                const { CanvasTextMetrics: metrics } = await import('../CanvasTextMetrics');
+
+                expect(metrics.graphemeSegmenter('e\u0301😀')).toEqual(['e', '\u0301', '😀']);
+            }
+            finally
+            {
+                if (descriptor) Object.defineProperty(globalThis, 'Intl', descriptor);
+            }
+        });
+
         it('should segment basic text into characters', () =>
         {
             const result = CanvasTextMetrics.graphemeSegmenter('abc');

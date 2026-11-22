@@ -54,6 +54,10 @@ export const uboParserFunctions: UboUploadFunction[] = [
         data[offset + 1] = v.green;
         data[offset + 2] = v.blue;
     },
+    (name: string, data: Float32Array, offset: number, uv: any, _v: any): void =>
+    {
+        data.set(uv[name].elements, offset);
+    },
 ];
 
 /** @internal */

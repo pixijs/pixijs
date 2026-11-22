@@ -146,4 +146,12 @@ export const uniformParsers: UniformParserDefinition[] = [
             }
         `
     },
+    // Matrix4 values from @pixi/3d store their components in column-major order.
+    {
+        type: 'mat4x4<f32>',
+        test: (data) => data.type === 'mat4x4<f32>' && data.size === 1
+            && (data.value as { elements?: ArrayLike<number> }).elements?.length === 16,
+        uniform: 'gl.uniformMatrix4fv(ud[name].location, false, uv[name].elements);',
+        ubo: 'data.set(uv[name].elements, offset);',
+    },
 ];
