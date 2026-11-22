@@ -5,6 +5,7 @@ category: scene
 children:
   - ./graphics-fill.md
   - ./graphics-pixel-line.mdx
+  - ./graphics-smooth.md
 ---
 # Graphics
 
@@ -137,6 +138,10 @@ app.stage.addChild(graphic); // Rendering happens here
 
 This means you can build, reuse, and transform `Graphics` objects freely without triggering GPU work.
 
+## Smooth edges without MSAA
+
+`Graphics` relies on MSAA (`antialias: true`) for smooth edges. {@link SmoothGraphics} has the same API and anti-aliases its edges in the shader instead, which also works without MSAA, in render textures and with thin lines. See [Smooth Graphics](./graphics-smooth.md).
+
 ## Performance guidelines
 
 - **Do not call `.clear()` and rebuild every frame.** Rebuilding triggers geometry re-triangulation on the CPU. For dynamic content, swap prebuilt `GraphicsContext` objects instead (see the context-swapping example above).
@@ -158,5 +163,6 @@ This means you can build, reuse, and transform `Graphics` objects freely without
 
 - {@link Graphics}
 - {@link GraphicsContext}
+- {@link SmoothGraphics}
 - {@link FillStyle}
 - {@link StrokeStyle}

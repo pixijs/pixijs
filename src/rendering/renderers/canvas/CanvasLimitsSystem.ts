@@ -20,6 +20,8 @@ export class CanvasLimitsSystem implements System
     public maxTextures = 16;
     public maxBatchableTextures = 16;
     public maxUniformBindings = 0;
+    /** Always 0, since the canvas renderer has no uniform buffers */
+    public minUniformBufferOffsetAlignment = 0;
 
     public init(): void
     {

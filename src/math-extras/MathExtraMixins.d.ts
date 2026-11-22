@@ -432,10 +432,6 @@ declare global
         /**
          * Rotates `this` vector.
          *
-         * Like a light ray bouncing off a mirror surface.
-         * `this` vector is the light and `normal` is a vector perpendicular to the mirror.
-         * `this.reflect(normal)` is the reflection of `this` on that mirror.
-         *
          * > [!IMPORTANT] Only available with **pixi.js/math-extras**.
          * @example
          * ```ts
@@ -447,16 +443,16 @@ declare global
          * console.log(result); // {x: -7.071067811865474, y: 21.213203435596427}
          *
          * // Using output point for efficiency
-         * const output = new Point(10, 20);
-         * point.rotate(90 * (Math.PI / 180), output);
-         * console.log(result); // {x: -7.071067811865474, y: 21.213203435596427}
+         * const output = new Point();
+         * point.rotate(radians, output);
+         * console.log(output); // {x: -7.071067811865474, y: 21.213203435596427}
          *
-         * // Chain multiple additions
-         * const final = point.rotate(radians).rotate(radians2);
+         * // Chain multiple rotations
+         * const final = point.rotate(radians).rotate(radians);
          * ```
          * @remarks
          * convert degrees to radians with const radians = degrees * (Math.PI / 180)
-         * @param {PointData} radians - The rotation angle in radians
+         * @param {number} radians - The rotation angle in radians
          * @param {PointData} outPoint - Optional Point-like object to store result
          * @returns The outPoint or a new Point with rotated result
          */

@@ -13,7 +13,8 @@ export interface GpuExtensions
      * `GPUTextureUsage.TRANSIENT_ATTACHMENT` (0x40) — when true, MSAA attachments can be
      * marked transient so TBDR drivers keep contents in tile memory and skip DRAM
      * allocation entirely. Not part of WebGPU 1.0; gated on the bit being present on
-     * the `GPUTextureUsage` enum at runtime.
+     * the `GPUTextureUsage` enum at runtime. It's also false on Safari 27.1 and later 27.x releases, where a WebKit
+     * bug can lose the device, and on WebKit that doesn't report a Safari version.
      */
     transientAttachment: boolean;
     /**
@@ -21,7 +22,8 @@ export interface GpuExtensions
      * `adapter.info.vendor`. On these, writing a multisample buffer out to memory and reading it back costs far
      * more than restoring it from its resolved image, so PixiJS never stores MSAA colour on them and restores
      * it when a pass reopens the target. Other GPUs keep MSAA in video memory, where reopening is nearly free,
-     * so they store it as before. An unknown vendor counts as not tile-based.
+     * so they store it as before. An unknown vendor counts as not tile-based. The `tileBasedGpu` renderer option
+     * overrides the guess.
      */
     tileBased: boolean;
 }

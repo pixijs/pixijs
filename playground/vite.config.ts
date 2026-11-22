@@ -135,6 +135,10 @@ export default defineConfig({
             }
         }
     ],
+    // pre-bundling would give pixi-filters its own copy of pixi.js, so its filters would fail on our textures
+    optimizeDeps: {
+        exclude: ['pixi-filters'],
+    },
     build: {
         target: 'esnext',
     },

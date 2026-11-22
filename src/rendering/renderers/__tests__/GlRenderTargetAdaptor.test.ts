@@ -28,10 +28,9 @@ describe('GlRenderTargetAdaptor', () =>
 
         const gpuRenderTarget = renderer.renderTarget.getGpuRenderTarget(renderTarget);
 
-        // every delete branch needs something to free: the msaa view and resolve framebuffers,
-        // one msaa colour renderbuffer and the depth-stencil renderbuffer
+        // every delete branch needs something to free: the msaa view and resolve framebuffers and the
+        // depth-stencil renderbuffer. The msaa colour renderbuffer belongs to the colour texture, not the target
         expect(gpuRenderTarget.msaa).toBe(true);
-        expect(gpuRenderTarget.msaaRenderBuffer).toHaveLength(1);
         expect(gpuRenderTarget.depthStencilRenderBuffer).toBeTruthy();
 
         const deleteFramebuffer = jest.spyOn(renderer.gl, 'deleteFramebuffer');
@@ -41,15 +40,14 @@ describe('GlRenderTargetAdaptor', () =>
         adaptor.destroyGpuRenderTarget(gpuRenderTarget);
 
         expect(deleteFramebuffer).toHaveBeenCalledTimes(2);
-        expect(deleteRenderbuffer).toHaveBeenCalledTimes(2);
+        expect(deleteRenderbuffer).toHaveBeenCalledTimes(1);
 
         expect(() => adaptor.destroyGpuRenderTarget(gpuRenderTarget)).not.toThrow();
 
         expect(deleteFramebuffer).toHaveBeenCalledTimes(2);
-        expect(deleteRenderbuffer).toHaveBeenCalledTimes(2);
+        expect(deleteRenderbuffer).toHaveBeenCalledTimes(1);
         expect(gpuRenderTarget.framebuffer).toBeNull();
         expect(gpuRenderTarget.resolveTargetFramebuffer).toBeNull();
         expect(gpuRenderTarget.depthStencilRenderBuffer).toBeNull();
-        expect(gpuRenderTarget.msaaRenderBuffer).toEqual([]);
     });
 });

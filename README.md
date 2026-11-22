@@ -126,10 +126,21 @@ This content is released under the [MIT License](http://opensource.org/licenses/
 ### Change Log
 [Releases](https://github.com/pixijs/pixijs/releases)
 
-### Support
-We're passionate about making PixiJS the best graphics library possible. Our dedication comes from our love for the project and community. If you'd like to support our efforts, please consider contributing to our open collective.
-<div>
-  <a href="https://opencollective.com/pixijs" target="_blank">
-    <img src="https://opencollective.com/pixijs/donate/button@2x.png?color=blue" width=200 />
-  </a>
-</div>
+<br/>
+
+<h2 align="center">PixiJS Sponsors</h2>
+
+<p align="center">
+  We're passionate about making PixiJS the best graphics library possible. Our dedication comes from our love for the project and community.
+</p>
+<br/>
+<p align="center">
+  <a href="https://pixijs.com/sponsor"><img src="https://pixijs.com/sponsors-readme.svg" alt="PixiJS sponsors"></a>
+</p>
+<p align="center">
+  <a href="https://namespace.so/github-actions/?utm_source=oss&utm_campaign=pixijs"><img alt="CI powered by Namespace" src="https://namespace.so/oss/badge.svg" height="32" /></a>
+</p>
+<br/>
+<p align="center">
+  If you'd like to support our efforts, please consider <a href="https://pixijs.com/sponsor"><b>becoming a sponsor</b></a>.
+</p>

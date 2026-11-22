@@ -215,7 +215,8 @@ export class BindGroupSystem implements System
                 gpuResource = {
                     buffer: renderer.buffer.getGPUBuffer(bufferResource.buffer),
                     offset: bufferResource.offset,
-                    size: bufferResource.size ?? bufferResource.buffer.descriptor.size,
+                    // undefined binds the rest of the buffer after the offset
+                    size: bufferResource.size,
                 };
             }
             else if (resource._resourceType === 'textureSampler')

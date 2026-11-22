@@ -82,9 +82,8 @@ function generateUboSyncPolyfill(
     // loop through all the uniforms..
     const functionMap: Record<string, {offset: number, func: UboUploadFunction}> = {};
 
-    for (const i in uboElements)
+    for (const uboElement of uboElements)
     {
-        const uboElement = uboElements[i];
         const uniform = uboElement.data;
 
         let parsed = false;

@@ -73,7 +73,7 @@ function syncResource(
         // a shared group can hold a block this program never declares
         if (shader.glProgram._uniformBlockData[name])
         {
-            shaderSystem.bindUniformBlock(resource, name, syncData.blockIndex++);
+            shaderSystem.bindUniformBlock(resource, name);
         }
     }
     else if (resource instanceof TextureSource || resource instanceof TextureView)

@@ -183,7 +183,7 @@ export class CanvasTextMetrics
      *
      * Note: This is an unstable API, Chrome < 94 use `textLetterSpacing`, later versions use `letterSpacing`.
      * @see CanvasTextMetrics.experimentalLetterSpacing
-     * @see https://developer.mozilla.org/en-US/docs/Web/API/ICanvasRenderingContext2D/letterSpacing
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/letterSpacing
      * @see https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
      */
     public static get experimentalLetterSpacingSupported(): boolean
@@ -689,7 +689,8 @@ export class CanvasTextMetrics
                 const c = new OffscreenCanvas(0, 0);
                 const context = c.getContext('2d', contextSettings);
 
-                if (context?.measureText)
+                // Measure once here: a context can have measureText and still be unable to measure.
+                if (context?.measureText('M').width >= 0)
                 {
                     CanvasTextMetrics.__canvas = c as ICanvas;
 

@@ -352,7 +352,9 @@ export class RoundedRectangle implements ShapePrimitive
      */
     public strokeContains(pX: number, pY: number, strokeWidth: number, alignment: number = 0.5): boolean
     {
-        const { x, y, width, height, radius } = this;
+        const { x, y, width, height } = this;
+        // clamp the radius the same way the shape is drawn
+        const radius = Math.max(0, Math.min(this.radius, Math.min(width, height) / 2));
 
         const strokeWidthOuter = strokeWidth * (1 - alignment);
         const strokeWidthInner = strokeWidth - strokeWidthOuter;

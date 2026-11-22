@@ -1,14 +1,28 @@
 import { CLEAR } from '../../../gl/const';
 import { RenderTarget } from '../../../shared/renderTarget/RenderTarget';
+import { CanvasSource } from '../../../shared/texture/sources/CanvasSource';
 import { TextureSource } from '../../../shared/texture/sources/TextureSource';
 import { Texture } from '../../../shared/texture/Texture';
 import { GpuMsaaRestore } from '../GpuMsaaRestore';
 import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
+import { DOMAdapter } from '~/environment';
 import { AlphaFilter } from '~/filters';
 import { Container, Graphics } from '~/scene';
 
+import type { GpuMsaaTexture } from '../../texture/GpuMsaaTexture';
+import type { GPUTextureGpuData } from '../../texture/GpuTextureSystem';
 import type { WebGPURenderer } from '../../WebGPURenderer';
 import type { GpuRenderTarget } from '../GpuRenderTarget';
+
+/**
+ * The samples a pass has already made for a texture: read from its GPU data, so nothing is made here.
+ * @param renderer - the renderer that drew into the texture
+ * @param source - the antialiased texture
+ */
+function samplesOf(renderer: WebGPURenderer, source: TextureSource): GpuMsaaTexture | null
+{
+    return (source._gpuData[renderer.uid] as GPUTextureGpuData)?.msaa ?? null;
+}
 
 function makeTarget(): RenderTarget
 {
@@ -103,11 +117,8 @@ describeLocalOnly('GpuRenderTargetAdaptor msaa textures', () =>
             renderer.encoder.renderStart();
             renderer.renderTarget.bind({ target, clear: true });
 
-            const msaaTexture = renderer.renderTarget.getGpuRenderTarget(target).msaaTextures[0];
-
             // multisampled textures must have exactly 1 mip level
-            expect(msaaTexture.autoGenerateMipmaps).toBe(false);
-            expect(msaaTexture.mipLevelCount).toBe(1);
+            expect(samplesOf(renderer, target.colorTexture).texture.mipLevelCount).toBe(1);
 
             renderer.encoder.postrender();
 
@@ -162,7 +173,7 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
         const gpuRenderTarget = renderer.renderTarget.getGpuRenderTarget(target);
         const first = gpuRenderTarget.descriptor.colorAttachments[0];
 
-        expect(gpuRenderTarget.msaaTextures[0].transient).toBe(true);
+        expect(samplesOf(renderer, target.colorTexture).transient).toBe(true);
         expect(first.loadOp).toBe('clear');
         expect(first.storeOp).toBe('discard');
         expect(restoredSlots(gpuRenderTarget)).toEqual([]);
@@ -331,6 +342,31 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
         renderer.destroy();
     });
 
+    it('should make the canvas samples again after a resize', async () =>
+    {
+        const renderer = (await getWebGPURenderer({ antialias: true })) as WebGPURenderer;
+        const device = renderer.gpu.device;
+        const shape = new Graphics().rect(0, 0, 10, 10).fill('red');
+        const root = () => renderer.renderTarget.getGpuRenderTarget(renderer.renderTarget.rootRenderTarget);
+
+        device.pushErrorScope('validation');
+
+        renderer.render(shape);
+
+        const before = root().canvasMsaaTextures[0];
+
+        renderer.resize(80, 80);
+        renderer.render({ container: shape, clear: false });
+
+        const after = root().canvasMsaaTextures[0];
+
+        expect(await device.popErrorScope()).toBeNull();
+        expect(after).not.toBe(before);
+        expect(after.texture.width).toBe(80);
+
+        renderer.destroy();
+    });
+
     it('should discard the canvas msaa depth/stencil only when the renderer is created transient', async () =>
     {
         for (const transient of [false, true])
@@ -366,7 +402,7 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
 
         const gpuRenderTarget = renderer.renderTarget.getGpuRenderTarget(target);
 
-        expect(gpuRenderTarget.msaaTextures[0].transient).toBe(false);
+        expect(samplesOf(renderer, target.colorTexture).transient).toBe(false);
         expect(gpuRenderTarget.descriptor.colorAttachments[0].storeOp).toBe('store');
 
         renderer.renderTarget.bind({ target: other, clear: true });
@@ -513,5 +549,133 @@ describeLocalOnly('GpuRenderTargetAdaptor transient msaa colour', () =>
         }
 
         renderer.destroy();
+    });
+});
+
+describeLocalOnly('GpuRenderTargetAdaptor clear values', () =>
+{
+    it('clears an attachment to its own clearValue, and the rest to the bind\'s colour, then the default', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const target = new RenderTarget({
+            colorTextures: [new TextureSource({ width: 16, height: 16 }), new TextureSource({ width: 16, height: 16 })],
+        });
+
+        target.colorAttachments[1].clearValue = [1, 0, 0, 1];
+
+        const attachments = () => renderer.renderTarget.getGpuRenderTarget(target).descriptor.colorAttachments;
+
+        renderer.render({ target, container: new Container(), clear: true, clearColor: [0, 0, 1, 1] });
+
+        expect(attachments()[0].clearValue).toEqual([0, 0, 1, 1]);
+        expect(attachments()[1].clearValue).toEqual([1, 0, 0, 1]);
+
+        renderer.render({ target, container: new Container(), clear: true });
+
+        expect(attachments()[0].clearValue).toEqual([0, 0, 0, 0]);
+        expect(attachments()[1].clearValue).toEqual([1, 0, 0, 1]);
+
+        renderer.destroy();
+    });
+
+    it('the bind decides whether anything clears, and loadOp: load opts an attachment out, on clear() too', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const target = new RenderTarget({
+            colorTextures: [new TextureSource({ width: 16, height: 16 }), new TextureSource({ width: 16, height: 16 })],
+        });
+        const gpuRenderTarget = renderer.renderTarget.getGpuRenderTarget(target);
+        const loadOps = () => Array.from(gpuRenderTarget.descriptor.colorAttachments, (attachment) => attachment.loadOp);
+
+        renderer.encoder.renderStart();
+
+        // the bind clears, attachment 1 opts out
+        target.colorAttachments[1].loadOp = 'load';
+        renderer.renderTarget.bind({ target, clear: true });
+
+        expect(loadOps()).toEqual(['clear', 'load']);
+
+        // the bind doesn't clear: nothing clears, whatever an attachment says, and the open pass is reused
+        const descriptor = gpuRenderTarget.descriptor;
+
+        target.colorAttachments[0].loadOp = 'clear';
+        target.colorAttachments[1].loadOp = 'clear';
+        renderer.renderTarget.bind({ target, clear: false });
+
+        expect(gpuRenderTarget.descriptor).toBe(descriptor);
+
+        // an explicit clear follows the same rule: attachment 1 still opts out
+        target.colorAttachments[1].loadOp = 'load';
+        renderer.renderTarget.clear(target, CLEAR.COLOR);
+
+        expect(loadOps()).toEqual(['clear', 'load']);
+
+        renderer.encoder.postrender();
+        renderer.destroy();
+    });
+
+    it('a filter handing back to a target with loadOp: clear attachments keeps what was drawn', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const color = new TextureSource({ width: 16, height: 16, resolution: 1 });
+        const target = new RenderTarget({
+            colorAttachments: [{ texture: color, loadOp: 'clear', clearValue: [0, 0, 0, 1] }],
+        });
+
+        // the left half drawn first; the right half through a filter, which pops back to `target` with clear: false
+        const scene = new Container();
+        const filtered = new Graphics().rect(8, 0, 8, 16).fill(0xffffff);
+
+        filtered.filters = [new AlphaFilter()];
+        scene.addChild(new Graphics().rect(0, 0, 8, 16).fill(0xffffff), filtered);
+
+        renderer.render({ target, container: scene, clear: true });
+
+        const { pixels } = renderer.extract.pixels(new Texture({ source: color }));
+        const at = (x: number, y: number) => Array.from(pixels.slice(((y * 16) + x) * 4, (((y * 16) + x) * 4) + 4));
+
+        expect(at(4, 8)).toEqual([255, 255, 255, 255]);
+        expect(at(12, 8)).toEqual([255, 255, 255, 255]);
+
+        // and a plain rebind that doesn't clear keeps it too
+        renderer.render({ target, container: new Container(), clear: false });
+
+        const { pixels: after } = renderer.extract.pixels(new Texture({ source: color }));
+
+        expect(Array.from(after.slice(((8 * 16) + 4) * 4, (((8 * 16) + 4) * 4) + 4))).toEqual([255, 255, 255, 255]);
+
+        renderer.destroy();
+    });
+});
+
+describeLocalOnly('GpuRenderTargetAdaptor canvas format', () =>
+{
+    it('should take the fallback canvas format from DOMAdapter when there is no global navigator', async () =>
+    {
+        // the event system reads the global navigator on init and destroy, so it must exist around both
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const adapterNavigator = DOMAdapter.get().getNavigator();
+        const getNavigator = jest.spyOn(DOMAdapter.get(), 'getNavigator').mockReturnValue(adapterNavigator);
+        const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+        const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+        const source = new CanvasSource({ width: 1, height: 1, format: 'rgba32float' });
+
+        Reflect.deleteProperty(globalThis, 'navigator');
+
+        try
+        {
+            expect('navigator' in globalThis).toBe(false);
+
+            renderer.renderTarget.getGpuRenderTarget(new RenderTarget({ colorTextures: [source] }));
+
+            expect(source._gpuContext.getCurrentTexture().format).toBe(adapterNavigator.gpu.getPreferredCanvasFormat());
+        }
+        finally
+        {
+            Object.defineProperty(globalThis, 'navigator', descriptor);
+            getNavigator.mockRestore();
+            warn.mockRestore();
+            renderer.destroy();
+        }
     });
 });

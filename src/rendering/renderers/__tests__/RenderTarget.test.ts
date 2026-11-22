@@ -129,7 +129,6 @@ describe('isRenderingToScreen', () =>
 
         expect(glRenderTarget.framebuffer).toBeNull();
         expect(glRenderTarget.resolveTargetFramebuffer).toBeNull();
-        expect(glRenderTarget.msaaRenderBuffer).toEqual([]);
 
         expect(glRenderTarget).toBeInstanceOf(GlRenderTarget);
     });

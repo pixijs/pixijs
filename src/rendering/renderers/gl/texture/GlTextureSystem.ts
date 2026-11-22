@@ -373,6 +373,7 @@ export class GlTextureSystem implements System, CanvasGenerator
         {
             this.unbind(source);
             this._gl.deleteTexture(glTexture.texture);
+            if (glTexture.msaaRenderBuffer) this._gl.deleteRenderbuffer(glTexture.msaaRenderBuffer);
         }
         source.off('update', this.onSourceUpdate, this);
         source.off('resize', this.onSourceUpdate, this);
@@ -622,6 +623,38 @@ export class GlTextureSystem implements System, CanvasGenerator
         source._gcLastUsed = this._renderer.gc.now;
 
         return source._gpuData[this._renderer.uid] as GlTexture || this._initSource(source);
+    }
+
+    /**
+     * The multisampled renderbuffer an antialiased texture is drawn into, made on first use, with its storage
+     * at the texture's current size. It belongs to the texture, so every render target over the texture shares
+     * its samples, and it is deleted with the texture's GL texture.
+     * @param source - a colour attachment of an antialiased target, or its depth/stencil texture
+     * @returns its multisampled renderbuffer
+     */
+    public getMsaaRenderBuffer(source: TextureSource): WebGLRenderbuffer
+    {
+        const gl = this._gl;
+        // also makes the GL texture, whose internal format the renderbuffer takes: the colour resolve and
+        // copyDepthTexture's blit out of it need the formats to match
+        const glTexture = this.getGlSource(source);
+
+        glTexture.msaaRenderBuffer ??= gl.createRenderbuffer();
+
+        // allocating empties the renderbuffer, and another target over the texture may have drawn into it
+        // since it was last allocated, so only when the texture has changed size
+        if (glTexture.msaaWidth !== source.pixelWidth || glTexture.msaaHeight !== source.pixelHeight)
+        {
+            glTexture.msaaWidth = source.pixelWidth;
+            glTexture.msaaHeight = source.pixelHeight;
+
+            gl.bindRenderbuffer(gl.RENDERBUFFER, glTexture.msaaRenderBuffer);
+            gl.renderbufferStorageMultisample(
+                gl.RENDERBUFFER, 4, glTexture.internalFormat, source.pixelWidth, source.pixelHeight
+            );
+        }
+
+        return glTexture.msaaRenderBuffer;
     }
 
     public generateCanvas(texture: Texture): ICanvas

@@ -2,7 +2,7 @@ import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
-import { type Renderer, type RendererOptions } from '../../types';
+import { type Renderer, type RendererOptions, RendererType } from '../../types';
 import { RenderTarget } from '../renderTarget/RenderTarget';
 import { CanvasPool } from '../texture/CanvasPool';
 import { TexturePool } from '../texture/TexturePool';
@@ -11,6 +11,7 @@ import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { TypeOrBool } from '../../../../scene/container/destroyTypes';
 import type { System } from '../system/System';
+import type { TEXTURE_FORMATS } from '../texture/const';
 import type { CanvasSource } from '../texture/sources/CanvasSource';
 import type { Texture } from '../texture/Texture';
 
@@ -60,6 +61,15 @@ export interface ViewSystemOptions
      * @default false
      */
     transient?: boolean;
+    /**
+     * WebGPU only. The format the canvas is set up with: `bgra8unorm`, `rgba8unorm` or `rgba16float`.
+     * WebGL and the canvas renderer ignore it.
+     * Defaults to the browser's preferred canvas format (`bgra8unorm` on most desktops, `rgba8unorm` on Android),
+     * as the other 8-bit format can cost the browser an extra full-screen copy every frame.
+     * Pass `rgba16float` for an HDR canvas; it never costs that copy.
+     * @default navigator.gpu.getPreferredCanvasFormat()
+     */
+    format?: TEXTURE_FORMATS;
 }
 
 /**
@@ -198,6 +208,12 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         // so it goes to the render target and not to the canvas source
         const { depth, ...canvasOptions } = options;
 
+        // only WebGPU sets up the canvas with a format
+        if (!canvasOptions.format && this._renderer.type === RendererType.WEBGPU)
+        {
+            canvasOptions.format = DOMAdapter.get().getNavigator().gpu.getPreferredCanvasFormat() as TEXTURE_FORMATS;
+        }
+
         this.texture = getCanvasTexture(this.canvas, canvasOptions);
         this.renderTarget = new RenderTarget({
             colorTextures: [this.texture],
@@ -207,8 +223,7 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
 
         this.texture.source.transparent = (options as RendererOptions).backgroundAlpha < 1;
 
-        // every change of screen size - the resolution set below, the resolution setter and
-        // renderer.resize - ends in the source resizing, so this is the one place to hook the pools
+        // the pools follow every change of pixel size, the resolution setter's included
         this.texture.source.on('resize', this._updateScreenSize, this);
 
         this.resolution = options.resolution;
@@ -225,6 +240,9 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
     public resize(desiredScreenWidth: number, desiredScreenHeight: number, resolution: number): void
     {
         this.texture.source.resize(desiredScreenWidth, desiredScreenHeight, resolution);
+
+        // a new resolution that leaves the pixel size as it was raises no resize event
+        this._updateScreenSize();
 
         this.screen.width = this.texture.frame.width;
         this.screen.height = this.texture.frame.height;
@@ -260,14 +278,15 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
 
     /**
      * Tells the texture and canvas pools how big this renderer's screen is, in physical pixels, so they
-     * can hand out screen sized resources instead of rounding every request up to a power of two.
+     * can hand out screen sized resources instead of rounding every request up to a power of two. The
+     * texture pool is told the resolution as well, to fit textures of other resolutions to the screen.
      */
     private _updateScreenSize(): void
     {
         const { pixelWidth, pixelHeight } = this.texture.source;
         const uid = this._renderer.uid;
 
-        TexturePool.setScreenSize(uid, pixelWidth, pixelHeight);
+        TexturePool.setScreenSize(uid, pixelWidth, pixelHeight, this.resolution);
         CanvasPool.setScreenSize(uid, pixelWidth, pixelHeight);
     }
 }

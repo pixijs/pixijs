@@ -23,8 +23,26 @@ export const canvasUtils = {
     canvas: null as ICanvas | null,
     convertTintToImage: false,
     cacheStepsPerColorChannel: 8,
-    canUseMultiply: canUseNewCanvasBlendModes(),
-    tintMethod: null as (texture: Texture, color: number, canvas: ICanvas) => void,
+    // Resolved on first use rather than at module load: the probe draws to 2D canvases and reads a pixel back,
+    // which can stall the main thread (for example on GPU-rasterized canvases) even when canvas tinting is never used.
+    _canUseMultiply: undefined as boolean | undefined,
+    get canUseMultiply(): boolean
+    {
+        return (this._canUseMultiply ??= canUseNewCanvasBlendModes());
+    },
+    set canUseMultiply(value: boolean)
+    {
+        this._canUseMultiply = value;
+    },
+    _tintMethod: null as ((texture: Texture, color: number, canvas: ICanvas) => void) | null,
+    get tintMethod(): (texture: Texture, color: number, canvas: ICanvas) => void
+    {
+        return (this._tintMethod ??= this.canUseMultiply ? this.tintWithMultiply : this.tintWithPerPixel);
+    },
+    set tintMethod(value: (texture: Texture, color: number, canvas: ICanvas) => void)
+    {
+        this._tintMethod = value;
+    },
     _canvasSourceCache: new WeakMap<TextureSource, CanvasSourceCache>(),
     _unpremultipliedCache: new WeakMap<TextureSource, CanvasSourceCache>(),
     getCanvasSource: (texture: Texture): CanvasImageSource | null =>
@@ -511,4 +529,3 @@ export const canvasUtils = {
     },
 };
 
-canvasUtils.tintMethod = canvasUtils.canUseMultiply ? canvasUtils.tintWithMultiply : canvasUtils.tintWithPerPixel;

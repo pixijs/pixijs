@@ -607,6 +607,33 @@ describe('Point', () =>
             expect(oc).toEqual(oa);
         });
 
+        it('should rotate in place when outPoint is this', () =>
+        {
+            const radians = 45 * (Math.PI / 180);
+            const cosTheta = Math.cos(radians);
+            const sinTheta = Math.sin(radians);
+            const rotated = {
+                x: (2 * cosTheta) - (3 * sinTheta),
+                y: (2 * sinTheta) + (3 * cosTheta)
+            };
+
+            // Point
+            const a = new Point(2, 3);
+            const c = a.rotate(radians, a);
+
+            expect(c).toBe(a);
+            expect(a.x).toBeCloseTo(rotated.x);
+            expect(a.y).toBeCloseTo(rotated.y);
+
+            // ObservablePoint
+            const oa = new ObservablePoint(observer, 2, 3);
+            const oc = oa.rotate(radians, oa);
+
+            expect(oc).toBe(oa);
+            expect(oa.x).toBeCloseTo(rotated.x);
+            expect(oa.y).toBeCloseTo(rotated.y);
+        });
+
         it('can output into any IPointData given', () =>
         {
             const radians = 45 * (Math.PI / 180);

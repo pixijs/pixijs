@@ -58,7 +58,8 @@ class WorkerManagerClass
      *
      * This method uses a dedicated worker to test ImageBitmap support
      * and caches the result for subsequent calls.
-     * @returns Promise that resolves to true if ImageBitmap is supported, false otherwise
+     * @returns Promise that resolves to true if ImageBitmap is supported, false otherwise.
+     * It also resolves to false when the check worker can't be created or fails to start.
      */
     public isImageBitmapSupported(): Promise<boolean>
     {
@@ -66,14 +67,25 @@ class WorkerManagerClass
 
         this._isImageBitmapSupported = new Promise((resolve) =>
         {
-            const { worker } = new CheckImageBitmapWorker();
+            let worker: Worker;
 
-            worker.addEventListener('message', (event: MessageEvent<boolean>) =>
+            const finish = (supported: boolean) =>
             {
-                worker.terminate();
+                worker?.terminate();
                 CheckImageBitmapWorker.revokeObjectURL();
-                resolve(event.data);
-            });
+                resolve(supported);
+            };
+
+            try
+            {
+                worker = new CheckImageBitmapWorker().worker;
+                worker.addEventListener('message', (event: MessageEvent<boolean>) => finish(event.data));
+                worker.addEventListener('error', () => finish(false));
+            }
+            catch (_e)
+            {
+                finish(false);
+            }
         });
 
         return this._isImageBitmapSupported;

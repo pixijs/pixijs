@@ -14,6 +14,10 @@ import type { ParticleRendererProperty } from './particleData';
 
 const emptyBounds = new Bounds(0, 0, 0, 0);
 
+// removeParticle switches from indexOf + splice per particle to one compaction pass above this many
+// arguments; measured in Node the two cross over between about 30 and 60 arguments (1k-100k particles)
+const BULK_REMOVE_THRESHOLD = 48;
+
 /**
  * Represents the properties of a particle that can be dynamically updated each frame.
  * These properties control which aspects of particles are recalculated during rendering.
@@ -418,6 +422,13 @@ export class ParticleContainer
      */
     public removeParticle(...children: T[]): T
     {
+        if (children.length > BULK_REMOVE_THRESHOLD)
+        {
+            if (this._removeParticlesInOnePass(children)) this.onViewUpdate();
+
+            return children[0];
+        }
+
         let didRemove = false;
 
         for (let i = 0; i < children.length; i++)
@@ -434,6 +445,49 @@ export class ParticleContainer
         if (didRemove) this.onViewUpdate();
 
         return children[0];
+    }
+
+    /**
+     * Removes many particles with a single compaction of `particleChildren` instead of an
+     * indexOf + splice per particle. Each argument removes the first remaining occurrence of that
+     * particle, the same as the per-particle path, and the order of the kept particles is unchanged.
+     * @param children - The particles to remove
+     * @returns true if any particle was removed
+     */
+    private _removeParticlesInOnePass(children: T[]): boolean
+    {
+        // how many occurrences of each particle to remove
+        const counts = new Map<T, number>();
+
+        for (let i = 0; i < children.length; i++)
+        {
+            const child = children[i];
+
+            counts.set(child, (counts.get(child) ?? 0) + 1);
+        }
+
+        const particles = this.particleChildren;
+        const length = particles.length;
+        let write = 0;
+
+        for (let read = 0; read < length; read++)
+        {
+            const particle = particles[read];
+            const count = counts.get(particle);
+
+            if (count)
+            {
+                counts.set(particle, count - 1);
+            }
+            else
+            {
+                particles[write++] = particle;
+            }
+        }
+
+        particles.length = write;
+
+        return write !== length;
     }
 
     /**

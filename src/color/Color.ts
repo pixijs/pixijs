@@ -1,7 +1,7 @@
-import { colord, extend } from '@pixi/colord';
-import namesPlugin from '@pixi/colord/plugins/names';
+import { colord, extend } from 'colord';
+import namesPlugin from 'colord/plugins/names';
 
-import type { AnyColor, HslaColor, HslColor, HsvaColor, HsvColor, RgbaColor, RgbColor } from '@pixi/colord';
+import type { AnyColor, HslaColor, HslColor, HsvaColor, HsvColor, RgbaColor, RgbColor } from 'colord';
 
 extend([namesPlugin]);
 
@@ -1079,7 +1079,9 @@ export class Color
 
         const [r, g, b] = this._components;
 
-        this._int = ((r * 255) << 16) + ((g * 255) << 8) + ((b * 255) | 0);
+        // Round like toUint8RgbArray() does, so toNumber() and toHex() agree with toBgrNumber() and
+        // toRgbaString() for components that are not an exact multiple of 1/255
+        this._int = (Math.round(r * 255) << 16) + (Math.round(g * 255) << 8) + Math.round(b * 255);
     }
 
     /**
@@ -1159,6 +1161,11 @@ export class Color
      */
     public static isColorLike(value: unknown): value is ColorSource
     {
+        if (value === null || value === undefined)
+        {
+            return false;
+        }
+
         return (
             typeof value === 'number'
             || typeof value === 'string'

@@ -562,6 +562,7 @@ export class AssetsClass
      * @remarks
      * - Assets are cached automatically to prevent duplicate loading
      * - URLs are resolved to the best format for the current browser
+     * - An asset object can omit `src` when all its aliases are already registered
      * - Asset types are detected automatically based on file extension
      * - Progress callback receives values from 0.0 to 1.0
      * - You can define with loader to use for an asset by specifying the `parser` property, which is useful for assets that do not have a file extension.
@@ -599,6 +600,11 @@ export class AssetsClass
 
                     if (aliases.some((alias) => !this.resolver.hasKey(alias)))
                     {
+                        if (url.src === undefined)
+                        {
+                            throw new Error('[Assets] An asset without a src must use registered aliases.');
+                        }
+
                         this.add(url);
                     }
 

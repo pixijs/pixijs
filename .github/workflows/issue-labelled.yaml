@@ -7,7 +7,7 @@ on:
 jobs:
   reply-labeled:
     if: github.repository == 'pixijs/pixijs'
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-linux-8-16
     permissions:
       issues: write # for actions-cool/issues-helper to update issues
       pull-requests: write # for actions-cool/issues-helper to update PRs
