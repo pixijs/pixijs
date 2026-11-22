@@ -93,6 +93,20 @@ PixiJS supports multiple `TextureSource` types depending on the input data:
 
 `HTMLSource` and `ElementImageSource` are experimental and only register when you import `pixi.js/html-source`. See the [HTML Source guide](../../html-source/__docs__/html-source.md).
 
+### Byte order of buffer and compressed textures
+
+A `BufferImageSource` or `CompressedSource` hands the renderer raw bytes, and its `format` describes them. WebGL, WebGPU and, for a `BufferImageSource`, the canvas renderer all read the bytes that way:
+
+- `rgba8unorm` texels are R, G, B, A bytes, and `bgra8unorm` texels are B, G, R, A bytes.
+- Byte data with no `format` is RGBA. A `BufferImageSource` made from a `Uint8Array`, `Uint8ClampedArray`, `Int8Array` or `ArrayBuffer` gets `rgba8unorm`, and so does a `CompressedSource`.
+
+WebGL can't upload BGRA, so it uploads `bgra8unorm` data as a copy with red and blue swapped. That costs a pass over the texels on every upload, so pick `rgba8unorm` for a texture you update every frame.
+
+```ts
+// B, G, R, A bytes, for example from a native video decoder
+const frame = new BufferImageSource({ resource: bgraBytes, width: 1280, height: 720, format: 'bgra8unorm' });
+```
+
 ### Updating part of a buffer texture
 
 A `BufferImageSource` holds texels in row-major order, so texel `i` sits at `x = i % width`, `y = floor(i / width)`. After changing the data, call `update(start, end)` with the texel range you changed to upload only that part. `end` is exclusive, like `TypedArray.subarray`. With no arguments, `update()` uploads the whole texture.

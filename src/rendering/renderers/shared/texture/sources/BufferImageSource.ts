@@ -20,6 +20,11 @@ export interface BufferSourceOptions extends TextureSourceOptions<TypedArray | A
 /**
  * A texture source that uses a TypedArray or ArrayBuffer as its resource
  *
+ * `format` describes the bytes in the buffer, and every renderer reads them that way: `bgra8unorm` texels are
+ * B, G, R, A bytes on WebGL, WebGPU and the canvas renderer alike. WebGL can't upload BGRA, so it uploads a copy
+ * with red and blue swapped, which costs a pass over the texels on every upload. Prefer `rgba8unorm` for a
+ * texture you update every frame.
+ *
  * Without a `format`, the array type picks it: `Float32Array` gives `rgba32float`,
  * 32-bit integer arrays give `rgba32uint`, 16-bit integer arrays give `rgba16uint`, anything else `rgba8unorm`,
  * read as R, G, B, A bytes on every renderer.

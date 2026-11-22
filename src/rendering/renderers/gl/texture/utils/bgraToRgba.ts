@@ -1,10 +1,13 @@
 import type { TEXTURE_FORMATS } from '../../../shared/texture/const';
 
 /**
- * Swaps up to this size reuse one shared buffer instead of allocating one per upload. A bigger swap gets a buffer of
- * its own that GC reclaims, so one large upload doesn't hold its size for the life of the app.
+ * The largest swap that goes into the shared buffer. That buffer grows to the biggest such swap and is reused, so a
+ * small texture updated every frame allocates only a few typed-array views per upload. A bigger swap goes into the
+ * caller's buffer, or into a new one that GC reclaims, so one large upload doesn't hold its size for the life of the
+ * app.
+ * @internal
  */
-const MAX_RETAINED_BYTES = 1024 * 1024;
+export const MAX_SHARED_SWAP_BYTES = 1024 * 1024;
 
 let scratch = new ArrayBuffer(0);
 
@@ -21,13 +24,15 @@ export function isBgraFormat(format: TEXTURE_FORMATS): boolean
 /**
  * Returns a copy of BGRA texels with red and blue swapped, for WebGL, which only uploads RGBA
  *
- * Up to 1 MiB, the copy is a view of a shared buffer that the next call overwrites. Pass it straight to
- * `texImage2D`, `texSubImage2D` or `texImage3D`, which copy it before returning.
+ * Up to 1 MiB, the copy is a view of the shared buffer, which the next call overwrites. Above that it is a view of
+ * `destination` when that holds enough bytes, or of a new buffer. Pass it straight to `texImage2D`, `texSubImage2D`,
+ * `texImage3D` or `texSubImage3D`, which copy it before returning.
  * @param texels - 4-byte BGRA texels
+ * @param destination - the buffer to swap texels over 1 MiB into, such as one a texture keeps for its updates
  * @returns the texels as R, G, B, A bytes
  * @internal
  */
-export function bgraToRgba(texels: ArrayBufferView | ArrayBuffer): Uint8Array
+export function bgraToRgba(texels: ArrayBufferView | ArrayBuffer, destination?: ArrayBuffer | null): Uint8Array
 {
     const bytes = ArrayBuffer.isView(texels)
         ? new Uint8Array(texels.buffer, texels.byteOffset, texels.byteLength)
@@ -35,9 +40,9 @@ export function bgraToRgba(texels: ArrayBufferView | ArrayBuffer): Uint8Array
     const byteLength = bytes.byteLength;
     let buffer: ArrayBuffer;
 
-    if (byteLength > MAX_RETAINED_BYTES)
+    if (byteLength > MAX_SHARED_SWAP_BYTES)
     {
-        buffer = new ArrayBuffer(byteLength);
+        buffer = destination && destination.byteLength >= byteLength ? destination : new ArrayBuffer(byteLength);
     }
     else
     {
