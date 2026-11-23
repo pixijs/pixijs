@@ -294,6 +294,8 @@ var BASIS = (function ()
 
             function isDataURI(filename) { return String.prototype.startsWith ? filename.startsWith(dataURIPrefix) : filename.indexOf(dataURIPrefix) === 0; } let wasmBinaryFile = 'basis_transcoder.wasm';
 
+            const wasmBinaryIntegrity = 'sha384-RbL+GHW7YqHxiM7T3lOeoudpGRhShr1v678F3MbBbPmLw/0zCKCo36vwNpJ5NFOf';
+
             if (!isDataURI(wasmBinaryFile)) { wasmBinaryFile = locateFile(wasmBinaryFile); } function getBinary()
             {
                 try
@@ -306,7 +308,7 @@ var BASIS = (function ()
             {
                 if (!wasmBinary && (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) && typeof fetch === 'function')
                 {
-                    return fetch(wasmBinaryFile, { credentials: 'same-origin' }).then(function (response)
+                    return fetch(wasmBinaryFile, { credentials: 'same-origin', integrity: wasmBinaryIntegrity }).then(function (response)
                     {
                         if (!response.ok) { throw `failed to load wasm binary file at '${wasmBinaryFile}'`; }
 
@@ -328,7 +330,7 @@ var BASIS = (function ()
                 {
                     if (!wasmBinary && typeof WebAssembly.instantiateStreaming === 'function' && !isDataURI(wasmBinaryFile) && typeof fetch === 'function')
                     {
-                        fetch(wasmBinaryFile, { credentials: 'same-origin' }).then(function (response)
+                        fetch(wasmBinaryFile, { credentials: 'same-origin', integrity: wasmBinaryIntegrity }).then(function (response)
                         {
                             const result = WebAssembly.instantiateStreaming(response, info);
 
