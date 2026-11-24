@@ -3,12 +3,6 @@ import { warn } from '../../../../utils/logging/warn';
 
 import type { GraphicsPath } from '../path/GraphicsPath';
 
-interface SubPath
-{
-    startX: number;
-    startY: number;
-}
-
 /**
  * Parses an SVG path data string and builds a GraphicsPath object from the commands.
  * This function handles all standard SVG path commands including moves, lines, curves and arcs.
@@ -36,13 +30,14 @@ export function parseSVGPath(svgPath: string, path: GraphicsPath): GraphicsPath
     // Parse the SVG path string into an array of commands
     const commands = parse(svgPath);
 
-    // Track subpaths for proper path closure handling
-    const subpaths: SubPath[] = [];
-    let currentSubPath: SubPath | null = null;
-
     // Track current position for relative commands
     let lastX = 0;
     let lastY = 0;
+
+    // Start of the current subpath, where Z returns to. Every M/m starts a new subpath; after Z
+    // without one, the next subpath starts at the same point.
+    let startX = 0;
+    let startY = 0;
 
     // Process each command in sequence
     for (let i = 0; i < commands.length; i++)
@@ -54,14 +49,14 @@ export function parseSVGPath(svgPath: string, path: GraphicsPath): GraphicsPath
         switch (type)
         {
             case 'M': // Move To (absolute)
-                lastX = data[1];
-                lastY = data[2];
+                lastX = startX = data[1];
+                lastY = startY = data[2];
 
                 path.moveTo(lastX, lastY);
                 break;
             case 'm': // Move To (relative)
-                lastX += data[1];
-                lastY += data[2];
+                lastX = startX = lastX + data[1];
+                lastY = startY = lastY + data[2];
 
                 path.moveTo(lastX, lastY);
                 break;
@@ -198,37 +193,15 @@ export function parseSVGPath(svgPath: string, path: GraphicsPath): GraphicsPath
             case 'Z': // Close Path
             case 'z':
                 path.closePath();
-                if (subpaths.length > 0)
-                {
-                    // Return to the start of the current subpath
-                    currentSubPath = subpaths.pop();
-                    if (currentSubPath)
-                    {
-                        lastX = currentSubPath.startX;
-                        lastY = currentSubPath.startY;
-                    }
-                    else
-                    {
-                        lastX = 0;
-                        lastY = 0;
-                    }
-                }
-                currentSubPath = null;
+
+                // Return to the start of the current subpath
+                lastX = startX;
+                lastY = startY;
                 break;
             default:
                 // #if _DEBUG
                 warn(`Unknown SVG path command: ${type}`);
                 // #endif
-        }
-
-        // Track subpath starts for path closure
-        if (type !== 'Z' && type !== 'z')
-        {
-            if (currentSubPath === null)
-            {
-                currentSubPath = { startX: lastX, startY: lastY };
-                subpaths.push(currentSubPath);
-            }
         }
     }
 
