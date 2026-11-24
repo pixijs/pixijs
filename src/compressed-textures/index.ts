@@ -24,5 +24,6 @@ export * from './ktx2/utils/gpuFormatToKTXBasisTranscoderFormat';
 export * from './ktx2/utils/setKTXTranscoderPath';
 export * from './ktx2/utils/vkFormatToGPUFormat';
 export * from './ktx2/worker/loadKTX2onWorker';
+export * from './shared/createCompressedTexture';
 export * from './shared/detectCompressed';
 export * from './shared/resolveCompressedTextureUrl';

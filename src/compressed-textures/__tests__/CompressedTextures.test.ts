@@ -1,8 +1,13 @@
+import { readFileSync } from 'fs-extra';
+import path from 'path';
 import { detectBasis } from '../basis/detectBasis';
 import { loadDDS } from '../dds/loadDDS';
+import { loadKTX } from '../ktx/loadKTX';
 import { detectCompressed } from '../shared/detectCompressed';
 import { resolveCompressedTextureUrl } from '../shared/resolveCompressedTextureUrl';
+import { getWebGLRenderer } from '@test-utils';
 import { Assets, Loader, Resolver } from '~/assets';
+import { TextureSource } from '~/rendering';
 
 import type { Texture } from '~/rendering';
 
@@ -21,6 +26,55 @@ describe('Compressed Loader', () =>
 
         expect(texture.width).toBe(1000);
         expect(texture.height).toBe(664);
+    });
+
+    it('should upload a texture loaded at a resolution other than 1', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadKTX);
+
+        const file = new Uint8Array(readFileSync(path.join(__dirname, 'textures/test.RGBA8.ktx')));
+        const src = URL.createObjectURL(new Blob([file]));
+        const texture = await loader.load<Texture>({ src, parser: 'ktx', data: { resolution: 2 } });
+
+        expect(texture.source.pixelWidth).toBe(66);
+        expect(texture.width).toBe(33);
+
+        renderer.texture.initSource(texture.source);
+
+        expect(renderer.gl.getError()).toBe(renderer.gl.NO_ERROR);
+
+        URL.revokeObjectURL(src);
+        renderer.destroy();
+    });
+
+    it('should size a loaded texture from the file whatever TextureSource.defaultOptions.resolution is', async () =>
+    {
+        const defaultResolution = TextureSource.defaultOptions.resolution;
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadKTX);
+
+        const file = new Uint8Array(readFileSync(path.join(__dirname, 'textures/test.RGBA8.ktx')));
+        const src = URL.createObjectURL(new Blob([file]));
+
+        TextureSource.defaultOptions.resolution = 2;
+
+        try
+        {
+            const texture = await loader.load<Texture>({ src, parser: 'ktx' });
+
+            expect(texture.source.pixelWidth).toBe(66);
+            expect(texture.source.resolution).toBe(1);
+            expect(texture.width).toBe(66);
+        }
+        finally
+        {
+            TextureSource.defaultOptions.resolution = defaultResolution;
+            URL.revokeObjectURL(src);
+        }
     });
 
     it('should resolve asset', () =>
