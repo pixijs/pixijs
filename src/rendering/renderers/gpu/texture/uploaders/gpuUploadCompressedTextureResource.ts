@@ -1,3 +1,4 @@
+import { TEXTURE_FORMAT_BYTES_PER_PIXEL } from '../../../shared/texture/const';
 import { blockDataMap } from '../../../shared/texture/utils/compressedBlockData';
 
 import type { CompressedSource } from '../../../shared/texture/sources/CompressedSource';
@@ -17,12 +18,16 @@ export const gpuUploadCompressedTextureResource = {
         let mipHeight = source.pixelHeight;
 
         const blockData = blockDataMap[source.format] || defaultBlockData;
+        const bytesPerPixel = TEXTURE_FORMAT_BYTES_PER_PIXEL[source.format];
 
         for (let i = 0; i < source.resource.length; i++)
         {
             const levelBuffer = source.resource[i];
 
-            const bytesPerRow = Math.ceil(mipWidth / blockData.blockWidth) * blockData.blockBytes;
+            // uncompressed levels are tightly packed rows of texels
+            const bytesPerRow = bytesPerPixel
+                ? mipWidth * bytesPerPixel
+                : Math.ceil(mipWidth / blockData.blockWidth) * blockData.blockBytes;
 
             gpu.device.queue.writeTexture(
                 {

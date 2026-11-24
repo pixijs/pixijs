@@ -28,9 +28,10 @@ export interface BufferSourceOptions extends TextureSourceOptions<TypedArray | A
  * Pass `depth` for a 3D texture, or `arrayLayerCount` for a 2D array. The buffer holds the slices (or layers)
  * one after another, each in row-major order, so texel `(x, y, z)` sits at index
  * `x + (y * width) + (z * width * height)`. These upload whole, so {@link BufferImageSource#update} takes no range.
- * `rgba32float`, the default for a `Float32Array`, needs an optional feature for linear filtering that PixiJS
- * doesn't request on WebGPU. Use `scaleMode: 'nearest'` with it, or pick `rgba8unorm`, `r8unorm` or
- * `rgba16float` for smooth sampling.
+ * `rgba32float`, the default for a `Float32Array`, samples on WebGPU only where the GPU has the
+ * `float32-filterable` feature, which PixiJS enables when available; some mobile GPUs lack it. On WebGL,
+ * linear filtering of it needs `OES_texture_float_linear`. Pick `rgba16float`, `rgba8unorm` or `r8unorm`
+ * for a texture that must sample everywhere.
  * @example
  * ```ts
  * const ids = new BufferImageSource({

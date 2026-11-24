@@ -165,16 +165,27 @@ describe('Parse KTX', () =>
         expect(result.resource.map((level) => level.byteLength)).toEqual([36, 4]);
         result.resource.forEach((level, i) => expect(level.every((value) => value === i + 1)).toBe(true));
     });
+
+    it('should parse a GL_RGBA8 texture as rgba8unorm', async () =>
+    {
+        const arrayBuffer = createUncompressedKTX(4, 4, 3, 0x8058);
+
+        const result = parseKTX(arrayBuffer, ['rgba8unorm']);
+
+        expect(result.format).toBe('rgba8unorm');
+        expect(result.resource.map((level) => level.byteLength)).toEqual([64, 16, 4]);
+    });
 });
 
 /**
- * Builds a KTX1 file holding an uncompressed SRGB8_ALPHA8 texture.
+ * Builds a KTX1 file holding an uncompressed 4-byte RGBA texture.
  * Every byte of mip level `i` is set to `i + 1`.
  * @param width - width of the base level
  * @param height - height of the base level
  * @param levels - number of mip levels
+ * @param glInternalFormat - SRGB8_ALPHA8 unless given
  */
-function createUncompressedKTX(width: number, height: number, levels: number): ArrayBuffer
+function createUncompressedKTX(width: number, height: number, levels: number, glInternalFormat = 0x8C43): ArrayBuffer
 {
     const levelSizes: number[] = [];
 
@@ -193,7 +204,7 @@ function createUncompressedKTX(width: number, height: number, levels: number): A
     view.setUint32(16, 0x1401, true); // glType: UNSIGNED_BYTE
     view.setUint32(20, 1, true); // glTypeSize
     view.setUint32(24, 0x1908, true); // glFormat: RGBA
-    view.setUint32(28, 0x8C43, true); // glInternalFormat: SRGB8_ALPHA8
+    view.setUint32(28, glInternalFormat, true);
     view.setUint32(32, 0x1908, true); // glBaseInternalFormat: RGBA
     view.setUint32(36, width, true);
     view.setUint32(40, height, true);

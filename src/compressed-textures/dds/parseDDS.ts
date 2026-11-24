@@ -1,3 +1,4 @@
+import { TEXTURE_FORMAT_BYTES_PER_PIXEL } from '../../rendering/renderers/shared/texture/const';
 import { DDS, DXGI_TO_TEXTURE_FORMAT, FOURCC_TO_TEXTURE_FORMAT, TEXTURE_FORMAT_BLOCK_SIZE } from './const';
 
 import type { TEXTURE_FORMATS } from '../../rendering/renderers/shared/texture/const';
@@ -24,28 +25,13 @@ export function parseDDS(arrayBuffer: ArrayBuffer, supportedFormats: TEXTURE_FOR
         throw new Error(`Unsupported texture format: ${fourCC} ${format}, supported: ${supportedFormats}`);
     }
 
-    if (mipmapCount <= 1)
-    { // No need bothering with the imageSize calculation!
-        return {
-            format,
-            width,
-            height,
-            resource: [new Uint8Array(arrayBuffer, dataOffset)],
-            alphaMode: 'no-premultiply-alpha',
-        } as TextureSourceOptions;
-    }
-
-    const levelBuffers = getMipmapLevelBuffers(format, width, height, dataOffset, mipmapCount, arrayBuffer);
-
-    const textureOptions: TextureSourceOptions = {
+    return {
         format,
         width,
         height,
-        resource: levelBuffers,
-        alphaMode: 'no-premultiply-alpha'
+        resource: getMipmapLevelBuffers(format, width, height, dataOffset, mipmapCount, arrayBuffer),
+        alphaMode: 'no-premultiply-alpha',
     };
-
-    return textureOptions;
 }
 
 function getMipmapLevelBuffers(format: TEXTURE_FORMATS, width: number, height: number,
@@ -65,7 +51,7 @@ function getMipmapLevelBuffers(format: TEXTURE_FORMATS, width: number, height: n
         const alignedHeight = Math.ceil(Math.max(4, mipHeight) / 4) * 4;
         const byteLength = blockBytes
             ? alignedWidth / 4 * alignedHeight / 4 * blockBytes
-            : mipWidth * mipHeight * 4;
+            : mipWidth * mipHeight * (TEXTURE_FORMAT_BYTES_PER_PIXEL[format] ?? 4);
 
         const levelBuffer = new Uint8Array(arrayBuffer, offset, byteLength);
 

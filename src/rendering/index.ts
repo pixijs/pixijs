@@ -114,6 +114,7 @@ export * from './renderers/gl/texture/uploaders/glUploadCubeTextureResource';
 export * from './renderers/gl/texture/uploaders/glUploadImageResource';
 export * from './renderers/gl/texture/uploaders/glUploadVideoResource';
 export * from './renderers/gl/texture/utils/applyStyleParams';
+export * from './renderers/gl/texture/utils/bgraToRgba';
 export * from './renderers/gl/texture/utils/getSupportedGlCompressedTextureFormats';
 export * from './renderers/gl/texture/utils/mapFormatToGlFormat';
 export * from './renderers/gl/texture/utils/mapFormatToGlInternalFormat';
