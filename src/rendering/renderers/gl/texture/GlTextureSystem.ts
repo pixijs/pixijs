@@ -350,10 +350,19 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         this._setBoundTexture(this._activeTextureLocation, source);
 
+        // WebGL1 can't mipmap a texture whose size isn't a power of two. The compressed uploader sends only level 0
+        // of those, so they need a filter without mips. Other sources keep their mip filter, because a resize can
+        // make them a power of two without restyling them
+        const mipmaps = source.mipLevelCount > 1 && (
+            this._renderer.context.supports.nonPowOf2mipmaps
+            || source.isPowerOfTwo
+            || source.uploadMethodId !== 'compressed'
+        );
+
         applyStyleParams(
             source.style,
             gl,
-            source.mipLevelCount > 1,
+            mipmaps,
             this._renderer.context.extensions.anisotropicFiltering,
             'texParameteri',
             glTexture.target,

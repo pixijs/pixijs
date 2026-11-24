@@ -1,5 +1,9 @@
+import { RenderTexture } from '../../../shared/texture/RenderTexture';
+import { CompressedSource } from '../../../shared/texture/sources/CompressedSource';
 import { TextureSource } from '../../../shared/texture/sources/TextureSource';
+import { Texture } from '../../../shared/texture/Texture';
 import { getWebGLRenderer } from '@test-utils';
+import { Graphics, Sprite } from '~/scene';
 
 import type { WebGLRenderer } from '../../WebGLRenderer';
 
@@ -45,5 +49,61 @@ describe('GlTextureSystem', () =>
         source.style.update();
 
         expect(gl.getError()).toBe(gl.NO_ERROR);
+    });
+
+    it('should keep mip filtering on WebGL1 for a render texture resized to a power of two', async () =>
+    {
+        renderer = await getWebGLRenderer({ preferWebGLVersion: 1 });
+
+        const renderTexture = RenderTexture.create({ width: 12, height: 12, mipLevelCount: 4, autoGenerateMipmaps: true });
+        const checkerboard = new Graphics();
+
+        for (let y = 0; y < 16; y++)
+        {
+            for (let x = 0; x < 16; x++)
+            {
+                checkerboard.rect(x, y, 1, 1).fill((x + y) % 2 ? 0xffffff : 0x000000);
+            }
+        }
+
+        // created at a size WebGL1 can't mipmap, then resized to one it can
+        renderer.texture.initSource(renderTexture.source);
+        renderTexture.resize(16, 16);
+        renderer.render({ container: checkerboard, target: renderTexture });
+        renderTexture.source.updateMipmaps();
+
+        const sprite = new Sprite(renderTexture);
+        const target = RenderTexture.create({ width: 5, height: 5 });
+
+        sprite.setSize(5);
+        renderer.render({ container: sprite, target });
+
+        // minified with mips, a 1px checkerboard averages to grey; without them it aliases
+        const { pixels } = renderer.extract.pixels(target);
+
+        for (let i = 0; i < pixels.length; i += 4)
+        {
+            expect(pixels[i]).toBeWithin(118, 139);
+        }
+    });
+
+    it('should draw the first level of a compressed texture that is not a power of two on WebGL1', async () =>
+    {
+        renderer = await getWebGLRenderer({ preferWebGLVersion: 1 });
+
+        const level = (size: number, rgba: number[]) => new Uint8Array(size * size * 4).map((_, i) => rgba[i % 4]);
+        const source = new CompressedSource({
+            resource: [level(6, [255, 0, 0, 255]), level(3, [0, 255, 0, 255]), level(1, [0, 0, 255, 255])],
+            width: 6,
+            height: 6,
+            format: 'rgba8unorm',
+        });
+
+        renderer.gl.getError();
+
+        const { pixels } = renderer.extract.pixels(new Sprite(new Texture({ source })));
+
+        expect(Array.from(pixels.subarray(0, 4))).toEqual([255, 0, 0, 255]);
+        expect(renderer.gl.getError()).toBe(renderer.gl.NO_ERROR);
     });
 });

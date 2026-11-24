@@ -44,6 +44,9 @@ await Assets.load('textures/background.ktx2');
 
 PixiJS parses and uploads the texture using the correct loader and GPU-compatible transcoding path based on the user's device.
 
+> [!NOTE]
+> Export compressed textures at whole-block sizes: a multiple of 4 for BC and ETC2, or of the block size for ASTC. PixiJS pads other sizes up to whole blocks and frames the texture to the image. Sprites draw only the image, but Graphics texture fills, mesh UVs outside 0 to 1 and custom shaders that sample `texture.source` show the padding.
+
 ---
 
 ## Integration with AssetPack
