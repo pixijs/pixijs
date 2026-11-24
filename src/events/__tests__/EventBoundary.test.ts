@@ -313,6 +313,195 @@ describe('EventBoundary', () =>
         expect(stageSpy).toHaveBeenCalledOnce();
     });
 
+    describe('press and release', () =>
+    {
+        // A press outside the canvas never reaches the boundary, but its release does.
+        // Sending a release without a press stands in for that. Touches cannot do this, as a touch that
+        // starts outside the canvas is not released on it, so touch only checks the boundary.
+        function setup()
+        {
+            const stage = new Container();
+            const boundary = new EventBoundary(stage);
+            const a = stage.addChild(graphicsWithRect(0, 0, 100, 100));
+            const b = stage.addChild(graphicsWithRect(100, 0, 100, 100));
+
+            stage.interactive = true;
+            a.interactive = true;
+            b.interactive = true;
+
+            const send = (type: string, x: number, pointerType = 'mouse', button = 0) =>
+            {
+                const event = new FederatedPointerEvent(boundary);
+
+                event.pointerId = 1;
+                event.pointerType = pointerType;
+                event.button = button;
+                event.type = type;
+                event.global.set(x, 50);
+                boundary.mapEvent(event);
+            };
+
+            return { stage, a, b, send };
+        }
+
+        it.each([
+            ['click', 'mouse', 0],
+            ['rightclick', 'mouse', 2],
+            ['tap', 'touch', 0],
+        ])('should not fire a second %s on the last clicked target', (clickType, pointerType, button) =>
+        {
+            const { a, send } = setup();
+            const clickSpy = jest.fn();
+            const tapSpy = jest.fn();
+            const upSpy = jest.fn();
+
+            a.addEventListener(clickType, clickSpy);
+            a.addEventListener('pointertap', tapSpy);
+            a.addEventListener('pointerup', upSpy);
+
+            send('pointerdown', 50, pointerType, button);
+            send('pointerup', 50, pointerType, button);
+
+            expect(clickSpy).toHaveBeenCalledOnce();
+            expect(tapSpy).toHaveBeenCalledOnce();
+
+            send('pointerup', 50, pointerType, button);
+
+            expect(upSpy).toHaveBeenCalledTimes(2);
+            expect(clickSpy).toHaveBeenCalledOnce();
+            expect(tapSpy).toHaveBeenCalledOnce();
+        });
+
+        it.each([
+            ['over another target', 'pointerup'],
+            ['outside the canvas', 'pointerupoutside'],
+        ])('should not notify the last clicked target or click its ancestors for a release %s', (_where, releaseType) =>
+        {
+            const { stage, a, send } = setup();
+            const outsideSpy = jest.fn();
+            const stageClickSpy = jest.fn();
+
+            a.addEventListener('pointerupoutside', outsideSpy);
+            a.addEventListener('mouseupoutside', outsideSpy);
+
+            send('pointerdown', 50);
+            send('pointerup', 50);
+
+            // added now because the click above bubbles to the stage
+            stage.addEventListener('click', stageClickSpy);
+            send(releaseType, 150);
+
+            expect(outsideSpy).not.toHaveBeenCalled();
+            expect(stageClickSpy).not.toHaveBeenCalled();
+        });
+
+        it('should not click a target whose press was released outside the canvas', () =>
+        {
+            const { a, send } = setup();
+            const outsideSpy = jest.fn();
+            const clickSpy = jest.fn();
+
+            a.addEventListener('pointerupoutside', outsideSpy);
+            a.addEventListener('click', clickSpy);
+
+            send('pointerdown', 50);
+            send('pointerupoutside', 150);
+            send('pointerup', 50);
+
+            expect(outsideSpy).toHaveBeenCalledOnce();
+            expect(clickSpy).not.toHaveBeenCalled();
+        });
+
+        // Pointer events only send the first press and the last release of a set of held buttons,
+        // but the mouse events used without pointer event support send them all.
+        it.each([
+            ['on the target', 'pointerup', 1],
+            ['outside the canvas', 'pointerupoutside', 0],
+        ])('should keep the press of a held button when another is released %s', (_where, releaseType, rightClicks) =>
+        {
+            const { a, send } = setup();
+            const clickSpy = jest.fn();
+            const rightClickSpy = jest.fn();
+
+            a.addEventListener('click', clickSpy);
+            a.addEventListener('rightclick', rightClickSpy);
+
+            send('pointerdown', 50, 'mouse', 0);
+            send('pointerdown', 50, 'mouse', 2);
+            send(releaseType, 50, 'mouse', 2);
+
+            expect(rightClickSpy).toHaveBeenCalledTimes(rightClicks);
+            expect(clickSpy).not.toHaveBeenCalled();
+
+            send('pointerup', 50, 'mouse', 0);
+
+            expect(clickSpy).toHaveBeenCalledOnce();
+        });
+
+        it('should click the nearest mounted ancestor if a pointerup listener destroys the pressed target', () =>
+        {
+            const { stage, a, send } = setup();
+            const stageClickSpy = jest.fn();
+
+            a.addEventListener('pointerup', () => a.destroy());
+            stage.addEventListener('click', stageClickSpy);
+
+            send('pointerdown', 50);
+            send('pointerup', 50);
+
+            expect(stageClickSpy).toHaveBeenCalledOnce();
+            expect(stageClickSpy.mock.calls[0][0].target).toBe(stage);
+        });
+
+        // listener on the pressed target, where the release is, its type, and its x position
+        const releaseListeners: [string, string, string, number][] = [
+            ['pointerup', 'on the target', 'pointerup', 50],
+            ['mouseup', 'on the target', 'pointerup', 50],
+            ['click', 'on the target', 'pointerup', 50],
+            ['pointerupoutside', 'over another target', 'pointerup', 150],
+            ['pointerupoutside', 'outside the canvas', 'pointerupoutside', 150],
+        ];
+
+        it.each(releaseListeners)(
+            'should keep a press made by a %s listener for a release %s',
+            (listenerType, _where, releaseType, x) =>
+            {
+                const { a, send } = setup();
+                const clickSpy = jest.fn();
+
+                a.addEventListener(listenerType, () => send('pointerdown', 50), { once: true });
+
+                send('pointerdown', 50);
+                send(releaseType, x);
+
+                a.addEventListener('click', clickSpy);
+
+                send('pointerup', 50);
+                expect(clickSpy).toHaveBeenCalledOnce();
+
+                send('pointerup', 50);
+                expect(clickSpy).toHaveBeenCalledOnce();
+            });
+
+        it.each(releaseListeners)(
+            'should forget the press if a %s listener throws for a release %s',
+            (listenerType, _where, releaseType, x) =>
+            {
+                const { a, send } = setup();
+                const clickSpy = jest.fn();
+
+                a.addEventListener(listenerType, () => { throw new Error('listener error'); }, { once: true });
+
+                send('pointerdown', 50);
+                expect(() => send(releaseType, x)).toThrow('listener error');
+
+                a.addEventListener('click', clickSpy);
+                send('pointerup', 50);
+
+                expect(clickSpy).not.toHaveBeenCalled();
+            });
+    });
+
     it('should fire pointerout on the most specific mounted ancestor of pointerover target', () =>
     {
         const stage = new Container();
