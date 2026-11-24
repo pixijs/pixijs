@@ -442,6 +442,7 @@ Texture.WHITE = new Texture({
         resource: new Uint8Array([255, 255, 255, 255]),
         width: 1,
         height: 1,
+        format: 'bgra8unorm',
         alphaMode: 'premultiply-alpha-on-upload',
         label: 'WHITE',
     }),

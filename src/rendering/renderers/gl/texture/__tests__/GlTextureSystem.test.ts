@@ -129,4 +129,29 @@ describe('GlTextureSystem', () =>
         expect(gl.getError()).toBe(gl.NO_ERROR);
         expect(gl.getParameter(gl.UNPACK_ALIGNMENT)).toBe(4);
     });
+
+    it.each(['rgba8unorm', 'bgra8unorm'] as const)(
+        'should draw into an antialiased %s render texture on WebGL2',
+        async (format) =>
+        {
+            renderer = await getWebGLRenderer({ preferWebGLVersion: 2 });
+
+            const gl = renderer.gl;
+
+            expect(renderer.context.webGLVersion).toBe(2);
+
+            const target = RenderTexture.create({ width: 4, height: 4, format, antialias: true });
+            const container = new Graphics().rect(0, 0, 4, 4).fill(0xff0000);
+
+            gl.getError();
+
+            renderer.render({ container, target });
+
+            expect(gl.getError()).toBe(gl.NO_ERROR);
+            expect(Array.from(renderer.extract.pixels(target).pixels.subarray(0, 4))).toEqual([255, 0, 0, 255]);
+
+            container.destroy();
+            target.destroy(true);
+        }
+    );
 });

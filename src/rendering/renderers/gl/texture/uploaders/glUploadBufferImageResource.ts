@@ -2,6 +2,7 @@ import { Rectangle } from '../../../../../maths/shapes/Rectangle';
 import { TEXTURE_FORMAT_BYTES_PER_PIXEL } from '../../../shared/texture/const';
 import { getTexelRangeRects } from '../../../shared/texture/utils/getTexelRangeRects';
 import { GL_TARGETS } from '../const';
+import { bgraToRgba, isBgraFormat, MAX_SHARED_SWAP_BYTES } from '../utils/bgraToRgba';
 
 import type { TypedArray } from '../../../shared/buffer/Buffer';
 import type { BufferImageSource } from '../../../shared/texture/sources/BufferImageSource';
@@ -15,6 +16,26 @@ const tempRects = [new Rectangle(), new Rectangle(), new Rectangle()];
 function paddedRowsByteLength(rows: number, rowBytes: number, alignment: number): number
 {
     return ((rows - 1) * (Math.ceil(rowBytes / alignment) * alignment)) + rowBytes;
+}
+
+/**
+ * Swaps the BGRA texels of an update to an allocated texture. Texels too big for the shared swap buffer go into one
+ * the texture keeps, sized to the whole resource so every later update or rect fits. Allocation uploads don't come
+ * here, so a texture uploaded once keeps no copy.
+ * @param glTexture - the texture being updated
+ * @param resource - the source's texels
+ * @param texels - the part of `resource` to upload
+ */
+function bgraUpdateToRgba(glTexture: GlTexture, resource: TypedArray, texels: TypedArray = resource): Uint8Array
+{
+    const kept = glTexture._bgraScratch;
+
+    if (texels.byteLength > MAX_SHARED_SWAP_BYTES && (!kept || kept.byteLength < texels.byteLength))
+    {
+        glTexture._bgraScratch = new ArrayBuffer(resource.byteLength);
+    }
+
+    return bgraToRgba(texels, glTexture._bgraScratch);
 }
 
 /** @internal */
@@ -33,6 +54,8 @@ export const glUploadBufferImageResource = {
     {
         const target = targetOverride || glTexture.target;
         const resource = source.resource as TypedArray;
+        // WebGL has no BGRA upload format, so BGRA texels upload as a copy with red and blue swapped
+        const bgra = isBgraFormat(source.format);
 
         // WebGL reads rows padded to UNPACK_ALIGNMENT, 4 by default. A buffer long enough for padded rows uploads as it
         // always has. One too short for them holds tightly packed rows, which upload at an alignment of 1.
@@ -63,7 +86,7 @@ export const glUploadBufferImageResource = {
                     0,
                     glTexture.format,
                     glTexture.type,
-                    resource
+                    bgra ? bgraToRgba(resource) : resource
                 );
             }
             else
@@ -79,7 +102,7 @@ export const glUploadBufferImageResource = {
                     source.depthOrArrayLayers,
                     glTexture.format,
                     glTexture.type,
-                    resource
+                    bgra ? bgraUpdateToRgba(glTexture, resource) : resource
                 );
             }
         }
@@ -102,7 +125,7 @@ export const glUploadBufferImageResource = {
                     0,
                     glTexture.format,
                     glTexture.type,
-                    resource
+                    bgra ? bgraToRgba(resource) : resource
                 );
             }
             else if (isPartial)
@@ -122,6 +145,7 @@ export const glUploadBufferImageResource = {
                 {
                     const rect = tempRects[i];
                     const offset = ((rect.y * source.width) + rect.x) * elementsPerTexel;
+                    const texels = resource.subarray(offset, offset + (rect.width * rect.height * elementsPerTexel));
 
                     gl.texSubImage2D(
                         target,
@@ -132,7 +156,7 @@ export const glUploadBufferImageResource = {
                         rect.height,
                         glTexture.format,
                         glTexture.type,
-                        resource.subarray(offset, offset + (rect.width * rect.height * elementsPerTexel))
+                        bgra ? bgraUpdateToRgba(glTexture, resource, texels) : texels
                     );
                 }
             }
@@ -147,7 +171,7 @@ export const glUploadBufferImageResource = {
                     source.height,
                     glTexture.format,
                     glTexture.type,
-                    resource
+                    bgra ? bgraUpdateToRgba(glTexture, resource) : resource
                 );
             }
         }

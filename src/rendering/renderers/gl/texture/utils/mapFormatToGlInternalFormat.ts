@@ -17,7 +17,7 @@ export function mapFormatToGlInternalFormat(
 ): Record<string, number>
 {
     let srgb = {};
-    let bgra8unorm: number = gl.RGBA;
+    let rgba8: number = gl.RGBA;
 
     if (!(gl instanceof DOMAdapter.get().getWebGLRenderingContext()))
     {
@@ -26,7 +26,7 @@ export function mapFormatToGlInternalFormat(
             'bgra8unorm-srgb': gl.SRGB8_ALPHA8,
         };
 
-        bgra8unorm = gl.RGBA8;
+        rgba8 = gl.RGBA8;
     }
     else if (extensions.srgb)
     {
@@ -59,7 +59,7 @@ export function mapFormatToGlInternalFormat(
         rg16uint: gl.RG16UI,
         rg16sint: gl.RG16I,
         rg16float: gl.RG16F,
-        rgba8unorm: gl.RGBA,
+        rgba8unorm: rgba8,
 
         ...srgb,
 
@@ -67,7 +67,7 @@ export function mapFormatToGlInternalFormat(
         rgba8snorm: gl.RGBA8_SNORM,
         rgba8uint: gl.RGBA8UI,
         rgba8sint: gl.RGBA8I,
-        bgra8unorm,
+        bgra8unorm: rgba8,
         rgb9e5ufloat: gl.RGB9_E5,
         rgb10a2unorm: gl.RGB10_A2,
         rg11b10ufloat: gl.R11F_G11F_B10F,

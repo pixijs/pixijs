@@ -20,6 +20,13 @@ export class GlTexture implements GPUData
      */
     public _layerInitMask = 0;
 
+    /**
+     * Where a bgra8unorm buffer update over 1 MiB is swapped to RGBA, made on the first such update and kept for
+     * later ones, so a large texture updated every frame doesn't allocate its size on each upload.
+     * @internal
+     */
+    public _bgraScratch: ArrayBuffer | null = null;
+
     /** Width of texture that was used in texImage2D. */
     public width: number;
 
