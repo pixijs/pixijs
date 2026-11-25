@@ -1,6 +1,4 @@
-import { convertFormatIfRequired } from '../utils/convertFormatIfRequired';
-import { createLevelBuffersFromKTX } from '../utils/createLevelBuffersFromKTX';
-import { getTextureFormatFromKTXTexture } from '../utils/getTextureFormatFromKTXTexture';
+import { createTextureOptionsFromKTX } from '../utils/createTextureOptionsFromKTX';
 import { gpuFormatToKTXBasisTranscoderFormat } from '../utils/gpuFormatToKTXBasisTranscoderFormat';
 
 import type { TEXTURE_FORMATS } from '../../../rendering/renderers/shared/texture/const';
@@ -54,15 +52,13 @@ async function getKTX(): Promise<LIBKTXModule>
     return ktxPromise;
 }
 
-async function fetchKTXTexture(url: string, ktx: LIBKTXModule)
+async function fetchKTXData(url: string): Promise<Uint8Array>
 {
     const ktx2Response = await fetch(url);
 
     if (ktx2Response.ok)
     {
-        const ktx2ArrayBuffer = await ktx2Response.arrayBuffer();
-
-        return new ktx.ktxTexture(new Uint8Array(ktx2ArrayBuffer));
+        return new Uint8Array(await ktx2Response.arrayBuffer());
     }
 
     throw new Error(`Failed to load KTX(2) texture: ${url}`);
@@ -79,42 +75,12 @@ const preferredTranscodedFormat: Partial<TEXTURE_FORMATS>[] = [
 async function load(url: string): Promise<TextureSourceOptions>
 {
     const ktx = await getKTX();
+    const data = await fetchKTXData(url);
 
-    const ktxTexture = await fetchKTXTexture(url, ktx);
-
-    let format: COMPRESSED_TEXTURE_FORMATS;
-
-    if (ktxTexture.needsTranscoding)
-    {
-        format = basisTranscodedTextureFormat;
-
-        const transcodeFormat = ktx.TranscodeTarget[basisTranscoderFormat];
-        const result = ktxTexture.transcodeBasis(transcodeFormat, 0);
-
-        if (result !== ktx.ErrorCode.SUCCESS)
-        {
-            throw new Error('Unable to transcode basis texture.');
-        }
-    }
-    else
-    {
-        format = getTextureFormatFromKTXTexture(ktxTexture);
-    }
-
-    const levelBuffers = createLevelBuffersFromKTX(ktxTexture);
-
-    const textureOptions = {
-        width: ktxTexture.baseWidth,
-        height: ktxTexture.baseHeight,
-        format: format as TEXTURE_FORMATS,
-        mipLevelCount: ktxTexture.numLevels,
-        resource: levelBuffers,
-        alphaMode: 'no-premultiply-alpha'
-    } as TextureSourceOptions;
-
-    convertFormatIfRequired(textureOptions);
-
-    return textureOptions;
+    return createTextureOptionsFromKTX(ktx, data, {
+        transcoderFormat: basisTranscoderFormat,
+        transcodedFormat: basisTranscodedTextureFormat,
+    });
 }
 
 async function init(
