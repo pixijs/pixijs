@@ -72,12 +72,15 @@ export interface CubeTextureSourceOptions extends Omit<
  *
  * for (let face = 0; face < 6; face++)
  * {
- *   renderer.renderTarget.bind({ target, clear: true, layer: face });
- *   // ...draw the scene as seen through this face
+ *   // ...point `scene` along this face
+ *   renderer.render({ container: scene, target, layer: face, clear: true });
  * }
  *
  * const cube = new CubeTexture({ source: cubeSource });
  * ```
+ *
+ * Inside a render, such as in a render pipe, bind a face with
+ * `renderer.renderTarget.bind({ target, clear: true, layer: face })` and draw to it instead.
  * @category rendering
  * @advanced
  */
