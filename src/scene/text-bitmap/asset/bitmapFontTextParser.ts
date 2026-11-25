@@ -67,21 +67,21 @@ export const bitmapFontTextParser = {
             distanceField: [],
         };
 
-        for (const i in items)
+        for (const item of items)
         {
             // Extract item name
-            const name = items[i].match(/^[a-z]+/gm)[0] as keyof BitmapFontRawData;
+            const name = item.match(/^[a-z]+/gm)[0] as keyof BitmapFontRawData;
 
             // Extract item attribute list as string ex.: "width=10"
-            const attributeList = items[i].match(/[a-zA-Z]+=([^\s"']+|"([^"]*)")/gm);
+            const attributeList = item.match(/[a-zA-Z]+=([^\s"']+|"([^"]*)")/gm) ?? [];
 
             // Convert attribute list into an object
             const itemData: any = {};
 
-            for (const i in attributeList)
+            for (const attribute of attributeList)
             {
                 // Split key-value pairs
-                const split = attributeList[i].split('=');
+                const split = attribute.split('=');
                 const key = split[0];
 
                 // Remove eventual quotes from value

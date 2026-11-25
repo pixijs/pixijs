@@ -40,4 +40,10 @@ export interface BasisTexture
         unused: number,
         getAlphaForOpaqueFormats: number
     ): boolean;
+
+    /** Empties the transcoder's copy of the file without freeing its memory. */
+    close(): void;
+
+    /** Frees the file in the WebAssembly heap of the transcoder. */
+    delete(): void;
 }

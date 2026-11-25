@@ -19,6 +19,8 @@ export interface KTXTexture
     baseWidth: number;
     transcodeBasis(transcodeFormat: any, arg1: number): unknown;
     needsTranscoding: boolean;
+    /** Frees the texture in the WebAssembly heap of the transcoder. */
+    delete(): void;
 }
 
 /** @internal */

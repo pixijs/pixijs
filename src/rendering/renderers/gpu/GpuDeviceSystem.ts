@@ -36,6 +36,8 @@ export interface GPU
  * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
  * while setting to `'low-power'` will prioritize power saving over rendering performance.
  * @property {boolean} [forceFallbackAdapter=false] - Force the use of the fallback adapter
+ * @property {boolean} [tileBasedGpu] - Whether the GPU renders in tiles. Leave unset to judge it from
+ * `adapter.info.vendor`.
  * @category rendering
  * @advanced
  */
@@ -54,6 +56,14 @@ export interface GpuContextOptions
      * @default false
      */
     forceFallbackAdapter: boolean;
+    /**
+     * Whether the GPU renders in tiles. Decides whether antialiased targets discard their multisample colour
+     * and restore it when a pass reopens them; see {@link GpuExtensions.tileBased}. Leave unset to judge it
+     * from `adapter.info.vendor`, which a browser may leave empty. Set it only when you know the hardware
+     * and have measured both paths on it.
+     * @default undefined
+     */
+    tileBasedGpu?: boolean;
     /** Using shared device and adaptor from other engine */
     gpu?: GPU;
 }
@@ -86,6 +96,11 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
          * @default false
          */
         forceFallbackAdapter: false,
+        /**
+         * {@link WebGPUOptions.tileBasedGpu}
+         * @default undefined
+         */
+        tileBasedGpu: undefined,
     };
 
     /** The GPU device */
@@ -128,7 +143,7 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
             transientAttachment:
                 typeof (GPUTextureUsage as { TRANSIENT_ATTACHMENT?: number }).TRANSIENT_ATTACHMENT === 'number'
                 && !isWebKit({ from: '27.1', before: '28' }),
-            tileBased: tileBasedVendors.has(gpu.adapter?.info?.vendor),
+            tileBased: this._options.tileBasedGpu ?? tileBasedVendors.has(gpu.adapter?.info?.vendor),
         };
 
         // a shared device belongs to the engine that created it, so only restore our own
@@ -206,6 +221,9 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
                 maxSamplersPerShaderStage: adapter.limits.maxSamplersPerShaderStage,
                 // the spec default is 256; the adapter's own value is always supported and often smaller
                 minUniformBufferOffsetAlignment: adapter.limits.minUniformBufferOffsetAlignment,
+                // the spec defaults are 256 MiB and 128 MiB; a larger buffer is invalid, and so is every draw from it
+                maxBufferSize: adapter.limits.maxBufferSize,
+                maxStorageBufferBindingSize: adapter.limits.maxStorageBufferBindingSize,
             },
         });
 
