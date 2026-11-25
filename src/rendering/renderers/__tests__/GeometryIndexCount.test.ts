@@ -87,8 +87,8 @@ describe('Geometry indexCount on WebGL', () =>
         renderer = null;
     });
 
-    // the count handed to gl.drawElements is the whole story here, and there is no program bound to
-    // draw with, so the call is captured rather than let through
+    // only the count and index type handed to gl.drawElements matter here, and no program is bound
+    // to draw with, so the call is captured rather than let through
     function drawElementsCall(geometry: Geometry, size?: number): Parameters<WebGL2RenderingContext['drawElements']>
     {
         renderer.geometry.bind(geometry, getGlProgram());
