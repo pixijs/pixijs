@@ -174,4 +174,24 @@ describe('FilterSystem blend modes with WebGL', () =>
 describeLocalOnly('FilterSystem blend modes with WebGPU', () =>
 {
     blendSuite(() => getWebGPURenderer({ width: 128, height: 128 }));
+
+    // the screen takes the preferred canvas format, rgba8unorm on Android, while pooled textures default to bgra8unorm
+    it.each(['rgba8unorm', 'bgra8unorm'] as const)('should copy the backdrop of a %s screen', async (format) =>
+    {
+        const renderer = await getWebGPURenderer({ width: 128, height: 128, format });
+        const stage = new Container();
+
+        stage.addChild(createBackdrop(), createParent());
+
+        const { device } = renderer.gpu;
+
+        device.pushErrorScope('validation');
+        renderer.render(stage);
+
+        expect(await device.popErrorScope()).toBeNull();
+
+        stage.destroy({ children: true });
+        TexturePool.clear();
+        renderer.destroy();
+    });
 });

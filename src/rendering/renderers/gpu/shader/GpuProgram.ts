@@ -1,5 +1,6 @@
 import { createIdFromString } from '../../shared/utils/createIdFromString';
 import { extractAttributesFromGpuProgram } from './utils/extractAttributesFromGpuProgram';
+import { extractFragmentOutputMaskFromGpuProgram } from './utils/extractFragmentOutputMaskFromGpuProgram';
 import { extractStructAndGroups } from './utils/extractStructAndGroups';
 import { generateGpuLayoutGroups } from './utils/generateGpuLayoutGroups';
 import { generateLayoutHash } from './utils/generateLayoutHash';
@@ -145,6 +146,7 @@ export class GpuProgram
      */
     public readonly name: string;
     private _attributeData: Record<string, ExtractedAttributeData>;
+    private _fragmentOutputMask: number | null | undefined;
 
     /** if true, the program will automatically assign global uniforms to group[0] */
     public autoAssignGlobalUniforms: boolean;
@@ -207,6 +209,23 @@ export class GpuProgram
         this._attributeData ??= extractAttributesFromGpuProgram(this.vertex);
 
         return this._attributeData;
+    }
+
+    /**
+     * Which color locations the fragment entry point writes: bit `n` is set when it writes
+     * `@location(n)`. A render target's color attachments that the shader doesn't write are left alone.
+     * `null` if the entry point couldn't be read, in which case every attachment is written.
+     * @advanced
+     */
+    get fragmentOutputMask(): number | null
+    {
+        // `undefined` = not read yet; `null` = read, but couldn't be parsed (kept, not retried)
+        if (this._fragmentOutputMask === undefined)
+        {
+            this._fragmentOutputMask = extractFragmentOutputMaskFromGpuProgram(this.fragment);
+        }
+
+        return this._fragmentOutputMask;
     }
     /** destroys the program */
     public destroy(): void

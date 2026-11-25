@@ -7,21 +7,23 @@ import { type ImageLike } from '../../../environment/ImageLike';
  * so we wait an arbitrary amount of time before resolving the promise.
  * @param image - The image to load the SVG into
  * @param url - The url to load the SVG from
- * @param delay - Whether to delay the load
+ * @param delay - How long to wait in milliseconds before loading, `true` waits 100ms and `false` or 0 does not wait
  * @returns - A promise that resolves when the image has loaded
  * @internal
  */
-export function loadSVGImage(image: ImageLike, url: string, delay: boolean)
+export function loadSVGImage(image: ImageLike, url: string, delay: boolean | number)
 {
+    const delayMs = delay === true ? 100 : Number(delay) || 0;
+
     return new Promise<void>(async (resolve) =>
     {
         // Safari has a known bug where embedded fonts are not available
         // immediately after the image loads, to compensate we wait an
         // arbitrary amount of time
         // @see https://bugs.webkit.org/show_bug.cgi?id=219770
-        if (delay)
+        if (delayMs > 0)
         {
-            await new Promise<void>((resolve) => setTimeout(resolve, 100));
+            await new Promise<void>((resolve) => setTimeout(resolve, delayMs));
         }
 
         image.onload = () =>

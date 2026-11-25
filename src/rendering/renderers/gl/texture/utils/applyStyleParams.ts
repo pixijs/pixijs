@@ -82,13 +82,13 @@ export function applyStyleParams(
         gl[glFunctionName](castParam, anisotropicExt.TEXTURE_MAX_ANISOTROPY_EXT, level);
     }
 
-    // 4. set the compare mode
+    // 4. set the compare mode (TEXTURE_COMPARE_MODE does not exist in webGL1)
     if (style.compare)
     {
         gl[glFunctionName](castParam, gl.TEXTURE_COMPARE_FUNC, compareModeToGlCompare[style.compare]);
         gl[glFunctionName](castParam, gl.TEXTURE_COMPARE_MODE, gl.COMPARE_REF_TO_TEXTURE);
     }
-    else if (!firstCreation)
+    else if (!firstCreation && gl.TEXTURE_COMPARE_MODE)
     {
         gl[glFunctionName](castParam, gl.TEXTURE_COMPARE_MODE, gl.NONE);
     }

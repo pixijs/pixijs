@@ -13,7 +13,7 @@ on:
 jobs:
   prTitle:
     name: Check
-    runs-on: ubuntu-22.04
+    runs-on: namespace-profile-linux-8-16
     steps:
       - name: Checkout
         uses: actions/checkout@v6

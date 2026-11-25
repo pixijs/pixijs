@@ -5,9 +5,14 @@ import type { GlUniformBlockData } from '../GlProgram';
  * @private
  * @param program - the webgl program
  * @param gl - the WebGL context
+ * @param firstBinding - the binding slot the first block reads from; each block takes the slot that many past its index
  * @returns {object} the uniform data for this program
  */
-export function getUboData(program: WebGLProgram, gl: WebGL2RenderingContext): Record<string, GlUniformBlockData>
+export function getUboData(
+    program: WebGLProgram,
+    gl: WebGL2RenderingContext,
+    firstBinding = 0,
+): Record<string, GlUniformBlockData>
 {
     // if uniform buffer data is not supported, early out
     if (!gl.ACTIVE_UNIFORM_BLOCKS) return {};
@@ -28,6 +33,7 @@ export function getUboData(program: WebGLProgram, gl: WebGL2RenderingContext): R
         uniformBlocks[name] = {
             name,
             index: uniformBlockIndex,
+            binding: uniformBlockIndex + firstBinding,
             size,
         };
     }

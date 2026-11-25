@@ -13,28 +13,33 @@ inputs:
 runs:
   using: "composite"
   steps:
+    # The npm publish jobs stay on GitHub-hosted runners, which have no Namespace
+    # cache volume, so they cache npm downloads the GitHub way instead.
     - name: Use Node.js
       uses: actions/setup-node@v6
       with:
         node-version: ${{ inputs.node-version }}
         registry-url: "https://registry.npmjs.org"
+        cache: ${{ runner.environment == 'github-hosted' && 'npm' || '' }}
     - name: Install npm
       shell: bash
       run: npm install -g npm@${{ inputs.npm-version }}
-    - name: Cache Dependencies
-      id: node-modules-cache
-      uses: actions/cache@v5
+    # The cache volume is shared by every branch and has no keys, so it holds
+    # the npm and Electron downloads rather than node_modules, and `npm ci`
+    # installs from disk. On macOS the volume is attached by symlink, and npm
+    # replaces a symlinked node_modules with a real folder.
+    - name: Cache npm and Electron downloads
+      if: runner.environment == 'self-hosted'
+      uses: namespacelabs/nscloud-cache-action@v1
       with:
-        path: node_modules
-        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-modules-
+        path: |
+          ~/.npm
+          ${{ runner.os == 'macOS' && '~/Library/Caches/electron' || '~/.cache/electron' }}
     - name: Install Dependencies
-      if: steps.node-modules-cache.outputs.cache-hit != 'true'
       shell: bash
-      run: npm ci
-    # A restored cache (or an interrupted install) can be missing Electron's binary,
-    # which fails every test job with "Electron failed to install correctly".
+      run: npm ci --prefer-offline --no-audit --no-fund
+    # An interrupted install can be missing Electron's binary, which fails every
+    # test job with "Electron failed to install correctly".
     - name: Verify Electron
       shell: bash
       run: node -e "require('electron')" || node node_modules/electron/install.js

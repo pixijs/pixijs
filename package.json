@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "8.22.0",
+  "version": "8.23.0",
   "author": "PixiJS Team",
   "homepage": "http://pixijs.com/",
   "bugs": "https://github.com/pixijs/pixijs/issues",
@@ -58,10 +58,10 @@
     "!(src/**/index).{ts,js,mjs}": "eslint --cache --max-warnings 0 --fix"
   },
   "dependencies": {
-    "@pixi/colord": "^2.9.6",
     "@types/earcut": "^3.0.0",
     "@webgpu/types": "^0.1.69",
     "@xmldom/xmldom": "^0.8.15",
+    "colord": "^2.11.0",
     "earcut": "^3.0.2",
     "eventemitter3": "^5.0.1",
     "gifuct-js": "^2.1.2",
@@ -215,6 +215,7 @@
     "./lib/scene/text-bitmap/init.*",
     "./lib/scene/text-html/init.*",
     "./lib/scene/graphics/init.*",
+    "./lib/scene/graphics-smooth/init.*",
     "./lib/scene/mesh/init.*",
     "./lib/prepare/init.*",
     "./lib/unsafe-eval/init.*",
@@ -400,6 +401,14 @@
       },
       "require": {
         "default": "./lib/scene/graphics/init.js"
+      }
+    },
+    "./graphics-smooth": {
+      "import": {
+        "default": "./lib/scene/graphics-smooth/init.mjs"
+      },
+      "require": {
+        "default": "./lib/scene/graphics-smooth/init.js"
       }
     },
     "./mesh": {

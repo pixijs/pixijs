@@ -574,8 +574,6 @@ export abstract class Batcher
                 continue;
             }
 
-            source._batchTick = BATCH_TICK;
-
             if (textureBatch.count >= maxTextures || breakRequired)
             {
                 this._finishBatch(
@@ -603,6 +601,9 @@ export abstract class Batcher
 
                 ++BATCH_TICK;
             }
+
+            // after the flush above: it bumps BATCH_TICK
+            source._batchTick = BATCH_TICK;
 
             element._textureId = source._textureBindLocation = textureBatch.count;
             textureBatch.ids[source.uid] = textureBatch.count;

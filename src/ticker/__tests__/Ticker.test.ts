@@ -8,6 +8,10 @@ describe('Ticker', () =>
 {
     let length: (ticker?: Ticker) => number;
 
+    // Adding a listener to the running shared ticker sets lastTime to performance.now(), which only moves every
+    // 0.1ms here, and update() skips a frame with no elapsed time. Step past lastTime so every update runs.
+    const update = () => shared.update(shared.lastTime + 1);
+
     beforeAll(() =>
     {
         length = (ticker?: Ticker) =>
@@ -99,12 +103,12 @@ describe('Ticker', () =>
         const listener = jest.fn();
 
         shared.add(listener);
-        shared.update();
+        update();
 
         expect(listener).toHaveBeenCalledTimes(1);
 
         shared.remove(listener);
-        shared.update();
+        update();
 
         expect(listener).toHaveBeenCalledTimes(1);
     });
@@ -116,13 +120,13 @@ describe('Ticker', () =>
         const len = length();
 
         shared.add(listener).add(listener);
-        shared.update();
+        update();
 
         expect(listener).toHaveBeenCalledTimes(2);
         expect(length()).toEqual(len + 2);
 
         shared.remove(listener);
-        shared.update();
+        update();
 
         expect(listener).toHaveBeenCalledTimes(2);
         expect(length()).toEqual(len);
@@ -166,7 +170,7 @@ describe('Ticker', () =>
             .add(listener3, null, UPDATE_PRIORITY.HIGH)
             .add(listener2, null, UPDATE_PRIORITY.NORMAL);
 
-        shared.update();
+        update();
 
         expect(length()).toEqual(len + 3);
 
@@ -191,7 +195,7 @@ describe('Ticker', () =>
 
         shared.addOnce(listener);
 
-        shared.update();
+        update();
 
         expect(listener).toHaveBeenCalledTimes(1);
         expect(length()).toEqual(len);
@@ -208,7 +212,7 @@ describe('Ticker', () =>
             .add(listener2)
             .add(listener3);
 
-        shared.update();
+        update();
 
         expect(length()).toEqual(len + 3);
 
@@ -239,11 +243,11 @@ describe('Ticker', () =>
         shared.addOnce(listener2, null, UPDATE_PRIORITY.NORMAL);
         shared.add(listener3, null, UPDATE_PRIORITY.LOW);
 
-        shared.update();
+        update();
 
         expect(length()).toEqual(len + 2);
 
-        shared.update();
+        update();
 
         expect(listener1).toHaveBeenCalledTimes(2);
         expect(listener2).toHaveBeenCalledTimes(1);
@@ -267,7 +271,7 @@ describe('Ticker', () =>
 
         shared.add(mainListener, null, UPDATE_PRIORITY.NORMAL);
 
-        shared.update();
+        update();
 
         expect(length()).toEqual(len + 3);
 
@@ -293,7 +297,7 @@ describe('Ticker', () =>
 
         shared.add(listener1, null, UPDATE_PRIORITY.NORMAL);
 
-        shared.update();
+        update();
 
         expect(length()).toEqual(len + 2);
 
@@ -321,7 +325,7 @@ describe('Ticker', () =>
 
         shared.add(listener1, null, UPDATE_PRIORITY.NORMAL);
 
-        shared.update();
+        update();
 
         expect(length()).toEqual(len + 1);
 
@@ -350,14 +354,14 @@ describe('Ticker', () =>
 
         shared.add(listener1, null, UPDATE_PRIORITY.NORMAL);
 
-        shared.update();
+        update();
 
         expect(length()).toEqual(len + 1);
 
         expect(listener2).not.toHaveBeenCalled();
         expect(listener1).toHaveBeenCalledTimes(1);
 
-        shared.update();
+        update();
 
         expect(listener2).toHaveBeenCalledTimes(1);
         expect(listener1).toHaveBeenCalledTimes(1);
@@ -389,7 +393,7 @@ describe('Ticker', () =>
 
         shared.add(listener1, null, UPDATE_PRIORITY.NORMAL);
 
-        shared.update();
+        update();
 
         expect(length()).toEqual(len + 2);
 
@@ -398,7 +402,7 @@ describe('Ticker', () =>
         expect(listener4).toHaveBeenCalledTimes(1);
         expect(listener1).toHaveBeenCalledTimes(1);
 
-        shared.update();
+        update();
 
         expect(listener2).toHaveBeenCalledTimes(1);
         expect(listener3).not.toHaveBeenCalled();

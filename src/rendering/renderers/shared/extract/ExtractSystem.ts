@@ -3,6 +3,7 @@ import { type ImageLike } from '../../../../environment/ImageLike';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Container } from '../../../../scene/container/Container';
 import { Texture } from '../texture/Texture';
+import { isIntegerFormat } from '../texture/utils/isIntegerFormat';
 
 import type { ColorSource } from '../../../../color/Color';
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
@@ -11,6 +12,31 @@ import type { Renderer } from '../../types';
 import type { System } from '../system/System';
 import type { GetPixelsOutput } from '../texture/GenerateCanvas';
 import type { GenerateTextureOptions } from './GenerateTextureSystem';
+
+/**
+ * Extract reads color through an 8-bit path on both backends (`readPixels` with `RGBA` / `UNSIGNED_BYTE`
+ * on WebGL, a copy onto an 8-bit canvas on WebGPU), which float, integer, depth and stencil textures
+ * can't go through. Throws for those, naming the format, rather than returning zeros or failing GPU
+ * validation.
+ * @param texture - the texture about to be read
+ * @param generated - true when extract made the texture itself, so it is destroyed before throwing
+ */
+function assertReadable(texture: Texture, generated = false): void
+{
+    const format = texture.source.format;
+
+    if (!format.endsWith('float') && !isIntegerFormat(format) && !format.startsWith('depth') && format !== 'stencil8')
+    {
+        return;
+    }
+
+    if (generated) texture.destroy(true);
+
+    throw new Error(
+        `[ExtractSystem] can't read ${format} textures: extract reads 8-bit color only. `
+        + 'Extract a Mesh whose shader reads the texture and outputs color instead.'
+    );
+}
 
 const imageTypes = {
     png: 'image/png',
@@ -646,6 +672,7 @@ export class ExtractSystem implements System
      *     antialias: true
      * });
      * ```
+     * @throws If the target is a float, integer or depth texture
      * @see {@link ExtractOptions} For detailed options
      * @see {@link ExtractSystem.image} For HTMLImage output
      * @see {@link ExtractSystem.pixels} For raw pixel data
@@ -661,10 +688,14 @@ export class ExtractSystem implements System
 
         if (target instanceof Texture)
         {
+            assertReadable(target);
+
             return renderer.texture.generateCanvas(target);
         }
 
         const texture = renderer.textureGenerator.generateTexture(options as GenerateTextureOptions);
+
+        assertReadable(texture, true);
 
         const canvas = renderer.texture.generateCanvas(texture);
 
@@ -676,28 +707,29 @@ export class ExtractSystem implements System
     /**
      * Returns a one-dimensional array containing the pixel data of the entire texture in RGBA order,
      * with integer values between 0 and 255 (inclusive).
-     * > [!NOE] The returned array is a flat Uint8Array where every 4 values represent RGBA
+     * > [!NOTE] `pixels` is a flat Uint8ClampedArray where every 4 values represent RGBA
      * @param options - The options for extracting the image, or the target to extract
-     * @returns One-dimensional Uint8Array containing the pixel data in RGBA format
+     * @returns The RGBA `pixels` as a flat Uint8ClampedArray, with their `width` and `height`
      * @example
      * ```ts
      * // Basic pixel extraction
      * const sprite = new Sprite(texture);
-     * const pixels = renderer.extract.pixels(sprite);
+     * const { pixels } = renderer.extract.pixels(sprite);
      * console.log(pixels[0], pixels[1], pixels[2], pixels[3]); // R,G,B,A values
      *
      * // Extract with custom region
-     * const pixels = renderer.extract.pixels({
+     * const { pixels } = renderer.extract.pixels({
      *     target: sprite,
      *     frame: new Rectangle(0, 0, 100, 100)
      * });
      *
      * // Extract with high resolution
-     * const pixels = renderer.extract.pixels({
+     * const { pixels } = renderer.extract.pixels({
      *     target: sprite,
      *     resolution: 2
      * });
      * ```
+     * @throws If the target is a float, integer or depth texture
      * @see {@link ExtractOptions} For detailed options
      * @see {@link ExtractSystem.canvas} For canvas output
      * @see {@link ExtractSystem.image} For image output
@@ -713,6 +745,8 @@ export class ExtractSystem implements System
         const texture = target instanceof Texture
             ? target
             : renderer.textureGenerator.generateTexture(options as GenerateTextureOptions);
+
+        assertReadable(texture, !(target instanceof Texture));
 
         const pixelInfo = renderer.texture.getPixels(texture);
 

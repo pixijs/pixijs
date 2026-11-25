@@ -56,21 +56,8 @@ export function parseKTX(arrayBuffer: ArrayBuffer, supportedFormats: TEXTURE_FOR
 function getImageBuffers(dataView: DataView, glType: number, imagePixelByteSize: number, pixelWidth: number,
     pixelHeight: number, offset: number, numberOfMipmapLevels: number, littleEndian: boolean)
 {
-    const alignedWidth = (pixelWidth + 3) & ~3;
-    const alignedHeight = (pixelHeight + 3) & ~3;
-    let imagePixels = pixelWidth * pixelHeight;
-
-    if (glType === 0)
-    {
-        // Align to 16 pixels (4x4 blocks)
-        imagePixels = alignedWidth * alignedHeight;
-    }
-
-    let mipByteSize = imagePixels * imagePixelByteSize;
     let mipWidth = pixelWidth;
     let mipHeight = pixelHeight;
-    let alignedMipWidth = alignedWidth;
-    let alignedMipHeight = alignedHeight;
     let imageOffset = offset;
 
     const imageBuffers = new Array<Uint8Array>(numberOfMipmapLevels);
@@ -78,11 +65,12 @@ function getImageBuffers(dataView: DataView, glType: number, imagePixelByteSize:
     for (let mipmapLevel = 0; mipmapLevel < numberOfMipmapLevels; mipmapLevel++)
     {
         const imageSize = dataView.getUint32(imageOffset, littleEndian);
-        let elementOffset = imageOffset + 4;
+        // 4x4 block-compressed levels are padded to whole blocks; uncompressed levels are not
+        const mipByteSize = glType === 0
+            ? ((mipWidth + 3) & ~3) * ((mipHeight + 3) & ~3) * imagePixelByteSize
+            : mipWidth * mipHeight * imagePixelByteSize;
 
-        imageBuffers[mipmapLevel] = new Uint8Array(dataView.buffer, elementOffset, mipByteSize);
-
-        elementOffset += mipByteSize;
+        imageBuffers[mipmapLevel] = new Uint8Array(dataView.buffer, imageOffset + 4, mipByteSize);
 
         // HINT: Aligns to 4-byte boundary after jumping imageSize (in lieu of mipPadding)
         imageOffset += imageSize + 4;// (+4 to jump the imageSize field itself)
@@ -91,11 +79,6 @@ function getImageBuffers(dataView: DataView, glType: number, imagePixelByteSize:
         // Calculate mipWidth, mipHeight for _next_ iteration
         mipWidth = (mipWidth >> 1) || 1;
         mipHeight = (mipHeight >> 1) || 1;
-        alignedMipWidth = (mipWidth + 4 - 1) & ~(4 - 1);
-        alignedMipHeight = (mipHeight + 4 - 1) & ~(4 - 1);
-
-        // Each mipmap level is 4-times smaller?
-        mipByteSize = alignedMipWidth * alignedMipHeight * imagePixelByteSize;
     }
 
     return imageBuffers;

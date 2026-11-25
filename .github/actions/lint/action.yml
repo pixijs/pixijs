@@ -1,8 +1,0 @@
-name: "Test Project Linting"
-description: "Runs lint and type checks"
-runs:
-  using: "composite"
-  steps:
-    - name: Run Tests
-      shell: bash
-      run: npm run test -- lint types index prune dts

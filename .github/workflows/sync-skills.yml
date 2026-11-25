@@ -45,7 +45,7 @@ jobs:
   sync:
     # Stable releases only; manual dispatch is always allowed.
     if: github.event_name == 'workflow_dispatch' || github.event.release.prerelease == false
-    runs-on: ubuntu-22.04
+    runs-on: namespace-profile-linux-8-16
     env:
       TARGET_REPO: pixijs/pixijs-skills
       SOURCE_REF: ${{ github.event_name == 'release' && github.event.release.tag_name || github.event.inputs.source_ref || 'dev' }}

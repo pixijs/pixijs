@@ -1,4 +1,5 @@
 import { getAttributeInfoFromFormat } from '../../../shared/geometry/utils/getAttributeInfoFromFormat';
+import { stripShaderComments } from '../../../shared/shader/utils/stripShaderComments';
 
 import type { ExtractedAttributeData } from '../../../gl/shader/program/extractAttributesFromGlProgram';
 import type { VertexFormat } from '../../../shared/geometry/const';
@@ -67,18 +68,6 @@ function parseLocations(str: string, results: Record<string, ExtractedAttributeD
 }
 
 /**
- * Strips comments from WGSL source code.
- * @param source - WGSL source code
- * @returns Source with comments removed
- */
-function stripComments(source: string): string
-{
-    return source
-        .replace(/\/\/.*$/gm, '') // Remove line comments
-        .replace(/\/\*[\s\S]*?\*\//g, ''); // Remove block comments
-}
-
-/**
  * Extracts vertex attributes from a WGSL shader program.
  *
  * Supports two styles:
@@ -96,7 +85,7 @@ export function extractAttributesFromGpuProgram(
     const results: Record<string, ExtractedAttributeData> = {};
 
     // Strip comments to avoid false matches
-    const cleanSource = stripComments(source);
+    const cleanSource = stripShaderComments(source);
 
     // Step 1: Find the start of the vertex function (include '(' to avoid prefix matches)
     const mainVertStart = cleanSource.indexOf(`fn ${entryPoint}(`);

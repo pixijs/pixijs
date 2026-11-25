@@ -1,7 +1,7 @@
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../../view/ViewContainer';
+import { type GraphicsGpuData } from './AbstractGraphicsPipe';
 import { GraphicsContext } from './GraphicsContext';
-import { type GraphicsGpuData } from './GraphicsPipe';
 import '../init';
 
 import type { ColorSource } from '../../../color/Color';
@@ -100,7 +100,7 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
     public batched: boolean;
 
     private _context: GraphicsContext;
-    private readonly _ownedContext: GraphicsContext;
+    protected readonly _ownedContext: GraphicsContext;
 
     /**
      * Creates a new Graphics object.

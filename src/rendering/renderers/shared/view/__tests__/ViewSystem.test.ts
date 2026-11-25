@@ -1,5 +1,5 @@
-import { getWebGLRenderer } from '@test-utils';
-import { CanvasPool, TexturePool } from '~/rendering';
+import { getWebGLRenderer, getWebGPURenderer, itLocalOnly } from '@test-utils';
+import { CanvasPool, TexturePool, TextureSource } from '~/rendering';
 
 describe('ViewSystem', () =>
 {
@@ -74,6 +74,26 @@ describe('ViewSystem', () =>
         renderer.destroy();
     });
 
+    it('should register the resolution of the screen with the texture pool', async () =>
+    {
+        const renderer = await getWebGLRenderer({ width: 393, height: 852, resolution: 3 });
+
+        const before = TexturePool.getOptimalTexture({ width: 393, height: 852 });
+
+        expect([before.source.pixelWidth, before.source.pixelHeight]).toEqual([393, 852]);
+        TexturePool.returnTexture(before);
+
+        // the same 1179x2556 pixels, so only the resolution is new
+        renderer.resize(1179, 2556, 1);
+
+        const after = TexturePool.getOptimalTexture({ width: 393, height: 852 });
+
+        expect([after.source.pixelWidth, after.source.pixelHeight]).toEqual([512, 1024]);
+
+        TexturePool.returnTexture(after);
+        renderer.destroy();
+    });
+
     it('should remove the screen from both pools when the renderer is destroyed', async () =>
     {
         const renderer = await getWebGLRenderer({ width: 640, height: 480, resolution: 2 });
@@ -87,5 +107,35 @@ describe('ViewSystem', () =>
         expect([canvas.width, canvas.height]).toEqual([2048, 1024]);
 
         TexturePool.returnTexture(texture);
+    });
+
+    itLocalOnly('should set up the WebGPU canvas in the preferred format by default', async () =>
+    {
+        const preferred = navigator.gpu.getPreferredCanvasFormat();
+        const originalFormat = TextureSource.defaultOptions.format;
+
+        // set the texture default to the other format, so a canvas that just took it fails the test
+        TextureSource.defaultOptions.format = preferred === 'bgra8unorm' ? 'rgba8unorm' : 'bgra8unorm';
+
+        const renderer = await getWebGPURenderer();
+
+        try
+        {
+            expect(renderer.view.texture.source.format).toBe(preferred);
+        }
+        finally
+        {
+            TextureSource.defaultOptions.format = originalFormat;
+            renderer.destroy();
+        }
+    });
+
+    itLocalOnly('should keep an explicit WebGPU canvas format', async () =>
+    {
+        const renderer = await getWebGPURenderer({ format: 'rgba16float' });
+
+        expect(renderer.view.texture.source.format).toBe('rgba16float');
+
+        renderer.destroy();
     });
 });

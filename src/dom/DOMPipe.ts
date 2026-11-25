@@ -32,9 +32,9 @@ export class DOMPipe implements RenderPipe<DOMContainer>
     /** Array to keep track of attached DOM elements */
     private readonly _attachedDomElements: DOMContainer[] = [];
     /** The main DOM element that acts as a container for other DOM elements */
-    public readonly _domElement: HTMLDivElement;
+    private _domElement: HTMLDivElement = null;
     /** The CanvasTransformSync instance that keeps the DOM element in sync with the canvas */
-    private _canvasObserver: CanvasObserver;
+    private _canvasObserver: CanvasObserver = null;
 
     /**
      * Constructor for the DOMPipe class.
@@ -47,27 +47,22 @@ export class DOMPipe implements RenderPipe<DOMContainer>
         // Add this DOMPipe to the postrender runner of the renderer
         // we want to dom elements are calculated after all things have been rendered
         this._renderer.runners.postrender.add(this);
-
-        // add DOMPipe to init runners
-        this._renderer.runners.init.add(this);
-
-        // Create a main DOM element to contain other DOM elements
-        this._domElement = document.createElement('div');
-        this._domElement.style.position = 'absolute';
-        this._domElement.style.top = '0';
-        this._domElement.style.left = '0';
-        this._domElement.style.pointerEvents = 'none';
-        this._domElement.style.zIndex = '1000';
     }
 
-    /** Initializes the DOMPipe, setting up the main DOM element and adding it to the document body. */
-    public init(): void
+    /** The main DOM element that acts as a container for other DOM elements, created on first use. */
+    public get domElement(): HTMLDivElement
     {
-        // Initialize the CanvasTransformSync to keep the DOM element in sync with the canvas
-        this._canvasObserver = new CanvasObserver({
-            domElement: this._domElement,
-            renderer: this._renderer,
-        });
+        if (!this._domElement)
+        {
+            this._domElement = document.createElement('div');
+            this._domElement.style.position = 'absolute';
+            this._domElement.style.top = '0';
+            this._domElement.style.left = '0';
+            this._domElement.style.pointerEvents = 'none';
+            this._domElement.style.zIndex = '1000';
+        }
+
+        return this._domElement;
     }
 
     /**
@@ -109,10 +104,14 @@ export class DOMPipe implements RenderPipe<DOMContainer>
 
         if (attachedDomElements.length === 0)
         {
-            this._domElement.remove();
+            this._domElement?.remove();
 
             return;
         }
+
+        const domElement = this.domElement;
+
+        this._canvasObserver ??= new CanvasObserver({ domElement, renderer: this._renderer });
 
         // Ensure the main DOM element is attached to the same parent as the canvas
         this._canvasObserver.ensureAttached();
@@ -130,11 +129,11 @@ export class DOMPipe implements RenderPipe<DOMContainer>
             }
             else
             {
-                if (!this._domElement.contains(element))
+                if (!domElement.contains(element))
                 {
                     element.style.position = 'absolute';
                     element.style.pointerEvents = 'auto';
-                    this._domElement.appendChild(element);
+                    domElement.appendChild(element);
                 }
 
                 const wt = domContainer.worldTransform;
@@ -162,8 +161,10 @@ export class DOMPipe implements RenderPipe<DOMContainer>
         }
 
         this._attachedDomElements.length = 0;
-        this._domElement.remove();
-        this._canvasObserver.destroy();
+        this._domElement?.remove();
+        this._domElement = null;
+        this._canvasObserver?.destroy();
+        this._canvasObserver = null;
         this._renderer = null;
     }
 }

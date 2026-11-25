@@ -19,6 +19,13 @@ describe('ScreenSizeRegistry', () =>
             expect(screens.set(2, 1280, 800)).toBe(true);
         });
 
+        it('should report a change of resolution alone', () =>
+        {
+            expect(screens.set(1, 1280, 720, 1)).toBe(true);
+            expect(screens.set(1, 1280, 720, 2)).toBe(true);
+            expect(screens.set(1, 1280, 720, 2)).toBe(false);
+        });
+
         it('should report whether a remove changed anything', () =>
         {
             screens.set(1, 1280, 720);
@@ -80,6 +87,34 @@ describe('ScreenSizeRegistry', () =>
             expect(screens.getFittingWidth(801)).toBe(1280);
             expect(screens.getFittingWidth(1281)).toBe(2560);
             expect(screens.getFittingWidth(2561)).toBeUndefined();
+        });
+
+        it('should fit a request to a screen at the resolution of the request', () =>
+        {
+            screens.set(1, 1179, 2556, 3);
+
+            expect(screens.getFittingWidth(393, 1)).toBe(393);
+            expect(screens.getFittingHeight(852, 1)).toBe(852);
+            expect(screens.getFittingWidth(300, 1)).toBe(393);
+            expect(screens.getFittingWidth(786, 2)).toBe(786);
+            expect(screens.getFittingWidth(1179, 3)).toBe(1179);
+        });
+
+        it('should fall back to the physical size past the screen at the resolution of the request', () =>
+        {
+            screens.set(1, 1179, 2556, 3);
+
+            expect(screens.getFittingWidth(394, 1)).toBe(1179);
+            expect(screens.getFittingWidth(1180, 1)).toBeUndefined();
+        });
+
+        it('should round up a screen that is not a whole size at the resolution of the request', () =>
+        {
+            screens.set(1, 1000, 500, 3);
+
+            expect(screens.getFittingWidth(334, 1)).toBe(334);
+            expect(screens.getFittingHeight(167, 1)).toBe(167);
+            expect(screens.getFittingWidth(1000, 3)).toBe(1000);
         });
 
         it('should stop returning a screen once it is removed', () =>

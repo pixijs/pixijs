@@ -21,6 +21,7 @@ const subImports = [
     ['./text-bitmap', './lib/scene/text-bitmap'],
     ['./text-html', './lib/scene/text-html'],
     ['./graphics', './lib/scene/graphics'],
+    ['./graphics-smooth', './lib/scene/graphics-smooth'],
     ['./mesh', './lib/scene/mesh'],
     ['./prepare', './lib/prepare'],
     ['./unsafe-eval', './lib/unsafe-eval'],

@@ -1,7 +1,8 @@
+import { DOMAdapter } from '../../../../environment/adapter';
 import { warn } from '../../../../utils/logging/warn';
 import { CLEAR } from '../../gl/const';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
-import { TextureSource } from '../../shared/texture/sources/TextureSource';
+import { GpuMsaaTexture } from '../texture/GpuMsaaTexture';
 import { GpuDepthCopy } from './GpuDepthCopy';
 import { GpuMsaaRestore } from './GpuMsaaRestore';
 import { GpuRenderTarget } from './GpuRenderTarget';
@@ -14,9 +15,12 @@ import type { RenderTargetAdaptor, RenderTargetSystem } from '../../shared/rende
 import type { Texture } from '../../shared/texture/Texture';
 import type { WebGPURenderer } from '../WebGPURenderer';
 
-// WebGPU's `GPUCanvasContext.configure` only accepts these formats. Anything else on a
-// CanvasSource falls back to the platform-preferred format with a warning.
-const canvasAllowedFormats: Record<string, true> = {
+/**
+ * WebGPU's `GPUCanvasContext.configure` only accepts these formats. Anything else on a
+ * CanvasSource falls back to the platform-preferred format with a warning.
+ * @internal
+ */
+export const canvasAllowedFormats: Record<string, true> = {
     bgra8unorm: true,
     rgba8unorm: true,
     rgba16float: true,
@@ -26,7 +30,7 @@ function getCanvasContextFormat(format: GPUTextureFormat): GPUTextureFormat
 {
     if (canvasAllowedFormats[format]) return format;
 
-    const preferred = navigator.gpu.getPreferredCanvasFormat();
+    const preferred = DOMAdapter.get().getNavigator().gpu.getPreferredCanvasFormat();
 
     warn(`[WebGPU] CanvasSource format '${format}' is not a valid GPUCanvasContext format. `
         + `Falling back to '${preferred}'. Allowed formats are: bgra8unorm, rgba8unorm, rgba16float.`);
@@ -188,6 +192,16 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         }
     }
 
+    /**
+     * Opens a pass on the target. The bind's `clear` decides whether color clears, and a color
+     * attachment whose own `loadOp` is `'load'` keeps its contents anyway.
+     * @param renderTarget - the target to render to
+     * @param clear - what to clear
+     * @param clearColor - the colour for attachments without a `clearValue`
+     * @param viewport - the viewport
+     * @param mipLevel - the mip level to render to
+     * @param layer - the array layer to render to
+     */
     public startRenderPass(
         renderTarget: RenderTarget,
         clear: CLEAR_OR_BOOL = true,
@@ -195,18 +209,18 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         viewport?: Rectangle,
         mipLevel = 0,
         layer = 0
-    )
+    ): void
     {
         const renderTargetSystem = this._renderTargetSystem;
 
         const gpuRenderTarget = renderTargetSystem.getGpuRenderTarget(renderTarget);
 
-        if (layer !== 0 && gpuRenderTarget.msaaTextures?.length)
+        if (layer !== 0 && gpuRenderTarget.msaa)
         {
             throw new Error('[RenderTargetSystem] Rendering to array layers is not supported with MSAA render targets.');
         }
 
-        if (mipLevel > 0 && gpuRenderTarget.msaaTextures?.length)
+        if (mipLevel > 0 && gpuRenderTarget.msaa)
         {
             throw new Error('[RenderTargetSystem] Rendering to mip levels is not supported with MSAA render targets.');
         }
@@ -216,11 +230,11 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         // viewport. This avoids a redundant pass teardown + state-cache flush (and re-binding every
         // pipeline / bind group / vertex buffer on the next draw). A *partial* clear still forces a
         // real begin because you cannot flip a loadOp to 'clear' mid-pass.
-        let clearBits: CLEAR_OR_BOOL = clear;
+        let clearBits: CLEAR = clear as CLEAR;
 
-        if (typeof clearBits === 'boolean')
+        if (typeof clear === 'boolean')
         {
-            clearBits = clearBits ? CLEAR.ALL : CLEAR.NONE;
+            clearBits = clear ? CLEAR.ALL : CLEAR.NONE;
         }
 
         // depth/stencil requested without an explicit texture — WebGPU always backs
@@ -255,7 +269,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             return;
         }
 
-        const { descriptor, restore } = this._buildDescriptor(renderTarget, clear, clearColor, mipLevel, layer);
+        const { descriptor, restore } = this._buildDescriptor(renderTarget, clearBits, clearColor, mipLevel, layer);
 
         gpuRenderTarget.descriptor = descriptor;
 
@@ -362,7 +376,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
      * `load`. Those buffers were discarded, so the pass must restore them before drawing.
      * @param renderTarget - the target to render to
      * @param clear - what to clear
-     * @param clearValue - the colour to clear to
+     * @param clearValue - the colour to clear attachments that have no `clearValue` of their own to
      * @param mipLevel - the mip level to render to
      * @param layer - the array layer to render to
      */
@@ -371,7 +385,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         clear: CLEAR_OR_BOOL,
         clearValue: RgbaArray,
         mipLevel = 0,
-        layer = 0
+        layer = 0,
     ): { descriptor: GPURenderPassDescriptor; restore: number[] | null }
     {
         let restoreList: number[] = null;
@@ -422,27 +436,29 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                     );
                 }
 
-                const msaaTexture = gpuRenderTarget.msaaTextures[i];
+                // an antialiased texture's samples are kept with the texture, so every target over it draws
+                // into the same ones; a canvas has no GPU data to keep them in, so the target holds its own
+                let msaa: GpuMsaaTexture = null;
 
-                if (msaaTexture)
+                if (colorTexture.antialias)
                 {
+                    msaa = context
+                        ? gpuRenderTarget.canvasMsaaTextures[i] ??= new GpuMsaaTexture(this._renderer, colorTexture)
+                        : this._renderer.texture.getMsaaTexture(colorTexture);
+
                     resolveTarget = view;
-                    view = this._renderer.texture.getTextureView(msaaTexture);
+                    view = msaa.view;
                 }
 
-                let loadOp = colorAttachment.loadOp;
-
-                if (clear !== undefined)
-                {
-                    loadOp = (clear as CLEAR) & CLEAR.COLOR ? 'clear' : 'load';
-                }
-
-                clearValue ??= renderTargetSystem.defaultClearColor;
+                // the bind decides whether color clears, and an attachment whose loadOp is 'load' opts out,
+                // so `clear: false` never clears anything
+                const clearsColor = ((clear as CLEAR) & CLEAR.COLOR) !== 0;
+                let loadOp: GPULoadOp = clearsColor && colorAttachment.loadOp !== 'load' ? 'clear' : 'load';
 
                 // a transient MSAA buffer is never stored, so a pass that would load it clears and restores it
                 // from the resolved texture instead (see GpuMsaaRestore). The first pass of a canvas frame has
                 // nothing to restore: its texture is new and empty, so a clear to transparent gives the same result.
-                const transient = !!msaaTexture?.transient;
+                const transient = !!msaa?.transient;
                 const load = transient && loadOp !== 'clear';
                 const restore = load && !newCanvasFrame;
 
@@ -471,8 +487,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                 }
                 else if (loadOp === 'clear')
                 {
-                    clearValue ??= (colorAttachment.clearValue as RgbaArray) ?? renderTargetSystem.defaultClearColor;
-                    baseAttachment.clearValue = clearValue;
+                    // the attachment's own value first, then the bind's colour, then the default
+                    baseAttachment.clearValue = colorAttachment.clearValue ?? clearValue
+                        ?? renderTargetSystem.defaultClearColor;
                 }
 
                 for (const key in colorAttachment)
@@ -667,27 +684,8 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                 gpuRenderTarget.contexts[i] = context;
             }
 
-            gpuRenderTarget.msaa = colorTexture.source.antialias;
-
-            if (colorTexture.antialias)
-            {
-                // On tile-based GPUs the MSAA colour buffer is always transient: never stored, and restored from
-                // the resolved texture when a pass reopens it (see GpuMsaaRestore). Elsewhere storing it is
-                // cheaper, so it is transient only when the user marks the target single-pass.
-                const msaaTexture = new TextureSource({
-                    width: 0,
-                    height: 0,
-                    sampleCount: 4,
-                    // WebGPU requires multisampled textures to have exactly 1 mip level, so this must never
-                    // inherit TextureSource.defaultOptions.autoGenerateMipmaps
-                    autoGenerateMipmaps: false,
-                    transient: this._renderer.device.extensions.tileBased || gpuRenderTarget.transient,
-                    arrayLayerCount: colorTexture.arrayLayerCount,
-                    format: colorTexture.format,
-                });
-
-                gpuRenderTarget.msaaTextures[i] = msaaTexture;
-            }
+            // any antialiased attachment makes the pass multisampled
+            gpuRenderTarget.msaa ||= colorTexture.source.antialias;
         });
 
         if (gpuRenderTarget.msaa)
@@ -722,7 +720,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             context.unconfigure();
         });
 
-        gpuRenderTarget.msaaTextures.forEach((texture) =>
+        gpuRenderTarget.canvasMsaaTextures.forEach((texture) =>
         {
             texture.destroy();
         });
@@ -732,7 +730,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             texture?.destroy();
         });
 
-        gpuRenderTarget.msaaTextures.length = 0;
+        gpuRenderTarget.canvasMsaaTextures.length = 0;
         gpuRenderTarget.msaaBackTextures.length = 0;
         gpuRenderTarget.contexts.length = 0;
     }
@@ -756,7 +754,13 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             {
                 const colorTexture = colorAttachment.texture;
 
-                gpuRenderTarget.msaaTextures[i]?.resize(colorTexture.width, colorTexture.height, colorTexture._resolution);
+                // the next pass makes the canvas's samples again at the new size
+                if (colorTexture instanceof CanvasSource && colorTexture.antialias)
+                {
+                    gpuRenderTarget.canvasMsaaTextures[i]?.destroy();
+                    gpuRenderTarget.canvasMsaaTextures[i] = null;
+                }
+
                 gpuRenderTarget.msaaBackTextures[i]?.resize(
                     colorTexture.width, colorTexture.height, colorTexture._resolution
                 );

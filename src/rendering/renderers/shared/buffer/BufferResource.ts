@@ -9,7 +9,8 @@ import type { Buffer } from './Buffer';
  * Whilst a buffer can be used as a resource, this class allows you to specify an offset and size of the buffer to use.
  * This is useful if you have a large buffer and only part of it is used in a shader.
  *
- * This resource, will listen for changes on the underlying buffer and emit a itself if the buffer changes shape.
+ * This resource listens for changes on the underlying buffer and emits a change itself if the buffer changes shape,
+ * unless it is created with `watch: false`.
  * @example
  *
  * const buffer = new Buffer({
@@ -52,15 +53,24 @@ export class BufferResource extends EventEmitter<{
 
     /** the underlying buffer that this resource is using */
     public buffer: Buffer;
-    /** the offset of the buffer this resource is using. If not provided, then it will use the offset of the buffer. */
+    /**
+     * the byte offset into the buffer this resource starts at, defaulting to 0.
+     * Must be a multiple of `renderer.limits.minUniformBufferOffsetAlignment`.
+     */
     public readonly offset: number;
-    /** the size of the buffer this resource is using. If not provided, then it will use the size of the buffer. */
+    /** the number of bytes this resource covers. If not provided, it covers the rest of the buffer after `offset`. */
     public readonly size: number;
     /**
      * A cheeky hint to the GL renderer to let it know this is a BufferResource
      * @internal
      */
     public readonly _bufferResource = true;
+
+    /**
+     * Whether this resource listens to its buffer. See the `watch` constructor option.
+     * @readonly
+     */
+    public readonly watch: boolean;
 
     /**
      * Has the Buffer resource been destroyed?
@@ -72,20 +82,32 @@ export class BufferResource extends EventEmitter<{
      * Create a new Buffer Resource.
      * @param options - The options for the buffer resource
      * @param options.buffer - The underlying buffer that this resource is using
-     * @param options.offset - The offset of the buffer this resource is using.
-     * If not provided, then it will use the offset of the buffer.
-     * @param options.size - The size of the buffer this resource is using.
-     * If not provided, then it will use the size of the buffer.
+     * @param options.offset - The byte offset into the buffer this resource starts at, defaulting to 0.
+     * Must be a multiple of `renderer.limits.minUniformBufferOffsetAlignment`.
+     * @param options.size - The number of bytes this resource covers.
+     * If not provided, it covers the rest of the buffer after `offset`.
+     * @param options.watch - Listen to the buffer, defaulting to true. A watched resource changes its id and
+     * emits `change` when the buffer resizes, unloads or is destroyed, so the bind groups holding it rebuild.
+     * Pass false when many resources share one buffer and every bind group holds them with
+     * `BindGroup.setResourceUnwatched`, as thousands of listeners on one buffer cost memory and time to add and
+     * remove. An unwatched resource keeps its id through those changes, so whoever owns it must
+     * replace it with a new resource once the buffer changes, or bind groups keep using the old GPU buffer.
      */
-    constructor({ buffer, offset, size }: { buffer: Buffer; offset?: number; size?: number; })
+    constructor({ buffer, offset, size, watch = true }: {
+        buffer: Buffer;
+        offset?: number;
+        size?: number;
+        watch?: boolean;
+    })
     {
         super();
 
         this.buffer = buffer;
         this.offset = offset | 0;
         this.size = size;
+        this.watch = watch;
 
-        this.buffer.on('change', this.onBufferChange, this);
+        if (watch) this.buffer.on('change', this.onBufferChange, this);
     }
 
     /**
@@ -127,6 +149,7 @@ export class BufferResource extends EventEmitter<{
 
         this.emit('change', this);
 
+        if (this.watch) this.buffer.off('change', this.onBufferChange, this);
         this.buffer = null;
         this.removeAllListeners();
     }

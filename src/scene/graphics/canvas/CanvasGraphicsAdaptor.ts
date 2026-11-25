@@ -16,9 +16,9 @@ import type { CrossPlatformCanvasRenderingContext2D } from '../../../rendering/r
 import type { CanvasRenderer } from '../../../rendering/renderers/canvas/CanvasRenderer';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { Renderer } from '../../../rendering/renderers/types';
+import type { GraphicsAdaptor, GraphicsPipeLike } from '../shared/AbstractGraphicsPipe';
 import type { ConvertedFillStyle, ConvertedStrokeStyle } from '../shared/FillTypes';
 import type { Graphics } from '../shared/Graphics';
-import type { GraphicsAdaptor, GraphicsPipeLike } from '../shared/GraphicsPipe';
 import type { ShapePrimitiveWithHoles } from '../shared/path/ShapePath';
 
 const emptyCanvasStyle = '#808080';

@@ -40,6 +40,19 @@ export class GlTexture implements GPUData
 
     public format: GL_FORMATS;
 
+    /**
+     * The samples an antialiased render target draws into this texture through, as WebGL textures can't
+     * hold samples. Every render target over the texture shares it (see GlTextureSystem.getMsaaRenderBuffer).
+     */
+    public msaaRenderBuffer: WebGLRenderbuffer | null = null;
+
+    /**
+     * The size `msaaRenderBuffer`'s storage was last allocated at, -1 until it is. This object outlives a
+     * resize of its source, so the storage is reallocated when the source's size no longer matches.
+     */
+    public msaaWidth = -1;
+    public msaaHeight = -1;
+
     constructor(texture: WebGLTexture)
     {
         this.texture = texture;

@@ -729,6 +729,48 @@ describe('CanvasTextMetrics', () =>
 
             expect(canvas1).toBe(canvas2);
         });
+
+        describe('choosing the measuring canvas', () =>
+        {
+            const originalOffscreenCanvas = globalThis.OffscreenCanvas;
+
+            const forgetCanvas = () =>
+            {
+                globalThis.OffscreenCanvas = originalOffscreenCanvas;
+                CanvasTextMetrics['__canvas'] = undefined;
+                CanvasTextMetrics['__context'] = undefined;
+            };
+
+            beforeEach(forgetCanvas);
+            afterEach(forgetCanvas);
+
+            it('should use an OffscreenCanvas when it can measure text', () =>
+            {
+                expect(CanvasTextMetrics._canvas).toBeInstanceOf(OffscreenCanvas);
+            });
+
+            it.each([
+                ['throws', () => { throw new Error('unsupported'); }],
+                ['returns no width', () => ({})],
+            ])('should still measure text when OffscreenCanvas measureText %s', (name, measureText) =>
+            {
+                globalThis.OffscreenCanvas = class
+                {
+                    public getContext()
+                    {
+                        return { measureText };
+                    }
+                } as unknown as typeof OffscreenCanvas;
+
+                const metrics = CanvasTextMetrics.measureText(
+                    `OffscreenCanvas measureText ${name}`,
+                    new TextStyle({ fontSize: 24 }),
+                );
+
+                expect(metrics.width).toBeGreaterThan(0);
+                expect(CanvasTextMetrics._canvas).toBeInstanceOf(HTMLCanvasElement);
+            });
+        });
     });
 
     describe('_context', () =>

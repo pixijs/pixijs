@@ -5,7 +5,18 @@ import type { GlTexture } from '../rendering/renderers/gl/texture/GlTexture';
 import type { GLTextureUploader } from '../rendering/renderers/gl/texture/uploaders/GLTextureUploader';
 import type { HTMLSourceResource, HTMLUploadableSource } from './HTMLSourceTypes';
 
-// Chromium 150+ collapsed the upload signature to (target, internalFormat, source).
+// Chromium 155+ draws into storage the caller allocates, at the canvas grid size unless
+// `width`/`height` are given. See https://developer.chrome.com/blog/html-in-canvas-ot-changes.
+type TexElementSubImage2D = (
+    target: number,
+    level: number,
+    xoffset: number,
+    yoffset: number,
+    source: HTMLSourceResource,
+    config?: { width: number; height: number },
+) => void;
+
+// Chromium 150-154 collapsed the upload signature to (target, internalFormat, source).
 // See https://github.com/WICG/html-in-canvas/pull/128/changes and
 // https://github.com/KhronosGroup/WebGL/pull/3752.
 type TexElementImage2DModern = (
@@ -26,6 +37,7 @@ type TexElementImage2DLegacy = (
 
 interface GlTexElementImageContext extends GlRenderingContext
 {
+    texElementSubImage2D?: TexElementSubImage2D;
     texElementImage2D?: TexElementImage2DModern | TexElementImage2DLegacy;
 }
 
@@ -76,13 +88,13 @@ export const glUploadHTMLResource: GLTextureUploader & { extension: { type: Exte
         targetOverride?: number,
     )
     {
-        const upload = (gl as GlTexElementImageContext).texElementImage2D;
+        const { texElementSubImage2D, texElementImage2D } = gl as GlTexElementImageContext;
 
-        if (!upload)
+        if (!texElementSubImage2D && !texElementImage2D)
         {
             throw new Error(
                 // eslint-disable-next-line max-len
-                '[HTMLSource] WebGLRenderingContext.texElementImage2D is not available. Enable the browser HTML-in-Canvas API before using HTMLSource.',
+                '[HTMLSource] WebGLRenderingContext.texElementSubImage2D is not available. Enable the browser HTML-in-Canvas API before using HTMLSource.',
             );
         }
 
@@ -100,15 +112,27 @@ export const glUploadHTMLResource: GLTextureUploader & { extension: { type: Exte
             return;
         }
 
-        // Detect the Chromium 150+ three-argument form by its arity; older builds still expect
-        // the full (target, level, internalFormat, format, type, source) signature.
-        if (upload.length === 3)
+        if (texElementSubImage2D)
         {
-            (upload as TexElementImage2DModern).call(gl, target, glTexture.internalFormat, source.resource);
+            // Pin the draw size to the allocation; the canvas grid size overflows it on HiDPI canvases.
+            ensureAllocated(gl, glTexture, target, textureWidth, textureHeight);
+            texElementSubImage2D.call(gl, target, 0, 0, 0, source.resource, {
+                width: textureWidth,
+                height: textureHeight,
+            });
+
+            return;
+        }
+
+        // Detect the Chromium 150-154 three-argument form by its arity; older builds still expect
+        // the full (target, level, internalFormat, format, type, source) signature.
+        if (texElementImage2D.length === 3)
+        {
+            (texElementImage2D as TexElementImage2DModern).call(gl, target, glTexture.internalFormat, source.resource);
         }
         else
         {
-            (upload as TexElementImage2DLegacy).call(
+            (texElementImage2D as TexElementImage2DLegacy).call(
                 gl,
                 target,
                 0,

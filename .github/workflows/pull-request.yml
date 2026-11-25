@@ -1,0 +1,93 @@
+name: Test + Build (Pull Request)
+
+on:
+  pull_request:
+    branches: [ '**' ]
+
+concurrency:
+  group: ${{github.workflow}} - ${{github.ref}}
+  cancel-in-progress: true
+
+# Each job gets its own machine, so nothing waits on anything else. `checks`
+# and `dist` can't share one: `dist` cleans lib/ while the dts check reads it.
+jobs:
+  checks:
+    runs-on: namespace-profile-linux-8-16
+    # A hung step would otherwise hold the runner for GitHub's 6h default.
+    timeout-minutes: 10
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Setup Project
+      uses: ./.github/actions/setup
+
+    - name: Lint, Types, Index, Prune and DTS
+      run: npm test -- lint types index prune dts
+
+  unit:
+    runs-on: namespace-profile-linux-8-16
+    timeout-minutes: 10
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Setup Project
+      uses: ./.github/actions/setup
+
+    - name: Unit Tests
+      run: xvfb-run --auto-servernum npm run test:unit -- --maxWorkers=50%
+      env:
+        NODE_ENV: production
+
+  dist:
+    runs-on: namespace-profile-linux-8-16
+    timeout-minutes: 10
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Setup Project
+      uses: ./.github/actions/setup
+
+    - name: Build
+      run: npm run dist
+
+  visuals:
+    # The profile fixes the macOS image and machine in Namespace's dashboard, so
+    # the GPU the visual references are checked against only changes when
+    # someone edits it.
+    runs-on: namespace-profile-pixijs
+    timeout-minutes: 10
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Setup Project
+      uses: ./.github/actions/setup
+
+    - name: Visual Tests
+      run: npm run test:visual
+      env:
+        NODE_ENV: production
+
+    - name: Upload Visual Test Images
+      if: failure()
+      uses: actions/upload-artifact@v7
+      with:
+        name: pr_uploads
+        path: .pr_uploads/
+        include-hidden-files: true
+        if-no-files-found: ignore
+
+  # Branch protection requires a check named `build`, which passes only when
+  # every job above did. Without `!cancelled()` it would be skipped after a
+  # failure, and a skipped check counts as passing.
+  build:
+    needs: [checks, unit, dist, visuals]
+    if: ${{ !cancelled() }}
+    runs-on: namespace-profile-linux-8-16
+    steps:
+    - name: Check Results
+      if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+      run: exit 1

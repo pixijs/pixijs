@@ -1,6 +1,6 @@
 import '~/environment-browser/browserAll';
-import { TextStyle } from '../../TextStyle';
-import { CanvasTextGenerator } from '../CanvasTextGenerator';
+import { CanvasTextGenerator } from '~/scene/text/canvas/CanvasTextGenerator';
+import { TextStyle } from '~/scene/text/TextStyle';
 
 function getFirstOpaqueRow(canvas: HTMLCanvasElement): number
 {
