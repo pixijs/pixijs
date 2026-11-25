@@ -65,8 +65,10 @@ export function buildSVGStrokeAttributes(style: ConvertedStrokeStyle, defs: SVGD
     {
         parts.push(`stroke-linejoin="${style.join}"`);
     }
-    else if (style.miterLimit !== 10)
+    else
     {
+        // Always written: SVG's default miter limit is 4, not the 10 Graphics uses by default,
+        // so without it sharper corners would be beveled when a browser renders the SVG
         parts.push(`stroke-miterlimit="${style.miterLimit}"`);
     }
 

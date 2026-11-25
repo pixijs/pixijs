@@ -92,7 +92,7 @@ describe('SVGExporter', () =>
 
         expect(actual).toBe(normaliseSvg(
             '<svg xmlns="http://www.w3.org/2000/svg" width="103" height="103" viewBox="-1.5 -1.5 103 103">'
-            + '<path d="M0 0L100 100" fill="none" stroke="#0000ff" stroke-width="3"/>'
+            + '<path d="M0 0L100 100" fill="none" stroke="#0000ff" stroke-width="3" stroke-miterlimit="10"/>'
             + '</svg>'
         ));
     });
@@ -212,6 +212,22 @@ describe('SVGExporter', () =>
         ));
     });
 
+    it('should write the miter limit of miter joins, which defaults to 4 in SVG', () =>
+    {
+        const ctx = new GraphicsContext();
+
+        // a corner of about 19 degrees: its miter is about 6 times the stroke width, under the default limit of 10
+        ctx.poly([0, 0, 100, 0, 0, 35]);
+        ctx.stroke({ color: 0x000000, width: 4 });
+        ctx.moveTo(0, 100);
+        ctx.lineTo(100, 100);
+        ctx.stroke({ color: 0x000000, width: 4, miterLimit: 4 });
+
+        const svg = graphicsContextToSvg(ctx);
+
+        expect(svg.match(/stroke-miterlimit="[^"]+"/g)).toEqual(['stroke-miterlimit="10"', 'stroke-miterlimit="4"']);
+    });
+
     it('should export polygon', () =>
     {
         const actual = buildAndExport((ctx) =>
@@ -237,7 +253,8 @@ describe('SVGExporter', () =>
 
         expect(actual).toBe(normaliseSvg(
             '<svg xmlns="http://www.w3.org/2000/svg" width="84" height="84" viewBox="8 8 84 84">'
-            + '<path d="M10 10L90 10L90 90L10 90Z" fill="none" stroke="#000000" stroke-width="4"/>'
+            + '<path d="M10 10L90 10L90 90L10 90Z" fill="none" stroke="#000000" stroke-width="4"'
+            + ' stroke-miterlimit="10"/>'
             + '</svg>'
         ));
     });
