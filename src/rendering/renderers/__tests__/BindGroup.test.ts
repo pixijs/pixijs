@@ -569,6 +569,33 @@ describe('BindGroup', () =>
         style.destroy();
     });
 
+    it('_touch re-stamps the bound resources on every call', () =>
+    {
+        const source = new TextureSource({ width: 2, height: 2 });
+        const style = new TextureStyle();
+        const bindGroup = new BindGroup({ 0: source, 1: style });
+
+        bindGroup._touch(101);
+        bindGroup._touch(102);
+        bindGroup._touch(103);
+
+        expect(source._gcLastUsed).toBe(103);
+        expect(style).not.toHaveProperty('_gcLastUsed');
+
+        // a resource swapped in after several touches is stamped on the next one
+        const other = new TextureSource({ width: 2, height: 2 });
+
+        bindGroup.setResource(other, 1);
+        bindGroup._touch(104);
+
+        expect(other._gcLastUsed).toBe(104);
+
+        bindGroup.destroy();
+        source.destroy();
+        other.destroy();
+        style.destroy();
+    });
+
     it('keeps its key and cached GPU bind group when a binding moves to a resource with the same id', () =>
     {
         const source = new TextureSource({ width: 2, height: 2 });
