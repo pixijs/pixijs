@@ -51,7 +51,7 @@ PixiJS also includes the `GCSystem`, which unloads GPU resources (textures, buff
 - **Unloads resources unused for 60 seconds** (`gcMaxUnusedTime: 60000`).
 - **Checks every 30 seconds** (`gcFrequency: 30000`).
 
-Resources that are still bound each frame are stamped as in use and are never collected mid-render. Unloaded resources are recreated automatically the next time they are drawn. A buffer with no `data` (created with only a `size`) is never collected, as its contents exist only on the GPU and could not be recreated.
+Resources that are still bound each frame are stamped as in use and are never collected mid-render. Unloaded resources are recreated automatically the next time they are drawn. A buffer created with only a `size` and no `data` is never collected, because its contents exist only on the GPU and PixiJS can't recreate them. Destroy it yourself when you no longer need it, since `geometry.destroy()` leaves a geometry's buffers alone unless you pass `true`.
 
 ### Customizing `GCSystem`
 

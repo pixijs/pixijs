@@ -192,10 +192,10 @@ declare const renderer: Renderer;
 declare let bundle: RenderBundle;
 declare function record(): RenderBundle;
 
-// both renderers recover on their own; only WebGPU render bundles need re-recording
+// both renderers recover on their own; WebGPU render bundles need re-recording
 if (renderer instanceof WebGPURenderer && !renderer.encoder.isBundleValid(bundle)) {
   bundle = record();
 }
 ```
 
-The WebGL renderer restores itself after `webglcontextrestored`. The WebGPU renderer requests a new device when the browser reports `GPUDevice.lost` and rebuilds its GPU resources on the next render. A device you pass through the WebGPU `gpu` option is neither restored nor destroyed by PixiJS. A render bundle recorded on a lost device fails `isBundleValid` and must be re-recorded.
+The WebGL renderer restores itself after `webglcontextrestored`. The WebGPU renderer requests a new device when the browser reports `GPUDevice.lost` and rebuilds its GPU resources on the next render. A device you pass through the WebGPU `gpu` option is neither restored nor destroyed by PixiJS. A render bundle recorded on a lost device fails `isBundleValid` and must be re-recorded. Bytes written with `renderer.buffer.write()` or `renderer.buffer.copy()` live only on the GPU, so after a context or device loss the buffer comes back with its `data`, or zeros if it has none. Write them again on the renderer's `contextChange`.

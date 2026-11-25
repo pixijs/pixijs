@@ -80,6 +80,11 @@ export interface BufferDescriptor
  * Buffers are updated by calling the {@link Buffer.update} method. This immediately updates the buffer on the GPU.
  * Be mindful of calling this more often than you need to. It is recommended to update buffers only when needed.
  *
+ * A buffer created with only a `size` keeps no CPU copy. Don't call `update()` on it, because on WebGL that
+ * zeroes the whole buffer. Fill it with `renderer.buffer.write()` and copy between buffers with
+ * `renderer.buffer.copy()`, described on {@link GlBufferSystem#write} and {@link GpuBufferSystem#write}. It is
+ * never garbage collected, so destroy it when you no longer need it.
+ *
  * In WebGPU, a GPU buffer cannot resized. This limitation is abstracted away, but know that resizing a buffer means
  * creating a brand new one and destroying the old, so it is best to limit this if possible.
  * @example

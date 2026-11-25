@@ -175,6 +175,7 @@ export class GlBufferSystem implements System
      * overwrite the region.
      *
      * - The buffer needs `BufferUsage.COPY_DST`. On WebGPU, `offset` and `data.byteLength` must be multiples of 4.
+     * - An index buffer with no `data` is drawn as 32-bit indices, so write `Uint32Array` indices into it.
      * - Contents written this way exist only on the GPU, so they are lost with the context or device.
      *   Write them again on the renderer's `contextChange`.
      * - A buffer with no `data` is never garbage collected, so destroy it when you are done with it. One with

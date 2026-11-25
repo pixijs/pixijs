@@ -2,7 +2,8 @@ import '~/rendering/init';
 import { Buffer } from '../shared/buffer/Buffer';
 import { BufferUsage } from '../shared/buffer/const';
 import { describeLocalOnly, getGlProgram, getWebGLRenderer, getWebGPURenderer } from '@test-utils';
-import { Geometry } from '~/rendering';
+import { Geometry, GpuProgram, RenderTexture, Shader } from '~/rendering';
+import { Mesh } from '~/scene';
 
 import type { WebGLRenderer } from '../gl/WebGLRenderer';
 import type { WebGPURenderer } from '../gpu/WebGPURenderer';
@@ -12,6 +13,19 @@ type GpuRenderer = WebGLRenderer | WebGPURenderer;
 
 const SIZE = 32;
 const USAGE = BufferUsage.VERTEX | BufferUsage.COPY_SRC | BufferUsage.COPY_DST;
+
+// draws white at clip space positions, matching getGlProgram
+const WHITE_WGSL = /* wgsl */`
+    @vertex fn vs(@location(0) aPosition: vec2<f32>) -> @builtin(position) vec4<f32>
+    {
+        return vec4<f32>(aPosition, 0.0, 1.0);
+    }
+
+    @fragment fn fs() -> @location(0) vec4<f32>
+    {
+        return vec4<f32>(1.0);
+    }
+`;
 
 function describeWriteAndCopy<R extends GpuRenderer>(
     createRenderer: () => Promise<R>,
@@ -54,6 +68,37 @@ function describeWriteAndCopy<R extends GpuRenderer>(
         expect(await readBack(renderer, to)).toEqual([0, 0, 0, 0, 3, 4, 5, 0]);
         expect(from.data).toBeUndefined();
         expect(to.data).toBeUndefined();
+    });
+
+    it('should draw from a size-only index buffer and a size-only vertex buffer grown with copy', () =>
+    {
+        // a quad over the whole target, so every pixel turns white only if every position and index landed
+        const positions = new Float32Array([-1, -1, 1, -1, 1, 1, -1, 1]);
+        const indices = new Uint32Array([0, 1, 2, 0, 2, 3]);
+        const small = new Buffer({ size: positions.byteLength, usage: USAGE });
+        const grown = new Buffer({ size: positions.byteLength * 2, usage: USAGE });
+        const indexBuffer = new Buffer({ size: indices.byteLength, usage: BufferUsage.INDEX | BufferUsage.COPY_DST });
+
+        renderer.buffer.write(small, positions);
+        renderer.buffer.copy(small, grown, positions.byteLength);
+        renderer.buffer.write(indexBuffer, indices);
+
+        const geometry = new Geometry({
+            attributes: { aPosition: { buffer: grown, format: 'float32x2' } },
+            indexBuffer,
+        });
+        const shader = new Shader({
+            glProgram: getGlProgram(),
+            gpuProgram: new GpuProgram({
+                vertex: { source: WHITE_WGSL, entryPoint: 'vs' },
+                fragment: { source: WHITE_WGSL, entryPoint: 'fs' },
+            }),
+        });
+        const target = RenderTexture.create({ width: 4, height: 4 });
+
+        renderer.render({ container: new Mesh({ geometry, shader }), target, clear: true });
+
+        expect(Array.from(renderer.extract.pixels(target).pixels)).toEqual(new Array(4 * 4 * 4).fill(255));
     });
 
     it('should not garbage collect a buffer with no data', async () =>
@@ -101,10 +146,10 @@ describe('Buffer write and copy on WebGL', () =>
         });
         const indexBuffer = new Buffer({ size: 12, usage: BufferUsage.INDEX | BufferUsage.COPY_DST });
 
+        // the first write gives the buffer its storage and the second only writes, each with the vertex array bound
         renderer.geometry.bind(geometry, program);
-
-        // the first write gives the buffer its storage, later ones only write
         renderer.buffer.write(indexBuffer, new Uint32Array([0, 1, 2]));
+        renderer.geometry.bind(geometry, program);
         renderer.buffer.write(indexBuffer, new Uint32Array([2, 1, 0]));
 
         renderer.geometry.bind(geometry, program);

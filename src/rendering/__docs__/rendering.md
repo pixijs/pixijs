@@ -382,7 +382,7 @@ await app.init({ preference: 'webgpu', antialias: true, transient: true });
 
 ### Device loss
 
-When the browser reports the GPU device as lost (a GPU process crash, for example), the WebGPU renderer requests a new device and rebuilds textures, buffers, pipelines, and bind groups on the next render. You do not need to handle it yourself, with one exception: a render bundle recorded on the old device fails `renderer.encoder.isBundleValid(bundle)` and must be re-recorded. A device you hand in through the `gpu` option is neither restored nor destroyed by PixiJS. The WebGL renderer restores itself the same way after `webglcontextrestored`.
+When the browser reports the GPU device as lost (a GPU process crash, for example), the WebGPU renderer requests a new device and rebuilds textures, buffers, pipelines, and bind groups on the next render. You do not need to handle it yourself, with two exceptions. A render bundle recorded on the old device fails `renderer.encoder.isBundleValid(bundle)` and must be re-recorded. Bytes written with `renderer.buffer.write()` or `renderer.buffer.copy()` live only on the GPU, so the rebuilt buffer starts from its `data`, or from zeros if it has none. Write them again on the renderer's `contextChange`. A device you hand in through the `gpu` option is neither restored nor destroyed by PixiJS. The WebGL renderer restores itself the same way after `webglcontextrestored`, and bytes from `write()` or `copy()` need writing again there too.
 
 ## Resetting state
 

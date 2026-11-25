@@ -104,6 +104,7 @@ export class GpuBufferSystem implements System
      * overwrite the region.
      *
      * - The buffer needs `BufferUsage.COPY_DST`. On WebGPU, `offset` and `data.byteLength` must be multiples of 4.
+     * - An index buffer with no `data` is drawn as 32-bit indices, so write `Uint32Array` indices into it.
      * - Contents written this way exist only on the GPU, so they are lost with the context or device.
      *   Write them again on the renderer's `contextChange`.
      * - A buffer with no `data` is never garbage collected, so destroy it when you are done with it. One with
@@ -153,7 +154,8 @@ export class GpuBufferSystem implements System
     {
         const device = this._gpu.device;
 
-        // a copy can't be recorded inside the frame's render pass, so it gets its own encoder, submitted now
+        // a copy can't be recorded inside the frame's render pass, and on the frame's encoder it would run after
+        // writes made later in the frame, so it gets its own encoder, submitted now
         const encoder = device.createCommandEncoder({ label: 'GpuBufferSystem.copy' });
 
         encoder.copyBufferToBuffer(this.getGPUBuffer(from), fromOffset, this.getGPUBuffer(to), toOffset, size);
