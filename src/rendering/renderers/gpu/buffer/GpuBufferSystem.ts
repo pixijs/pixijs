@@ -12,7 +12,7 @@ import type { WebGPURenderer } from '../WebGPURenderer';
 export class GpuBufferData implements GPUData
 {
     public gpuBuffer: GPUBuffer;
-    /** The buffer's `_updateID` this GPU buffer holds, kept per renderer since renderers can share a buffer */
+    /** The buffer's `_updateID` when this GPU buffer was last written */
     public updateID: number;
 
     constructor(gpuBuffer: GPUBuffer, updateID: number)
@@ -80,8 +80,8 @@ export class GpuBufferSystem implements System
 
         const data = buffer.data;
 
-        // compared per renderer, as GlBufferSystem does: resetting the shared `_updateID` would let
-        // only the first renderer that sees an update upload it
+        // renderers can share a buffer, so resetting its `_updateID` would let only the first renderer
+        // to see a change upload it
         if (gpuData.updateID !== buffer._updateID && data)
         {
             gpuData.updateID = buffer._updateID;

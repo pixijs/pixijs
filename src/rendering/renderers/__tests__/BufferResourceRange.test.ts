@@ -251,6 +251,27 @@ function describeBufferResourceRanges(createRenderer: () => Promise<GpuRenderer>
             expect(readSwatch(renderer, { swatch: row(buffer, 1) })).toEqual(WHITE);
         });
 
+        it('should land a ranged update in every renderer that holds the buffer', async () =>
+        {
+            const other = await createRenderer();
+
+            try
+            {
+                // the other renderer uploads the buffer first, so it is the first to hear the update
+                expect(readSwatch(other, { swatch: row(buffer, 0) })).toEqual(RED);
+                expect(readSwatch(renderer, { swatch: row(buffer, 0) })).toEqual(RED);
+
+                writeRow(buffer, 0, BLUE);
+
+                expect(readSwatch(other, { swatch: row(buffer, 0) })).toEqual(BLUE);
+                expect(readSwatch(renderer, { swatch: row(buffer, 0) })).toEqual(BLUE);
+            }
+            finally
+            {
+                other.destroy();
+            }
+        });
+
         it('should keep a ranged update made while nothing drew the buffer', () =>
         {
             const other = createSwatchBuffer();
