@@ -178,7 +178,8 @@ export interface SpritesheetOptions<S extends SpritesheetData = SpritesheetData>
  * }
  * ```
  * Sprite sheets can be packed using tools like {@link https://codeandweb.com/texturepacker|TexturePacker},
- * {@link https://renderhjs.net/shoebox/|Shoebox} or {@link https://github.com/krzysztof-o/spritesheet.js|Spritesheet.js}.
+ * {@link https://renderhjs.net/shoebox/|Shoebox}, {@link https://github.com/krzysztof-o/spritesheet.js|Spritesheet.js}
+ * or {@link https://spritesheet.dev/|SpriteSheet.dev}.
  * Default anchor points (see {@link Texture#defaultAnchor}), default 9-slice borders
  * (see {@link Texture#defaultBorders}) and grouping of animation sprites are currently only
  * supported by TexturePacker.
