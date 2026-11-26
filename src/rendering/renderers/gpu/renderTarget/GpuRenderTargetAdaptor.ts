@@ -526,7 +526,8 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                 view: this._renderer.texture.getTextureRenderTargetView(
                     attachment.texture,
                     mipLevel,
-                    layer,
+                    // a single-layer depth/stencil is shared by every layer of the colour target, as on WebGL
+                    attachment.texture.depthOrArrayLayers > 1 ? layer : 0,
                     attachment.viewDescriptor
                 ),
             };

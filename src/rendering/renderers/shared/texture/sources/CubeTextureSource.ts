@@ -30,19 +30,22 @@ export interface CubeTextureFaces<T>
  */
 export interface CubeTextureSourceOptions extends Omit<
     TextureSourceOptions<any>,
-    'resource' | 'width' | 'height' | 'dimensions' | 'viewDimension' | 'resolution' | 'format' | 'alphaMode'
+    'resource' | 'dimensions' | 'viewDimension' | 'arrayLayerCount'
 >
 {
     /**
-     * The 6 face sources that make up the cube texture.
+     * The 6 face sources that make up the cube texture. Their size, resolution, format and alphaMode
+     * replace the options of the same name.
      *
      * All faces must match in:
      * - size (pixelWidth / pixelHeight)
      * - resolution
      * - format
      * - alphaMode
+     *
+     * Leave it out for an empty cube to render into, sized by `width`, `height` and `resolution`.
      */
-    faces: CubeTextureFaces<TextureSource>;
+    faces?: CubeTextureFaces<TextureSource>;
 }
 
 /**
@@ -59,63 +62,87 @@ export interface CubeTextureSourceOptions extends Omit<
  *   label: 'env-map',
  * });
  * ```
+ * @example
+ * Create an empty cube and render into each face. A face is an array layer, in the order
+ * +X, -X, +Y, -Y, +Z, -Z (`right`, `left`, `top`, `bottom`, `front`, `back`):
+ *
+ * ```ts
+ * const cubeSource = new CubeTextureSource({ width: 256, height: 256, format: 'rgba16float' });
+ * const target = new RenderTarget({ colorTextures: [cubeSource], depth: true });
+ *
+ * for (let face = 0; face < 6; face++)
+ * {
+ *   // ...point `scene` along this face
+ *   renderer.render({ container: scene, target, layer: face, clear: true });
+ * }
+ *
+ * const cube = new CubeTexture({ source: cubeSource });
+ * ```
+ *
+ * Inside a render, such as in a render pipe, bind a face with
+ * `renderer.renderTarget.bind({ target, clear: true, layer: face })` and draw to it instead.
  * @category rendering
  * @advanced
  */
 export class CubeTextureSource extends TextureSource<CubeTextureFaces<TextureSource>>
 {
-    /** @internal */
-    public override readonly uploadMethodId = 'cube';
+    /**
+     * `'cube'` uploads the faces; an empty cube has nothing to upload, so it is allocated empty like a RenderTexture.
+     * @internal
+     */
+    public override readonly uploadMethodId: string;
 
-    /** The 6 face sources that make up this cube texture. */
+    /** The 6 face sources that make up this cube texture, or `undefined` for an empty cube. */
     public readonly faces: CubeTextureFaces<TextureSource>;
 
     constructor(options: CubeTextureSourceOptions)
     {
         const { faces, ...rest } = options;
+        const first = faces?.right;
 
-        // Validate faces are compatible (size/format/alpha/resolution).
-        CubeTextureSource._validateFaces(faces);
-
-        const first = faces.right;
-
-        // Derived settings from the face sources.
-        const derivedResolution = first.resolution;
-        const derivedFormat = first.format;
-        const derivedAlphaMode = first.alphaMode;
+        if (faces)
+        {
+            // Validate faces are compatible (size/format/alpha/resolution).
+            CubeTextureSource._validateFaces(faces);
+        }
 
         // #if _DEBUG
-        // CubeTextureSourceOptions omits these keys, but warn if someone still passes them at runtime.
+        // CubeTextureSourceOptions omits the view keys, and faces decide the rest; warn if they are passed anyway.
         const ignoredKeys = ([
-            'resolution',
-            'format',
-            'alphaMode',
+            ...(faces ? ['width', 'height', 'resolution', 'format', 'alphaMode'] : []),
             'dimensions',
             'viewDimension',
+            'arrayLayerCount',
         ] as const).filter((key) => (rest as any)[key] !== undefined);
 
         if (ignoredKeys.length)
         {
             warn(
-                `[CubeTextureSource] Ignoring option(s) [${ignoredKeys.join(', ')}]; these are derived from face sources.`
+                `[CubeTextureSource] Ignoring option(s) [${ignoredKeys.join(', ')}]; `
+                + 'a cube has 6 layers, and its size and format come from the faces when given.'
             );
         }
         // #endif
 
         super({
             ...rest,
-            resource: faces,
             // Keep these aligned with the face sources so any code that reads width/height works.
-            width: first.width,
-            height: first.height,
+            ...(faces && {
+                resource: faces,
+                width: first.width,
+                height: first.height,
+                resolution: first.resolution,
+                format: first.format,
+                alphaMode: first.alphaMode,
+            }),
             viewDimension: 'cube',
             arrayLayerCount: 6,
-            resolution: derivedResolution,
-            format: derivedFormat,
-            alphaMode: derivedAlphaMode,
         });
 
+        this.uploadMethodId = faces ? 'cube' : 'unknown';
         this.faces = faces;
+
+        if (!faces) return;
 
         // Forward face updates so the cube gets re-uploaded when any face changes.
         for (const key of Object.keys(faces) as (keyof CubeTextureFaces<TextureSource>)[])
