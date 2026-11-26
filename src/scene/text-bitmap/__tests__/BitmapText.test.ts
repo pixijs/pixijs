@@ -9,6 +9,7 @@ import '../init';
 import '../../graphics/init';
 import { basePath, getWebGLRenderer } from '@test-utils';
 import { Cache, Loader, loadTextures, loadTxt } from '~/assets';
+import { getBatchSamplersUniformGroup } from '~/rendering';
 
 describe('BitmapText', () =>
 {
@@ -43,6 +44,42 @@ describe('BitmapText', () =>
         renderer.render(text);
 
         expect(Cache.get('arial-bitmap-normal-normal-normal').pages).toHaveLength(1);
+    });
+
+    it('should reuse its distance field shader when the text changes', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const msdfFont = await loader.load<BitmapFont>(`${basePath}fonts/msdf.fnt`);
+        const fontFamily = 'bitmap-text-shader-regression';
+
+        Cache.set(`${fontFamily}-bitmap`, msdfFont);
+
+        const text = new BitmapText({ text: 'A', style: { fontFamily } });
+        const batchSamplers = getBatchSamplersUniformGroup(renderer.limits.maxBatchableTextures);
+
+        try
+        {
+            renderer.render(text);
+
+            const listeners = batchSamplers.listenerCount('change');
+
+            for (const value of ['B', 'CA', 'DEF'])
+            {
+                text.text = value;
+                renderer.render(text);
+            }
+
+            expect(batchSamplers.listenerCount('change')).toBe(listeners);
+
+            text.destroy();
+            expect(batchSamplers.listenerCount('change')).toBe(listeners - 1);
+        }
+        finally
+        {
+            if (!text.destroyed) text.destroy();
+            renderer.destroy();
+            Cache.remove(`${fontFamily}-bitmap`);
+        }
     });
 
     it('should default to white fill', async () =>
