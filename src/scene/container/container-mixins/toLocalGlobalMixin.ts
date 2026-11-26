@@ -1,5 +1,6 @@
 import { Point } from '../../../maths/point/Point';
 import { matrixPool } from '../bounds/utils/matrixAndBoundsPool';
+import { isPassRoot } from '../renderPass';
 
 import type { PointData } from '../../../maths/point/PointData';
 import type { Container } from '../Container';
@@ -108,7 +109,7 @@ export interface ToLocalGlobalMixin
 export const toLocalGlobalMixin: Partial<Container> = {
     getGlobalPosition(point: Point = new Point(), skipUpdate = false): Point
     {
-        if (this.parent)
+        if (this.parent && !isPassRoot(this))
         {
             this.parent.toGlobal(this._position, point, skipUpdate);
         }

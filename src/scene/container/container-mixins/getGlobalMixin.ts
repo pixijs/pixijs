@@ -1,6 +1,7 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { updateTransformBackwards } from '../bounds/getGlobalBounds';
 import { matrixPool } from '../bounds/utils/matrixAndBoundsPool';
+import { getPassRootTransform, isPassRoot } from '../renderPass';
 import { multiplyColors } from '../utils/multiplyColors';
 
 import type { Container } from '../Container';
@@ -102,12 +103,12 @@ export const getGlobalMixin: Partial<Container> = {
         }
 
         let alpha = this.alpha;
-        let current = this.parent;
+        let current = isPassRoot(this) ? null : this.parent;
 
         while (current)
         {
             alpha *= current.alpha;
-            current = current.parent;
+            current = isPassRoot(current) ? null : current.parent;
         }
 
         return alpha;
@@ -118,6 +119,10 @@ export const getGlobalMixin: Partial<Container> = {
         {
             return matrix.copyFrom(this.worldTransform);
         }
+
+        const passTransform = getPassRootTransform(this);
+
+        if (passTransform) return matrix.copyFrom(passTransform);
 
         this.updateLocalTransform();
 
@@ -148,12 +153,12 @@ export const getGlobalMixin: Partial<Container> = {
         }
 
         let color = this.localColor;
-        let parent = this.parent;
+        let parent = isPassRoot(this) ? null : this.parent;
 
         while (parent)
         {
             color = multiplyColors(color, parent.localColor);
-            parent = parent.parent;
+            parent = isPassRoot(parent) ? null : parent.parent;
         }
 
         return bgr2rgb(color);
