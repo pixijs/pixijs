@@ -12,10 +12,13 @@ import type { WebGPURenderer } from '../WebGPURenderer';
 export class GpuBufferData implements GPUData
 {
     public gpuBuffer: GPUBuffer;
+    /** The buffer's `_updateID` when this GPU buffer was last written */
+    public updateID: number;
 
-    constructor(gpuBuffer: GPUBuffer)
+    constructor(gpuBuffer: GPUBuffer, updateID: number)
     {
         this.gpuBuffer = gpuBuffer;
+        this.updateID = updateID;
     }
 
     public destroy()
@@ -73,13 +76,15 @@ export class GpuBufferSystem implements System
     public updateBuffer(buffer: Buffer): GPUBuffer
     {
         const gpuBuffer = this.getGPUBuffer(buffer);
+        const gpuData = buffer._gpuData[this._renderer.uid] as GpuBufferData;
 
         const data = buffer.data;
 
-        // TODO this can be better...
-        if (buffer._updateID && data)
+        // renderers can share a buffer, so resetting its `_updateID` would let only the first renderer
+        // to see a change upload it
+        if (gpuData.updateID !== buffer._updateID && data)
         {
-            buffer._updateID = 0;
+            gpuData.updateID = buffer._updateID;
 
             // make sure
             this._gpu.device.queue.writeBuffer(
@@ -104,7 +109,8 @@ export class GpuBufferSystem implements System
      * overwrite the region.
      *
      * - The buffer needs `BufferUsage.COPY_DST`. On WebGPU, `offset` and `data.byteLength` must be multiples of 4.
-     * - An index buffer with no `data` is drawn as 32-bit indices, so write `Uint32Array` indices into it.
+     * - An index buffer with no `data` is drawn in its `indexFormat` (`uint32` by default), so write indices
+     *   of that type into it.
      * - Contents written this way exist only on the GPU, so they are lost with the context or device.
      *   Write them again on the renderer's `contextChange`.
      * - A buffer with no `data` is never garbage collected, so destroy it when you are done with it. One with
@@ -178,8 +184,6 @@ export class GpuBufferSystem implements System
     {
         const gpuBuffer = this._gpu.device.createBuffer(buffer.descriptor);
 
-        buffer._updateID = 0;
-
         if (buffer.data)
         {
             // TODO if data is static, this can be mapped at creation
@@ -193,7 +197,7 @@ export class GpuBufferSystem implements System
             gpuBuffer.unmap();
         }
 
-        buffer._gpuData[this._renderer.uid] = new GpuBufferData(gpuBuffer);
+        buffer._gpuData[this._renderer.uid] = new GpuBufferData(gpuBuffer, buffer._updateID);
         if (this._managedBuffers.add(buffer))
         {
             buffer.on('update', this.updateBuffer, this);
@@ -206,7 +210,6 @@ export class GpuBufferSystem implements System
     protected onBufferChange(buffer: Buffer)
     {
         this._managedBuffers.remove(buffer);
-        buffer._updateID = 0;
         this.createGPUBuffer(buffer);
     }
 

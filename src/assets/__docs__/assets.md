@@ -30,16 +30,16 @@ const assets = await Assets.load(['bunny.png', 'spritesheet.json', 'font.ttf']);
 
 ## Supported file types
 
-| Type                | Extensions                                                       | Loaders                                                               |
-| ------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------- |
-| Textures            | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.avif`, `.svg`        | {@link loadTextures}, {@link loadSvg}                                 |
-| Video Textures      | `.mp4`, `.m4v`, `.webm`, `.ogg`, `.ogv`, `.h264`, `.avi`, `.mov` | {@link loadVideoTextures}                                             |
-| Sprite Sheets       | `.json`                                                          | {@link spritesheetAsset}                                              |
-| Bitmap Fonts        | `.fnt`, `.xml`                                                   | {@link loadBitmapFont}                                                |
-| Web Fonts           | `.ttf`, `.otf`, `.woff`, `.woff2`                                | {@link loadWebFont}                                                   |
-| JSON                | `.json`                                                          | {@link loadJson}                                                      |
-| Text                | `.txt`                                                           | {@link loadTxt}                                                       |
-| Compressed Textures | `.basis`, `.dds`, `.ktx`, `.ktx2`                                | {@link loadBasis}, {@link loadDDS}, {@link loadKTX}, {@link loadKTX2} |
+| Type                | Extensions                                                       | Loaders                                                                                 |
+| ------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Textures            | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.avif`, `.svg`        | {@link loadTextures}, {@link loadSvg}                                                   |
+| Video Textures      | `.mp4`, `.m4v`, `.webm`, `.ogg`, `.ogv`, `.h264`, `.avi`, `.mov` | {@link loadVideoTextures}                                                               |
+| Sprite Sheets       | `.json`                                                          | {@link spritesheetAsset}                                                                |
+| Bitmap Fonts        | `.fnt`, `.xml`                                                   | {@link loadBitmapFont}                                                                  |
+| Web Fonts           | `.ttf`, `.otf`, `.woff`, `.woff2`                                | {@link loadWebFont}                                                                     |
+| JSON                | `.json`                                                          | {@link loadJson}                                                                        |
+| Text                | `.txt`                                                           | {@link loadTxt}                                                                         |
+| Compressed Textures | `.astc`, `.basis`, `.dds`, `.ktx`, `.ktx2`                       | {@link loadASTC}, {@link loadBasis}, {@link loadDDS}, {@link loadKTX}, {@link loadKTX2} |
 
 You can add custom parsers for additional formats via {@link LoaderParser}.
 

@@ -22,7 +22,8 @@ export interface GpuExtensions
      * `adapter.info.vendor`. On these, writing a multisample buffer out to memory and reading it back costs far
      * more than restoring it from its resolved image, so PixiJS never stores MSAA colour on them and restores
      * it when a pass reopens the target. Other GPUs keep MSAA in video memory, where reopening is nearly free,
-     * so they store it as before. An unknown vendor counts as not tile-based.
+     * so they store it as before. An unknown vendor counts as not tile-based. The `tileBasedGpu` renderer option
+     * overrides the guess.
      */
     tileBased: boolean;
 }

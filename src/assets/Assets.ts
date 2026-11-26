@@ -562,6 +562,7 @@ export class AssetsClass
      * @remarks
      * - Assets are cached automatically to prevent duplicate loading
      * - URLs are resolved to the best format for the current browser
+     * - An asset object can omit `src` when all its aliases are already registered
      * - Asset types are detected automatically based on file extension
      * - Progress callback receives values from 0.0 to 1.0
      * - You can define with loader to use for an asset by specifying the `parser` property, which is useful for assets that do not have a file extension.
@@ -599,6 +600,11 @@ export class AssetsClass
 
                     if (aliases.some((alias) => !this.resolver.hasKey(alias)))
                     {
+                        if (url.src === undefined)
+                        {
+                            throw new Error('[Assets] An asset without a src must use registered aliases.');
+                        }
+
                         this.add(url);
                     }
 
@@ -1287,16 +1293,16 @@ export class AssetsClass
  * - **Format Detection**: Automatically select optimal asset formats
  *
  * Supported Asset Types:
- * | Type                | Extensions                                                       | Loaders                                                               |
- * | ------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------- |
- * | Textures            | `.png`, `.jpg`, `.gif`, `.webp`, `.avif`, `.svg`                 | {@link loadTextures}, {@link loadSvg}                                 |
- * | Video Textures      | `.mp4`, `.m4v`, `.webm`, `.ogg`, `.ogv`, `.h264`, `.avi`, `.mov` | {@link loadVideoTextures}                                             |
- * | Sprite Sheets       | `.json`                                                          | {@link spritesheetAsset}                                              |
- * | Bitmap Fonts        | `.fnt`, `.xml`, `.txt`                                           | {@link loadBitmapFont}                                                |
- * | Web Fonts           | `.ttf`, `.otf`, `.woff`, `.woff2`                                | {@link loadWebFont}                                                   |
- * | JSON                | `.json`                                                          | {@link loadJson}                                                      |
- * | Text                | `.txt`                                                           | {@link loadTxt}                                                       |
- * | Compressed Textures | `.basis`, `.dds`, `.ktx`, `.ktx2`                                | {@link loadBasis}, {@link loadDDS}, {@link loadKTX}, {@link loadKTX2} |
+ * | Type                | Extensions                                                       | Loaders                                                                                 |
+ * | ------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+ * | Textures            | `.png`, `.jpg`, `.gif`, `.webp`, `.avif`, `.svg`                 | {@link loadTextures}, {@link loadSvg}                                                   |
+ * | Video Textures      | `.mp4`, `.m4v`, `.webm`, `.ogg`, `.ogv`, `.h264`, `.avi`, `.mov` | {@link loadVideoTextures}                                                               |
+ * | Sprite Sheets       | `.json`                                                          | {@link spritesheetAsset}                                                                |
+ * | Bitmap Fonts        | `.fnt`, `.xml`, `.txt`                                           | {@link loadBitmapFont}                                                                  |
+ * | Web Fonts           | `.ttf`, `.otf`, `.woff`, `.woff2`                                | {@link loadWebFont}                                                                     |
+ * | JSON                | `.json`                                                          | {@link loadJson}                                                                        |
+ * | Text                | `.txt`                                                           | {@link loadTxt}                                                                         |
+ * | Compressed Textures | `.astc`, `.basis`, `.dds`, `.ktx`, `.ktx2`                       | {@link loadASTC}, {@link loadBasis}, {@link loadDDS}, {@link loadKTX}, {@link loadKTX2} |
  * > [!NOTE] Some loaders allow for custom configuration, please refer to the specific loader documentation for details.
  * @example
  * ```typescript

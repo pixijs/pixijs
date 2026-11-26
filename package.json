@@ -202,6 +202,7 @@
     "./lib/accessibility/init.*",
     "./lib/advanced-blend-modes/init.*",
     "./lib/app/init.*",
+    "./lib/compressed-textures/astc/init.*",
     "./lib/compressed-textures/dds/init.*",
     "./lib/compressed-textures/ktx/init.*",
     "./lib/compressed-textures/ktx2/init.*",
@@ -297,6 +298,14 @@
       },
       "require": {
         "default": "./lib/app/init.js"
+      }
+    },
+    "./astc": {
+      "import": {
+        "default": "./lib/compressed-textures/astc/init.mjs"
+      },
+      "require": {
+        "default": "./lib/compressed-textures/astc/init.js"
       }
     },
     "./dds": {

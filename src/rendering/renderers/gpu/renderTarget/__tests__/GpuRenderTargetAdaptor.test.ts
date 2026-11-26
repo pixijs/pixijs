@@ -1,9 +1,11 @@
 import { CLEAR } from '../../../gl/const';
 import { RenderTarget } from '../../../shared/renderTarget/RenderTarget';
+import { CanvasSource } from '../../../shared/texture/sources/CanvasSource';
 import { TextureSource } from '../../../shared/texture/sources/TextureSource';
 import { Texture } from '../../../shared/texture/Texture';
 import { GpuMsaaRestore } from '../GpuMsaaRestore';
 import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
+import { DOMAdapter } from '~/environment';
 import { AlphaFilter } from '~/filters';
 import { Container, Graphics } from '~/scene';
 
@@ -643,5 +645,37 @@ describeLocalOnly('GpuRenderTargetAdaptor clear values', () =>
         expect(Array.from(after.slice(((8 * 16) + 4) * 4, (((8 * 16) + 4) * 4) + 4))).toEqual([255, 255, 255, 255]);
 
         renderer.destroy();
+    });
+});
+
+describeLocalOnly('GpuRenderTargetAdaptor canvas format', () =>
+{
+    it('should take the fallback canvas format from DOMAdapter when there is no global navigator', async () =>
+    {
+        // the event system reads the global navigator on init and destroy, so it must exist around both
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+        const adapterNavigator = DOMAdapter.get().getNavigator();
+        const getNavigator = jest.spyOn(DOMAdapter.get(), 'getNavigator').mockReturnValue(adapterNavigator);
+        const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+        const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+        const source = new CanvasSource({ width: 1, height: 1, format: 'rgba32float' });
+
+        Reflect.deleteProperty(globalThis, 'navigator');
+
+        try
+        {
+            expect('navigator' in globalThis).toBe(false);
+
+            renderer.renderTarget.getGpuRenderTarget(new RenderTarget({ colorTextures: [source] }));
+
+            expect(source._gpuContext.getCurrentTexture().format).toBe(adapterNavigator.gpu.getPreferredCanvasFormat());
+        }
+        finally
+        {
+            Object.defineProperty(globalThis, 'navigator', descriptor);
+            getNavigator.mockRestore();
+            warn.mockRestore();
+            renderer.destroy();
+        }
     });
 });

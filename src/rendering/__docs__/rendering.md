@@ -358,11 +358,13 @@ Pass an array to `executeBundle` to replay several bundles in one call. A bundle
 
 ### Antialiasing on WebGPU
 
-On a tile-based GPU (every phone GPU and Apple silicon, reported by `renderer.device.extensions.tileBased`), antialiased targets never write their multisample colour buffer to memory. Only the resolved image is kept. When a pass reopens a target, for example a filter popping back onto its parent or a render with `clear: false`, PixiJS copies the resolved image back into the multisample buffer before drawing. This saves bandwidth on every frame, and the multisample buffer may not be allocated at all where the browser supports `GPUTextureUsage.TRANSIENT_ATTACHMENT`. You don't need to set anything.
+On a tile-based GPU (every phone GPU and Apple silicon, reported by `renderer.device.extensions.tileBased`), antialiased targets never write their multisample colour buffer to memory. Only the resolved image is kept. When a pass reopens a target, for example a filter popping back onto its parent or a render with `clear: false`, PixiJS copies the resolved image back into the multisample buffer before drawing. This saves bandwidth on every frame, and the multisample buffer may not be allocated at all where the browser supports `GPUTextureUsage.TRANSIENT_ATTACHMENT`.
 
 Restoring writes the resolved colour into every sample, so antialiased edges that meet exactly across a reopen, such as two shapes drawn by separate `clear: false` renders, can show a faint seam. On an antialiased canvas, a frame that starts without clearing (`clearBeforeRender: false`, or a first `render` with `clear: false`) starts from an empty canvas rather than the previous frame, as it already does without antialiasing.
 
 Other GPUs (Intel, NVIDIA, AMD) keep multisample buffers in video memory, where storing them and loading them back on a reopen is cheaper than restoring, so PixiJS does that there.
+
+PixiJS judges this from `adapter.info.vendor`. A browser may leave that empty, and PixiJS then stores and loads, which is always correct. If you ship on hardware you know is tile-based and you've measured that restoring is faster there, pass `tileBasedGpu: true` to the renderer. `tileBasedGpu: false` forces store and load.
 
 The multisample depth/stencil buffer is kept by default, because masks need it across a reopen. A render texture that is drawn in a single pass and never reopened can discard it too, along with its colour buffer on GPUs that aren't tile-based:
 
