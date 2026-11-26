@@ -15,14 +15,19 @@ export const validFormats = ['basis', 'bc7', 'bc6h', 'astc', 'etc2', 'bc5', 'bc4
 export const resolveCompressedTextureUrl = {
     extension: ExtensionType.ResolveParser,
     test: (value: string) =>
-        checkExtension(value, ['.ktx', '.ktx2', '.dds']),
+        checkExtension(value, ['.ktx', '.ktx2', '.dds', '.astc']),
     parse: (value: string) =>
     {
         let format;
 
-        const splitValue = value.split('.');
+        const splitValue = value.split(/[?#]/)[0].split('.');
+        const extension = splitValue[splitValue.length - 1];
 
-        if (splitValue.length > 2)
+        if (validFormats.includes(extension))
+        {
+            format = extension;
+        }
+        else if (splitValue.length > 2)
         {
             const newFormat = splitValue[splitValue.length - 2];
 
@@ -33,7 +38,7 @@ export const resolveCompressedTextureUrl = {
         }
         else
         {
-            format = splitValue[splitValue.length - 1];
+            format = extension;
         }
 
         return {

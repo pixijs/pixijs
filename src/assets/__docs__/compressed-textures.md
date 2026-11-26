@@ -16,6 +16,7 @@ Compressed textures use 4-8x less GPU memory than standard PNG/JPG textures and 
 | **KTX**   | `.ktx`         | Mobile (ETC2/ASTC)                | Khronos format, supports ETC and other schemes                      |
 | **KTX2**  | `.ktx2`        | Cross-platform (recommended)      | Supports Basis Universal and supercompressed formats                |
 | **Basis** | `.basis`       | Cross-platform, smallest files    | Highly compressed format that transcodes to multiple GPU formats    |
+| **ASTC**  | `.astc`        | Mobile, Apple silicon Macs        | Raw ASTC blocks from `astcenc`, uploaded without transcoding        |
 
 ## Registering loaders
 
@@ -26,6 +27,7 @@ import 'pixi.js/dds';
 import 'pixi.js/ktx';
 import 'pixi.js/ktx2';
 import 'pixi.js/basis';
+import 'pixi.js/astc';
 ```
 
 > [!NOTE]
@@ -75,3 +77,18 @@ Your manifest can include multiple format candidates:
 ```
 
 PixiJS tries to load `bg.ktx2` or `bg.basis` first if the device supports it, falling back to `bg.png` as needed.
+
+---
+
+## Raw ASTC files
+
+`pixi.js/astc` loads the raw `.astc` files that `astcenc` writes. PixiJS uploads their blocks without transcoding, so they load only on devices with ASTC support, such as iPhones, most Android phones and Macs with Apple silicon. On other devices `Assets.load` rejects, so list a fallback after the `.astc` file:
+
+```ts
+import 'pixi.js/astc';
+import { Assets } from 'pixi.js';
+
+const texture = await Assets.load({ src: ['textures/bg.astc', 'textures/bg.png'] });
+```
+
+A raw file holds one 2D image with no mipmaps and no color space. PixiJS samples it as stored, like a PNG, so leave `srgb` unset for images compressed from a PNG or JPEG. `data: { srgb: true }` makes the GPU convert the colors from sRGB to linear when sampling, which draws mid-tones darker: a gray of 128 draws as 55. Turn it on only when your own shader expects linear color.

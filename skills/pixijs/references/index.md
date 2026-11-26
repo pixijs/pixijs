@@ -96,7 +96,7 @@ Keywords: `Assets.load` array not iterable (TS2488), `Assets.get` with array key
 - [fonts.md](assets/fonts.md): `loadWebFont`, `family` and `data` descriptors, bitmap fonts (`.fnt`, `.xml`).
 - [video.md](assets/video.md): `VideoSource` options, `resource` play/unmute, autoplay and sound, `updateFPS`, `crossorigin`.
 - [svg.md](assets/svg.md): SVG as texture or `GraphicsContext`, `parseAsGraphicsContext` / `setPreferences`, `<style>` ignored.
-- [compressed-textures.md](assets/compressed-textures.md): KTX2, Basis, DDS, KTX imports, `getSupportedCompressedTextureFormats`.
+- [compressed-textures.md](assets/compressed-textures.md): KTX2, Basis, DDS, KTX and raw ASTC imports, `getSupportedCompressedTextureFormats`, ASTC `srgb`.
 - [resolution.md](assets/resolution.md): `@2x`, `RETINA_PREFIX`, `texturePreference`, `{webp,png}` format patterns.
 
 ### [events](events.md)

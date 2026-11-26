@@ -44,6 +44,7 @@ export type AssetParser =
     | 'dds'
     | 'ktx2'
     | 'ktx'
+    | 'astc'
     | (string & {});
 
 /**
