@@ -453,9 +453,9 @@ export class GlGeometrySystem implements System
 
         if (geometry.indexBuffer)
         {
-            const byteSize = geometry.indexBuffer.data.BYTES_PER_ELEMENT;
+            const byteSize = geometry.indexBuffer.indexFormat === 'uint16' ? 2 : 4;
             const glType = byteSize === 2 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
-            const count = size || geometry.indexCount || geometry.indexBuffer.data.length;
+            const count = size || geometry.indexCount || geometry.indexBuffer._indexLength;
             const byteOffset = (start || 0) * byteSize;
 
             if (instanceCount !== 1)

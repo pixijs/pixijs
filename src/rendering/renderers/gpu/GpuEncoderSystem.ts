@@ -326,9 +326,7 @@ export class GpuEncoderSystem implements System
 
         this._boundIndexBuffer = buffer;
 
-        const indexFormat = buffer.data.BYTES_PER_ELEMENT === 2 ? 'uint16' : 'uint32';
-
-        this.renderPassEncoder.setIndexBuffer(this._renderer.buffer.updateBuffer(buffer), indexFormat);
+        this.renderPassEncoder.setIndexBuffer(this._renderer.buffer.updateBuffer(buffer), buffer.indexFormat);
     }
 
     public resetBindGroup(index: number)
@@ -453,7 +451,7 @@ export class GpuEncoderSystem implements System
         if (geometry.indexBuffer)
         {
             this.renderPassEncoder.drawIndexed(
-                size || geometry.indexCount || geometry.indexBuffer.data.length,
+                size || geometry.indexCount || geometry.indexBuffer._indexLength,
                 instanceCount ?? geometry.instanceCount,
                 start || 0,
                 baseVertex || 0,
