@@ -1,3 +1,5 @@
+import { CompressedSource } from '../../../shared/texture/sources/CompressedSource';
+import { CubeTextureSource } from '../../../shared/texture/sources/CubeTextureSource';
 import { TextureSource } from '../../../shared/texture/sources/TextureSource';
 import { Texture } from '../../../shared/texture/Texture';
 import { describeLocalOnly, getWebGPURenderer } from '@test-utils';
@@ -203,5 +205,51 @@ describeLocalOnly('GpuTextureSystem 3D textures', () =>
             expect(storage.dimension).toBe('3d');
             expect(plain.usage & GPUTextureUsage.STORAGE_BINDING).toBe(0);
         });
+    });
+});
+
+describeLocalOnly('GpuTextureSystem HDR cube textures', () =>
+{
+    it('should upload packed HDR cube faces on a device without rg11b10ufloat-renderable', async () =>
+    {
+        const adapter = await navigator.gpu.requestAdapter();
+        const device = await adapter.requestDevice();
+
+        try
+        {
+            renderer = await getWebGPURenderer({ gpu: { adapter, device } });
+            expect(device.features.has('rg11b10ufloat-renderable')).toBe(false);
+
+            const face = new CompressedSource({
+                width: 2,
+                height: 2,
+                format: 'rg11b10ufloat',
+                resource: [new Uint8Array(16), new Uint8Array(4)],
+            });
+            const cube = new CubeTextureSource({
+                faces: { right: face, left: face, top: face, bottom: face, front: face, back: face },
+                mipLevelCount: 2,
+            });
+
+            device.pushErrorScope('validation');
+            const texture = renderer.texture.initSource(cube);
+
+            renderer.texture.getTextureView(cube);
+            expect(await device.popErrorScope()).toBeNull();
+            expect(texture.usage & GPUTextureUsage.RENDER_ATTACHMENT).toBe(0);
+            expect(texture.usage & GPUTextureUsage.COPY_SRC).toBe(GPUTextureUsage.COPY_SRC);
+            expect(texture.mipLevelCount).toBe(2);
+
+            const emptyCube = new CubeTextureSource({ width: 2, height: 2, format: 'rgba16float' });
+
+            expect(renderer.texture.initSource(emptyCube).usage & GPUTextureUsage.RENDER_ATTACHMENT)
+                .toBe(GPUTextureUsage.RENDER_ATTACHMENT);
+        }
+        finally
+        {
+            renderer?.destroy();
+            renderer = null;
+            device.destroy();
+        }
     });
 });
