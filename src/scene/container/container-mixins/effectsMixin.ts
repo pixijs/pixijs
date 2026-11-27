@@ -376,7 +376,8 @@ export const effectsMixin: Partial<Container> = {
             ...options,
         };
 
-        if (options.mask)
+        // a null mask clears it, options without a mask keep the current one
+        if (options.mask !== undefined)
         {
             this.mask = options.mask;
         }
