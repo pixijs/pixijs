@@ -194,7 +194,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 
             skipTexture = false;
             // don't let empty characters count towards the maxCharHeight
-            if (char !== '\n' && char !== '\r' && char !== '\t' && char !== ' ')
+            if (char !== '\n' && char !== '\r' && char !== '\r\n' && char !== '\t' && char !== ' ')
             {
                 skipTexture = true;
                 currentMaxCharHeight = Math.ceil(Math.max(paddedHeight, currentMaxCharHeight));
