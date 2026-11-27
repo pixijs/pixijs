@@ -16,6 +16,8 @@ import type { BitmapText } from './BitmapText';
 /** @internal */
 export class BitmapTextGraphics extends Graphics implements GPUData
 {
+    public textUpdateId = -1;
+
     public destroy()
     {
         if (this.context.customShader)
@@ -61,7 +63,11 @@ export abstract class AbstractBitmapTextPipe implements RenderPipe<BitmapText>
         {
             bitmapText._didTextUpdate = false;
 
-            this._updateContext(bitmapText, graphicsRenderable);
+            // Initialization or prepare may have already built this text revision.
+            if (graphicsRenderable.textUpdateId !== bitmapText._didViewChangeTick)
+            {
+                this._updateContext(bitmapText, graphicsRenderable);
+            }
         }
 
         this._renderer.renderPipes.graphics.addRenderable(graphicsRenderable, instructionSet);
@@ -89,8 +95,9 @@ export abstract class AbstractBitmapTextPipe implements RenderPipe<BitmapText>
 
     protected abstract getSdfShader(): SdfShader | null;
 
-    private _updateContext(bitmapText: BitmapText, proxyGraphics: Graphics)
+    private _updateContext(bitmapText: BitmapText, proxyGraphics: BitmapTextGraphics)
     {
+        const textUpdateId = bitmapText._didViewChangeTick;
         const { context } = proxyGraphics;
 
         const bitmapFont = BitmapFontManager.getFont(bitmapText.text, bitmapText._style);
@@ -182,6 +189,8 @@ export abstract class AbstractBitmapTextPipe implements RenderPipe<BitmapText>
 
             currentY += lineHeight;
         }
+
+        proxyGraphics.textUpdateId = textUpdateId;
     }
 
     private _getGpuBitmapText(bitmapText: BitmapText)
