@@ -86,6 +86,11 @@ export interface BufferDescriptor
  * Buffers are updated by calling the {@link Buffer.update} method. This immediately updates the buffer on the GPU.
  * Be mindful of calling this more often than you need to. It is recommended to update buffers only when needed.
  *
+ * A buffer created with only a `size` keeps no CPU copy. Don't call `update()` on it, because on WebGL that
+ * zeroes the whole buffer. Fill it with `renderer.buffer.write()` and copy between buffers with
+ * `renderer.buffer.copy()`, described on {@link GlBufferSystem#write} and {@link GpuBufferSystem#write}. It is
+ * never garbage collected, so destroy it when you no longer need it.
+ *
  * In WebGPU, a GPU buffer cannot resized. This limitation is abstracted away, but know that resizing a buffer means
  * creating a brand new one and destroying the old, so it is best to limit this if possible.
  * @example
@@ -127,8 +132,6 @@ export class Buffer extends EventEmitter<{
     public _gcData?: GCData;
     /** @internal */
     public _gcLastUsed = -1;
-    /** If set to true, the buffer will be garbage collected automatically when it is not used. */
-    public autoGarbageCollect = true;
 
     /** a unique id for this uniform group used through the renderer */
     public readonly uid: number = uid('buffer');
@@ -168,6 +171,8 @@ export class Buffer extends EventEmitter<{
     private _dataInt32: Int32Array = null;
 
     private readonly _indexFormat: 'uint16' | 'uint32';
+
+    private _autoGarbageCollect = true;
 
     /**
      * should the GPU buffer be shrunk when the data becomes smaller?
@@ -278,6 +283,22 @@ export class Buffer extends EventEmitter<{
         {
             this.descriptor.usage &= ~BufferUsage.STATIC;
         }
+    }
+
+    /**
+     * If set to true, the buffer will be garbage collected automatically when it is not used.
+     *
+     * Reads false while the buffer has no `data`: its contents exist only on the GPU, with nothing to restore
+     * them from, so it is never collected and must be destroyed when no longer needed.
+     */
+    get autoGarbageCollect(): boolean
+    {
+        return this._autoGarbageCollect && !!this._data;
+    }
+
+    set autoGarbageCollect(value: boolean)
+    {
+        this._autoGarbageCollect = value;
     }
 
     /**
