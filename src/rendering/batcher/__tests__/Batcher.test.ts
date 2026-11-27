@@ -3,6 +3,7 @@ import { DummyBatchableObject } from './DummyBatchableObject';
 import { TestBatcher } from './TestBatcher';
 import { getTexture } from '@test-utils';
 import { InstructionSet } from '~/rendering';
+import { GlobalResourceRegistry } from '~/utils';
 
 import type { BLEND_MODES, Texture } from '~/rendering';
 
@@ -137,5 +138,35 @@ describe('Batcher', () =>
         const batches = buildBatches(1, elements);
 
         expect(batches).toEqual([[a.source.uid], [b.source.uid]]);
+    });
+
+    it('should not destroy the batches a batcher is using when the global resources are released', () =>
+    {
+        const a = getTexture();
+        const elements = [makeElement(a, 'normal'), makeElement(a, 'add'), makeElement(a, 'normal')];
+        const batcher = new TestBatcher({ maxTextures: 16 });
+        const build = () =>
+        {
+            batcher.begin();
+            elements.forEach((element) => batcher.add(element));
+            batcher.finish(new InstructionSet());
+        };
+
+        // the second build takes its batches back from the pool
+        build();
+        build();
+
+        // as destroying another renderer with releaseGlobalResources does
+        GlobalResourceRegistry.release();
+
+        const batches = batcher.batches.slice(0, batcher.batchIndex);
+
+        expect(batches).toHaveLength(3);
+        batches.forEach((batch) =>
+        {
+            expect(batch.textures).not.toBeNull();
+            expect(batch.batcher).toBe(batcher);
+        });
+        expect(() => build()).not.toThrow();
     });
 });

@@ -82,13 +82,10 @@ let batchPoolIndex = 0;
 GlobalResourceRegistry.register({
     clear: () =>
     {
-        // check if the first element has a destroy method
-        if (batchPool.length > 0)
+        // only the batches below the index are free, the ones above it are still in use by a batcher
+        for (let i = 0; i < batchPoolIndex; i++)
         {
-            for (const item of batchPool)
-            {
-                if (item) item.destroy();
-            }
+            batchPool[i].destroy();
         }
         batchPool.length = 0; // clear the array
         batchPoolIndex = 0;
