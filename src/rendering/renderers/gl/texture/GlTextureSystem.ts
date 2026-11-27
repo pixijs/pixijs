@@ -449,6 +449,8 @@ export class GlTextureSystem implements System, CanvasGenerator
     private _initEmptyTexture2D(glTexture: GlTexture, source: TextureSource): void
     {
         const gl = this._gl;
+        // Unused batch samplers bind Texture.EMPTY. Initialize its one pixel before the first draw.
+        const isEmptyPixel = source === Texture.EMPTY.source && source.pixelWidth === 1 && source.pixelHeight === 1;
 
         // Level 0
         gl.texImage2D(
@@ -460,7 +462,7 @@ export class GlTextureSystem implements System, CanvasGenerator
             0,
             glTexture.format,
             glTexture.type,
-            null,
+            isEmptyPixel ? new Uint8Array(4) : null,
         );
 
         // Mips (if requested)
