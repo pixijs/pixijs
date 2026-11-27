@@ -2,6 +2,7 @@ import { Application } from '../Application';
 import { basePath, getApp, nextTick } from '@test-utils';
 import { Assets } from '~/assets';
 import { extensions, ExtensionType } from '~/extensions';
+import { AbstractRenderer } from '~/rendering';
 import { Container, Graphics, Sprite, Text } from '~/scene';
 import { GlobalResourceRegistry } from '~/utils';
 
@@ -66,6 +67,58 @@ describe('Application', () =>
             expect(plugin.destroy).toHaveBeenCalledOnce();
 
             extensions.remove(extension);
+        });
+
+        it('should not start when destroyed while init is pending', async () =>
+        {
+            const plugin = {
+                init: jest.fn(),
+                destroy: jest.fn(),
+            };
+            const extension = { type: ExtensionType.Application, ref: plugin };
+            const rendererDestroy = jest.spyOn(AbstractRenderer.prototype, 'destroy');
+
+            extensions.add(extension);
+
+            const app = new Application();
+            const init = app.init();
+
+            expect(() => app.destroy(true)).not.toThrow();
+            await init;
+
+            expect(app.stage).toBeNull();
+            expect(app.renderer).toBeNull();
+            expect(plugin.init).not.toHaveBeenCalled();
+            expect(plugin.destroy).not.toHaveBeenCalled();
+            expect(rendererDestroy).toHaveBeenCalledTimes(1);
+            expect(rendererDestroy).toHaveBeenCalledWith(true);
+
+            rendererDestroy.mockRestore();
+
+            await app.init();
+
+            expect(app.stage).toBeInstanceOf(Container);
+            expect(app.renderer).toBeTruthy();
+            expect(plugin.init).toHaveBeenCalledOnce();
+
+            app.destroy();
+            extensions.remove(extension);
+        });
+
+        it('should destroy an application that was never initialized', async () =>
+        {
+            const app = new Application();
+
+            expect(() => app.destroy()).not.toThrow();
+            expect(app.stage).toBeNull();
+            expect(app.renderer).toBeNull();
+
+            await app.init();
+
+            expect(app.stage).toBeInstanceOf(Container);
+            expect(app.renderer).toBeTruthy();
+
+            app.destroy();
         });
 
         it('should remove canvas when destroyed', async () =>

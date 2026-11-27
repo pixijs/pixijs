@@ -210,6 +210,11 @@ export class Application<R extends Renderer = Renderer>
      */
     public renderer: R;
 
+    /** Whether init is waiting for the renderer it creates. */
+    private _initializing = false;
+    /** The renderer options of a destroy called while init was waiting for its renderer. */
+    private _destroyOnInit: { rendererDestroyOptions: RendererDestroyOptions } = null;
+
     /** Create new Application instance */
     constructor();
 
@@ -251,7 +256,31 @@ export class Application<R extends Renderer = Renderer>
         options = { ...options };
 
         this.stage ||= new Container();
-        this.renderer = await autoDetectRenderer(options as ApplicationOptions) as R;
+        this._initializing = true;
+
+        let renderer: R;
+        let destroyOnInit: { rendererDestroyOptions: RendererDestroyOptions };
+
+        try
+        {
+            renderer = await autoDetectRenderer(options as ApplicationOptions) as R;
+        }
+        finally
+        {
+            destroyOnInit = this._destroyOnInit;
+            this._initializing = false;
+            this._destroyOnInit = null;
+        }
+
+        // destroy was called while the renderer was being created, so the application does not start
+        if (destroyOnInit)
+        {
+            renderer.destroy(destroyOnInit.rendererDestroyOptions);
+
+            return;
+        }
+
+        this.renderer = renderer;
 
         // install plugins here
         Application._plugins.forEach((plugin) =>
@@ -406,11 +435,29 @@ export class Application<R extends Renderer = Renderer>
      *     }
      * );
      * ```
+     * It can also be called while {@link Application#init} is still pending: the application then does not start,
+     * and init destroys the renderer it creates with the same `rendererDestroyOptions`.
      * > [!WARNING] After calling destroy, the application instance should no longer be used.
      * > All properties will be null and further operations will throw errors.
      */
     public destroy(rendererDestroyOptions: RendererDestroyOptions = false, options: DestroyOptions = false): void
     {
+        // a pending init destroys the renderer it creates
+        if (this._initializing)
+        {
+            this._destroyOnInit = { rendererDestroyOptions };
+        }
+
+        // no renderer yet, so no plugin has been initialized either
+        if (!this.renderer)
+        {
+            this.stage?.destroy(options);
+            this.stage = null;
+            this.renderer = null;
+
+            return;
+        }
+
         // Destroy plugins in the opposite order
         // which they were constructed
         const plugins = Application._plugins.slice(0);
