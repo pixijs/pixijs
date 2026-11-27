@@ -63,7 +63,10 @@ export function roundedShapeArc(
             continue;
         }
 
-        let angle = Math.asin((v1.nx * v2.ny) - (v1.ny * v2.nx));
+        // the cross product of two unit vectors can round to just over 1 for right angles,
+        // where Math.asin would return NaN
+        const cross = (v1.nx * v2.ny) - (v1.ny * v2.nx);
+        let angle = Math.asin(Math.min(1, Math.max(-1, cross)));
         let radDirection = 1;
         let drawDirection = false;
 

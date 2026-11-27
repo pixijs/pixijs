@@ -173,6 +173,35 @@ describe('Graphics Drawing', () =>
         });
     });
 
+    describe('roundShape', () =>
+    {
+        it('should round right-angle corners of a rotated square', () =>
+        {
+            // For these corners the cross product of the two unit edge vectors
+            // rounds to 1.0000000000000002, just outside the domain of Math.asin.
+            const graphics = new Graphics();
+
+            graphics.roundShape([
+                { x: 100, y: 100 },
+                { x: 160, y: 130 },
+                { x: 130, y: 190 },
+                { x: 70, y: 160 },
+            ], 10).fill(0xff0000);
+
+            const { minX, minY, maxX, maxY } = graphics.context.bounds;
+
+            // rounding pulls the bounds in from the sharp corners, but only a little
+            expect(minX).toBeGreaterThan(70);
+            expect(minX).toBeLessThan(75);
+            expect(minY).toBeGreaterThan(100);
+            expect(minY).toBeLessThan(105);
+            expect(maxX).toBeGreaterThan(155);
+            expect(maxX).toBeLessThan(160);
+            expect(maxY).toBeGreaterThan(185);
+            expect(maxY).toBeLessThan(190);
+        });
+    });
+
     describe('Ellipse', () =>
     {
         it('should measure an ellipse correctly', async () =>
