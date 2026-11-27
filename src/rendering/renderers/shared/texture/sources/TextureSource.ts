@@ -8,6 +8,7 @@ import { type GlTexture } from '../../../gl/texture/GlTexture';
 import { type GPUTextureGpuData } from '../../../gpu/texture/GpuTextureSystem';
 import { type GCable, type GCData } from '../../GCSystem';
 import { TextureStyle } from '../TextureStyle';
+import { isIntegerFormat } from '../utils/isIntegerFormat';
 
 import type { BindResource } from '../../../gpu/shader/BindResource';
 import type {
@@ -90,6 +91,9 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
      *
      * A 3D texture on WebGPU needs {@link TextureSourceOptions.storage} and `rgba8unorm` or `rgba16float`,
      * because a compute shader writes the mips. WebGL fills the chain with `gl.generateMipmap`.
+     *
+     * An integer format (`*uint`, `*sint`) can't be filtered, so it has no mipmaps whatever
+     * {@link TextureSource.defaultOptions} says.
      */
     autoGenerateMipmaps?: boolean;
     /** the alpha mode of the texture */
@@ -283,6 +287,9 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      *
      * A 3D texture on WebGPU needs {@link TextureSourceOptions.storage} and `rgba8unorm` or `rgba16float`,
      * because a compute shader writes the mips. WebGL fills the chain with `gl.generateMipmap`.
+     *
+     * An integer format (`*uint`, `*sint`) can't be filtered, so it has no mipmaps whatever
+     * {@link TextureSource.defaultOptions} says.
      */
     public autoGenerateMipmaps = false;
     /** the format that the texture data has */
@@ -410,7 +417,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.arrayLayerCount = options.arrayLayerCount;
         this.depth = dimension === '3d' ? (options.depth ?? 1) : 1;
         this.mipLevelCount = options.mipLevelCount;
-        this.autoGenerateMipmaps = options.autoGenerateMipmaps;
+        // an integer texture can't be filtered, so it can't have mipmaps, whatever the defaults say
+        this.autoGenerateMipmaps = isIntegerFormat(this.format) ? false : options.autoGenerateMipmaps;
         this.sampleCount = options.sampleCount;
         // a 3D texture can't be multisampled, whatever the defaults say
         this.antialias = dimension === '3d' ? false : options.antialias;
@@ -755,7 +763,7 @@ function resolveViewDimension(options: TextureSourceOptions & TextureShapeOption
 }
 
 /**
- * Throws on size and dimension options that contradict each other.
+ * Throws on size, dimension and format options that contradict each other.
  * @param options - the options passed to the TextureSource constructor, without the defaults
  * @param viewDimension - the view dimension resolved from the options
  * @param dimension - the texture dimension resolved from the view
@@ -802,5 +810,11 @@ function validateTextureShape(
     if (dimension === '3d' && options.antialias)
     {
         throw new Error('[TextureSource] a 3D texture can\'t be antialiased: WebGPU has no multisampled 3D textures.');
+    }
+
+    if (options.autoGenerateMipmaps && options.format && isIntegerFormat(options.format))
+    {
+        throw new Error(`[TextureSource] a '${options.format}' texture can't have mipmaps: `
+            + 'integer texels can\'t be filtered.');
     }
 }
