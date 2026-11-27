@@ -19,9 +19,8 @@ import type { GenerateTextureOptions } from './GenerateTextureSystem';
  * can't go through. Throws for those, naming the format, rather than returning zeros or failing GPU
  * validation.
  * @param texture - the texture about to be read
- * @param generated - true when extract made the texture itself, so it is destroyed before throwing
  */
-function assertReadable(texture: Texture, generated = false): void
+function assertReadable(texture: Texture): void
 {
     const format = texture.source.format;
 
@@ -29,8 +28,6 @@ function assertReadable(texture: Texture, generated = false): void
     {
         return;
     }
-
-    if (generated) texture.destroy(true);
 
     throw new Error(
         `[ExtractSystem] can't read ${format} textures: extract reads 8-bit color only. `
@@ -695,13 +692,16 @@ export class ExtractSystem implements System
 
         const texture = renderer.textureGenerator.generateTexture(options as GenerateTextureOptions);
 
-        assertReadable(texture, true);
+        try
+        {
+            assertReadable(texture);
 
-        const canvas = renderer.texture.generateCanvas(texture);
-
-        texture.destroy(true);
-
-        return canvas;
+            return renderer.texture.generateCanvas(texture);
+        }
+        finally
+        {
+            texture.destroy(true);
+        }
     }
 
     /**
@@ -742,21 +742,26 @@ export class ExtractSystem implements System
         const target = options.target;
 
         const renderer = this._renderer;
-        const texture = target instanceof Texture
-            ? target
-            : renderer.textureGenerator.generateTexture(options as GenerateTextureOptions);
 
-        assertReadable(texture, !(target instanceof Texture));
-
-        const pixelInfo = renderer.texture.getPixels(texture);
-
-        if (target instanceof Container)
+        if (target instanceof Texture)
         {
-            // destroy generated texture
-            texture.destroy(true);
+            assertReadable(target);
+
+            return renderer.texture.getPixels(target);
         }
 
-        return pixelInfo;
+        const texture = renderer.textureGenerator.generateTexture(options as GenerateTextureOptions);
+
+        try
+        {
+            assertReadable(texture);
+
+            return renderer.texture.getPixels(texture);
+        }
+        finally
+        {
+            texture.destroy(true);
+        }
     }
 
     /**
