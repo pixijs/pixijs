@@ -22,12 +22,10 @@ export function fontStringFromTextStyle(style: TextStyle): string
 
     // Clean-up fontFamily property by quoting each font name
     // this will support font names with spaces
-    let fontFamilies: string | string[] = style.fontFamily;
-
-    if (!Array.isArray(style.fontFamily))
-    {
-        fontFamilies = style.fontFamily.split(',');
-    }
+    // an array is copied, so the one the style was given is left as it is
+    const fontFamilies: string[] = Array.isArray(style.fontFamily)
+        ? [...style.fontFamily]
+        : style.fontFamily.split(',');
 
     for (let i = fontFamilies.length - 1; i >= 0; i--)
     {
@@ -39,9 +37,8 @@ export function fontStringFromTextStyle(style: TextStyle): string
         {
             fontFamily = `"${fontFamily}"`;
         }
-        (fontFamilies as string[])[i] = fontFamily;
+        fontFamilies[i] = fontFamily;
     }
 
-    // eslint-disable-next-line max-len
-    return `${style.fontStyle} ${style.fontVariant} ${style.fontWeight} ${fontSizeString} ${(fontFamilies as string[]).join(',')}`;
+    return `${style.fontStyle} ${style.fontVariant} ${style.fontWeight} ${fontSizeString} ${fontFamilies.join(',')}`;
 }
