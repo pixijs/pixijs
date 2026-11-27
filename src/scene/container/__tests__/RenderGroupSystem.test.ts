@@ -122,6 +122,74 @@ describe('RenderGroupSystem', () =>
 
         expect(container.renderGroup.texture._source.scaleMode).toEqual('nearest');
     });
+
+    it('should restore inherited color and alpha after cacheAsTexture is turned off', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const target = RenderTexture.create({ width: 40, height: 20 });
+        const stage = new Container();
+        const parent = new Container({ alpha: 0.5, tint: 0xff0000 });
+        const cached = new Container();
+
+        cached.addChild(new Sprite({ texture: Texture.WHITE, x: 20, width: 20, height: 20 }));
+        parent.addChild(new Sprite({ texture: Texture.WHITE, width: 20, height: 20 }), cached);
+        stage.addChild(parent);
+
+        const pixelAt = (x: number, y: number) =>
+        {
+            const { pixels, width } = renderer.extract.pixels(target);
+            const offset = ((y * width) + x) * 4;
+
+            return Array.from(pixels.subarray(offset, offset + 4));
+        };
+
+        renderer.render({ container: stage, target, clear: true });
+        cached.cacheAsTexture(true);
+        renderer.render({ container: stage, target, clear: true });
+        cached.cacheAsTexture(false);
+        renderer.render({ container: stage, target, clear: true });
+
+        expect(pixelAt(30, 10)).toEqual(pixelAt(10, 10));
+
+        stage.destroy({ children: true });
+        target.destroy(true);
+        renderer.destroy();
+    });
+
+    it('should keep children hidden with their ancestor after cacheAsTexture is turned off', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const stage = new Container();
+        const parent = new Container();
+        const cached = new Container();
+        const inner = new Container();
+        const part = new Sprite({ texture: Texture.WHITE, width: 8, height: 8 });
+
+        part.visible = false;
+        inner.addChild(new Sprite({ texture: Texture.WHITE, width: 8, height: 8 }), part);
+        cached.addChild(inner);
+        parent.addChild(cached);
+        stage.addChild(parent);
+
+        renderer.render(stage);
+        cached.cacheAsTexture(true);
+        renderer.render(stage);
+        parent.visible = false;
+        renderer.render(stage);
+        cached.cacheAsTexture(false);
+        renderer.render(stage);
+        part.visible = true;
+        renderer.render(stage);
+
+        expect(part.globalDisplayStatus).not.toEqual(0b111);
+
+        part.x += 1;
+
+        expect(() => renderer.render(stage)).not.toThrow();
+
+        stage.destroy({ children: true });
+        renderer.destroy();
+    });
 });
 
 describe('RenderGroupSystem cacheAsTexture on WebGL', () =>
