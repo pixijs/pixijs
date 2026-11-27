@@ -12,12 +12,24 @@ import type { GlProgram } from '../GlProgram';
 import type { IGLUniformData } from '../GlProgramData';
 
 /**
- * generates a WebGL Program object from a high level Pixi Program.
- * @param gl - a rendering context on which to generate the program
+ * A program whose shaders were compiled and linked without asking whether either is done.
+ * @private
+ */
+export interface StartedProgram
+{
+    webGLProgram: WebGLProgram;
+    glVertShader: WebGLShader;
+    glFragShader: WebGLShader;
+}
+
+/**
+ * Compiles a Pixi program's shaders and links them without asking for any status, so a driver with
+ * `KHR_parallel_shader_compile` does the work off the calling thread.
+ * @param gl - a rendering context on which to start the program
  * @param program - the high level Pixi Program.
  * @private
  */
-export function generateProgram(gl: GlRenderingContext, program: GlProgram): GlProgramData
+export function startProgram(gl: GlRenderingContext, program: GlProgram): StartedProgram
 {
     const glVertShader = compileShader(gl, gl.VERTEX_SHADER, program.vertex);
     const glFragShader = compileShader(gl, gl.FRAGMENT_SHADER, program.fragment);
@@ -50,6 +62,22 @@ export function generateProgram(gl: GlRenderingContext, program: GlProgram): GlP
     }
 
     gl.linkProgram(webGLProgram);
+
+    return { webGLProgram, glVertShader, glFragShader };
+}
+
+/**
+ * Finishes a started program: its link status, attributes, uniforms and uniform blocks. The first status query
+ * waits for the link if it is still running.
+ * @param gl - the rendering context the program was started on
+ * @param program - the high level Pixi Program.
+ * @param started - what startProgram returned for it
+ * @private
+ */
+export function finishProgram(gl: GlRenderingContext, program: GlProgram, started: StartedProgram): GlProgramData
+{
+    const { webGLProgram, glVertShader, glFragShader } = started;
+    const transformFeedbackVaryings = program.transformFeedbackVaryings;
 
     if (!gl.getProgramParameter(webGLProgram, gl.LINK_STATUS))
     {
@@ -95,4 +123,15 @@ export function generateProgram(gl: GlRenderingContext, program: GlProgram): GlP
     const glProgram = new GlProgramData(webGLProgram, uniformData);
 
     return glProgram;
+}
+
+/**
+ * generates a WebGL Program object from a high level Pixi Program.
+ * @param gl - a rendering context on which to generate the program
+ * @param program - the high level Pixi Program.
+ * @private
+ */
+export function generateProgram(gl: GlRenderingContext, program: GlProgram): GlProgramData
+{
+    return finishProgram(gl, program, startProgram(gl, program));
 }
