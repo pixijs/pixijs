@@ -655,7 +655,7 @@ export class EventSystem implements System<EventSystemOptions>
         for (let i = 0, j = events.length; i < j; i++)
         {
             const nativeEvent = events[i];
-            const federatedEvent = this._bootstrapEvent(this._rootPointerEvent, nativeEvent);
+            const federatedEvent = this._bootstrapPointerEvent(this._rootPointerEvent, nativeEvent);
 
             this.rootBoundary.mapEvent(federatedEvent);
         }
@@ -678,7 +678,7 @@ export class EventSystem implements System<EventSystemOptions>
 
         for (let i = 0, j = normalizedEvents.length; i < j; i++)
         {
-            const event = this._bootstrapEvent(this._rootPointerEvent, normalizedEvents[i]);
+            const event = this._bootstrapPointerEvent(this._rootPointerEvent, normalizedEvents[i]);
 
             this.rootBoundary.mapEvent(event);
         }
@@ -708,7 +708,7 @@ export class EventSystem implements System<EventSystemOptions>
 
         for (let i = 0, j = normalizedEvents.length; i < j; i++)
         {
-            const event = this._bootstrapEvent(this._rootPointerEvent, normalizedEvents[i]);
+            const event = this._bootstrapPointerEvent(this._rootPointerEvent, normalizedEvents[i]);
 
             event.type += outside;
 
@@ -731,7 +731,7 @@ export class EventSystem implements System<EventSystemOptions>
 
         for (let i = 0, j = normalizedEvents.length; i < j; i++)
         {
-            const event = this._bootstrapEvent(this._rootPointerEvent, normalizedEvents[i]);
+            const event = this._bootstrapPointerEvent(this._rootPointerEvent, normalizedEvents[i]);
 
             this.rootBoundary.mapEvent(event);
         }
@@ -755,7 +755,7 @@ export class EventSystem implements System<EventSystemOptions>
 
         for (let i = 0, j = normalizedEvents.length; i < j; i++)
         {
-            const event = this._bootstrapEvent(this._rootContextMenuEvent, normalizedEvents[i]);
+            const event = this._bootstrapPointerEvent(this._rootContextMenuEvent, normalizedEvents[i]);
 
             this.rootBoundary.mapEvent(event);
         }
@@ -1109,8 +1109,9 @@ export class EventSystem implements System<EventSystemOptions>
      * Normalizes the `nativeEvent` into a federateed {@link FederatedPointerEvent}.
      * @param event
      * @param nativeEvent
+     * @private
      */
-    private _bootstrapEvent(event: FederatedPointerEvent, nativeEvent: PointerEvent): FederatedPointerEvent
+    public _bootstrapPointerEvent(event: FederatedPointerEvent, nativeEvent: PointerEvent): FederatedPointerEvent
     {
         event.originalEvent = null;
         event.nativeEvent = nativeEvent;
@@ -1128,8 +1129,8 @@ export class EventSystem implements System<EventSystemOptions>
         this._transferMouseData(event, nativeEvent);
 
         this.mapPositionToPoint(event.screen, nativeEvent.clientX, nativeEvent.clientY);
-        event.global.copyFrom(event.screen);// global = screen for top-level
-        event.offset.copyFrom(event.screen);// EventBoundary recalculates using its rootTarget
+        event.global.copyFrom(event.screen); // global = screen for top-level
+        event.offset.copyFrom(event.screen); // EventBoundary recalculates using its rootTarget
 
         event.isTrusted = nativeEvent.isTrusted;
         if (event.type === 'pointerleave')
