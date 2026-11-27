@@ -1227,6 +1227,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         parentRenderGroup?.removeChild(this);
 
+        // the render group will be used for something else, so nothing can be left in it
+        if (!parentRenderGroup) this.renderGroup._releaseChildren();
+
         BigPool.return(this.renderGroup);
 
         this.renderGroup = null;

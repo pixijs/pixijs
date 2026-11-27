@@ -3,6 +3,8 @@ import { InstructionSet } from '../../rendering/renderers/shared/instructions/In
 import { type SCALE_MODE } from '../../rendering/renderers/shared/texture/const';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
 import { type Renderer } from '../../rendering/renderers/types';
+import { RenderGroupState } from './RenderGroupState';
+import { renderPass } from './renderPass';
 
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
@@ -10,6 +12,7 @@ import type { BatchableSprite } from '../sprite/BatchableSprite';
 import type { ViewContainer } from '../view/ViewContainer';
 import type { Bounds } from './bounds/Bounds';
 import type { Container } from './Container';
+import type { RenderView } from './renderPass';
 
 /**
  * Options for caching a container as a texture.
@@ -59,10 +62,41 @@ export class RenderGroup implements Instruction
     public renderGroupParent: RenderGroup = null;
     public renderGroupChildren: RenderGroup[] = [];
 
-    public worldTransform: Matrix = new Matrix();
-    public worldColorAlpha = 0xffffffff;
-    public worldColor = 0xffffff;
-    public worldAlpha = 1;
+    /**
+     * Where this is in its scene. Rendering the scene to a texture does not change it.
+     * @internal
+     */
+    public readonly _sceneState = new RenderGroupState();
+    /**
+     * Where this is in the last render it was part of, for use while that render runs.
+     * @internal
+     */
+    public readonly _passState = new RenderGroupState();
+    /**
+     * The id of the last render this was part of.
+     * @internal
+     */
+    public _passId = -1;
+    /**
+     * Whether the scene state is known, as this has been rendered, or added to one that has.
+     * @internal
+     */
+    public _isPlaced = false;
+    /**
+     * Where its scene is, if it was drawn as the root of a render with a transform other than its own.
+     * @internal
+     */
+    public _sceneTransform: Matrix | null = null;
+    /**
+     * The view this was last drawn to as the root of a render.
+     * @internal
+     */
+    public _view: RenderView | null = null;
+    /**
+     * The frame of the view it was drawn in.
+     * @internal
+     */
+    public _viewFrame = 0;
 
     // these updates are transform changes..
     public readonly childrenToUpdate: Record<number, { list: Container[]; index: number; }> = Object.create(null);
@@ -118,7 +152,8 @@ export class RenderGroup implements Instruction
     public _batchableRenderGroup: BatchableSprite;
 
     /**
-     * Holds a reference to the closest parent RenderGroup that has isCachedAsTexture enabled.
+     * Holds a reference to the closest parent RenderGroup that has isCachedAsTexture enabled,
+     * in the last render this was part of.
      * This is used to properly transform coordinates when rendering into cached textures.
      * @type {RenderGroup | null}
      * @ignore
@@ -130,10 +165,13 @@ export class RenderGroup implements Instruction
     private _inverseParentTextureTransform: Matrix;
 
     private _matrixDirty = 0b111;
+    private _matrixPassId = 0;
 
     public init(root: Container)
     {
         this.root = root;
+        this._sceneState.set(root.localTransform, root.localColor, root.localAlpha);
+        this.invalidateMatrices();
 
         if (root._onRender) this.addOnRender(root);
 
@@ -173,7 +211,12 @@ export class RenderGroup implements Instruction
     {
         this.textureNeedsUpdate = true;
 
-        const cachedParent = this._parentCacheAsTextureRenderGroup;
+        let cachedParent = this.renderGroupParent;
+
+        while (cachedParent && !cachedParent.isCachedAsTexture)
+        {
+            cachedParent = cachedParent.renderGroupParent;
+        }
 
         // It's worth going bottom-up and notify all parents cached as texture
         // that cached child was updated.
@@ -204,6 +247,12 @@ export class RenderGroup implements Instruction
 
         this._onRenderContainers.length = 0;
         this.renderGroupParent = null;
+        this._parentCacheAsTextureRenderGroup = null;
+
+        this._passId = -1;
+        this._isPlaced = false;
+        this._sceneTransform = null;
+        this._view = null;
 
         this.disableCacheAsTexture();
     }
@@ -221,6 +270,13 @@ export class RenderGroup implements Instruction
         }
 
         renderGroupChild.renderGroupParent = this;
+
+        // until a new render group is first rendered, the containers in it are still relative to this one
+        if (renderGroupChild._passId === -1)
+        {
+            renderGroupChild._sceneState.copyFrom(this._sceneState);
+            renderGroupChild._isPlaced = this._isPlaced;
+        }
 
         this.renderGroupChildren.push(renderGroupChild);
     }
@@ -315,6 +371,23 @@ export class RenderGroup implements Instruction
         }
     }
 
+    /**
+     * Lets go of the containers in this, when there is no render group to take them.
+     * @internal
+     */
+    public _releaseChildren()
+    {
+        const containers = this.getChildren();
+
+        for (let i = 0; i < containers.length; i++)
+        {
+            // reading it keeps it, so they stay where they were until they are in a render group again
+            void containers[i].worldTransform;
+        }
+
+        this.removeChildren(this.root.children);
+    }
+
     public onChildUpdate(child: Container)
     {
         let childrenToUpdate = this.childrenToUpdate[child.relativeRenderGroupDepth];
@@ -340,6 +413,70 @@ export class RenderGroup implements Instruction
     public onChildViewUpdate(child: Container)
     {
         this.childrenRenderablesToUpdate.list[this.childrenRenderablesToUpdate.index++] = child;
+    }
+
+    /**
+     * Whether a view is showing this, drawn as the root of a render.
+     * @internal
+     */
+    get _isOnView(): boolean
+    {
+        return this._view !== null && this._view.frame === this._viewFrame;
+    }
+
+    /**
+     * Whether this is drawn as its cached texture. The root of a render is not, it is drawn directly.
+     * @internal
+     */
+    get _isDrawnAsTexture(): boolean
+    {
+        return this.isCachedAsTexture && renderPass.root !== this;
+    }
+
+    /** The state in the render that is running if this is part of it, otherwise in the scene. */
+    private get _state(): RenderGroupState
+    {
+        return this._passId === renderPass.id ? this._passState : this._sceneState;
+    }
+
+    get worldTransform(): Matrix
+    {
+        return this._state.transform;
+    }
+
+    set worldTransform(value: Matrix)
+    {
+        this._state.transform.copyFrom(value);
+    }
+
+    get worldColor(): number
+    {
+        return this._state.color;
+    }
+
+    set worldColor(value: number)
+    {
+        this._state.color = value;
+    }
+
+    get worldAlpha(): number
+    {
+        return this._state.alpha;
+    }
+
+    set worldAlpha(value: number)
+    {
+        this._state.alpha = value;
+    }
+
+    get worldColorAlpha(): number
+    {
+        return this._state.colorAlpha;
+    }
+
+    set worldColorAlpha(value: number)
+    {
+        this._state.colorAlpha = value;
     }
 
     get isRenderable(): boolean
@@ -422,12 +559,24 @@ export class RenderGroup implements Instruction
         this._matrixDirty = 0b111;
     }
 
+    /** The matrices are of the world transform, which is not the same in a render and out of it. */
+    private _validateMatrices()
+    {
+        const passId = this._passId === renderPass.id ? renderPass.id : 0;
+
+        if (this._matrixPassId === passId) return;
+
+        this._matrixPassId = passId;
+        this.invalidateMatrices();
+    }
+
     /**
      * Returns the inverse of the world transform matrix.
      * @returns {Matrix} The inverse of the world transform matrix.
      */
     public get inverseWorldTransform()
     {
+        this._validateMatrices();
         if ((this._matrixDirty & 0b001) === 0) return this._inverseWorldTransform;
 
         this._matrixDirty &= ~0b001;
@@ -446,6 +595,7 @@ export class RenderGroup implements Instruction
      */
     public get textureOffsetInverseTransform()
     {
+        this._validateMatrices();
         if ((this._matrixDirty & 0b010) === 0) return this._textureOffsetInverseTransform;
 
         this._matrixDirty &= ~0b010;
@@ -468,6 +618,7 @@ export class RenderGroup implements Instruction
      */
     public get inverseParentTextureTransform()
     {
+        this._validateMatrices();
         if ((this._matrixDirty & 0b100) === 0) return this._inverseParentTextureTransform;
 
         this._matrixDirty &= ~0b100;
@@ -500,7 +651,7 @@ export class RenderGroup implements Instruction
      */
     public get cacheToLocalTransform()
     {
-        if (this.isCachedAsTexture)
+        if (this._isDrawnAsTexture)
         {
             return this.textureOffsetInverseTransform;
         }

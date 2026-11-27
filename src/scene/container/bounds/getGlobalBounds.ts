@@ -1,4 +1,5 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
+import { getPassRootTransform } from '../renderPass';
 import { boundsPool, matrixPool } from './utils/matrixAndBoundsPool';
 
 import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
@@ -71,7 +72,10 @@ function _getGlobalBounds(
 
         worldTransform = matrixPool.get();
 
-        worldTransform.appendFrom(target.localTransform, parentTransform);
+        const passTransform = getPassRootTransform(target);
+
+        if (passTransform) worldTransform.copyFrom(passTransform);
+        else worldTransform.appendFrom(target.localTransform, parentTransform);
     }
     else
     {
@@ -136,6 +140,10 @@ export function updateTransformBackwards(target: Container, parentTransform: Mat
 
     if (parent)
     {
+        const passTransform = getPassRootTransform(parent);
+
+        if (passTransform) return parentTransform.append(passTransform);
+
         updateTransformBackwards(parent, parentTransform);
 
         parent.updateLocalTransform();

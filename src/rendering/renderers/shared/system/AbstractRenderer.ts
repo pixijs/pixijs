@@ -14,6 +14,7 @@ import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { Matrix } from '../../../../maths/matrix/Matrix';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { TypeOrBool } from '../../../../scene/container/destroyTypes';
+import type { RenderView } from '../../../../scene/container/renderPass';
 import type { CLEAR_OR_BOOL } from '../../gl/const';
 import type { Renderer } from '../../types';
 import type { BackgroundSystem } from '../background/BackgroundSystem';
@@ -271,6 +272,13 @@ export class AbstractRenderer<
     protected config: RendererConfig;
 
     private _systemsHash: Record<string, System> = Object.create(null);
+    /**
+     * The main view if the render that is starting draws to it, otherwise null.
+     * @internal
+     */
+    public _passView: RenderView | null = null;
+    private readonly _renderView: RenderView = { frame: 0 };
+
     private _lastObjectRendered: Container;
 
     /**
@@ -364,8 +372,17 @@ export class AbstractRenderer<
 
         options.target ||= this.view.renderTarget;
 
+        const { target } = options;
+        const { renderTarget, canvas, texture } = this.view;
+
+        // systems can replace the target, so it cannot be compared later
+        const renderingToView = target === renderTarget
+            || target === canvas
+            || target === texture
+            || target === texture.source;
+
         // TODO: we should eventually fix events so that it can handle multiple canvas elements
-        if (options.target === this.view.renderTarget)
+        if (target === renderTarget)
         {
             // TODO get rid of this
             this._lastObjectRendered = options.container;
@@ -399,6 +416,13 @@ export class AbstractRenderer<
 
         this.runners.prerender.emit(options);
         this.runners.renderStart.emit(options);
+
+        const { clear = true } = options;
+
+        if (renderingToView && (clear === true || (Number(clear) & CLEAR.COLOR))) this._renderView.frame++;
+
+        // set here as the runners above can start other renders
+        this._passView = renderingToView ? this._renderView : null;
         this.runners.render.emit(options);
         this.runners.renderEnd.emit(options);
         this.runners.postrender.emit(options);
@@ -597,6 +621,8 @@ export class AbstractRenderer<
 
     public destroy(options: RendererDestroyOptions = false): void
     {
+        this._renderView.frame++;
+
         this.runners.destroy.items.reverse();
         this.runners.destroy.emit(options);
 

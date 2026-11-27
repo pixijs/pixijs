@@ -1,4 +1,5 @@
 import { Container, UPDATE_BLEND, UPDATE_COLOR, UPDATE_VISIBLE } from '../Container';
+import { renderPass } from '../renderPass';
 import { clearList } from './clearList';
 import { multiplyColors } from './multiplyColors';
 
@@ -66,37 +67,79 @@ export function updateRenderGroupTransform(renderGroup: RenderGroup)
 {
     const root = renderGroup.root;
 
-    let worldAlpha;
+    const { renderGroupParent, _sceneState } = renderGroup;
 
-    if (renderGroup.renderGroupParent)
+    renderGroup.invalidateMatrices();
+
+    // out of a render, this puts it back where it is in the scene graph
+    if (renderPass.id) updatePassState(renderGroup);
+    else renderGroup._sceneTransform = null;
+
+    if (renderPass.view)
     {
-        const renderGroupParent = renderGroup.renderGroupParent;
-
-        renderGroup.worldTransform.appendFrom(
-            root.relativeGroupTransform,
-            renderGroupParent.worldTransform,
-        );
-
-        renderGroup.worldColor = multiplyColors(
-            root.groupColor,
-            renderGroupParent.worldColor,
-        );
-
-        worldAlpha = root.groupAlpha * renderGroupParent.worldAlpha;
+        _sceneState.copyFrom(renderGroup._passState);
+    }
+    else if (renderGroup._sceneTransform)
+    {
+        _sceneState.set(renderGroup._sceneTransform, root.localColor, root.localAlpha);
+    }
+    else if (renderGroupParent)
+    {
+        _sceneState.set(root.relativeGroupTransform, root.groupColor, root.groupAlpha, renderGroupParent._sceneState);
     }
     else
     {
-        renderGroup.worldTransform.copyFrom(root.localTransform);
-        renderGroup.worldColor = root.localColor;
-        worldAlpha = root.localAlpha;
+        _sceneState.set(root.localTransform, root.localColor, root.localAlpha);
+    }
+}
+
+function updatePassState(renderGroup: RenderGroup): void
+{
+    const { root, renderGroupParent, _passState } = renderGroup;
+    const { id, transform, view } = renderPass;
+
+    renderGroup._passId = id;
+    renderGroup._isPlaced = true;
+
+    if (renderGroup === renderPass.root)
+    {
+        _passState.set(transform, root.localColor, root.localAlpha);
+
+        // rendering to a texture does not move what is in a scene, or on the view
+        if (view || !(renderGroupParent?._isPlaced || renderGroup._isOnView))
+        {
+            const isWhereItIs = !root.parent && transform === root.localTransform;
+
+            renderGroup._sceneTransform = isWhereItIs ? null : transform.clone();
+        }
+
+        if (view)
+        {
+            renderGroup._view = view;
+            renderGroup._viewFrame = view.frame;
+        }
+
+        return;
     }
 
-    // eslint-disable-next-line no-nested-ternary
-    worldAlpha = worldAlpha < 0 ? 0 : (worldAlpha > 1 ? 1 : worldAlpha);
-    renderGroup.worldAlpha = worldAlpha;
+    if (renderGroupParent)
+    {
+        // onRender can move this to a parent that is not being rendered, or is part of another render
+        const parentState = renderGroupParent._passId === id ? renderGroupParent._passState : renderGroupParent._sceneState;
 
-    renderGroup.worldColorAlpha = renderGroup.worldColor
-            + (((worldAlpha * 255) | 0) << 24);
+        _passState.set(root.relativeGroupTransform, root.groupColor, root.groupAlpha, parentState);
+    }
+    else
+    {
+        _passState.set(root.localTransform, root.localColor, root.localAlpha);
+    }
+
+    // now part of the scene being drawn, unless it is on the view by itself
+    if (view || !renderGroup._isOnView)
+    {
+        renderGroup._sceneTransform = null;
+        renderGroup._view = null;
+    }
 }
 
 /**

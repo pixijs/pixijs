@@ -36,7 +36,7 @@ export function getGlobalRenderableBounds(renderables: Renderable[], bounds: Bou
 
         const renderGroup = renderable.renderGroup ?? renderable.parentRenderGroup;
 
-        if (renderGroup?.isCachedAsTexture)
+        if (renderGroup?._isDrawnAsTexture)
         {
             bounds.matrix = tempProjectionMatrix.copyFrom(renderGroup.textureOffsetInverseTransform)
                 .append(renderable.worldTransform);
