@@ -1,12 +1,14 @@
 import { DOMAdapter } from '../../environment/adapter';
 import { AbstractRenderer } from '../../rendering/renderers/shared/system/AbstractRenderer';
 
-let _isWebGLSupported: boolean | undefined;
+let _isWebGLSupported = false;
 
 /**
  * Helper for checking for WebGL support in the current environment.
  *
- * Results are cached after first call for better performance.
+ * A successful result is cached for better performance. A failed check is not cached, since the
+ * failure can be temporary (for example, the browser couldn't create a context at that moment),
+ * so calling it again checks again.
  * @example
  * ```ts
  * // Basic WebGL support check
@@ -23,9 +25,9 @@ export function isWebGLSupported(
     failIfMajorPerformanceCaveat?: boolean
 ): boolean
 {
-    if (_isWebGLSupported !== undefined) return _isWebGLSupported;
+    if (_isWebGLSupported) return true;
 
-    _isWebGLSupported = ((): boolean =>
+    const supported = ((): boolean =>
     {
         const contextOptions = {
             stencil: true,
@@ -66,5 +68,7 @@ export function isWebGLSupported(
         }
     })();
 
-    return _isWebGLSupported;
+    _isWebGLSupported = supported;
+
+    return supported;
 }
