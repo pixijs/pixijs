@@ -492,13 +492,13 @@ export class PipelineSystem implements System
             // TODO later check if its helpful to create..
             // layout,
             vertex: {
-                module: this._getModule(vertexSource),
+                module: this._getModule(vertexSource, program.name),
                 entryPoint: program.vertex.entryPoint,
                 constants,
                 buffers,
             },
             fragment: {
-                module: this._getModule(fragmentSource),
+                module: this._getModule(fragmentSource, program.name),
                 entryPoint: program.fragment.entryPoint,
                 targets: blendModes,
                 constants,
@@ -542,17 +542,18 @@ export class PipelineSystem implements System
         return pipeline;
     }
 
-    private _getModule(code: string): GPUShaderModule
+    private _getModule(code: string, name?: string): GPUShaderModule
     {
-        return this._moduleCache[code] || this._createModule(code);
+        return this._moduleCache[code] || this._createModule(code, name);
     }
 
-    private _createModule(code: string): GPUShaderModule
+    private _createModule(code: string, name?: string): GPUShaderModule
     {
         const device = this._gpu.device;
 
         this._moduleCache[code] = device.createShaderModule({
             code,
+            label: name ? `PIXI Shader Module (${name})` : 'PIXI Shader Module',
         });
 
         return this._moduleCache[code];
