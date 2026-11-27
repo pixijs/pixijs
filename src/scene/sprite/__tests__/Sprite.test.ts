@@ -3,10 +3,67 @@ import { NineSliceSprite } from '../../sprite-nine-slice/NineSliceSprite';
 import { Sprite } from '../Sprite';
 import { getTexture, getWebGLRenderer } from '@test-utils';
 import { Point, Rectangle } from '~/maths';
-import { CanvasRenderer, ImageSource, RenderTexture, Texture, TextureSource } from '~/rendering';
+import { BufferImageSource, CanvasRenderer, ImageSource, RenderTexture, Texture, TextureSource } from '~/rendering';
 
 describe('Sprite', () =>
 {
+    describe('batch rendering', () =>
+    {
+        it.each([
+            { blendMode: 'normal', spriteAlpha: 0.5, groupAlpha: 1, textureAlpha: 255 },
+            { blendMode: 'normal', spriteAlpha: 1, groupAlpha: 0.5, textureAlpha: 255 },
+            { blendMode: 'normal', spriteAlpha: 0.5, groupAlpha: 1, textureAlpha: 128 },
+            { blendMode: 'add', spriteAlpha: 0.5, groupAlpha: 1, textureAlpha: 255 },
+            { blendMode: 'screen', spriteAlpha: 0.5, groupAlpha: 1, textureAlpha: 255 },
+        ] as const)('renders equivalent alpha modes with $blendMode and alpha $spriteAlpha/$groupAlpha/$textureAlpha',
+            async ({ blendMode, spriteAlpha, groupAlpha, textureAlpha }) =>
+            {
+                const renderer = await getWebGLRenderer();
+                const container = new Container({ isRenderGroup: true, alpha: groupAlpha });
+                const target = RenderTexture.create({ width: 4, height: 2 });
+
+                try
+                {
+                    const alphaModes = ['premultiplied-alpha', 'no-premultiply-alpha'] as const;
+
+                    for (const [x, alphaMode] of alphaModes.entries())
+                    {
+                        const colorScale = x === 0 ? textureAlpha / 255 : 1;
+                        const source = new BufferImageSource({
+                            resource: new Uint8Array([200 * colorScale, 100 * colorScale, 50 * colorScale, textureAlpha]),
+                            width: 1,
+                            height: 1,
+                            alphaMode,
+                        });
+
+                        container.addChild(new Sprite({
+                            x: x * 2,
+                            width: 2,
+                            height: 2,
+                            texture: new Texture({ source }),
+                            alpha: spriteAlpha,
+                            blendMode,
+                        }));
+                    }
+
+                    renderer.render({ container, target, clear: true, clearColor: 0x203040 });
+
+                    const { pixels } = renderer.extract.pixels(target);
+
+                    for (let channel = 0; channel < 4; channel++)
+                    {
+                        expect(Math.abs(pixels[channel] - pixels[8 + channel])).toBeLessThanOrEqual(1);
+                    }
+                }
+                finally
+                {
+                    container.destroy({ children: true, texture: true, textureSource: true });
+                    target.destroy(true);
+                    renderer.destroy();
+                }
+            });
+    });
+
     describe('constructor', () =>
     {
         it('should support no arguments', () =>

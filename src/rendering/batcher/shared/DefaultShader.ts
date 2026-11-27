@@ -5,6 +5,42 @@ import { roundPixelsBit, roundPixelsBitGl } from '../../high-shader/shader-bits/
 import { getBatchSamplersUniformGroup } from '../../renderers/gl/shader/getBatchSamplersUniformGroup';
 import { Shader } from '../../renderers/shared/shader/Shader';
 
+import type { HighShaderBit } from '../../high-shader/compiler/types';
+
+const premultiplyTextureBitGl: HighShaderBit = {
+    name: 'premultiply-texture',
+    vertex: {
+        header: 'out float vPremultiplyTexture;',
+        main: 'vPremultiplyTexture = step(2.0, aTextureIdAndRound.x);',
+    },
+    fragment: {
+        header: 'in float vPremultiplyTexture;',
+        main: /* glsl */`
+            if (vPremultiplyTexture > 0.5)
+            {
+                outColor.rgb *= outColor.a;
+            }
+        `,
+    },
+};
+
+const premultiplyTextureBit: HighShaderBit = {
+    name: 'premultiply-texture',
+    vertex: {
+        header: '@out @interpolate(flat) vPremultiplyTexture: u32;',
+        main: 'vPremultiplyTexture = aTextureIdAndRound.x & 2u;',
+    },
+    fragment: {
+        header: '@in @interpolate(flat) vPremultiplyTexture: u32;',
+        main: /* wgsl */`
+            if (vPremultiplyTexture != 0u)
+            {
+                outColor = vec4<f32>(outColor.rgb * outColor.a, outColor.a);
+            }
+        `,
+    },
+};
+
 /**
  * DefaultShader is a specialized shader class designed for batch rendering.
  * It extends the base Shader class and provides functionality for handling
@@ -27,6 +63,7 @@ export class DefaultShader extends Shader
             bits: [
                 colorBitGl,
                 generateTextureBatchBitGl(maxTextures),
+                premultiplyTextureBitGl,
                 roundPixelsBitGl,
             ]
         });
@@ -36,6 +73,7 @@ export class DefaultShader extends Shader
             bits: [
                 colorBit,
                 generateTextureBatchBit(maxTextures),
+                premultiplyTextureBit,
                 roundPixelsBit,
             ]
         });
