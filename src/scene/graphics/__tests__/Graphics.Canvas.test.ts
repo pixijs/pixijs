@@ -90,4 +90,58 @@ describe('Graphics Canvas rendering', () =>
             texture.destroy(true);
         }
     });
+
+    it('should stop managing a rendered graphics once it is destroyed', async () =>
+    {
+        const renderer = new CanvasRenderer();
+
+        await renderer.init({ width: 4, height: 4, backgroundAlpha: 0 });
+
+        const graphics = new Graphics().rect(0, 0, 4, 4).fill(0xff0000);
+        const managedGraphics = renderer.renderPipes.graphics['_managedGraphics'];
+
+        try
+        {
+            renderer.render({ container: graphics });
+
+            expect(managedGraphics.items[graphics.uid]).toBe(graphics);
+
+            graphics.destroy();
+
+            expect(managedGraphics.items[graphics.uid]).toBeNull();
+        }
+        finally
+        {
+            renderer.destroy();
+            if (!graphics.destroyed) graphics.destroy();
+        }
+    });
+
+    it('should manage a rendered graphics again after its context was unloaded', async () =>
+    {
+        const renderer = new CanvasRenderer();
+
+        await renderer.init({ width: 4, height: 4, backgroundAlpha: 0 });
+
+        const graphics = new Graphics().rect(0, 0, 4, 4).fill(0xff0000);
+        const managedGraphics = renderer.renderPipes.graphics['_managedGraphics'];
+
+        try
+        {
+            renderer.render({ container: graphics });
+
+            graphics.context.unload();
+
+            expect(managedGraphics.items[graphics.uid]).toBeNull();
+
+            renderer.render({ container: graphics });
+
+            expect(managedGraphics.items[graphics.uid]).toBe(graphics);
+        }
+        finally
+        {
+            renderer.destroy();
+            graphics.destroy();
+        }
+    });
 });
