@@ -107,7 +107,7 @@ export abstract class AbstractGraphicsPipe<TBatchable extends PipeBatchable> imp
         // assume context is dirty..
         const context = graphics.context;
 
-        const wasBatched = !!graphics._gpuData;
+        const wasBatched = !!graphics._gpuData[this.renderer.uid]?.batched;
 
         const gpuContext = this._contextSystem.updateGpuContext(context);
 
@@ -131,6 +131,9 @@ export abstract class AbstractGraphicsPipe<TBatchable extends PipeBatchable> imp
         {
             this._rebuild(graphics);
         }
+
+        // remembered so validateRenderable() can tell when the graphics switches between batched and not
+        this._getGpuDataForRenderable(graphics).batched = gpuContext.isBatchable;
 
         if (gpuContext.isBatchable)
         {
