@@ -18,6 +18,7 @@ import { GpuMipmapGenerator } from './utils/GpuMipmapGenerator';
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { System } from '../../shared/system/System';
 import type { CanvasGenerator, GetPixelsOutput } from '../../shared/texture/GenerateCanvas';
+import type { CubeTextureSource } from '../../shared/texture/sources/CubeTextureSource';
 import type { TextureSource } from '../../shared/texture/sources/TextureSource';
 import type { BindableTexture, Texture } from '../../shared/texture/Texture';
 import type { TextureStyle } from '../../shared/texture/TextureStyle';
@@ -212,7 +213,19 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
             if (source.uploadMethodId !== 'compressed')
             {
-                usage |= GPUTextureUsage.RENDER_ATTACHMENT;
+                // Uploaded HDR cubes only need sampling and copies when their faces already contain the mips.
+                // Without the optional feature, rg11b10ufloat cannot be used as a render attachment.
+                const isUploadOnlyHdrCube = source.format === 'rg11b10ufloat'
+                    && source.uploadMethodId === 'cube'
+                    && !source.autoGenerateMipmaps
+                    && !this._gpu.device.features.has('rg11b10ufloat-renderable')
+                    && Object.values((source as CubeTextureSource).faces)
+                        .every((face) => face.uploadMethodId === 'compressed');
+
+                if (!isUploadOnlyHdrCube)
+                {
+                    usage |= GPUTextureUsage.RENDER_ATTACHMENT;
+                }
                 usage |= GPUTextureUsage.COPY_SRC;
             }
 
