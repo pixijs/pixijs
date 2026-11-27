@@ -431,6 +431,7 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
 Texture.EMPTY = new Texture({
     label: 'EMPTY',
     source: new TextureSource({
+        alphaMode: 'premultiplied-alpha',
         label: 'EMPTY',
     })
 });
