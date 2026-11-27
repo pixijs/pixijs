@@ -3,6 +3,7 @@ import { Mesh } from '../shared/Mesh';
 import { MeshGeometry } from '../shared/MeshGeometry';
 import '../init';
 import { getTexture, getWebGLRenderer, getWebGPURenderer, itLocalOnly } from '@test-utils';
+import { RenderTexture } from '~/rendering';
 
 function getMesh(batched = true)
 {
@@ -89,6 +90,34 @@ describe('Mesh', () =>
         expect(() => rendererB.render(mesh)).not.toThrow();
 
         rendererB.destroy();
+    });
+
+    it.each([true, false])('should move the mesh after rebuilding with batch mode changed from %s', async (batched) =>
+    {
+        const renderer = await getWebGLRenderer();
+        const target = RenderTexture.create({ width: 40, height: 20 });
+        const stage = new Container();
+        const parent = stage.addChild(new Container());
+        const mesh = parent.addChild(getMesh(batched));
+
+        parent.position.set(10, 10);
+        renderer.render({ container: stage, target });
+
+        parent.addChild(new Container());
+        mesh.geometry.batchMode = batched ? 'no-batch' : 'batch';
+        renderer.render({ container: stage, target });
+
+        parent.x = 30;
+        renderer.render({ container: stage, target });
+
+        const { pixels, width } = renderer.extract.pixels(target);
+
+        expect(pixels[((10 * width) + 10) * 4]).toBe(0);
+        expect(pixels[((10 * width) + 30) * 4]).toBe(255);
+
+        stage.destroy({ children: true });
+        target.destroy(true);
+        renderer.destroy();
     });
 
     it('should support color tinting', () =>
