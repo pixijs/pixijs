@@ -218,4 +218,70 @@ describe('GlobalUniformSystem', () =>
 
         expect((bindGroup3.resources[0]as UniformGroup).uniforms.uWorldColorAlpha).toEqual(new Float32Array([1, 1, 1, 1]));
     });
+    it('should reuse global uniform data objects after a reset', async () =>
+    {
+        const globalUniformSystem = createGlobalUniformSystem();
+
+        const startData = globalUniformSystem.globalUniformData;
+
+        globalUniformSystem.push({ worldTransformMatrix: new Matrix(3, 3, 3, 3, 3, 3) });
+
+        const pushData = globalUniformSystem.globalUniformData;
+
+        expect(pushData).not.toBe(startData);
+
+        globalUniformSystem.pop();
+
+        expect(globalUniformSystem.globalUniformData).toBe(startData);
+
+        const worldTransformMatrix = new Matrix(4, 4, 4, 4, 4, 4);
+        const offset = new Point(10, 20);
+
+        globalUniformSystem.start({
+            projectionMatrix: new Matrix(1, 1, 1, 1, 1, 1),
+            size: [2, 2],
+            worldTransformMatrix,
+            offset,
+        });
+
+        globalUniformSystem.push({ worldColor: 0x00FFFFFF });
+
+        const reused = [
+            globalUniformSystem['_globalUniformDataStack'][0],
+            globalUniformSystem.globalUniformData,
+        ];
+
+        // both objects come back from the pool instead of being allocated again
+        expect(reused).toContain(startData);
+        expect(reused).toContain(pushData);
+        expect(globalUniformSystem['_globalUniformDataPool']).toHaveLength(0);
+
+        // and they carry the values of this frame, not the previous one
+        expect(globalUniformSystem.globalUniformData).toMatchObject({
+            worldTransformMatrix,
+            offset,
+            worldColor: 0x00FFFFFF,
+            resolution: [1, 1],
+        });
+        expect(globalUniformSystem.globalUniformData.bindGroup).toBe(globalUniformSystem.bindGroup);
+        expect((globalUniformSystem.bindGroup.resources[0] as UniformGroup).uniforms.uWorldTransformMatrix)
+            .toMatchObject({ a: 4, b: 4, c: 4, d: 4, tx: -6, ty: -16 });
+    });
+
+    it('should not allocate a default matrix and point for every bind on an empty stack', async () =>
+    {
+        const globalUniformSystem = createGlobalUniformSystem();
+
+        const first = globalUniformSystem.globalUniformData;
+
+        globalUniformSystem.start({ projectionMatrix: new Matrix(), size: [1, 1] });
+
+        const second = globalUniformSystem.globalUniformData;
+
+        expect(second.worldTransformMatrix).toBe(first.worldTransformMatrix);
+        expect(second.offset).toBe(first.offset);
+        expect(second.worldTransformMatrix).toMatchObject({ a: 1, b: 0, c: 0, d: 1, tx: 0, ty: 0 });
+        expect(second.offset).toMatchObject({ x: 0, y: 0 });
+        expect(second.worldColor).toBe(0xFFFFFFFF);
+    });
 });
