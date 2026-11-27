@@ -122,6 +122,11 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
     public initGpuText(text: Text)
     {
+        const existing = text._gpuData[this._renderer.uid];
+
+        // Don't replace a live batchable; prepare.upload can race with render. #12181
+        if (existing) return existing;
+
         const batchableText = new BatchableText();
 
         batchableText.currentKey = '--';
