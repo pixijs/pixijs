@@ -700,6 +700,37 @@ describe('EventSystem', () =>
         expect(eventSpy).toHaveBeenCalledOnce();
     });
 
+    it('should not dispatch pointerupoutside to a clicked target when the page is clicked elsewhere', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene();
+        const clickSpy = jest.fn();
+        const outsideSpy = jest.fn();
+
+        renderer.render(stage);
+        renderer.canvas.style.cssText = 'position: fixed; left: 0; top: 0';
+        document.body.appendChild(renderer.canvas);
+
+        graphics.addEventListener('click', clickSpy);
+        graphics.addEventListener('pointerupoutside', outsideSpy);
+
+        const click = (element: HTMLElement, position: number) =>
+        {
+            const init = { bubbles: true, pointerType: 'mouse', clientX: position, clientY: position };
+
+            element.dispatchEvent(new PointerEvent('pointerdown', init));
+            element.dispatchEvent(new PointerEvent('pointerup', init));
+        };
+
+        click(renderer.canvas, 25);
+        click(document.body, 200);
+
+        renderer.canvas.remove();
+
+        expect(clickSpy).toHaveBeenCalledOnce();
+        expect(outsideSpy).not.toHaveBeenCalled();
+    });
+
     // eslint-disable-next-line jest/no-done-callback
     it('should set the detail of click events to the click count', async (done) =>
     {

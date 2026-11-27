@@ -965,7 +965,7 @@ export class EventBoundary
      * The `pointerupoutside` event bubbles from the original `pointerdown` target to the most specific
      * ancestor of the `pointerdown` and `pointerup` targets, which is also the `click` event's target. `touchend`,
      * `rightup`, `mouseup`, `touchendoutside`, `rightupoutside`, `mouseupoutside`, and `tap` are fired as well for
-     * specific pointer types.
+     * specific pointer types. The tracking data for the specific pointer is cleared of a `pressTarget`.
      * @param from - The upstream `pointerup` event.
      */
     protected mapPointerUp(from: FederatedEvent): void
@@ -980,6 +980,12 @@ export class EventBoundary
         }
 
         const now = performance.now();
+        const trackingData = this.trackingData(from.pointerId);
+        const pressPath = trackingData.pressTargetsByButton[from.button];
+
+        // Forget the press before any listener runs, as listeners may throw or start a new press.
+        delete trackingData.pressTargetsByButton[from.button];
+
         const e = this.createPointerEvent(from);
 
         this.dispatchEvent(e, 'pointerup');
@@ -995,8 +1001,8 @@ export class EventBoundary
             this.dispatchEvent(e, isRightButton ? 'rightup' : 'mouseup');
         }
 
-        const trackingData = this.trackingData(from.pointerId);
-        const pressTarget = this.findMountedTarget(trackingData.pressTargetsByButton[from.button]);
+        // Found after the listeners above, which may unmount the press target.
+        const pressTarget = this.findMountedTarget(pressPath);
 
         let clickTarget = pressTarget;
 
@@ -1025,8 +1031,6 @@ export class EventBoundary
 
                 currentTarget = currentTarget.parent;
             }
-
-            delete trackingData.pressTargetsByButton[from.button];
 
             // currentTarget is the most specific ancestor holding both the pointerdown and pointerup
             // targets. That is - it's our click target!
@@ -1110,6 +1114,9 @@ export class EventBoundary
 
         const trackingData = this.trackingData(from.pointerId);
         const pressTarget = this.findMountedTarget(trackingData.pressTargetsByButton[from.button]);
+
+        delete trackingData.pressTargetsByButton[from.button];
+
         const e = this.createPointerEvent(from);
 
         if (pressTarget)
@@ -1133,8 +1140,6 @@ export class EventBoundary
 
                 currentTarget = currentTarget.parent;
             }
-
-            delete trackingData.pressTargetsByButton[from.button];
         }
 
         this.freeEvent(e);
