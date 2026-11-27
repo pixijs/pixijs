@@ -66,7 +66,10 @@ fn mainFragment(
    var back =  textureSample(uBackTexture, uSampler, uv);
    var front = textureSample(uTexture, uSampler, uv);
    var blendedAlpha = front.a + back.a * (1.0 - front.a);
-   
+
+   // The front texture holds premultiplied colours, while the blend formulas expect straight ones.
+   front = vec4<f32>(front.rgb / max(front.a, 0.00001), front.a);
+
    var out = vec4<f32>(0.0,0.0,0.0,0.0);
 
    {MAIN}
