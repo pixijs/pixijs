@@ -30,7 +30,7 @@ export const glUploadVideoResource = {
         gl: GlRenderingContext,
         webGLVersion: number,
         targetOverride?: number,
-        forceAllocation = getDefaultForceAllocation()
+        forceAllocation?: boolean
     )
     {
         if (!source.isValid)
@@ -52,7 +52,15 @@ export const glUploadVideoResource = {
             return;
         }
 
-        glUploadImageResource.upload(source as any, glTexture, gl, webGLVersion, targetOverride, forceAllocation);
+        glUploadImageResource.upload(
+            source,
+            glTexture,
+            gl,
+            webGLVersion,
+            targetOverride,
+            forceAllocation ?? (!source.preserveAlpha && getDefaultForceAllocation()),
+            source.preserveAlpha
+        );
     }
 } as GLTextureUploader;
 

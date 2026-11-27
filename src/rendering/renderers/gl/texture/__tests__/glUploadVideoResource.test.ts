@@ -1,3 +1,5 @@
+import type { VideoSourceOptions } from '../../../shared/texture/sources/VideoSource';
+
 const SAFARI_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 '
     + '(KHTML, like Gecko) Version/18.0 Safari/605.1.15';
 
@@ -26,7 +28,7 @@ describe('glUploadVideoResource', () =>
         }
     });
 
-    async function uploadVideoFrameTwice(userAgent?: string)
+    async function uploadVideoFrameTwice(userAgent?: string, options?: Partial<VideoSourceOptions>)
     {
         const { DOMAdapter } = await import('~/environment/adapter');
         const { getAsset, getWebGLRenderer } = await import('@test-utils');
@@ -43,22 +45,31 @@ describe('glUploadVideoResource', () =>
 
         video.src = getAsset('video/park.mp4');
 
-        const source = new VideoSource({ resource: video, autoPlay: false });
+        const source = new VideoSource({ resource: video, autoPlay: false, ...options });
 
         await source.load();
 
         const texImage2D = jest.spyOn(renderer.gl, 'texImage2D');
         const texSubImage2D = jest.spyOn(renderer.gl, 'texSubImage2D');
 
+        const isVideoUpload = (args: readonly unknown[]) => args[args.length - 1] === video;
+        const frameUploads = () => ({
+            reallocated: texImage2D.mock.calls.filter(isVideoUpload).length,
+            updatedInPlace: texSubImage2D.mock.calls.filter(isVideoUpload).length,
+        });
+
         try
         {
             renderer.texture.initSource(source);
+
+            const firstFrame = frameUploads();
+
             texImage2D.mockClear();
             texSubImage2D.mockClear();
 
             source.update();
 
-            return { reallocated: texImage2D.mock.calls.length, updatedInPlace: texSubImage2D.mock.calls.length };
+            return { firstFrame, nextFrame: frameUploads() };
         }
         finally
         {
@@ -72,11 +83,23 @@ describe('glUploadVideoResource', () =>
 
     it('should re-allocate each video frame when the adapter set after import reports Safari', async () =>
     {
-        expect(await uploadVideoFrameTwice(SAFARI_UA)).toEqual({ reallocated: 1, updatedInPlace: 0 });
+        const { nextFrame } = await uploadVideoFrameTwice(SAFARI_UA);
+
+        expect(nextFrame).toEqual({ reallocated: 1, updatedInPlace: 0 });
     });
 
     it('should update video frames in place outside Safari', async () =>
     {
-        expect(await uploadVideoFrameTwice()).toEqual({ reallocated: 0, updatedInPlace: 1 });
+        const { nextFrame } = await uploadVideoFrameTwice();
+
+        expect(nextFrame).toEqual({ reallocated: 0, updatedInPlace: 1 });
+    });
+
+    it('should upload even the first Safari video frame with texSubImage2D when preserving alpha', async () =>
+    {
+        expect(await uploadVideoFrameTwice(SAFARI_UA, { preserveAlpha: true })).toEqual({
+            firstFrame: { reallocated: 0, updatedInPlace: 1 },
+            nextFrame: { reallocated: 0, updatedInPlace: 1 },
+        });
     });
 });

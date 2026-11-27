@@ -1,5 +1,4 @@
-import type { CanvasSource } from '../../../shared/texture/sources/CanvasSource';
-import type { ImageSource } from '../../../shared/texture/sources/ImageSource';
+import type { TextureSource } from '../../../shared/texture/sources/TextureSource';
 import type { GlRenderingContext } from '../../context/GlRenderingContext';
 import type { GlTexture } from '../GlTexture';
 import type { GLTextureUploader } from './GLTextureUploader';
@@ -10,12 +9,13 @@ export const glUploadImageResource = {
     id: 'image',
 
     upload(
-        source: ImageSource | CanvasSource,
+        source: TextureSource,
         glTexture: GlTexture,
         gl: GlRenderingContext,
         webGLVersion: number,
         targetOverride?: number,
-        forceAllocation = false
+        forceAllocation = false,
+        preferSubImage = false
     )
     {
         const target = targetOverride || glTexture.target;
@@ -29,6 +29,7 @@ export const glUploadImageResource = {
         const isWebGL2 = webGLVersion === 2;
         const needsAllocation = forceAllocation || glTexture.width !== textureWidth || glTexture.height !== textureHeight;
         const resourceFitsTexture = resourceWidth >= textureWidth && resourceHeight >= textureHeight;
+        const useSubImageForAllocation = preferSubImage || !resourceFitsTexture;
         const resource = source.resource as TexImageSource;
 
         const uploadFunction = isWebGL2 ? uploadImageWebGL2 : uploadImageWebGL1;
@@ -39,17 +40,17 @@ export const glUploadImageResource = {
             glTexture,
             textureWidth,
             textureHeight,
-            resourceWidth,
-            resourceHeight,
+            preferSubImage ? Math.min(textureWidth, resourceWidth) : resourceWidth,
+            preferSubImage ? Math.min(textureHeight, resourceHeight) : resourceHeight,
             resource,
             needsAllocation,
-            resourceFitsTexture
+            useSubImageForAllocation
         );
 
         glTexture.width = textureWidth;
         glTexture.height = textureHeight;
     }
-} as GLTextureUploader;
+} satisfies GLTextureUploader;
 
 function uploadImageWebGL2(
     gl: GlRenderingContext,
@@ -61,12 +62,11 @@ function uploadImageWebGL2(
     resourceHeight: number,
     resource: TexImageSource,
     needsAllocation: boolean,
-    resourceFitsTexture: boolean
+    useSubImageForAllocation: boolean
 ): void
 {
-    if (!resourceFitsTexture)
+    if (useSubImageForAllocation)
     {
-        // Allocate the full texture and upload the (smaller) resource into it.
         if (needsAllocation)
         {
             gl.texImage2D(
@@ -137,12 +137,11 @@ function uploadImageWebGL1(
     _resourceHeight: number,
     resource: TexImageSource,
     needsAllocation: boolean,
-    resourceFitsTexture: boolean
+    useSubImageForAllocation: boolean
 ): void
 {
-    if (!resourceFitsTexture)
+    if (useSubImageForAllocation)
     {
-        // Allocate the full texture and upload the (smaller) resource into it.
         if (needsAllocation)
         {
             gl.texImage2D(
