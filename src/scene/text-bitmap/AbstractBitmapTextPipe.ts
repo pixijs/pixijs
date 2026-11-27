@@ -97,7 +97,7 @@ export abstract class AbstractBitmapTextPipe implements RenderPipe<BitmapText>
 
         context.clear();
 
-        if (bitmapFont.distanceField.type !== 'none')
+        if (bitmapFont.distanceField.type !== 'none' && !context.customShader)
         {
             // Only use custom shader for WebGL/WebGPU renderers
             // Canvas renderer cannot properly handle MSDF distance field math
@@ -105,10 +105,7 @@ export abstract class AbstractBitmapTextPipe implements RenderPipe<BitmapText>
 
             if (sdfShader)
             {
-                if (!context.customShader)
-                {
-                    context.customShader = sdfShader;
-                }
+                context.customShader = sdfShader;
             }
         }
 
