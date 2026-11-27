@@ -138,4 +138,37 @@ describe('Batcher', () =>
 
         expect(batches).toEqual([[a.source.uid], [b.source.uid]]);
     });
+
+    it('should upgrade indexBuffer to Uint32Array when vertex count exceeds 65535 even with fewer than 65536 indices', () =>
+    {
+        const texture = getTexture();
+        const batcher = new TestBatcher({
+            maxTextures: 16,
+            indicesInitialSize: 100,
+        });
+
+        batcher.vertexSize = 6;
+
+        const zeroIndexManyVerts = makeElement(texture);
+
+        zeroIndexManyVerts.attributeSize = 65540;
+        zeroIndexManyVerts.indexSize = 0;
+
+        const trailingMesh = makeElement(texture);
+
+        trailingMesh.attributeSize = 4;
+        trailingMesh.indexSize = 6;
+        trailingMesh.indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
+
+        batcher.begin();
+        batcher.add(zeroIndexManyVerts);
+        batcher.add(trailingMesh);
+        batcher.finish(new InstructionSet());
+
+        expect(batcher.indexSize).toBe(6);
+        expect(batcher.indexBuffer).toBeInstanceOf(Uint32Array);
+        expect(batcher.indexBuffer[0]).toBe(65540);
+        expect(batcher.indexBuffer[1]).toBe(65541);
+        expect(batcher.indexBuffer[2]).toBe(65542);
+    });
 });
