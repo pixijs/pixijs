@@ -1,3 +1,4 @@
+import { BufferImageSource } from '../sources/BufferImageSource';
 import { TextureSource } from '../sources/TextureSource';
 import { getWebGLRenderer } from '@test-utils';
 
@@ -161,6 +162,35 @@ describe('TextureSource', () =>
             finally
             {
                 TextureSource.defaultOptions.antialias = defaultAntialias;
+            }
+        });
+
+        it('should reject autoGenerateMipmaps on an integer texture', () =>
+        {
+            expect(() => new TextureSource({ format: 'rgba32uint', autoGenerateMipmaps: true }))
+                .toThrow('can\'t have mipmaps');
+
+            expect(new TextureSource({ format: 'rgba32uint' }).autoGenerateMipmaps).toBe(false);
+            expect(new TextureSource({ format: 'r32sint', autoGenerateMipmaps: false }).autoGenerateMipmaps).toBe(false);
+        });
+
+        it('should not apply a global autoGenerateMipmaps default to an integer texture', () =>
+        {
+            const defaultMipmaps = TextureSource.defaultOptions.autoGenerateMipmaps;
+
+            TextureSource.defaultOptions.autoGenerateMipmaps = true;
+
+            try
+            {
+                expect(new TextureSource({ width: 4, height: 4, format: 'rgba32uint' }).autoGenerateMipmaps).toBe(false);
+                expect(new TextureSource({ width: 4, height: 4, format: 'r32sint' }).autoGenerateMipmaps).toBe(false);
+                expect(new BufferImageSource({ resource: new Uint32Array(4), width: 1, height: 1 }).autoGenerateMipmaps)
+                    .toBe(false);
+                expect(new TextureSource({ width: 4, height: 4 }).autoGenerateMipmaps).toBe(true);
+            }
+            finally
+            {
+                TextureSource.defaultOptions.autoGenerateMipmaps = defaultMipmaps;
             }
         });
 

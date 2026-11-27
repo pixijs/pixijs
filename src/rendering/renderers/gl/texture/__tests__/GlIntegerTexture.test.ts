@@ -88,6 +88,31 @@ describe('GlTextureSystem integer formats', () =>
         renderer.destroy();
     });
 
+    it('should upload an rgba32uint texture when the mipmap default is on', async () =>
+    {
+        const defaultMipmaps = TextureSource.defaultOptions.autoGenerateMipmaps;
+
+        TextureSource.defaultOptions.autoGenerateMipmaps = true;
+
+        try
+        {
+            const { renderer, integerTexture, draw } = await setup();
+
+            const quad = new Mesh({
+                geometry: new Geometry({ attributes: { aPosition: [-1, -1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1] } }),
+                shader: Shader.from({ gl: glShader, resources: { uData: integerTexture.source } }),
+            });
+
+            expect(draw(quad)).toEqual({ error: renderer.gl.NO_ERROR, pixel: [0, 255, 0, 255] });
+
+            renderer.destroy();
+        }
+        finally
+        {
+            TextureSource.defaultOptions.autoGenerateMipmaps = defaultMipmaps;
+        }
+    });
+
     it('should upload every integer format', async () =>
     {
         const renderer = await getWebGLRenderer();
