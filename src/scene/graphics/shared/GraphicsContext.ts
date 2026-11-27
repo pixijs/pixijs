@@ -500,13 +500,14 @@ export class GraphicsContext extends EventEmitter<{
 
         const t = this._transform;
 
-        this._activePath.arcTo(
-            (t.a * x1) + (t.c * y1) + t.tx,
-            (t.b * x1) + (t.d * y1) + t.ty,
-            (t.a * x2) + (t.c * y2) + t.tx,
-            (t.b * x2) + (t.d * y2) + t.ty,
-            radius,
-        );
+        if (t.a === 1 && t.b === 0 && t.c === 0 && t.d === 1)
+        {
+            this._activePath.arcTo(x1 + t.tx, y1 + t.ty, x2 + t.tx, y2 + t.ty, radius);
+        }
+        else
+        {
+            this._activePath.arcTo(x1, y1, x2, y2, radius, t.clone());
+        }
 
         return this;
     }
