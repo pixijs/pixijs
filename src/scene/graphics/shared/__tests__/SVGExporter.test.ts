@@ -346,6 +346,33 @@ describe('SVGExporter', () =>
             expect(d).not.toContain('ZL');
         });
 
+        it('should keep a full-circle arc connected to the path around it', () =>
+        {
+            const ctx = new GraphicsContext();
+
+            ctx.moveTo(0, 50);
+            ctx.arc(50, 50, 10, 0, Math.PI * 2);
+            ctx.lineTo(100, 50);
+            ctx.stroke({ color: 0x000000 });
+
+            const d = graphicsContextToSvg(ctx).match(/d="([^"]+)"/)![1];
+
+            // the line runs into the circle at angle 0, and the next line leaves from there
+            expect(d).toBe('M0 50L60 50A10 10 0 0 1 40 50A10 10 0 0 1 60 50L100 50');
+        });
+
+        it('should export a full-circle arc as half turns in its own direction', () =>
+        {
+            const ctx = new GraphicsContext();
+
+            ctx.arc(50, 50, 25, Math.PI / 2, (Math.PI / 2) - (Math.PI * 2), true);
+            ctx.fill({ color: 0x000000 });
+
+            const d = graphicsContextToSvg(ctx).match(/d="([^"]+)"/)![1];
+
+            expect(d).toBe('M50 75A25 25 0 0 0 50 25A25 25 0 0 0 50 75');
+        });
+
         it('should derive the viewBox from context bounds without extra stroke padding', () =>
         {
             const ctx = new GraphicsContext();

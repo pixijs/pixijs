@@ -88,7 +88,8 @@ export function buildSVGPath(path: GraphicsPath, precision = 2, flatten = false)
 
             case 'arc':
                 parts.push(buildArc(d[0], d[1], d[2], d[3], d[4], !!d[5], hasCurrent, precision, flatten));
-                hasCurrent = !isFullCircle(d[3], d[4], !!d[5]);
+                // a flattened full circle is written as a closed ellipse
+                hasCurrent = !(flatten && isFullCircle(d[3], d[4], !!d[5]));
                 break;
 
             case 'rect':
@@ -179,9 +180,33 @@ function buildArc(
         sweep += PI2;
     }
 
+    const sx = cx + (radius * Math.cos(startAngle));
+    const sy = cy + (radius * Math.sin(startAngle));
+    const sweepFlag = ccw ? 0 : 1;
+    const start = hasCurrent ? 'L' : 'M';
+
     if (Math.abs(sweep) >= PI2 - 1e-6)
     {
-        return buildEllipseArc(cx, cy, radius, radius, null, precision, flatten);
+        if (flatten)
+        {
+            return buildEllipseArc(cx, cy, radius, radius, null, precision, flatten);
+        }
+
+        // An SVG arc that ends where it starts draws nothing, so a full turn (or more) is written
+        // as half turns. Like the arc Graphics draws, it stays connected to the current point and
+        // ends at endAngle, where the next segment continues.
+        const halfTurns = Math.ceil((Math.abs(sweep) / Math.PI) - 1e-6);
+        let d = `${start}${n(sx, precision)} ${n(sy, precision)}`;
+
+        for (let i = 1; i <= halfTurns; i++)
+        {
+            const a = startAngle + ((i / halfTurns) * sweep);
+
+            d += `A${n(radius, precision)} ${n(radius, precision)} 0 0 ${sweepFlag} `
+                + `${n(cx + (radius * Math.cos(a)), precision)} ${n(cy + (radius * Math.sin(a)), precision)}`;
+        }
+
+        return d;
     }
 
     if (flatten)
@@ -203,14 +228,10 @@ function buildArc(
         return parts.join('');
     }
 
-    const sx = cx + (radius * Math.cos(startAngle));
-    const sy = cy + (radius * Math.sin(startAngle));
     const ex = cx + (radius * Math.cos(endAngle));
     const ey = cy + (radius * Math.sin(endAngle));
 
     const largeArc = Math.abs(sweep) > Math.PI ? 1 : 0;
-    const sweepFlag = ccw ? 0 : 1;
-    const start = hasCurrent ? 'L' : 'M';
 
     return `${start}${n(sx, precision)} ${n(sy, precision)}`
         + `A${n(radius, precision)} ${n(radius, precision)} 0 ${largeArc} ${sweepFlag} `
