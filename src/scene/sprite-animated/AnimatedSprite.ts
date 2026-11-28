@@ -681,6 +681,15 @@ export class AnimatedSprite extends Sprite
             this._currentTime += elapsed;
         }
 
+        // While looping, keep the time within a single loop, so that turning off `loop` later
+        // lets the current loop finish instead of ending the animation at once.
+        if (this.loop)
+        {
+            const length = this._textures.length;
+
+            this._currentTime = ((this._currentTime % length) + length) % length;
+        }
+
         // Handle scenarios when animation reaches the start or the end.
         if (this._currentTime < 0 && !this.loop)
         {
