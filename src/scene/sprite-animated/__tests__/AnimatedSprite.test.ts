@@ -562,6 +562,71 @@ describe('AnimatedSprite', () =>
             sprite.update(ticker1);
             expect(count).toBe(2);
         });
+
+        it('should finish the current loop when loop is turned off after looping', () =>
+        {
+            let completed = false;
+
+            sprite.gotoAndStop(0);
+            sprite.onComplete = () => { completed = true; };
+            sprite.autoUpdate = false;
+            sprite.play();
+
+            // two full loops and one frame into the third
+            for (let i = 0; i < 14; i++)
+            {
+                sprite.update(ticker1);
+            }
+            expect(sprite.currentFrame).toBe(1);
+
+            sprite.loop = false;
+            sprite.update(ticker1);
+            expect(sprite.playing).toBe(true);
+            expect(sprite.currentFrame).toBe(1);
+            expect(completed).toBe(false);
+
+            sprite.update(ticker1);
+            sprite.update(ticker1);
+            expect(sprite.currentFrame).toBe(2);
+            expect(completed).toBe(false);
+
+            sprite.update(ticker1);
+            sprite.update(ticker1);
+            expect(sprite.playing).toBe(false);
+            expect(sprite.currentFrame).toBe(2);
+            expect(completed).toBe(true);
+        });
+
+        it('should finish the current loop when loop is turned off after looping - reverse', () =>
+        {
+            let completed = false;
+
+            sprite.gotoAndStop(2);
+            sprite.animationSpeed = -0.5;
+            sprite.onComplete = () => { completed = true; };
+            sprite.autoUpdate = false;
+            sprite.play();
+
+            // two full loops and one frame into the third
+            for (let i = 0; i < 14; i++)
+            {
+                sprite.update(ticker1);
+            }
+            expect(sprite.currentFrame).toBe(1);
+
+            sprite.loop = false;
+            sprite.update(ticker1);
+            sprite.update(ticker1);
+            expect(sprite.playing).toBe(true);
+            expect(sprite.currentFrame).toBe(0);
+            expect(completed).toBe(false);
+
+            sprite.update(ticker1);
+            sprite.update(ticker1);
+            expect(sprite.playing).toBe(false);
+            expect(sprite.currentFrame).toBe(0);
+            expect(completed).toBe(true);
+        });
     });
 
     describe('.destroy()', () =>
